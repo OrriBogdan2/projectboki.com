@@ -16,8 +16,8 @@
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preconnect" href="https://media.anthum.ai">
-<link rel="stylesheet" href="assets/style.css?v=5">
+<link rel="preload" as="image" href="assets/img/game/skylands-map-2560.webp" imagesrcset="assets/img/game/skylands-map-1280.webp 1280w, assets/img/game/skylands-map-2560.webp 2560w, assets/img/game/skylands-map-3840.webp 3840w" imagesizes="100vw">
+<link rel="stylesheet" href="assets/style.css?v=6">
 </head>
 <body>
 
@@ -30,8 +30,8 @@
       <a href="#bond">Your Boki</a>
       <a href="#skylands">The Skylands</a>
       <a href="#fair">Fair play</a>
-      <a class="btn btn-sun js-discord" href="#" target="_blank" rel="noopener" hidden>Playtest</a>
-      <a class="btn btn-sun js-nodiscord" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-nav js-discord" href="#" target="_blank" rel="noopener" hidden>Join the playtest</a>
+      <a class="btn btn-nav js-nodiscord" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
 </header>
@@ -40,24 +40,23 @@
 
 <!-- 1. HERO: a squad mid-fight, Boki at their side -->
 <section class="hero" aria-label="Project Boki">
-  <img class="bg" src="https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/55c45acc-7728-46f4-a6b5-5d476eaadc11.png" srcset="https://media.anthum.ai/cdn-cgi/image/width=960,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/55c45acc-7728-46f4-a6b5-5d476eaadc11.png 960w, https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/55c45acc-7728-46f4-a6b5-5d476eaadc11.png 1600w, https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/55c45acc-7728-46f4-a6b5-5d476eaadc11.png 2400w" sizes="100vw" alt="Concept art: a squad and their Boki fight a giant moss golem on a floating island">
-  <span class="concept hero-tag">Concept art</span>
+  <img class="bg" src="assets/img/game/skylands-map-2560.webp" srcset="assets/img/game/skylands-map-1280.webp 1280w, assets/img/game/skylands-map-2560.webp 2560w, assets/img/game/skylands-map-3840.webp 3840w" sizes="100vw" alt="The Skylands from above as a match begins: floating islands joined by bridges over the clouds">
   <div class="wrap">
     <div class="kicker">A PvPvE extraction game for PC</div>
-    <h1><span class="line">Raise them.</span><span class="line">Risk them.</span><span class="line">Bring them home.</span></h1>
+    <h1><span class="line">Raise an AI pet...</span><span class="line">and try not to lose her.</span></h1>
     <div class="compare">
       <span>Runs with real stakes, like Tarkov.</span>
       <span>Top-down fights, like SUPERVIVE.</span>
       <span>A bond like Monster Rancher.</span>
     </div>
     <div class="cta">
-      <a class="btn btn-discord js-discord" href="#" target="_blank" rel="noopener" hidden>
+      <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden>
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
-        Join the playtest
+        Join the playtest<span class="arrow" aria-hidden="true"></span>
       </a>
-      <a class="btn btn-sun" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">
+      <a class="btn btn-glass" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
-        Play it from GitHub
+        View on GitHub
       </a>
     </div>
     <div class="facts"><span>20 to 40 players a match</span><span>Solo, duo or trio</span><span>Six archetypes</span><span>Open source</span></div>
@@ -67,7 +66,7 @@
 <!-- 2. STAKES -->
 <section id="stakes">
   <div class="wrap split">
-    <div class="media"><img src="https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/35983a1f-ccc4-456d-aaa8-ee6ac6fd602f.png" srcset="https://media.anthum.ai/cdn-cgi/image/width=960,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/35983a1f-ccc4-456d-aaa8-ee6ac6fd602f.png 960w, https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/35983a1f-ccc4-456d-aaa8-ee6ac6fd602f.png 1600w, https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/35983a1f-ccc4-456d-aaa8-ee6ac6fd602f.png 2400w" sizes="(max-width: 1000px) 100vw, 50vw" alt="Concept art: a hunter carries their wounded Boki to the sky-skiff as a rival squad closes in" loading="lazy"><span class="concept">Concept art</span></div>
+    <div class="media"><img src="assets/img/game/extraction-2560.webp" srcset="assets/img/game/extraction-1280.webp 1280w, assets/img/game/extraction-2560.webp 2560w" sizes="(max-width: 1000px) 100vw, 50vw" alt="The sky-skiff waits at the dock while a brute and frost spiders close in" loading="lazy"></div>
     <div class="copy">
       <h2><span>Every run</span><span>risks your Boki.</span></h2>
       <p class="lead">Your Boki comes with you on every run, and it changes how you fight.</p>
@@ -84,10 +83,10 @@
       <h2><span>How a run works.</span></h2>
     </div>
     <ol class="run">
-      <li><img src="assets/img/run/drop-sm.webp" alt="The Skylands from the skyship as a match begins" loading="lazy"><div><h3>Drop in</h3><p>Jump from the skyship and glide to where you want to land.</p></div></li>
-      <li><img src="assets/img/run/colossus-sm.webp" alt="Fighting the Stone Colossus in its lair" loading="lazy"><div><h3>Fight and explore</h3><p>Rival squads, wildlife and bosses. Loot what you can.</p></div></li>
-      <li><img src="assets/img/world/meadow-sm.webp" alt="A hunter meets wild Boki on a grassy island" loading="lazy"><div><h3>Find or tame a Boki</h3><p>Wild Boki live out here. Some will follow you home.</p></div></li>
-      <li><img src="assets/img/run/extract-sm.webp" alt="Boarding the sky-skiff to extract" loading="lazy"><div><h3>Extract or lose it</h3><p>Get out with your Boki, or leave it for someone else.</p></div></li>
+      <li><img src="assets/img/game/skyship-crossing-1280.webp" srcset="assets/img/game/skyship-crossing-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="The skyship crossing the Skylands before the drop" loading="lazy"><div><h3>Drop in</h3><p>Jump from the skyship and glide to where you want to land.</p></div></li>
+      <li><img src="assets/img/game/colossus-1280.webp" srcset="assets/img/game/colossus-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="Fighting the Stone Colossus in its lair" loading="lazy"><div><h3>Fight and explore</h3><p>Rival squads, wildlife and bosses. Loot what you can.</p></div></li>
+      <li><img src="assets/img/game/meadow-1280.webp" srcset="assets/img/game/meadow-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="A hunter meets wild Boki on a grassy island" loading="lazy"><div><h3>Find or tame a Boki</h3><p>Wild Boki live out here. Some will follow you home.</p></div></li>
+      <li><img src="assets/img/game/extraction-2-1280.webp" srcset="assets/img/game/extraction-2-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="Boarding the sky-skiff to extract" loading="lazy"><div><h3>Extract or lose it</h3><p>Get out with your Boki, or leave it for someone else.</p></div></li>
     </ol>
   </div>
 </section>
@@ -95,7 +94,7 @@
 <!-- 4. SKILL -->
 <section id="skill" class="skill">
   <div class="wrap split flip">
-    <div class="media"><img src="https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/1b5b9eac-fa9f-4898-a52e-fd87162f2ad2.png" srcset="https://media.anthum.ai/cdn-cgi/image/width=960,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/1b5b9eac-fa9f-4898-a52e-fd87162f2ad2.png 960w, https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/1b5b9eac-fa9f-4898-a52e-fd87162f2ad2.png 1600w, https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/1b5b9eac-fa9f-4898-a52e-fd87162f2ad2.png 2400w" sizes="(max-width: 1000px) 100vw, 50vw" alt="Concept art: a thief, a mage and a juggernaut fight with their Boki on a sky ruin" loading="lazy"><span class="concept">Concept art</span></div>
+    <div class="media"><img src="assets/img/game/stormcoil-2560.webp" srcset="assets/img/game/stormcoil-1280.webp 1280w, assets/img/game/stormcoil-2560.webp 2560w" sizes="(max-width: 1000px) 100vw, 50vw" alt="Dodging Stormcoil's lightning circles in its lair" loading="lazy"></div>
     <div class="copy">
       <h2><span>Kits win fights.</span><span>Not stats.</span></h2>
       <p class="lead">Movement, positioning and your archetype's kit decide who walks out. Your Boki adds to your kit. It never replaces your aim.</p>
@@ -116,7 +115,7 @@
       <p class="lead" style="margin-top:22px">At home, your Boki has its own memory, personality, size, markings and history. It decides how far it trusts you.</p>
     </div>
     <article class="boki-card" aria-label="Example Boki: Ember">
-      <div class="scene"><img class="art" src="https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/75b2a15c-aa36-4251-bc27-bb43aca8f624.png" srcset="https://media.anthum.ai/cdn-cgi/image/width=960,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/75b2a15c-aa36-4251-bc27-bb43aca8f624.png 960w, https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/75b2a15c-aa36-4251-bc27-bb43aca8f624.png 1600w, https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/75b2a15c-aa36-4251-bc27-bb43aca8f624.png 2400w" sizes="(max-width: 1000px) 100vw, 50vw" alt="Concept art: a hunter at home with Ember, a Vespyx, on their farm island" loading="lazy"><span class="concept">Concept art</span></div>
+      <div class="scene"><img src="assets/img/boki/vespyx-r.webp" alt="Ember, a Vespyx: part fox, part scorpion"></div>
       <div class="sheet">
         <div class="who">Vespyx, part fox and part scorpion</div>
         <h3>Ember</h3>
@@ -136,17 +135,16 @@
 <!-- 6. A LIVING WORLD -->
 <section id="skylands" class="skylands">
   <div class="bleed">
-    <img src="https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/f3e31b27-78dd-491a-9b63-41e98e539c84.png" srcset="https://media.anthum.ai/cdn-cgi/image/width=960,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/f3e31b27-78dd-491a-9b63-41e98e539c84.png 960w, https://media.anthum.ai/cdn-cgi/image/width=1600,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/f3e31b27-78dd-491a-9b63-41e98e539c84.png 1600w, https://media.anthum.ai/cdn-cgi/image/width=2400,format=auto,quality=85/images/4641fdd2-5192-41e5-9c89-f9c418a9bf92/f3e31b27-78dd-491a-9b63-41e98e539c84.png 2400w" sizes="100vw" alt="Concept art: the Wyrm breaks the world apart in the Sundering" loading="lazy">
-    <span class="concept hero-tag">Concept art</span>
+    <img src="assets/img/game/wyrm-1920.webp" srcset="assets/img/game/wyrm-1280.webp 1280w, assets/img/game/wyrm-1920.webp 1920w" sizes="100vw" alt="The Wyrm burning the old world" loading="lazy">
     <div class="wrap">
       <h2><span>The Wyrm woke.</span><span>The Sundering broke the world.</span></h2>
       <p class="lead" style="margin-top:22px">What's left floats above the clouds: the Skylands. Boki live here as wildlife, each with its own habitat and habits.</p>
     </div>
   </div>
   <div class="wrap row">
-    <figure><img src="assets/img/world/sundering-sm.webp" alt="The land breaking apart in the Sundering" loading="lazy"><figcaption>The Sundering</figcaption></figure>
-    <figure><img src="assets/img/world/meadow-sm.webp" alt="A meadow island where wild Boki live" loading="lazy"><figcaption>Where Boki live</figcaption></figure>
-    <figure><img src="assets/img/world/skyship-sm.webp" alt="The skyship docked at the central island" loading="lazy"><figcaption>The skyship</figcaption></figure>
+    <figure><img src="assets/img/game/sundering-1280.webp" srcset="assets/img/game/sundering-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="The land breaking apart in the Sundering" loading="lazy"><figcaption>The Sundering</figcaption></figure>
+    <figure><img src="assets/img/game/ember-isles-1280.webp" srcset="assets/img/game/ember-isles-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="Islands of the Skylands joined by bridges above the clouds" loading="lazy"><figcaption>The Skylands today</figcaption></figure>
+    <figure><img src="assets/img/game/skyship-dock-1280.webp" srcset="assets/img/game/skyship-dock-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="The skyship docked at the central island" loading="lazy"><figcaption>The skyship</figcaption></figure>
   </div>
 </section>
 
@@ -172,8 +170,8 @@
       <h2><span>Miss Battlerite or SUPERVIVE?</span><span>Join the playtest.</span></h2>
       <p class="lead">We're building this with the players who miss them. Get in early, break things, and tell us what's wrong.</p>
       <div class="cta">
-        <a class="btn btn-discord js-discord" href="#" target="_blank" rel="noopener" hidden>Join the Discord</a>
-        <a class="btn btn-light" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">See the code on GitHub</a>
+        <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden>Join the Discord<span class="arrow" aria-hidden="true"></span></a>
+        <a class="btn btn-glass" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">View on GitHub</a>
       </div>
     </div>
   </div>
@@ -193,6 +191,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=3"></script>
+<script src="assets/site.js?v=6"></script>
 </body>
 </html>
