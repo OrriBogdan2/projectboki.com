@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Boki: Raise them. Risk them. Bring them home.</title>
+<meta name="description" content="Project Boki is an open-source creature-raising farm and PvPvE extraction game built in Godot. Raise Boki at home, take them on expeditions, and bring them back alive.">
+<meta name="theme-color" content="#1c1236">
+<link rel="icon" href="assets/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://projectboki.com/">
+<meta property="og:title" content="Project Boki">
+<meta property="og:description" content="Raise them. Risk them. Bring them home. An open-source creature-raising farm and PvPvE extraction game.">
+<meta property="og:image" content="https://projectboki.com/assets/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="nav-logo" href="#top"><img src="assets/img/favicon.png" alt="">Project Boki</a>
+    <nav class="nav-links">
+      <a href="#boki">Boki</a>
+      <a href="#features">Features</a>
+      <a href="#make">Make a Boki</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="presskit.html">Press kit</a>
+      <a class="btn btn-primary btn-sm" href="https://github.com/OrriBogdan2/kinfall" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span>Early build · Open source</div>
+    <h1 class="logo" aria-label="Project Boki">
+      <span class="back" aria-hidden="true"><small>Project</small>Boki</span>
+      <span class="front" aria-hidden="true"><small>Project</small>Boki</span>
+    </h1>
+    <div class="tagline">Raise them. Risk them. Bring them home.</div>
+    <p class="lede">A creature-raising farm and a PvPvE extraction game in one. Your Boki live with you on a floating island, then ride on your shoulder into 20-player expeditions where you can win new ones or lose your own.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/OrriBogdan2/kinfall" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+        Get it on GitHub
+      </a>
+      <a class="btn btn-discord js-discord" href="#" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+        Join the Discord
+      </a>
+      <a class="btn btn-ghost" href="#boki">Meet the Boki</a>
+    </div>
+    <div class="hero-meta">
+      <span><b>Godot 4.6</b> engine</span>
+      <span><b>Solo · Duo · Trio</b></span>
+      <span><b>GPL-3.0</b> licensed</span>
+      <span><b>Windows · macOS</b></span>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Raise Boki on your island</span><span>Throw them into fights</span><span>Glide between sky islands</span><span>Crack boss lairs</span><span>Hatch rare eggs</span><span>Extract or lose it all</span><span>Open source</span>
+    <span>Raise Boki on your island</span><span>Throw them into fights</span><span>Glide between sky islands</span><span>Crack boss lairs</span><span>Hatch rare eggs</span><span>Extract or lose it all</span><span>Open source</span>
+  </div>
+</div>
+
+<!-- TWO HALVES -->
+<section id="about">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">One game, two halves</div>
+      <h2>A home worth protecting.<br>A sky worth risking it in.</h2>
+    </div>
+    <div class="halves">
+      <article class="half reveal">
+        <div class="shot"><img src="assets/img/farm.jpg" alt="The farm island with Boki working at a lumber camp, quarry and workbench" loading="lazy"></div>
+        <div class="body">
+          <div class="tag" style="color:var(--teal)">The Farm</div>
+          <h3>Raise them</h3>
+          <p>Plant crops, build up your island and look after your Boki. Feed them, brush them, train them and give them jobs. Each one remembers what you do together and decides how far it trusts you.</p>
+        </div>
+      </article>
+      <article class="half reveal">
+        <div class="shot"><img src="assets/img/match.jpg" alt="An expedition on a floating island with chests and a sky dock" loading="lazy"></div>
+        <div class="body">
+          <div class="tag" style="color:var(--accent)">The Expedition</div>
+          <h3>Risk them</h3>
+          <p>Drop from a skyship into a PvPvE match against rival squads, monsters and wild Boki. Loot, fight, and find a way out before the islands fall. One life, and on the higher tiers your Boki can be taken.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BOKI -->
+<section id="boki" class="boki-sec">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <div class="eyebrow">Meet the Boki</div>
+      <h2>Every Boki is part animal,<br>part something stranger.</h2>
+      <p class="lede">Each species is built from one or two real animals and has an element of its own. No two are the same: personality, traits and bond all vary from Boki to Boki.</p>
+    </div>
+    <div class="boki-grid">
+      <article class="boki reveal" style="--c:#a6ff3a">
+        <div class="portrait"><img src="assets/img/boki/vespyx.jpg" alt="Vespyx" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Vespyx</h3><span class="chip">Venom</span></div>
+        <div class="animals">Fox · Scorpion</div>
+        <p>A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#7ff3ff">
+        <div class="portrait"><img src="assets/img/boki/prismander.jpg" alt="Prismander" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Prismander</h3><span class="chip">Prism</span></div>
+        <div class="animals">Axolotl</div>
+        <p>An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#3fe0c0">
+        <div class="portrait"><img src="assets/img/boki/mycroll.jpg" alt="Mycroll" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Mycroll</h3><span class="chip">Spore</span></div>
+        <div class="animals">Hedgehog · Toadstool</div>
+        <p>A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#7fb4ff">
+        <div class="portrait"><img src="assets/img/boki/echolop.jpg" alt="Echolop" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Echolop</h3><span class="chip">Echo</span></div>
+        <div class="animals">Hare · Bat</div>
+        <p>A long-eared hare with bat wings. It hears everything coming and fires ringing pulses of sound.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#b48cff">
+        <div class="portrait"><img src="assets/img/boki/gravadillo.jpg" alt="Gravadillo" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Gravadillo</h3><span class="chip">Gravity</span></div>
+        <div class="animals">Armadillo · Rhino beetle</div>
+        <p>An armadillo with a rhino beetle's horn. It rolls up in heavy plates and bends gravity to slam foes down.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#fff0a0">
+        <div class="portrait"><img src="assets/img/boki/lunowl.jpg" alt="Lunowl" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Lunowl</h3><span class="chip">Lunar</span></div>
+        <div class="animals">Owl · Luna moth</div>
+        <p>A moonlit owl with soft moth wings. It flits on moondust and dazzles foes with silver light.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#ffd36a">
+        <span class="rare">Boss egg · Stone Colossus</span>
+        <div class="portrait"><img src="assets/img/boki/cairnback.jpg" alt="Cairnback" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Cairnback</h3><span class="chip">Titan</span></div>
+        <div class="animals">Tortoise · Ibex</div>
+        <p>A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#9ff4ff">
+        <span class="rare">Boss egg · Stormcoil</span>
+        <div class="portrait"><img src="assets/img/boki/zephyrak.jpg" alt="Zephyrak" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Zephyrak</h3><span class="chip">Tempest</span></div>
+        <div class="animals">Moray eel · Swift</div>
+        <p>A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static.</p></div>
+      </article>
+      <article class="boki reveal" style="--c:#ffe680">
+        <span class="rare">Boss egg · Brood Mother</span>
+        <div class="portrait"><img src="assets/img/boki/hivara.jpg" alt="Hivara" loading="lazy"></div>
+        <div class="info"><div class="row"><h3>Hivara</h3><span class="chip">Swarm</span></div>
+        <div class="animals">Honeybee · Praying mantis</div>
+        <p>A honeybee with a praying mantis's folded blades and a crown of wax. A swarm of tiny bees follows it everywhere.</p></div>
+      </article>
+    </div>
+    <p class="boki-more reveal">Nine Boki today. The goal is <b>~150 at launch</b>, many of them designed by the community.</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Features</div>
+      <h2>Your partner has a mind of its own.</h2>
+    </div>
+    <div class="features">
+      <div class="feature reveal"><div class="icon">🧠</div><h3>Boki with personalities</h3><p>Bravery, loyalty, temper and curiosity shape how each Boki fights. A timid one backs off when hurt. A reckless order might get refused.</p></div>
+      <div class="feature reveal"><div class="icon">🎯</div><h3>Throw and recall</h3><p>Your Boki rides on your shoulder until you throw it into a fight. It picks targets on its own, then snaps back to you on recall.</p></div>
+      <div class="feature reveal"><div class="icon">⚡</div><h3>Bond ultimates</h3><p>Hits and combos fill a shared bond meter. When it's full, your Boki fuses onto you as armor or grows giant and stomps.</p></div>
+      <div class="feature reveal"><div class="icon">🪂</div><h3>Glide the sky islands</h3><p>Jump from the skyship, glide between floating islands through air rings, and kick off walls. Speed is what keeps you up.</p></div>
+      <div class="feature reveal"><div class="icon">🏰</div><h3>Boss lairs and rare eggs</h3><p>Crack a lair's lock, take down the Stone Colossus, Stormcoil or the Brood Mother, and carry its egg home to hatch a rare Boki.</p></div>
+      <div class="feature reveal"><div class="icon">⚖️</div><h3>Real stakes</h3><p>The Meadow is safe. In the Dusk Isles and the Hollow, the Boki you carry can be looted by rivals. Get them back, or buy them back.</p></div>
+      <div class="feature reveal"><div class="icon">💬</div><h3>They learn to talk</h3><p>Hatchlings only say their own name. With levels and trust they pick up words, then sentences, then talk freely.</p></div>
+      <div class="feature reveal"><div class="icon">✨</div><h3>Shimmering variants</h3><p>About 1 in 25 Boki hatch or spawn shimmering, with rare colours of their own. Breeding two Boki can pass it on.</p></div>
+      <div class="feature reveal"><div class="icon">🎶</div><h3>An original soundtrack</h3><p>Folk-style music for every area: home by day and night, each island, the town, the Hollow. Every track you've heard stays in your house.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <figure class="wide reveal">
+      <img src="assets/img/lineup.jpg" alt="Every Boki species lined up on the farm, with their shimmering variants below" loading="lazy">
+      <figcaption><h3>Every Boki, and its shimmering twin</h3><p>Rare colours turn up about once in every 25 Boki.</p></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- MAKE A BOKI -->
+<section id="make" style="background:var(--bg-2)">
+  <div class="wrap make">
+    <div class="reveal">
+      <div class="eyebrow">Open source</div>
+      <h2>Make a Boki.</h2>
+      <p class="lede">Project Boki is open source under GPL-3.0. Boki and their abilities are pure data, so anyone can design one without touching the engine code. A headless validator checks every submission so community Boki stay balanced and readable.</p>
+      <ol class="steps">
+        <li><div><b>Fork the repo</b><span>Clone it and open project.godot in Godot 4.6.</span></div></li>
+        <li><div><b>Describe your Boki</b><span>One JSON file: its animals, element, stats, traits and abilities.</span></div></li>
+        <li><div><b>Test it in the sandbox</b><span>Run its whole kit on training dummies.</span></div></li>
+        <li><div><b>Open a pull request</b><span>The community gets a say in which Boki make it in.</span></div></li>
+      </ol>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/OrriBogdan2/kinfall/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Read the contributing guide</a>
+      </div>
+    </div>
+    <div class="code reveal">
+      <div class="bar"><i></i><i></i><i></i><em>content/kin/mycroll.json</em></div>
+<pre>{
+  <span class="k">"name"</span>: <span class="s">"Mycroll"</span>,
+  <span class="k">"type"</span>: <span class="s">"spore"</span>,
+  <span class="k">"animals"</span>: [<span class="s">"Hedgehog"</span>, <span class="s">"Toadstool"</span>],
+  <span class="k">"stats"</span>: { <span class="k">"hp"</span>: <span class="n">90</span>, <span class="k">"dmg"</span>: <span class="n">8</span>, <span class="k">"speed"</span>: <span class="n">6.2</span> },
+  <span class="k">"traits"</span>: {
+    <span class="k">"bravery"</span>: <span class="n">0.55</span>, <span class="k">"loyalty"</span>: <span class="n">0.6</span>,
+    <span class="k">"temper"</span>: <span class="n">0.4</span>, <span class="k">"curiosity"</span>: <span class="n">0.8</span>
+  },
+  <span class="k">"voice"</span>: <span class="s">"curious and odd, notices small things"</span>,
+  <span class="k">"abilities"</span>: [<span class="s">"puffcap_mines"</span>, <span class="s">"thorn_patch"</span>],
+  <span class="k">"ultimate"</span>: <span class="s">"thornwake"</span>,
+  <span class="k">"ai"</span>: { <span class="k">"style"</span>: <span class="s">"trapper"</span>, <span class="k">"caution"</span>: <span class="n">0.45</span> },
+  <span class="k">"throw_hit"</span>: { <span class="k">"root"</span>: <span class="n">0.9</span> }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Roadmap</div>
+      <h2>Where it's headed.</h2>
+    </div>
+    <div class="road">
+      <div class="phase now reveal">
+        <div class="when">Now · Playable</div>
+        <h3>Early build</h3>
+        <ul>
+          <li>Farm, raising and Boki care</li>
+          <li>PvPvE expeditions across three tiers</li>
+          <li>Light, medium and heavy classes</li>
+          <li>Nine Boki, three boss lairs</li>
+          <li>Original soundtrack</li>
+        </ul>
+      </div>
+      <div class="phase reveal">
+        <div class="when">Next</div>
+        <h3>Making it a game</h3>
+        <ul>
+          <li>Real online multiplayer</li>
+          <li>Progression, meta loop and economy</li>
+          <li>More maps</li>
+          <li>Onboarding for new players</li>
+          <li>Audio pass, crash reports</li>
+        </ul>
+      </div>
+      <div class="phase reveal">
+        <div class="when">Later</div>
+        <h3>Toward launch</h3>
+        <ul>
+          <li>~150 Boki, community designed</li>
+          <li>Riding and flying Boki</li>
+          <li>Class archetypes (Thief, Mage, Juggernaut...)</li>
+          <li>Desktop release</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <div class="eyebrow">FAQ</div>
+      <h2>Questions</h2>
+    </div>
+    <div class="faq reveal">
+      <details><summary>How do I play it?</summary><p>Install <a href="https://godotengine.org/download" target="_blank" rel="noopener">Godot 4.6</a> (the standard build, not .NET), clone the <a href="https://github.com/OrriBogdan2/kinfall" target="_blank" rel="noopener">GitHub repo</a>, import <code>project.godot</code> and press F5. Packaged builds will come later.</p></details>
+      <details><summary>Is it free?</summary><p>The game is open source under GPL-3.0, and you can play it from source today. Monetization will come later, if at all, and won't be pay-to-win.</p></details>
+      <details><summary>What platforms will it be on?</summary><p>Project Boki is being built as a desktop game for Windows and macOS. Controller support is planned later.</p></details>
+      <details><summary>Wasn't this called Kinfall?</summary><p>Yes. Kinfall was the working title, and the creatures were called kin. Both got renamed in October 2026. You'll still see the old name in parts of the code.</p></details>
+      <details><summary>Can I design a Boki?</summary><p>Yes, that's the point. Boki are pure data files, so you can design one without writing engine code. See <a href="#make">Make a Boki</a>.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="final reveal">
+      <h2>Follow the build.</h2>
+      <p class="lede">Star the repo to follow along, or jump into the Discord to playtest and help design Boki.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/OrriBogdan2/kinfall" target="_blank" rel="noopener">Star on GitHub</a>
+        <a class="btn btn-discord js-discord" href="#" target="_blank" rel="noopener" hidden>Join the Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Project Boki · Made with Godot</span>
+    <nav>
+      <a href="https://github.com/OrriBogdan2/kinfall" target="_blank" rel="noopener">GitHub</a>
+      <a class="js-discord" href="#" target="_blank" rel="noopener" hidden>Discord</a>
+      <a href="presskit.html">Press kit</a>
+      <a href="mailto:hello@projectboki.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
