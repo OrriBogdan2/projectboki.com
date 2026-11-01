@@ -54,8 +54,8 @@ h2 span, h1 span.line { display: block; }          /* each sentence on its own l
 
 /* hero: a run in progress */
 .hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; isolation: isolate; }
-.hero > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; z-index: -2; animation: drift 24s ease-in-out infinite alternate; }
-.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10,18,34,.88) 0%, rgba(10,18,34,.6) 38%, rgba(10,18,34,0) 70%), linear-gradient(0deg, rgba(10,18,34,.7) 0%, transparent 40%); }
+.hero > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; z-index: -2; animation: drift 24s ease-in-out infinite alternate; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10,18,34,.78) 0%, rgba(10,18,34,.45) 34%, rgba(10,18,34,0) 60%), linear-gradient(0deg, rgba(10,18,34,.6) 0%, transparent 35%); }
 @keyframes drift { from { transform: scale(1.04); } to { transform: scale(1.12) translate(-1.5%, 1%); } }
 .hero .wrap { padding: 140px 0 90px; }
 .hero .kicker { font-size: 20px; font-weight: 700; color: var(--sun-hi); }
@@ -185,3 +185,11 @@ footer a:hover { color: var(--sun); }
   .join { padding: 70px 26px; border-radius: 28px; }
   .skylands .bleed { min-height: 80vh; }
 }
+
+/* concept art labels: honest about what's gameplay and what's not */
+.media, .boki-card .scene, .skylands .bleed { position: relative; }
+.concept { position: absolute; z-index: 3; right: 16px; bottom: 16px; font-weight: 700; font-size: 14px; color: #fff; padding: 6px 12px; border-radius: 999px; background: rgba(10,18,34,.62); backdrop-filter: blur(6px); }
+.hero .concept.hero-tag, .skylands .concept.hero-tag { right: 24px; bottom: 24px; top: auto; }
+.boki-card .scene img.art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; transform: none; left: 0; bottom: 0; filter: none; max-height: none; }
+.boki-card .scene { background: #f3e6d0; }
+.boki-card .scene::after { display: none; }
