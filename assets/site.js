@@ -1,6 +1,6 @@
 // Paste the Discord invite here (e.g. "https://discord.gg/abc123").
 // Every Discord button then shows up, and the nav button switches from GitHub to the playtest.
-const DISCORD_URL = "";
+const DISCORD_URL = "https://discord.gg/nbeBaU7xt";
 
 if (DISCORD_URL) {
   document.querySelectorAll(".js-discord").forEach((a) => { a.href = DISCORD_URL; a.hidden = false; });
