@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" as="image" href="assets/img/game/skylands-map-2560.webp">
-<link rel="stylesheet" href="assets/style.css?v=8">
+<link rel="stylesheet" href="assets/style.css?v=9">
 </head>
 <body>
 
@@ -26,7 +26,7 @@
     <a class="brand" href="#top" aria-label="Project Boki home"><img src="assets/img/mark.svg" alt="">Project Boki</a>
     <nav class="nav-links" aria-label="Main">
       <a href="#run">The run</a>
-      <a href="#skill">Combat</a>
+      <a href="#wardens">Wardens</a>
       <a href="#bond">Your Boki</a>
       <a href="#skylands">The Skylands</a>
       <a href="#fair">Fair play</a>
@@ -82,18 +82,22 @@
 </section>
 
 <!-- 4. SKILL -->
-<section id="skill" class="skill">
-  <div class="wrap split flip">
-    <div class="media"><img src="assets/img/game/stormcoil-2560.webp" srcset="assets/img/game/stormcoil-1280.webp 1280w, assets/img/game/stormcoil-2560.webp 2560w" sizes="(max-width: 1000px) 100vw, 50vw" alt="Dodging Stormcoil's lightning circles in its lair" loading="lazy"></div>
-    <div class="copy">
-      <h2><span>Kits win fights.</span><span>Not stats.</span></h2>
-      <p class="lead">Movement and positioning decide who walks out.<br>Your Boki adds to your kit. It never aims for you.</p>
-      <div class="kits">
-        <div><b>Light</b><span>Thief<br>Archer</span></div>
-        <div><b>Medium</b><span>Mage<br>Gunslinger</span></div>
-        <div><b>Heavy</b><span>Juggernaut<br>Bulwark</span></div>
+<section id="wardens" class="wardens">
+  <div class="wrap">
+    <div class="w-head">
+      <h2><span>Pick your Warden.</span></h2>
+      <p class="lead">Every hunt, you take up a legendary Warden's Mantle.<br>Kits and aim win fights, not stats.</p>
+    </div>
+    <div class="w-stage" id="w-stage">
+      <img id="w-splash" src="assets/img/wardens/vex-splash-1920.webp" srcset="assets/img/wardens/vex-splash-960.webp 960w, assets/img/wardens/vex-splash-1920.webp 1920w" sizes="(max-width: 1240px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy">
+      <div class="w-info" aria-live="polite">
+        <div class="w-title" id="w-title">Hired Gun</div>
+        <h3 id="w-name">Vex</h3>
+        <div class="w-meta" id="w-meta"><span>Medium</span><span>Quill rifle</span></div>
+        <p id="w-desc">Bounces a spiked charge off the wall and slides around still shooting.</p>
       </div>
     </div>
+    <div class="w-pick" id="w-pick" role="group" aria-label="Choose a Warden"></div>
   </div>
 </section>
 
@@ -181,6 +185,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=6"></script>
+<script src="assets/site.js?v=9"></script>
 </body>
 </html>
