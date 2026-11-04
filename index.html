@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project Boki: a PvPvE extraction game for PC</title>
-<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise a creature that remembers you. Then risk it every run.">
+<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise your greatest ally, then risk losing them forever.">
 <meta name="theme-color" content="#080d18">
 <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon.png" type="image/png">
@@ -12,12 +12,12 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projectboki.com/">
 <meta property="og:title" content="Project Boki">
-<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise a creature that remembers you. Then risk it every run.">
+<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise your greatest ally, then risk losing them forever.">
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" as="image" href="assets/img/hero-poster.webp">
-<link rel="stylesheet" href="assets/style.css?v=21">
+<link rel="preload" as="image" href="assets/img/hunters/vex-2000.webp" imagesrcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2000.webp 2000w" imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="assets/style.css?v=22">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -48,19 +48,18 @@
 <main id="top">
 
 <section class="hero" id="hero" aria-label="Project Boki">
-  <div class="hero-media" id="hero-media">
-    <video class="bg" autoplay muted loop playsinline preload="auto" poster="assets/img/hero-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
+  <div class="hero-media" id="hero-media" aria-hidden="true">
+    <img class="slide on" src="assets/img/hunters/vex-2000.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2000.webp 2000w" sizes="100vw" style="--x:38%" alt="" fetchpriority="high">
   </div>
   <div class="hero-in" id="hero-in">
-    <img class="mark" src="assets/img/mark.svg" width="200" height="232" alt="">
-    <h1>Project Boki</h1>
-    <p class="tag">Raise a creature that remembers you.<br>Then risk it every run.</p>
+    <div class="lockup"><img class="mark" src="assets/img/mark.svg" width="200" height="232" alt=""><h1>Project Boki</h1></div>
+    <p class="tag">Raise your greatest ally...<br>then risk losing them forever.</p>
     <div class="cta">
       <a class="btn btn-solid" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
       <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
     </div>
   </div>
-  <a class="scroll-cue" href="#run" aria-label="Scroll down"><span></span></a>
+  <a class="now" id="hero-now" href="#hunters"><span class="bar"><i></i></span><b id="hero-name">Vex</b><em id="hero-title">Hired Gun</em></a>
 </section>
 
 
@@ -145,7 +144,7 @@
 </section>
 
 <section class="join">
-  <video class="bg" autoplay muted loop playsinline poster="assets/img/run/drop-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
+  <img class="bg" src="assets/img/hunters/hem-1600.webp" srcset="assets/img/hunters/hem-960.webp 960w, assets/img/hunters/hem-1600.webp 1600w, assets/img/hunters/hem-2000.webp 2000w" sizes="100vw" alt="" loading="lazy">
   <div class="wrap" data-r>
     <h2>Miss Battlerite or SUPERVIVE?<br>Join the playtest.</h2>
     <div class="cta">
@@ -173,6 +172,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=21"></script>
+<script src="assets/site.js?v=22"></script>
 </body>
 </html>
