@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" as="image" href="assets/img/hunters/vex-2000.webp" imagesrcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2000.webp 2000w" imagesizes="100vw" fetchpriority="high">
-<link rel="stylesheet" href="assets/style.css?v=22">
+<link rel="stylesheet" href="assets/style.css?v=23">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -101,23 +101,26 @@
 <section id="boki" class="boki">
   <div class="wrap">
     <header class="head" data-r>
-      <h2>Every Boki<br>is different.</h2>
+      <h2>Every Boki is different.</h2>
       <p>It has its own personality.<br>It remembers every run.</p>
     </header>
-    <article class="card" data-r aria-label="Example Boki: Ember">
-      <div class="pic"><img src="assets/img/boki/vespyx-r.webp" alt="Ember, a Vespyx: part fox, part scorpion" loading="lazy"></div>
-      <div class="sheet">
-        <div class="kind">Vespyx</div>
-        <h3>Ember</h3>
-        <dl>
-          <div><dt>Personality</dt><dd>Brave, hot-tempered, loyal</dd></div>
-          <div><dt>Hatched</dt><dd>On your farm</dd></div>
-          <div><dt>Runs survived</dt><dd>23</dd></div>
-          <div><dt>Taken</dt><dd>Once. Won back two runs later.</dd></div>
-        </dl>
-        <p class="says">"Ember." "Home." "Again?"</p>
+    <div class="bk" data-r>
+      <div class="bk-stage" id="bk-stage">
+        <div class="bk-glow"></div>
+        <img id="bk-img" src="assets/img/boki/vespyx-900.webp" width="900" height="900" alt="Vespyx, part fox and part scorpion" loading="lazy">
+        <button class="bk-arrow prev" type="button" id="bk-prev" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="bk-arrow next" type="button" id="bk-next" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="bk-count"><b id="bk-n">01</b> / <span id="bk-total">09</span></div>
       </div>
-    </article>
+      <div class="bk-sheet" aria-live="polite">
+        <div class="bk-mix" id="bk-mix">Fox + Scorpion</div>
+        <h3 id="bk-name">Vespyx</h3>
+        <p id="bk-flavor">A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.</p>
+        <dl class="bk-traits" id="bk-traits"></dl>
+        <div class="bk-meta"><span id="bk-size">Small</span><span id="bk-found">Starter egg</span></div>
+      </div>
+    </div>
+    <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose a Boki" data-r></div>
   </div>
 </section>
 
@@ -172,6 +175,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=22"></script>
+<script src="assets/site.js?v=23"></script>
 </body>
 </html>
