@@ -12,9 +12,41 @@ if (nav) {
   window.addEventListener("scroll", onScroll, { passive: true });
 }
 
+const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 // No autoplaying video for people who asked for less motion.
-if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+if (calm) {
   document.querySelectorAll("video[autoplay]").forEach((v) => { v.removeAttribute("autoplay"); v.pause(); });
+}
+
+// Reveal sections as they come into view.
+const revealed = document.querySelectorAll("[data-r]");
+if ("IntersectionObserver" in window && !calm) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+  revealed.forEach((el) => io.observe(el));
+} else {
+  revealed.forEach((el) => el.classList.add("in"));
+}
+
+// Hero drifts back and fades as you scroll past it.
+const heroIn = document.getElementById("hero-in");
+const heroVid = document.querySelector("#hero-media .bg");
+const cue = document.querySelector(".scroll-cue");
+if (heroIn && !calm) {
+  let ticking = false;
+  const draw = () => {
+    ticking = false;
+    const h = window.innerHeight, y = Math.min(window.scrollY, h);
+    const t = y / h;
+    heroIn.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
+    heroIn.style.opacity = String(Math.max(0, 1 - t * 1.6));
+    if (cue) cue.style.opacity = t > 0.02 ? "0" : "";
+    if (heroVid) heroVid.style.transform = `translate3d(0, ${y * 0.2}px, 0) scale(${1 + t * 0.06})`;
+  };
+  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(draw); } }, { passive: true });
+  draw();
 }
 
 /* ---------- Hunters: pick a Mask ---------- */

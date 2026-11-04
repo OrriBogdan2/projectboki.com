@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project Boki: a PvPvE extraction game for PC</title>
-<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Put on a Mask, bond with a Boki, and bring it home alive.">
+<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise a creature that remembers you. Then risk it every run.">
 <meta name="theme-color" content="#080d18">
 <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon.png" type="image/png">
@@ -16,7 +16,18 @@
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="assets/style.css?v=20">
+<link rel="preload" as="image" href="assets/img/hero-poster.webp">
+<link rel="stylesheet" href="assets/style.css?v=21">
+<script>
+  // Hold the hero until the display font is in, so nothing jumps on load.
+  (function (d) {
+    d.classList.add("js");
+    var go = function () { d.classList.add("ready"); };
+    if (document.fonts && document.fonts.load) { document.fonts.load("1em Lilita").then(go, go); }
+    else { go(); }
+    setTimeout(go, 1500);
+  })(document.documentElement);
+</script>
 </head>
 <body>
 
@@ -36,31 +47,31 @@
 
 <main id="top">
 
-<section class="hero" aria-label="Project Boki">
-  <video class="bg" autoplay muted loop playsinline poster="assets/img/game/skylands-map-2560.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
-  <div class="hero-in">
-    <h1 class="lockup"><img src="assets/img/mark.svg" alt=""><span>Project Boki</span></h1>
+<section class="hero" id="hero" aria-label="Project Boki">
+  <div class="hero-media" id="hero-media">
+    <video class="bg" autoplay muted loop playsinline preload="auto" poster="assets/img/hero-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
+  </div>
+  <div class="hero-in" id="hero-in">
+    <img class="mark" src="assets/img/mark.svg" width="200" height="232" alt="">
+    <h1>Project Boki</h1>
     <p class="tag">Raise a creature that remembers you.<br>Then risk it every run.</p>
     <div class="cta">
       <a class="btn btn-solid" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
       <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
     </div>
   </div>
-  <ul class="facts" aria-label="At a glance"><li>PvPvE extraction</li><li>PC</li><li>20-40 players</li><li>Open source</li></ul>
+  <a class="scroll-cue" href="#run" aria-label="Scroll down"><span></span></a>
 </section>
 
-<section class="stakes">
-  <img class="bg" src="assets/img/game/extraction-2560.webp" srcset="assets/img/game/extraction-1280.webp 1280w, assets/img/game/extraction-2560.webp 2560w" sizes="100vw" alt="The sky-skiff waits at the dock while a brute and frost spiders close in" loading="lazy">
-  <div class="wrap">
-    <h2>Every run<br>risks your Boki.</h2>
-    <p>Go down, and another squad takes it home.</p>
-  </div>
-</section>
 
-<section class="run" aria-labelledby="run-h">
+<section id="run" class="run">
   <div class="wrap">
-    <h2 id="run-h" class="sr">How a run works</h2>
-    <ol class="tiles">
+    <header class="head" data-r>
+      <div class="eyebrow">PvPvE extraction for PC</div>
+      <h2>Bring your Boki home.</h2>
+      <p>It comes on every run.<br>Go down, and another squad takes it.</p>
+    </header>
+    <ol class="tiles" data-r="stagger">
       <li><img src="assets/img/game/skyship-crossing-1280.webp" alt="The skyship crossing the Skylands" loading="lazy"><b>01</b><h3>Drop in</h3></li>
       <li><img src="assets/img/game/colossus-1280.webp" alt="A squad fighting the Stone Colossus" loading="lazy"><b>02</b><h3>Fight</h3></li>
       <li><img src="assets/img/game/meadow-1280.webp" alt="A Hunter meets wild Boki on a grassy island" loading="lazy"><b>03</b><h3>Tame</h3></li>
@@ -71,11 +82,11 @@
 
 <section id="hunters" class="hunters">
   <div class="wrap">
-    <header class="head">
+    <header class="head" data-r>
       <h2>Put on a Mask.</h2>
-      <p>Each one holds a fallen Hunter.<br>Wear it, and you become them.</p>
+      <p>Every Mask holds a fallen Hunter.<br>Put it on, and you become them.</p>
     </header>
-    <div class="stage">
+    <div class="stage" data-r>
       <div class="shot"><img id="h-art" src="assets/img/hunters/vex-1600.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2000.webp 2000w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy"></div>
       <div class="info" aria-live="polite">
         <div class="title" id="h-title">Hired Gun</div>
@@ -84,17 +95,17 @@
         <div class="relic"><span>Mask</span><em id="h-relic">Brass cyber-eye</em></div>
       </div>
     </div>
-    <div class="pick" id="h-pick" role="group" aria-label="Choose a Hunter"></div>
+    <div class="pick" data-r id="h-pick" role="group" aria-label="Choose a Hunter"></div>
   </div>
 </section>
 
 <section id="boki" class="boki">
   <div class="wrap">
-    <header class="head">
-      <h2>Raise one.<br>Know it well.</h2>
-      <p>Every Boki has its own memory, personality and history.</p>
+    <header class="head" data-r>
+      <h2>Every Boki<br>is different.</h2>
+      <p>It has its own personality.<br>It remembers every run.</p>
     </header>
-    <article class="card" aria-label="Example Boki: Ember">
+    <article class="card" data-r aria-label="Example Boki: Ember">
       <div class="pic"><img src="assets/img/boki/vespyx-r.webp" alt="Ember, a Vespyx: part fox, part scorpion" loading="lazy"></div>
       <div class="sheet">
         <div class="kind">Vespyx</div>
@@ -113,7 +124,7 @@
 
 <section id="world" class="world">
   <img class="bg" src="assets/img/hunters/sable-1600.webp" srcset="assets/img/hunters/sable-960.webp 960w, assets/img/hunters/sable-1600.webp 1600w, assets/img/hunters/sable-2000.webp 2000w" sizes="100vw" alt="Sable, the thief, in the Wyrm's hoard as its eye opens" loading="lazy">
-  <div class="wrap">
+  <div class="wrap" data-r>
     <h2>The Wyrm stole our faces.<br>Masks give them back.</h2>
     <p>Hunt for the Wyrmheart: one wish to remake the world, or rule it.<br>Every Hunter wants it. So does the Wyrm.</p>
   </div>
@@ -121,8 +132,8 @@
 
 <section id="fair" class="fair">
   <div class="wrap">
-    <h2>Nothing that matters<br>is for sale.</h2>
-    <ul>
+    <h2 data-r>No pay to win.</h2>
+    <ul data-r="stagger">
       <li>No loot boxes</li>
       <li>No paid eggs</li>
       <li>No energy or timers</li>
@@ -135,7 +146,7 @@
 
 <section class="join">
   <video class="bg" autoplay muted loop playsinline poster="assets/img/run/drop-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
-  <div class="wrap">
+  <div class="wrap" data-r>
     <h2>Miss Battlerite or SUPERVIVE?<br>Join the playtest.</h2>
     <div class="cta">
       <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
@@ -162,6 +173,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=20"></script>
+<script src="assets/site.js?v=21"></script>
 </body>
 </html>
