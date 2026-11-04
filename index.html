@@ -2,189 +2,166 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project Boki: a PvPvE extraction game for PC</title>
-<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Your Boki comes on every run, and you can lose it. Raise them. Risk them. Bring them home.">
-<meta name="theme-color" content="#0c1526">
+<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Put on a Mask, bond with a Boki, and bring it home alive.">
+<meta name="theme-color" content="#080d18">
 <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/icon-512.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projectboki.com/">
 <meta property="og:title" content="Project Boki">
-<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise them. Risk them. Bring them home.">
+<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise a creature that remembers you. Then risk it every run.">
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" as="image" href="assets/img/game/skylands-map-2560.webp">
-<link rel="stylesheet" href="assets/style.css?v=9">
+<link rel="stylesheet" href="assets/style.css?v=20">
 </head>
 <body>
 
 <header class="nav" id="nav">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="Project Boki home"><img src="assets/img/mark.svg" alt="">Project Boki</a>
-    <nav class="nav-links" aria-label="Main">
-      <a href="#run">The run</a>
-      <a href="#wardens">Wardens</a>
-      <a href="#bond">Your Boki</a>
-      <a href="#skylands">The Skylands</a>
-      <a href="#fair">Fair play</a>
-      <a class="btn btn-nav js-discord" href="#" target="_blank" rel="noopener" hidden>Join the playtest</a>
-      <a class="btn btn-nav js-nodiscord" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
-    </nav>
+  <a class="brand" href="#top" aria-label="Project Boki home"><img src="assets/img/mark.svg" alt=""><span>Project Boki</span></a>
+  <nav class="links" aria-label="Main">
+    <a href="#hunters">Hunters</a>
+    <a href="#boki">Boki</a>
+    <a href="#world">World</a>
+    <a href="#fair">Fair play</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="icon-btn js-discord" href="#" target="_blank" rel="noopener" aria-label="Discord" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg></a>
+    <a class="btn btn-solid btn-sm" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener">Play</a>
   </div>
 </header>
 
 <main id="top">
 
-<!-- 1. HERO: a squad mid-fight, Boki at their side -->
 <section class="hero" aria-label="Project Boki">
   <video class="bg" autoplay muted loop playsinline poster="assets/img/game/skylands-map-2560.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
-  <div class="hero-center">
-    <h1 class="lockup">
-      <img src="assets/img/mark.svg" alt="">
-      <span>Project Boki</span>
-    </h1>
+  <div class="hero-in">
+    <h1 class="lockup"><img src="assets/img/mark.svg" alt=""><span>Project Boki</span></h1>
     <p class="tag">Raise a creature that remembers you.<br>Then risk it every run.</p>
     <div class="cta">
-      <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Join the playtest</a>
-      <a class="btn btn-glass" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>GitHub</a>
+      <a class="btn btn-solid" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
+      <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
     </div>
   </div>
-  <div class="platform">PvPvE extraction · PC · Open source</div>
+  <ul class="facts" aria-label="At a glance"><li>PvPvE extraction</li><li>PC</li><li>20-40 players</li><li>Open source</li></ul>
 </section>
 
-<!-- 2. STAKES -->
-<section id="stakes">
-  <div class="wrap split">
-    <div class="media"><img src="assets/img/game/extraction-2560.webp" srcset="assets/img/game/extraction-1280.webp 1280w, assets/img/game/extraction-2560.webp 2560w" sizes="(max-width: 1000px) 100vw, 50vw" alt="The sky-skiff waits at the dock while a brute and frost spiders close in" loading="lazy"></div>
-    <div class="copy">
-      <h2><span>Every run</span><span>risks your Boki.</span></h2>
-      <p class="lead">Go down, and another squad takes it home.<br>Extract, and it's yours again.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 3. HOW A RUN WORKS -->
-<section id="run" class="sky">
+<section class="stakes">
+  <img class="bg" src="assets/img/game/extraction-2560.webp" srcset="assets/img/game/extraction-1280.webp 1280w, assets/img/game/extraction-2560.webp 2560w" sizes="100vw" alt="The sky-skiff waits at the dock while a brute and frost spiders close in" loading="lazy">
   <div class="wrap">
-    <div class="steps-head">
-      <h2><span>How a run works.</span></h2>
-    </div>
-    <ol class="run">
-      <li><img src="assets/img/game/skyship-crossing-1280.webp" srcset="assets/img/game/skyship-crossing-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="The skyship crossing the Skylands before the drop" loading="lazy"><div><h3>Drop in</h3><p>Jump from the skyship and glide to where you want to land.</p></div></li>
-      <li><img src="assets/img/game/colossus-1280.webp" srcset="assets/img/game/colossus-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="Fighting the Stone Colossus in its lair" loading="lazy"><div><h3>Fight and explore</h3><p>Rival squads, wildlife and bosses. Loot what you can.</p></div></li>
-      <li><img src="assets/img/game/meadow-1280.webp" srcset="assets/img/game/meadow-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="A hunter meets wild Boki on a grassy island" loading="lazy"><div><h3>Find or tame a Boki</h3><p>Wild Boki live out here. Some will follow you home.</p></div></li>
-      <li><img src="assets/img/game/extraction-2-1280.webp" srcset="assets/img/game/extraction-2-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 25vw" alt="Boarding the sky-skiff to extract" loading="lazy"><div><h3>Extract or lose it</h3><p>Get out with your Boki, or leave it for someone else.</p></div></li>
+    <h2>Every run<br>risks your Boki.</h2>
+    <p>Go down, and another squad takes it home.</p>
+  </div>
+</section>
+
+<section class="run" aria-labelledby="run-h">
+  <div class="wrap">
+    <h2 id="run-h" class="sr">How a run works</h2>
+    <ol class="tiles">
+      <li><img src="assets/img/game/skyship-crossing-1280.webp" alt="The skyship crossing the Skylands" loading="lazy"><b>01</b><h3>Drop in</h3></li>
+      <li><img src="assets/img/game/colossus-1280.webp" alt="A squad fighting the Stone Colossus" loading="lazy"><b>02</b><h3>Fight</h3></li>
+      <li><img src="assets/img/game/meadow-1280.webp" alt="A Hunter meets wild Boki on a grassy island" loading="lazy"><b>03</b><h3>Tame</h3></li>
+      <li><img src="assets/img/game/extraction-2-1280.webp" alt="Boarding the sky-skiff to extract" loading="lazy"><b>04</b><h3>Extract</h3></li>
     </ol>
   </div>
 </section>
 
-<!-- 4. SKILL -->
-<section id="wardens" class="wardens">
+<section id="hunters" class="hunters">
   <div class="wrap">
-    <div class="w-head">
-      <h2><span>Pick your Warden.</span></h2>
-      <p class="lead">Every hunt, you take up a legendary Warden's Mantle.<br>Kits and aim win fights, not stats.</p>
-    </div>
-    <div class="w-stage" id="w-stage">
-      <img id="w-splash" src="assets/img/wardens/vex-splash-1920.webp" srcset="assets/img/wardens/vex-splash-960.webp 960w, assets/img/wardens/vex-splash-1920.webp 1920w" sizes="(max-width: 1240px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy">
-      <div class="w-info" aria-live="polite">
-        <div class="w-title" id="w-title">Hired Gun</div>
-        <h3 id="w-name">Vex</h3>
-        <div class="w-meta" id="w-meta"><span>Medium</span><span>Quill rifle</span></div>
-        <p id="w-desc">Bounces a spiked charge off the wall and slides around still shooting.</p>
+    <header class="head">
+      <h2>Put on a Mask.</h2>
+      <p>Each one holds a fallen Hunter.<br>Wear it, and you become them.</p>
+    </header>
+    <div class="stage">
+      <div class="shot"><img id="h-art" src="assets/img/hunters/vex-1600.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2000.webp 2000w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy"></div>
+      <div class="info" aria-live="polite">
+        <div class="title" id="h-title">Hired Gun</div>
+        <h3 id="h-name">Vex</h3>
+        <p id="h-line">Foundry kid who bolted a siege cannon to her arm.</p>
+        <div class="relic"><span>Mask</span><em id="h-relic">Brass cyber-eye</em></div>
       </div>
     </div>
-    <div class="w-pick" id="w-pick" role="group" aria-label="Choose a Warden"></div>
+    <div class="pick" id="h-pick" role="group" aria-label="Choose a Hunter"></div>
   </div>
 </section>
 
-<!-- 5. BOND: one Boki you know well -->
-<section id="bond" class="bond">
+<section id="boki" class="boki">
   <div class="wrap">
-    <div class="intro">
-      <h2><span>Raise one.</span><span>Know it well.</span></h2>
-      <p class="lead" style="margin-top:22px">Every Boki has its own memory, personality and history.</p>
-    </div>
-    <article class="boki-card" aria-label="Example Boki: Ember">
-      <div class="scene"><img src="assets/img/boki/vespyx-r.webp" alt="Ember, a Vespyx: part fox, part scorpion"></div>
+    <header class="head">
+      <h2>Raise one.<br>Know it well.</h2>
+      <p>Every Boki has its own memory, personality and history.</p>
+    </header>
+    <article class="card" aria-label="Example Boki: Ember">
+      <div class="pic"><img src="assets/img/boki/vespyx-r.webp" alt="Ember, a Vespyx: part fox, part scorpion" loading="lazy"></div>
       <div class="sheet">
-        <div class="who">Vespyx, part fox and part scorpion</div>
+        <div class="kind">Vespyx</div>
         <h3>Ember</h3>
         <dl>
-          <dt>Size</dt><dd>Small for a Vespyx</dd>
-          <dt>Personality</dt><dd>Brave, hot-tempered, loyal to a fault</dd>
-          <dt>Markings</dt><dd>A pale belly and a bright green sting</dd>
-          <dt>Hatched</dt><dd>On your farm, from an egg found in the Dusk Isles</dd>
-          <dt>Survived</dt><dd>23 runs. Taken by another squad in the Hollow, won back two runs later.</dd>
-          <dt>Says</dt><dd>"Ember." "Home." "Again?"</dd>
+          <div><dt>Personality</dt><dd>Brave, hot-tempered, loyal</dd></div>
+          <div><dt>Hatched</dt><dd>On your farm</dd></div>
+          <div><dt>Runs survived</dt><dd>23</dd></div>
+          <div><dt>Taken</dt><dd>Once. Won back two runs later.</dd></div>
         </dl>
+        <p class="says">"Ember." "Home." "Again?"</p>
       </div>
     </article>
   </div>
 </section>
 
-<!-- 6. A LIVING WORLD -->
-<section id="skylands" class="skylands">
-  <div class="bleed">
-    <img src="assets/img/game/wyrm-1920.webp" srcset="assets/img/game/wyrm-1280.webp 1280w, assets/img/game/wyrm-1920.webp 1920w" sizes="100vw" alt="The Wyrm burning the old world" loading="lazy">
-    <div class="wrap">
-      <h2><span>The Wyrm woke.</span><span>The Sundering broke the world.</span></h2>
-      <p class="lead" style="margin-top:22px">What's left floats above the clouds. Boki live here wild.</p>
-    </div>
-  </div>
-  <div class="wrap row">
-    <figure><img src="assets/img/game/sundering-1280.webp" srcset="assets/img/game/sundering-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="The land breaking apart in the Sundering" loading="lazy"><figcaption>The Sundering</figcaption></figure>
-    <figure><img src="assets/img/game/ember-isles-1280.webp" srcset="assets/img/game/ember-isles-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="Islands of the Skylands joined by bridges above the clouds" loading="lazy"><figcaption>The Skylands today</figcaption></figure>
-    <figure><img src="assets/img/game/skyship-dock-1280.webp" srcset="assets/img/game/skyship-dock-1280.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw" alt="The skyship docked at the central island" loading="lazy"><figcaption>The skyship</figcaption></figure>
+<section id="world" class="world">
+  <img class="bg" src="assets/img/hunters/sable-1600.webp" srcset="assets/img/hunters/sable-960.webp 960w, assets/img/hunters/sable-1600.webp 1600w, assets/img/hunters/sable-2000.webp 2000w" sizes="100vw" alt="Sable, the thief, in the Wyrm's hoard as its eye opens" loading="lazy">
+  <div class="wrap">
+    <h2>The Wyrm stole our faces.<br>Masks give them back.</h2>
+    <p>Hunt for the Wyrmheart: one wish to remake the world, or rule it.<br>Every Hunter wants it. So does the Wyrm.</p>
   </div>
 </section>
 
-<!-- 7. FAIR -->
 <section id="fair" class="fair">
   <div class="wrap">
-    <h2><span>Nothing that matters</span><span>is for sale.</span></h2>
+    <h2>Nothing that matters<br>is for sale.</h2>
     <ul>
-      <li>No paid eggs, rolls or loot boxes.</li>
-      <li>No energy, no timers.</li>
-      <li>Boki and power are never sold.</li>
-      <li>You only pay for the game and cosmetics.</li>
-      <li class="oss">Open source under GPL-3.0.</li>
+      <li>No loot boxes</li>
+      <li>No paid eggs</li>
+      <li>No energy or timers</li>
+      <li>Boki and power never sold</li>
+      <li>Cosmetics only</li>
+      <li>Open source, GPL-3.0</li>
     </ul>
   </div>
 </section>
 
-<!-- 8. COMMUNITY -->
-<section class="community">
+<section class="join">
+  <video class="bg" autoplay muted loop playsinline poster="assets/img/run/drop-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
   <div class="wrap">
-    <div class="join">
-      <video autoplay muted loop playsinline poster="assets/img/run/drop-poster.webp" aria-hidden="true"><source src="assets/video/drop.mp4" type="video/mp4"></video>
-      <h2><span>Miss Battlerite or SUPERVIVE?</span><span>Join the playtest.</span></h2>
-      <p class="lead">Get in early and help shape it.</p>
-      <div class="cta">
-        <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden>Join the Discord<span class="arrow" aria-hidden="true"></span></a>
-        <a class="btn btn-glass" href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">View on GitHub</a>
-      </div>
+    <h2>Miss Battlerite or SUPERVIVE?<br>Join the playtest.</h2>
+    <div class="cta">
+      <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
+      <a class="btn btn-glass" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
     </div>
   </div>
 </section>
 
 </main>
 
-<footer>
-  <div class="wrap">
-    <a class="brand" href="#top"><img src="assets/img/mark.svg" alt="">Project Boki</a>
-    <nav aria-label="Footer">
-      <a href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
-      <a class="js-discord" href="#" target="_blank" rel="noopener" hidden>Discord</a>
-      <a href="presskit.html">Press kit</a>
-      <a href="mailto:orri@projectboki.com">Contact</a>
-    </nav>
-  </div>
+<footer class="foot">
+  <a class="brand" href="#top"><img src="assets/img/mark.svg" alt=""><span>Project Boki</span></a>
+  <nav aria-label="Footer">
+    <a href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener">itch.io</a>
+    <a class="js-discord" href="#" target="_blank" rel="noopener" hidden>Discord</a>
+    <a href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
+    <a href="presskit.html">Press kit</a>
+    <a href="mailto:orri@projectboki.com">Contact</a>
+  </nav>
 </footer>
 
-<script src="assets/site.js?v=9"></script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-discord" viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
+</svg>
+
+<script src="assets/site.js?v=20"></script>
 </body>
 </html>
