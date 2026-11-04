@@ -104,6 +104,61 @@ if (heroIn && !calm) {
   draw();
 }
 
+/* ---------- Hunter figure: 24-frame turntable, drag to turn ---------- */
+function spinner(box, el) {
+  const FRAMES = 24, COLS = 6, ROWS = 4;
+  let f = 0, id = "", timer = null, drag = null, idle = null, ready = false, seen = false;
+  const pos = () => {
+    const c = f % COLS, r = Math.floor(f / COLS);
+    el.style.backgroundPosition = `${(c / (COLS - 1)) * 100}% ${(r / (ROWS - 1)) * 100}%`;
+  };
+  const tick = () => { f = (f + 1) % FRAMES; pos(); };
+  const play = () => { if (!timer && ready && seen && !calm) timer = setInterval(tick, 140); };
+  const stop = () => { clearInterval(timer); timer = null; };
+  const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play() : stop(); });
+  io.observe(box);
+  box.addEventListener("pointerdown", (e) => {
+    if (!ready) return;
+    drag = { x: e.clientX, f }; stop(); clearTimeout(idle);
+    box.setPointerCapture(e.pointerId); box.classList.add("grab");
+  });
+  box.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const step = Math.round((e.clientX - drag.x) / 14);
+    f = (((drag.f - step) % FRAMES) + FRAMES) % FRAMES; pos();
+  });
+  const end = () => {
+    if (!drag) return;
+    drag = null; box.classList.remove("grab");
+    idle = setTimeout(play, 2500);
+  };
+  box.addEventListener("pointerup", end);
+  box.addEventListener("pointercancel", end);
+  return {
+    load(next, name) {
+      if (next === id) return;
+      id = next; ready = false; stop(); f = 0;
+      el.setAttribute("aria-label", `${name}'s in-game model on a stand`);
+      box.classList.add("swap");
+      const still = `assets/img/hunters/3d/${next}.webp`, sheet = `assets/img/hunters/3d/${next}-spin.webp`;
+      const im = new Image();
+      im.onload = () => {
+        if (id !== next) return;
+        el.style.backgroundImage = `url(${still})`; el.style.backgroundSize = "100% 100%"; el.style.backgroundPosition = "0 0";
+        box.classList.remove("swap");
+        const sp = new Image();
+        sp.onload = () => {
+          if (id !== next) return;
+          el.style.backgroundImage = `url(${sheet})`; el.style.backgroundSize = `${COLS * 100}% ${ROWS * 100}%`;
+          pos(); ready = true; play();
+        };
+        sp.src = sheet;
+      };
+      setTimeout(() => { im.src = still; }, 180);
+    },
+  };
+}
+
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, mask (relic), one line]
 const HUNTERS = [
@@ -128,6 +183,8 @@ if (pick) {
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp`;
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2000)} 2000w`;
   let current = 0;
+  const fig = spinner(document.getElementById("h-fig"), document.getElementById("h-fig-img"));
+  fig.load("vex", "Vex");
 
   HUNTERS.forEach(([id, name, title], i) => {
     const b = document.createElement("button");
@@ -143,7 +200,7 @@ if (pick) {
   function show(i) {
     if (i === current) return;
     current = i;
-    const [id, name, title, relic, line] = HUNTERS[i];
+    const [id, name, title, relic] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     pick.children[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     art.classList.add("out");
@@ -158,7 +215,7 @@ if (pick) {
       $("h-name").textContent = name;
       $("h-title").textContent = title;
       $("h-relic").textContent = relic;
-      $("h-line").textContent = line;
+      fig.load(id, name);
       art.classList.remove("out");
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
