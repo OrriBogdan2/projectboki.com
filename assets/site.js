@@ -180,14 +180,18 @@ if (pick) {
 // [id, name, mix, size, found, glow, body, flavor, [bravery, loyalty, temper, curiosity]]
 const BOKI = [
   ["vespyx", "Vespyx", "Fox + Scorpion", "Small", "Starter egg", "#a6ff3a", "#4a2f5c", "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.", [0.75, 0.5, 0.7, 0.5]],
-  ["prismander", "Prismander", "Axolotl + Crystal", "Small", "Starter egg", "#7ff3ff", "#f0a6d6", "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.", [0.45, 0.85, 0.2, 0.6]],
   ["mycroll", "Mycroll", "Hedgehog + Toadstool", "Small", "Starter egg", "#3fe0c0", "#6b4a3c", "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.", [0.55, 0.6, 0.4, 0.8]],
+  ["prismander", "Prismander", "Axolotl + Crystal", "Small", "Starter egg", "#7ff3ff", "#f0a6d6", "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.", [0.45, 0.85, 0.2, 0.6]],
+  ["gloamshell", "Gloamshell", "Garden snail + Smoked obsidian", "Small", "Wild in Gloomheart", "#8a6aff", "#3a3448", "A snail whose shell is smoked obsidian glass. It drinks the light around it and leaves a trail of dusk behind.", [0.3, 0.6, 0.35, 0.55]],
+  ["rimeshrew", "Rimeshrew", "Shrew + Hoarfrost", "Small", "Wild in Frostreach", "#bff4ff", "#9fb6c8", "A tiny shrew with a frost-feathered coat that never melts. It has to eat every hour, so it never stops moving.", [0.9, 0.5, 0.65, 0.75]],
+  ["selenfin", "Selenfin", "Hatchetfish + Moonstone", "Small", "Wild in Gloomheart", "#fff0a0", "#c8d0e0", "A silver hatchetfish that swims through the air, a moonstone glowing in its keel. Where it floats, wounds close.", [0.4, 0.8, 0.15, 0.5]],
+  ["glintmole", "Glintmole", "Star-nosed mole + Quartz geode", "Small", "Wild in Greenreach", "#c9a8ff", "#5b4a5e", "A star-nosed mole whose back is a split geode full of quartz. It feels the ground shake long before you do.", [0.35, 0.75, 0.3, 0.7]],
   ["echolop", "Echolop", "Hare + Bat", "Small", "Wild nests", "#7fe8ff", "#4a5aa8", "A long-eared hare with bat wings. It hears everything coming and fires ringing pulses of sound.", [0.65, 0.4, 0.6, 0.9]],
   ["lunowl", "Lunowl", "Owl + Luna moth", "Small", "Wild nests", "#fff0a0", "#9fe6b4", "A moonlit owl with soft moth wings. It flits on moondust and dazzles foes with silver light.", [0.35, 0.55, 0.5, 0.7]],
   ["gravadillo", "Gravadillo", "Armadillo + Rhino beetle", "Large", "Wild nests", "#b48cff", "#3c4058", "An armadillo with a rhino beetle's horn. It rolls up in heavy plates and bends gravity to slam foes down.", [0.9, 0.7, 0.3, 0.2]],
-  ["cairnback", "Cairnback", "Tortoise + Ibex", "Large", "The Stone Colossus's egg", "#ffd36a", "#6a6f7a", "A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell.", [0.85, 0.8, 0.25, 0.35]],
   ["hivara", "Hivara", "Honeybee + Praying mantis", "Small", "The Brood Mother's egg", "#ffe680", "#d9a42a", "A honeybee with a praying mantis's folded blades, wearing a crown of wax. A swarm of tiny bees follows it everywhere.", [0.7, 0.75, 0.55, 0.6]],
   ["zephyrak", "Zephyrak", "Moray eel + Swift", "Small", "Stormcoil's egg", "#9ff4ff", "#2f6f9a", "A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static.", [0.8, 0.45, 0.65, 0.85]],
+  ["cairnback", "Cairnback", "Tortoise + Ibex", "Large", "The Stone Colossus's egg", "#ffd36a", "#6a6f7a", "A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell.", [0.85, 0.8, 0.25, 0.35]],
 ];
 const TRAITS = ["Bravery", "Loyalty", "Temper", "Curiosity"];
 
