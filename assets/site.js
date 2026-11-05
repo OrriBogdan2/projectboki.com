@@ -144,8 +144,10 @@ if (pick) {
   });
 
   function show(i) {
+    i = (i + HUNTERS.length) % HUNTERS.length;
     if (i === current) return;
     current = i;
+    $("h-n").textContent = String(i + 1).padStart(2, "0");
     const [id, name, title, model] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     pick.children[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
@@ -165,6 +167,11 @@ if (pick) {
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
   }
+
+  $("h-prev").addEventListener("click", () => show(current - 1));
+  $("h-next").addEventListener("click", () => show(current + 1));
+  swipe(document.querySelector(".stage .shot"), (d) => show(current + d));
+  nudge(pick);
 
   pick.addEventListener("keydown", (e) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
@@ -273,15 +280,33 @@ if (bkPick) {
     e.preventDefault(); show(at + d, d); bkPick.children[at].focus();
   });
 
-  // Swipe the stage on touch screens.
-  let x0 = null;
-  stage.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") x0 = e.clientX; });
-  stage.addEventListener("pointerup", (e) => {
-    if (x0 === null) return;
-    const dx = e.clientX - x0; x0 = null;
-    if (Math.abs(dx) > 40) show(at + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
-  });
-  stage.addEventListener("pointercancel", () => { x0 = null; });
+  swipe(stage, (d) => show(at + d, d));
+  nudge(bkPick);
 
   show(0);
+}
+
+/* ---------- shared: swipe to switch, and a one-time nudge so the strip reads as scrollable ---------- */
+function swipe(el, go) {
+  if (!el) return;
+  let x0 = null, y0 = 0;
+  el.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { x0 = e.clientX; y0 = e.clientY; } });
+  el.addEventListener("pointerup", (e) => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+  });
+  el.addEventListener("pointercancel", () => { x0 = null; });
+}
+function nudge(strip) {
+  if (calm || !("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting || strip.scrollWidth <= strip.clientWidth + 4) return;
+    io.disconnect();
+    setTimeout(() => {
+      strip.scrollTo({ left: 90, behavior: "smooth" });
+      setTimeout(() => strip.scrollTo({ left: 0, behavior: "smooth" }), 650);
+    }, 500);
+  }, { threshold: 0.9 });
+  io.observe(strip);
 }

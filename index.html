@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
 
-<link rel="stylesheet" href="assets/style.css?v=34">
+<link rel="stylesheet" href="assets/style.css?v=35">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -70,6 +70,9 @@
       <p>Cursed Masks house the souls of heroes.<br>Find them all to gain unlimited power.</p>
     </header>
     <div class="stage" data-r>
+      <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="bk-count h-count"><b id="h-n">01</b> / <span>12</span></div>
       <div class="shot"><img id="h-art" src="assets/img/hunters/vex-1600.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy"></div>
       <div class="info" aria-live="polite">
         <div class="title" id="h-title">Hired Gun</div>
@@ -80,6 +83,7 @@
         <span class="fig-hint">Drag to turn</span>
       </div>
     </div>
+    <div class="pick-label" data-r><b>Choose a Hunter</b><span class="swipe">Swipe for all 12 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div class="pick" data-r id="h-pick" role="group" aria-label="Choose a Hunter"></div>
   </div>
 </section>
@@ -108,6 +112,7 @@
         <div class="bk-meta"><span id="bk-size">Small</span><span id="bk-found">Starter egg</span></div>
       </div>
     </div>
+    <div class="pick-label" data-r><b>Choose a Boki</b><span class="swipe">Swipe for all 21 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose a Boki" data-r></div>
   </div>
 </section>
@@ -163,6 +168,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=34"></script>
+<script src="assets/site.js?v=35"></script>
 </body>
 </html>
