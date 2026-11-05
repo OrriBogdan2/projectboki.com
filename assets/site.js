@@ -30,63 +30,7 @@ if ("IntersectionObserver" in window && !calm) {
   revealed.forEach((el) => el.classList.add("in"));
 }
 
-// Hero: slow crossfade through Hunter key art.
-// [id, name, title, focal x on narrow screens]
-const HERO = [
-  ["vex", "Vex", "Hired Gun", "62%"],
-  ["kael", "Kael", "The Unbroken", "40%"],
-  ["ryzz", "Ryzz", "Storm Chaser", "60%"],
-  ["claire", "Claire", "Frost Siren", "64%"],
-  ["motley", "Motley", "Void Jester", "66%"],
-  ["cinder", "Cinder", "Mad Pyromancer", "72%"],
-];
 const media = document.getElementById("hero-media");
-const now = document.getElementById("hero-now");
-if (media && now) {
-  const DUR = 7000;
-  now.style.setProperty("--dur", DUR + "ms");
-  const set = (id) => `assets/img/hunters/${id}-960.webp 960w, assets/img/hunters/${id}-1600.webp 1600w, assets/img/hunters/${id}-2400.webp 2400w`;
-  const slides = [media.querySelector(".slide")];
-  let i = 0, timer = null, built = false;
-
-  const build = () => {
-    if (built) return; built = true;
-    HERO.slice(1).forEach(([id, , , x]) => {
-      const im = document.createElement("img");
-      im.className = "slide"; im.alt = ""; im.decoding = "async";
-      im.sizes = "100vw"; im.srcset = set(id); im.src = `assets/img/hunters/${id}-1600.webp`;
-      im.style.setProperty("--x", x);
-      media.appendChild(im); slides.push(im);
-    });
-  };
-  const restartBar = () => { now.classList.remove("run"); void now.offsetWidth; now.classList.add("run"); };
-  const step = () => {
-    const n = (i + 1) % slides.length;
-    const go = () => {
-      slides[i].classList.remove("on");
-      slides[n].classList.add("on");
-      now.classList.add("swap");
-      setTimeout(() => {
-        document.getElementById("hero-name").textContent = HERO[n][1];
-        document.getElementById("hero-title").textContent = HERO[n][2];
-        now.classList.remove("swap");
-      }, 400);
-      i = n; restartBar();
-    };
-    const im = slides[n];
-    im.complete ? go() : (im.decode ? im.decode().then(go, go) : go());
-  };
-  const play = () => { if (!timer) { restartBar(); timer = setInterval(step, DUR); } };
-  const stop = () => { clearInterval(timer); timer = null; now.classList.remove("run"); };
-
-  if (!calm) {
-    const first = slides[0];
-    const start = () => { build(); play(); };
-    first.complete ? setTimeout(start, 600) : first.addEventListener("load", () => setTimeout(start, 600), { once: true });
-    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : built && play()));
-    new IntersectionObserver(([e]) => (e.isIntersecting ? built && play() : stop())).observe(media);
-  }
-}
 
 // Hero content drifts back and fades as you scroll past it.
 const heroIn = document.getElementById("hero-in");
@@ -167,10 +111,10 @@ const HUNTERS = [
   ["vex", "Vex", "Hired Gun", true],
   ["kael", "Kael", "The Unbroken", true],
   ["lisette", "Lisette", "Red Stitch", false],
-  ["breaker", "Breaker", "Frozen Bulwark", false],
+  ["breaker", "Breaker", "Sunken Bulwark", false],
   ["ryzz", "Ryzz", "Storm Chaser", true],
   ["cinder", "Cinder", "Mad Pyromancer", false],
-  ["grimble", "Grimble", "Broken Abomination", false],
+  ["grimble", "Grimble", "Scrap King", false],
   ["pip", "Pip", "Little Lantern", true],
   ["claire", "Claire", "Frost Siren", false],
   ["tarek", "Tarek", "Cliff Runner", true],
