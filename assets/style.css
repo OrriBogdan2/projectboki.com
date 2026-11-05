@@ -50,7 +50,7 @@ section { position: relative; }
 .nav { position: fixed; inset: 0 0 auto; z-index: 50; height: 72px; padding: 0 var(--pad); display: flex; align-items: center; justify-content: space-between; gap: 24px; transition: background .25s, border-color .25s; border-bottom: 1px solid transparent; }
 .nav.scrolled { background: rgba(8,13,24,.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-color: var(--line); }
 .brand { display: flex; align-items: center; gap: 10px; font-family: "Lilita"; font-size: 24px; }
-.brand img { width: 34px; height: 40px; }
+.brand img { width: 36px; height: 36px; border-radius: 9px; }
 .links { display: flex; gap: 34px; font-weight: 700; font-size: 16px; letter-spacing: .02em; }
 .links a { opacity: .85; transition: opacity .15s, color .15s; }
 .links a:hover { opacity: 1; color: var(--sun); }
@@ -79,7 +79,8 @@ section { position: relative; }
   linear-gradient(0deg, var(--bg) 0%, rgba(8,13,24,.92) 16%, rgba(8,13,24,.55) 38%, rgba(8,13,24,0) 62%),
   radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(5,8,15,.7) 100%), radial-gradient(ellipse 55% 45% at 50% 70%, rgba(5,8,15,.55), transparent 80%); }
 .hero-in { display: flex; flex-direction: column; align-items: center; will-change: transform, opacity; }
-.lockup { display: flex; align-items: center; gap: clamp(12px, 1.6vw, 22px); }
+.lockup { display: block; margin: 0; line-height: 0; }
+.lockup .wordmark { width: clamp(300px, 46vw, 720px); height: auto; filter: drop-shadow(0 12px 40px rgba(0,0,0,.6)); }
 .hero .mark { width: clamp(56px, 6.4vw, 96px); height: auto; aspect-ratio: 200 / 232; filter: drop-shadow(0 10px 24px rgba(0,0,0,.55)); }
 .hero h1 { font-size: clamp(60px, 9.4vw, 148px); line-height: .9; letter-spacing: -.005em; text-shadow: 0 8px 40px rgba(0,0,0,.55); padding-top: .06em; }
 .tag { margin: clamp(18px, 2.4vh, 28px) 0 clamp(26px, 3.6vh, 40px); font-size: clamp(19px, 2vw, 27px); font-weight: 600; line-height: 1.4; letter-spacing: .005em; text-shadow: 0 2px 18px rgba(0,0,0,.7); }
@@ -239,7 +240,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .hero { padding-bottom: 40px; }
   .cast { width: 260%; }
   .cast li { width: 34vw; border-radius: 14px; }
-  .lockup { flex-direction: column; gap: 6px; }
+  .lockup .wordmark { width: min(88vw, 420px); }
   .hero .mark { width: 58px; }
   .hero h1 { font-size: clamp(54px, 15vw, 68px); }
   .tag { font-size: clamp(17px, 4.7vw, 20px); margin: 16px 0 28px; }
@@ -301,6 +302,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 /* ---------- 404 ---------- */
 .nf { min-height: 100vh; min-height: 100svh; display: grid; place-content: center; justify-items: center; gap: 16px; text-align: center; padding: 24px; }
 .nf img { width: 96px; }
+.nf .nf-wm { width: min(80vw, 420px); }
 .nf h1 { font-size: 120px; }
 .nf p { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
 
@@ -327,3 +329,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .bk-pick button { flex: 0 0 84px; }
 }
 @media (prefers-reduced-motion: reduce) { .pick-label .swipe svg { animation: none; } }
+
+.pk-logos a { background: #21172f; border: 1px solid var(--line); }
+.pk-logos img, .pk-grid.pk-logos .tile img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
