@@ -33,19 +33,19 @@ if ("IntersectionObserver" in window && !calm) {
 // Hero: slow crossfade through Hunter key art.
 // [id, name, title, focal x on narrow screens]
 const HERO = [
-  ["vex", "Vex", "Hired Gun", "38%"],
-  ["kael", "Kael", "The Unbroken", "42%"],
-  ["ryzz", "Ryzz", "Storm Chaser", "52%"],
-  ["claire", "Claire", "Frost Siren", "42%"],
-  ["ostra", "Ostra", "Void Jester", "52%"],
-  ["cinder", "Cinder", "Mad Pyromancer", "40%"],
+  ["vex", "Vex", "Hired Gun", "62%"],
+  ["kael", "Kael", "The Unbroken", "40%"],
+  ["ryzz", "Ryzz", "Storm Chaser", "60%"],
+  ["claire", "Claire", "Frost Siren", "64%"],
+  ["motley", "Motley", "Void Jester", "66%"],
+  ["cinder", "Cinder", "Mad Pyromancer", "72%"],
 ];
 const media = document.getElementById("hero-media");
 const now = document.getElementById("hero-now");
 if (media && now) {
   const DUR = 7000;
   now.style.setProperty("--dur", DUR + "ms");
-  const set = (id) => `assets/img/hunters/${id}-960.webp 960w, assets/img/hunters/${id}-1600.webp 1600w, assets/img/hunters/${id}-2000.webp 2000w`;
+  const set = (id) => `assets/img/hunters/${id}-960.webp 960w, assets/img/hunters/${id}-1600.webp 1600w, assets/img/hunters/${id}-2400.webp 2400w`;
   const slides = [media.querySelector(".slide")];
   let i = 0, timer = null, built = false;
 
@@ -138,6 +138,8 @@ function spinner(box, el) {
     load(next, name) {
       if (next === id) return;
       id = next; ready = false; stop(); f = 0;
+      box.hidden = !next;
+      if (!next) return;
       el.setAttribute("aria-label", `${name}'s in-game model on a stand`);
       box.classList.add("swap");
       const still = `assets/img/hunters/3d/${next}.webp`, sheet = `assets/img/hunters/3d/${next}-spin.webp`;
@@ -160,20 +162,20 @@ function spinner(box, el) {
 }
 
 /* ---------- Hunters: pick a Mask ---------- */
-// [id, name, title, mask (relic), one line]
+// [id, name, title, has an up-to-date in-game model]
 const HUNTERS = [
-  ["vex", "Vex", "Hired Gun", "Brass cyber-eye", "Foundry kid who bolted a siege cannon to her arm."],
-  ["kael", "Kael", "The Unbroken", "Broken champion's collar", "Undefeated arena slave. A demon lives in his blade."],
-  ["hem", "Hem", "Red Stitch", "Stitched porcelain mask", "The Tyrant's mask-stitcher, turned deserter."],
-  ["breaker", "Breaker", "Frozen Bulwark", "Ship's compass", "Went down with his ship so the refugees could live."],
-  ["ryzz", "Ryzz", "Storm Chaser", "Her first lightning rod", "Struck by the Wyrm's storm. Throws it back in pink."],
-  ["cinder", "Cinder", "Mad Pyromancer", "Cracked goggles", "Drank the Wyrm's blood. Fireproof, and a little mad."],
-  ["dredge", "Dredge", "Brass Abomination", "Cracked porthole eye", "A diving machine haunted by whatever drowned inside."],
-  ["pip", "Pip", "Little Lantern", "Hearth lantern", "Carries a shelter's fire. It heals."],
-  ["claire", "Claire", "Frost Siren", "Ice skates", "Skated the crowd to safety. The frost took her."],
-  ["tarek", "Tarek", "Cliff Runner", "A seeing-stone", "Blind. Sees through three floating stones."],
-  ["ostra", "Ostra", "Void Jester", "Grinning jester mask", "Sealed in his own mask. Steals your laughter."],
-  ["sable", "Sable", "Silver Thief", "Silver domino mask", "The thief who woke the Wyrm."],
+  ["vex", "Vex", "Hired Gun", true],
+  ["kael", "Kael", "The Unbroken", true],
+  ["lisette", "Lisette", "Red Stitch", false],
+  ["breaker", "Breaker", "Frozen Bulwark", false],
+  ["ryzz", "Ryzz", "Storm Chaser", true],
+  ["cinder", "Cinder", "Mad Pyromancer", false],
+  ["grimble", "Grimble", "Broken Abomination", false],
+  ["pip", "Pip", "Little Lantern", true],
+  ["claire", "Claire", "Frost Siren", false],
+  ["tarek", "Tarek", "Cliff Runner", true],
+  ["motley", "Motley", "Void Jester", true],
+  ["sable", "Sable", "Silver Thief", true],
 ];
 
 const pick = document.getElementById("h-pick");
@@ -181,7 +183,7 @@ if (pick) {
   const art = document.getElementById("h-art");
   const $ = (id) => document.getElementById(id);
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp`;
-  const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2000)} 2000w`;
+  const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
   let current = 0;
   const fig = spinner(document.getElementById("h-fig"), document.getElementById("h-fig-img"));
   fig.load("vex", "Vex");
@@ -200,7 +202,7 @@ if (pick) {
   function show(i) {
     if (i === current) return;
     current = i;
-    const [id, name, title, relic] = HUNTERS[i];
+    const [id, name, title, model] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     pick.children[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     art.classList.add("out");
@@ -214,8 +216,7 @@ if (pick) {
       art.alt = `${name}, ${title}`;
       $("h-name").textContent = name;
       $("h-title").textContent = title;
-      $("h-relic").textContent = relic;
-      fig.load(id, name);
+      fig.load(model ? id : "", name);
       art.classList.remove("out");
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
