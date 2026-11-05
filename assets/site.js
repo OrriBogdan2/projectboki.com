@@ -150,7 +150,10 @@ if (pick) {
     $("h-n").textContent = String(i + 1).padStart(2, "0");
     const [id, name, title, model] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
-    pick.children[i].scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    { // keep the picked portrait in view by scrolling the strip only, never the page
+      const btn = pick.children[i];
+      if (pick.scrollWidth > pick.clientWidth) pick.scrollTo({ left: btn.offsetLeft - (pick.clientWidth - btn.clientWidth) / 2, behavior: "smooth" });
+    }
     art.classList.add("out");
     const next = new Image();
     next.sizes = art.sizes;
@@ -179,7 +182,7 @@ if (pick) {
     e.preventDefault();
     const n = (current + d + HUNTERS.length) % HUNTERS.length;
     show(n);
-    pick.children[n].focus();
+    pick.children[n].focus({ preventScroll: true });
   });
 }
 
@@ -277,7 +280,7 @@ if (bkPick) {
   bkPick.addEventListener("keydown", (e) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (!d) return;
-    e.preventDefault(); show(at + d, d); bkPick.children[at].focus();
+    e.preventDefault(); show(at + d, d); bkPick.children[at].focus({ preventScroll: true });
   });
 
   swipe(stage, (d) => show(at + d, d));
