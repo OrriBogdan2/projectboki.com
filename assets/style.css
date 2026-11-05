@@ -32,7 +32,7 @@ h2 { font-size: clamp(42px, 6vw, 88px); }
 section { position: relative; }
 .head { text-align: center; margin-bottom: clamp(36px, 5vw, 60px); }
 .head .sub { margin-top: 10px; font-family: "Lilita"; font-size: clamp(24px, 2.6vw, 36px); line-height: 1.1; color: var(--sun); }
-.head p { text-wrap: balance; margin-top: 18px; font-size: clamp(19px, 1.7vw, 23px); color: var(--soft); }
+.head p { text-wrap: balance; max-width: 34em; margin-inline: auto; margin-top: 18px; font-size: clamp(19px, 1.7vw, 23px); color: var(--soft); }
 
 /* ---------- buttons ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 58px; padding: 0 28px; border-radius: 14px; font-family: "Lilita"; font-size: 21px; letter-spacing: .02em; white-space: nowrap; transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; }
