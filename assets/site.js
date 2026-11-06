@@ -110,11 +110,11 @@ function spinner(box, el) {
 const HUNTERS = [
   ["vex", "Vex", "Hired Gun", true],
   ["kael", "Kael", "The Unbroken", false],
-  ["lisette", "Lisette", "Red Stitch", false],
+  ["lisette", "Lisette", "Red Stitch", true],
   ["breaker", "Breaker", "Sunken Bulwark", false],
   ["ryzz", "Ryzz", "Storm Chaser", true],
   ["cinder", "Cinder", "Mad Pyromancer", false],
-  ["grimble", "Grimble", "Scrap King", false],
+  ["grimble", "Grimble", "Scrap King", true],
   ["pip", "Pip", "Little Lantern", true],
   ["claire", "Claire", "Frost Siren", false],
   ["tarek", "Tarek", "Cliff Runner", true],
