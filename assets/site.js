@@ -130,7 +130,8 @@ if (pick) {
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
   let current = 0;
   const fig = spinner(document.getElementById("h-fig"), document.getElementById("h-fig-img"));
-  fig.load("vex", "Vex");
+  // load the first turntable only once the Hunters section is close to view
+  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { o.disconnect(); fig.load(HUNTERS[current][3] ? HUNTERS[current][0] : "", HUNTERS[current][1]); } }, { rootMargin: "400px 0px" }).observe(document.getElementById("hunters"));
 
   HUNTERS.forEach(([id, name, title], i) => {
     const b = document.createElement("button");
