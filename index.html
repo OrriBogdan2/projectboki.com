@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project Boki: a PvPvE extraction game for PC</title>
-<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise your greatest ally, then fight to save their souls.">
+<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise infinitely unique creatures in a new take on the extraction genre.">
 <meta name="theme-color" content="#080d18">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projectboki.com/">
 <meta property="og:title" content="Project Boki">
-<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise your greatest ally, then fight to save their souls.">
+<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise infinitely unique creatures in a new take on the extraction genre.">
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg?v=4">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://projectboki.com/assets/img/og.jpg?v=4">
@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=37">
+<link rel="stylesheet" href="assets/style.css?v=38">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -40,7 +40,7 @@
   <nav class="links" aria-label="Main">
     <a href="#hunters">Hunters</a>
     <a href="#boki">Boki</a>
-    <a href="#fair">Fair play</a>
+    <a href="#faq">FAQ</a>
   </nav>
   <div class="nav-cta">
     <a class="icon-btn js-discord" href="#" target="_blank" rel="noopener" aria-label="Discord" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg></a>
@@ -56,7 +56,7 @@
   </div>
   <div class="hero-in" id="hero-in">
     <h1 class="lockup"><img class="wordmark" src="assets/img/wordmark-1280.webp" srcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" sizes="(max-width: 720px) 90vw, 720px" width="2053" height="956" alt="Project Boki" fetchpriority="high"></h1>
-    <p class="tag">Raise your greatest ally...<br>then fight to save their souls.</p>
+    <p class="tag">Raise infinitely unique creatures<br>in a new take on the extraction genre.</p>
     <div class="cta">
       <a class="btn btn-solid" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
       <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
@@ -68,8 +68,8 @@
   <div class="wrap">
     <header class="head" data-r>
       <div class="eyebrow">PvPvE extraction for PC</div>
-      <h2>Put on a Mask.</h2>
-      <div class="sub">Enter the world of The Empty.</div>
+      <h2>The Skylands are destroyed.</h2>
+      <div class="sub">Every Mask houses a Hunter's soul.<br>Put it on and escape The Empty.</div>
     </header>
     <div class="stage" data-r>
       <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -95,7 +95,7 @@
   <div class="wrap">
     <header class="head" data-r>
       <h2>Every Boki is different.</h2>
-      <div class="sub">Tame your own Boki.</div>
+      <div class="sub">Raise your own!</div>
     </header>
     <div class="bk" data-r>
       <div class="bk-stage" id="bk-stage">
@@ -117,22 +117,23 @@
     <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose a Boki" data-r></div>
   </div>
 </section>
-<section id="fair" class="fair">
+<section id="faq" class="faq">
   <div class="wrap">
-    <h2 data-r>No pay to win.</h2>
-    <ul data-r="stagger">
-      <li>No loot boxes</li>
-      <li>No paid eggs</li>
-      <li>No energy or timers</li>
-      <li>Boki and power never sold</li>
-      <li>Cosmetics only</li>
-      <li>Open source, GPL-3.0</li>
-    </ul>
+    <h2 data-r>FAQ</h2>
+    <div class="qa" data-r="stagger">
+      <details><summary>What is Project Boki?</summary><p>A skill-based PvPvE extraction game for PC. 20 to 40 players drop in solo, duo or trio, fight rival squads and monsters, and try to get out alive.</p></details>
+      <details><summary>What are Boki?</summary><p>Your creature partners. Every Boki has its own personality, size, mutations and evolutions. You raise one at home and it comes with you on every run.</p></details>
+      <details><summary>Can I lose my Boki?</summary><p>Yes. Go down in a run and another squad can take your Boki home. Extract, and it comes back with you.</p></details>
+      <details><summary>Is it pay to win?</summary><p>No. Boki and power are never sold. You only pay for the game and cosmetics.</p></details>
+      <details><summary>Are there loot boxes or paid eggs?</summary><p>No loot boxes, no paid eggs or rolls, and no energy or timers.</p></details>
+      <details><summary>How do I play?</summary><p>The current build is on itch.io. Join the Discord to get into playtests.</p></details>
+      <details><summary>Is it open source?</summary><p>Yes. The game is open source under GPL-3.0, and the code is on GitHub.</p></details>
+    </div>
   </div>
 </section>
 
 <section class="join">
-  <img class="bg" src="assets/img/hunters/pip-1600.webp" srcset="assets/img/hunters/pip-960.webp 960w, assets/img/hunters/pip-1600.webp 1600w, assets/img/hunters/pip-2400.webp 2400w" sizes="100vw" alt="" loading="lazy">
+  <div class="join-bg" aria-hidden="true"></div>
   <div class="wrap" data-r>
     <h2>Miss Battlerite or SUPERVIVE?<br>Join the playtest.</h2>
     <div class="cta">
