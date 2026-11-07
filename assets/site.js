@@ -166,11 +166,30 @@ if (pick) {
       art.alt = `${name}, ${title}`;
       $("h-name").textContent = name;
       $("h-title").textContent = title;
+      alignTitle();
       fig.load(model ? id : "", name);
       art.classList.remove("out");
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
   }
+
+  // Big letters have a wider side bearing than small ones, so line the title up with the name's ink, not its box.
+  const ink = (el, ch) => { // px from the text origin to the first painted column of ch
+    const cs = getComputedStyle(el), px = parseFloat(cs.fontSize), w = Math.ceil(px * 2), h = Math.ceil(px * 1.6);
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    const c = cv.getContext("2d", { willReadFrequently: true });
+    c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; c.textBaseline = "top"; c.fillText(ch, px / 2, px / 4);
+    const d = c.getImageData(0, 0, w, h).data;
+    for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) if (d[(y * w + x) * 4 + 3] > 96) return x - px / 2;
+    return 0;
+  };
+  function alignTitle() {
+    const n = $("h-name"), t = $("h-title");
+    t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0]) - ink(t, t.textContent[0].toUpperCase())).toFixed(1) + "px";
+  }
+  alignTitle();
+  document.fonts && document.fonts.ready.then(alignTitle);
+  addEventListener("resize", alignTitle);
 
   $("h-prev").addEventListener("click", () => show(current - 1));
   arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
