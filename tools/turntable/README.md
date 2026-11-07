@@ -10,4 +10,4 @@ Renders each Hunter's in-game model (with its idle animation) on a stand as a 24
 
 Kael: until his v2 model is merged to main (main's juggernaut still looks like the old v1), render `--ids=juggernaut` from the game branch `ext/kael-v2-model` instead of main, and pack that. Once main has the v2 (pale silver blade, red scarf), use main again.
 
-Game ids to site ids: gunslinger=vex, juggernaut=kael, archer=lisette (Ravyl), bulwark=breaker (Mossy), mage=ryzz, ashwick=cinder, dredge=grimble, tender=pip (Lumi), rimewright=claire (Nivi), dolm=tarek (Kibo), ostra=motley, thief=sable.
+Game ids to site ids: gunslinger=vex, juggernaut=kael, archer=lisette (Lace), bulwark=breaker (Mossy), mage=ryzz (Sparkle), ashwick=cinder, dredge=grimble, tender=pip (Meeko), rimewright=claire (Neve), dolm=tarek (Tenzo), ostra=motley, thief=sable.

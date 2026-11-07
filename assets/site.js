@@ -109,15 +109,15 @@ function spinner(box, el) {
 // [id, name, title, has an up-to-date in-game model]
 const HUNTERS = [
   ["vex", "Vex", "Hired Gun", true],
-  ["breaker", "Mossy", "Sunken Bulwark", true],
-  ["ryzz", "Ryzz", "Storm Chaser", true],
+  ["breaker", "Mossy", "Barnacle Knight", true],
+  ["ryzz", "Sparkle", "Storm Chaser", true],
   ["kael", "Kael", "The Unbroken", true],
-  ["lisette", "Ravyl", "Red Stitch", true],
-  ["claire", "Neve", "Snowglider", true],
+  ["lisette", "Lace", "Red Stitch", true],
+  ["claire", "Neve", "Snowglide", true],
   ["grimble", "Grimble", "Scrap King", true],
-  ["pip", "Meeko", "The Magic Fox", true],
-  ["cinder", "Cinder", "Mad Pyromancer", true],
-  ["tarek", "Kibo", "Stone Seer", true],
+  ["pip", "Meeko", "The Dawnfox", true],
+  ["cinder", "Cinder", "Flame Queen", true],
+  ["tarek", "Tenzo", "Stone Seer", true],
   ["motley", "Motley", "Void Jester", true],
   ["sable", "Sable", "Silver Thief", true],
 ];
