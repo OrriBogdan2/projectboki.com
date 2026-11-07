@@ -223,10 +223,10 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 
 /* ---------- faq ---------- */
 .faq { position: relative; padding: var(--sec) 0; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse 60% 70% at 15% 30%, rgba(226,92,255,.10), transparent 70%), radial-gradient(ellipse 50% 60% at 90% 80%, rgba(74,230,200,.08), transparent 70%), var(--bg-2); border-block: 1px solid var(--line); }
-.faq-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
-.faq-side { position: sticky; top: 110px; }
+.faq-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+.faq-side { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .faq h2 { font-size: clamp(56px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #ffffff 30%, #b9c4da 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.faq-boki { display: block; width: min(320px, 80%); height: auto; margin-top: 28px; filter: drop-shadow(0 30px 40px rgba(0,0,0,.55)); }
+.faq-boki { display: block; width: min(300px, 78%); height: auto; margin-top: 20px; filter: drop-shadow(0 30px 40px rgba(0,0,0,.55)); }
 .qa { display: grid; border-top: 1px solid var(--line); }
 .qa details { border-bottom: 1px solid var(--line); transition: background .25s; }
 .qa details:hover { background: linear-gradient(90deg, rgba(255,255,255,.035), transparent 80%); }
@@ -397,6 +397,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .pk-logos a { background: #21172f; border: 1px solid var(--line); }
 .pk-logos img, .pk-grid.pk-logos .tile img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
 
-@media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; gap: 24px; } .faq-side { position: static; display: flex; align-items: center; justify-content: space-between; } .faq-boki { width: 120px; margin: 0; } }
+@media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; gap: 24px; } .faq-side { flex-direction: row; justify-content: center; gap: 20px; } .faq-boki { width: 120px; margin: 0; } }
 @media (max-width: 720px) { .qa summary { grid-template-columns: 38px 1fr 30px; font-size: 18px; padding: 20px 2px; } .qa p { padding: 0 6px 20px 40px; font-size: 17px; } }
 @media (prefers-reduced-motion: reduce) { .qa details::details-content { transition: none; } }
