@@ -109,9 +109,9 @@ function spinner(box, el) {
 // [id, name, title, has an up-to-date in-game model]
 const HUNTERS = [
   ["vex", "Vex", "Hired Gun", true],
-  ["kael", "Kael", "The Unbroken", false],
-  ["lisette", "Ravel", "Red Stitch", true],
   ["breaker", "Mossy", "Sunken Bulwark", false],
+  ["lisette", "Ravel", "Red Stitch", true],
+  ["kael", "Kael", "The Unbroken", false],
   ["ryzz", "Ryzz", "Storm Chaser", true],
   ["cinder", "Cinder", "Mad Pyromancer", false],
   ["grimble", "Grimble", "Scrap King", true],
