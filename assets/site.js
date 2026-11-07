@@ -185,7 +185,7 @@ if (pick) {
   };
   function alignTitle() {
     const n = $("h-name"), t = $("h-title");
-    t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0]) - ink(t, t.textContent[0].toUpperCase())).toFixed(1) + "px";
+    t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0]) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
   }
   alignTitle();
   document.fonts && document.fonts.ready.then(alignTitle);
