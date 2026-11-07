@@ -118,8 +118,8 @@ const HUNTERS = [
   ["claire", "Neve", "The Snowglider", true],
   ["ryzz", "Sparkle", "The Storm Chaser", true],
   ["breaker", "Mossy", "The Barnacle Knight", true],
-  ["motley", "Motley", "The Void Jester", true],
   ["sable", "Sable", "The Silver Thief", true],
+  ["motley", "Motley", "The Void Jester", true],
 ];
 
 const pick = document.getElementById("h-pick");
