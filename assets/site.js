@@ -113,7 +113,7 @@ const HUNTERS = [
   ["ryzz", "Ryzz", "Storm Chaser", true],
   ["kael", "Kael", "The Unbroken", true],
   ["lisette", "Ravyl", "Red Stitch", true],
-  ["claire", "Nivi", "Snowglider", true],
+  ["claire", "Neve", "Snowglider", true],
   ["grimble", "Grimble", "Scrap King", true],
   ["pip", "Meeko", "The Magic Fox", true],
   ["cinder", "Cinder", "Mad Pyromancer", true],
