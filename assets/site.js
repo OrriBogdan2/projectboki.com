@@ -106,20 +106,20 @@ function spinner(box, el) {
 }
 
 /* ---------- Hunters: pick a Mask ---------- */
-// [id, name, title, has an up-to-date in-game model]
+// [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const HUNTERS = [
-  ["vex", "Vex", "The Hired Gun", true],
-  ["kael", "Kael", "The Unbroken", true],
-  ["cinder", "Cinder", "The Flame Queen", true],
-  ["pip", "Meeko", "The Dawnfox", true],
-  ["tarek", "Tenzo", "The Stone Seer", true],
-  ["lisette", "Lace", "The Red Stitch", true],
-  ["grimble", "Grimble", "The Scrap King", true],
-  ["claire", "Neve", "The Snowglide", true],
-  ["ryzz", "Sparkle", "The Storm Chaser", true],
-  ["breaker", "Mossy", "The Barnacle Knight", true],
-  ["sable", "Sable", "The Silver Thief", true],
-  ["motley", "Motley", "The Void Jester", true],
+  ["vex", "Vex", "The Hired Gun", true, "Rifleman"],
+  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
+  ["cinder", "Cinder", "The Flame Queen", true, "Burner"],
+  ["pip", "Meeko", "The Dawnfox", true, "Medic"],
+  ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
+  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
+  ["grimble", "Grimble", "The Scrap King", true, "Brawler"],
+  ["claire", "Neve", "The Snowglide", true, "Controller"],
+  ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
+  ["breaker", "Mossy", "The Barnacle Knight", true, "Tank"],
+  ["sable", "Sable", "The Silver Thief", true, "Duelist"],
+  ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
 
 const pick = document.getElementById("h-pick");
@@ -149,7 +149,7 @@ if (pick) {
     if (i === current) return;
     current = i;
     $("h-n").textContent = String(i + 1).padStart(2, "0");
-    const [id, name, title, model] = HUNTERS[i];
+    const [id, name, title, model, role] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     { // keep the picked portrait in view by scrolling the strip only, never the page
       const btn = pick.children[i];
@@ -166,6 +166,7 @@ if (pick) {
       art.alt = `${name}, ${title}`;
       $("h-name").textContent = name;
       $("h-title").textContent = title;
+      $("h-role").textContent = role;
       alignTitle();
       fig.load(model ? id : "", name);
       art.classList.remove("out");
@@ -192,6 +193,7 @@ if (pick) {
   function alignTitle() {
     const n = $("h-name"), t = $("h-title");
     t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0], true) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
+    $("h-role").style.marginLeft = t.style.paddingLeft;
   }
   alignTitle();
   document.fonts && document.fonts.ready.then(alignTitle);
@@ -359,4 +361,34 @@ function arrowKeys(section, strip, go) {
     e.preventDefault();
     go(d);
   });
+}
+
+/* ---------- Analytics (PostHog) and email signup ---------- */
+// Paste the Project Boki PostHog project's public token here to switch on analytics and the email signup.
+// It's a separate PostHog organization from General Creative, so the data never mixes.
+const POSTHOG_KEY = "";
+const POSTHOG_HOST = "https://us.i.posthog.com";
+if (POSTHOG_KEY) {
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  // Cookieless: nothing is stored on the visitor's device, so no consent banner is needed.
+  posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, persistence: "memory", person_profiles: "identified_only" });
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[href]"); if (!a) return;
+    const h = a.href;
+    const where = a.closest("section, header, footer")?.id || a.closest("section, header, footer")?.className || "page";
+    if (h.includes("discord")) posthog.capture("click_discord", { where });
+    else if (h.includes("itch.io")) posthog.capture("click_play", { where });
+  });
+  const form = document.getElementById("signup");
+  if (form) {
+    form.hidden = false;
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = form.email.value.trim(); if (!email) return;
+      posthog.identify(email, { email });
+      posthog.capture("email_signup", { email });
+      form.querySelector(".su-row").hidden = true; form.querySelector("label").hidden = true;
+      form.querySelector(".su-done").hidden = false;
+    });
+  }
 }

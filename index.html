@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Project Boki: a PvPvE extraction game for PC</title>
-<meta name="description" content="Project Boki is a skill-based PvPvE extraction game for PC. Raise infinitely unique creatures in a new take on the extraction genre.">
+<title>Project Boki: raise unique creatures, survive deadly extractions</title>
+<meta name="description" content="Project Boki is a creature raising game where you catch new creatures through entering deadly extractions. It feels like a MOBA, but uses WASD controls and a complex physics system.">
 <meta name="theme-color" content="#080d18">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projectboki.com/">
 <meta property="og:title" content="Project Boki">
-<meta property="og:description" content="A skill-based PvPvE extraction game for PC. Raise infinitely unique creatures in a new take on the extraction genre.">
+<meta property="og:description" content="Raise infinitely unique creatures in a new take on the extraction genre.">
 <meta property="og:image" content="https://projectboki.com/assets/img/og.jpg?v=4">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://projectboki.com/assets/img/og.jpg?v=4">
@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=50">
+<link rel="stylesheet" href="assets/style.css?v=51">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -78,6 +78,7 @@
       <div class="info" aria-live="polite">
         <h3 id="h-name">Vex</h3>
         <div class="title" id="h-title">The Hired Gun</div>
+        <div class="role" id="h-role">Rifleman</div>
       </div>
       <div class="fig" id="h-fig" title="Drag to turn">
         <div class="fig-img" id="h-fig-img" role="img" aria-label="Vex's in-game model on a stand" ></div>
@@ -114,44 +115,62 @@
     </div>
     <div class="pick-label" data-r><b>Choose a Boki</b><span class="swipe">Swipe for all 21 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose a Boki" data-r></div>
+    <div class="band" data-r>
+      <p>Hatch your first Boki in the playtest.</p>
+      <a class="btn btn-solid btn-sm js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
+    </div>
   </div>
 </section>
 <section id="faq" class="faq">
-  <div class="wrap">
-    <h2 data-r>FAQ</h2>
+  <div class="wrap faq-grid">
+    <div class="faq-side" data-r>
+      <h2>FAQ</h2>
+      <img class="faq-boki" src="assets/img/boki/vespyx-900.webp" width="900" height="900" alt="" loading="lazy">
+    </div>
     <div class="qa" data-r="stagger">
-      <details><summary>What is Project Boki?</summary><p>Project Boki is a creature raising game where you catch new creatures through entering deadly extractions. It feels like a MOBA, but uses WASD controls and a complex physics system.</p></details>
-      <details><summary>What are Boki?</summary><p>Boki are mini AI creatures that learn to fight with you, bond with you, and grow into a unique pet. You can claim more by heading into expeditions - just be careful not to die...</p></details>
-      <details><summary>Can I lose my Boki?</summary><p>At higher tiers, yes. Go down and another squad can take your Boki home. You can track who took it, then try to negotiate to get it back.</p></details>
-      <details><summary>Is it pay to win?</summary><p>No. Boki and power are never sold. You only pay for the game and cosmetics.</p></details>
-      <details><summary>Are there loot boxes or paid eggs?</summary><p>No loot boxes, no paid eggs or rolls, and no energy or timers.</p></details>
-      <details><summary>How do I play?</summary><p>The current build is on itch.io. Join the Discord to get into playtests.</p></details>
+      <details><summary><i>01</i><span>What is Project Boki?</span></summary><div class="a"><p>Project Boki is a creature raising game where you catch new creatures through entering deadly extractions. It feels like a MOBA, but uses WASD controls and a complex physics system.</p></div></details>
+      <details><summary><i>02</i><span>What are Boki?</span></summary><div class="a"><p>Boki are mini AI creatures that learn to fight with you, bond with you, and grow into a unique pet. You can claim more by heading into expeditions - just be careful not to die...</p></div></details>
+      <details><summary><i>03</i><span>Can I lose my Boki?</span></summary><div class="a"><p>At higher tiers, yes. Go down and another squad can take your Boki home. You can track who took it, then try to negotiate to get it back.</p></div></details>
+      <details><summary><i>04</i><span>Is it pay to win?</span></summary><div class="a"><p>No. Boki and power are never sold. You only pay for the game and cosmetics.</p></div></details>
+      <details><summary><i>05</i><span>Are there loot boxes or paid eggs?</span></summary><div class="a"><p>No loot boxes, no paid eggs or rolls, and no energy or timers.</p></div></details>
+      <details><summary><i>06</i><span>How do I play?</span></summary><div class="a"><p>The current build is on itch.io. Join the Discord to get into playtests.</p></div></details>
     </div>
   </div>
 </section>
 
 <section class="join">
-  <div class="join-bg" aria-hidden="true"></div>
+  <div class="join-bg" aria-hidden="true"><i class="beam"></i><i class="embers"></i></div>
   <div class="wrap" data-r>
     <h2>Miss Battlerite or SUPERVIVE?<br>Join the playtest.</h2>
     <div class="cta">
       <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
       <a class="btn btn-glass" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
     </div>
+    <form class="signup" id="signup" hidden>
+      <label for="su-email">Or get playtest invites by email</label>
+      <div class="su-row">
+        <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+        <button class="btn btn-solid btn-sm" type="submit">Notify me</button>
+      </div>
+      <p class="su-done" role="status" hidden>You're on the list.</p>
+    </form>
   </div>
 </section>
 
 </main>
 
 <footer class="foot">
-  <a class="brand" href="#top"><img src="assets/img/brand-96.webp" width="36" height="36" alt=""><span>Project Boki</span></a>
-  <nav aria-label="Footer">
+  <div class="foot-in">
+    <a class="foot-wm" href="#top" aria-label="Project Boki, back to top"><img src="assets/img/wordmark-640.webp" width="640" height="298" alt="Project Boki" loading="lazy"></a>
+    <nav aria-label="Footer">
     <a href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener">itch.io</a>
     <a class="js-discord" href="#" target="_blank" rel="noopener" hidden>Discord</a>
     <a href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
     <a href="presskit.html">Press kit</a>
     <a href="mailto:orri@projectboki.com">Contact</a>
   </nav>
+  </div>
+  <p class="foot-c">© 2026 Project Boki</p>
 </footer>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -159,6 +178,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=63"></script>
+<script src="assets/site.js?v=64"></script>
 </body>
 </html>
