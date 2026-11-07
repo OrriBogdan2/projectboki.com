@@ -154,7 +154,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .fig-img { width: 100%; height: 100%; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); pointer-events: none; }
 .fig-hint { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.8); opacity: 0; transition: opacity .3s; pointer-events: none; }
 .fig:hover .fig-hint { opacity: 1; }
-.pick { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.pick { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+@media (min-width: 1001px) { .pick, .pick-label:has(+ .pick) { --pw: min(100vw - 48px, 1560px); margin-inline: calc((100% - var(--pw)) / 2); } .pick-label + .pick { margin-top: 18px; } }
 .pick button { all: unset; box-sizing: border-box; position: relative; cursor: pointer; border-radius: 14px; overflow: hidden; aspect-ratio: 1; border: 2px solid transparent; opacity: .72; filter: saturate(.8); transition: opacity .2s, filter .2s, border-color .2s, transform .2s; }
 .pick button img { width: 100%; height: 100%; object-fit: cover; }
 .pick button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -250,7 +251,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .bk-sheet p { min-height: 0; }
   .pick { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 16px 8px 18px; margin-inline: -8px; margin-top: 2px; margin-bottom: -10px; }
   .pick::-webkit-scrollbar { display: none; }
-  .pick button { flex: 0 0 76px; scroll-snap-align: start; }
+  .pick button { flex: 0 0 104px; scroll-snap-align: start; }
 }
 
 /* ---------- phone ---------- */
@@ -345,7 +346,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 @media (max-width: 720px) {
   .stage .h-arrow { top: 28vw; margin-top: -21px; }
   .h-count { top: 12px; left: 14px; }
-  .pick button { flex: 0 0 84px; }
+  .pick button { flex: 0 0 104px; }
   .bk-pick button { flex: 0 0 84px; }
 }
 @media (prefers-reduced-motion: reduce) { .pick-label .swipe svg { animation: none; } }
