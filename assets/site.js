@@ -370,8 +370,24 @@ const POSTHOG_KEY = "phc_CQft5Eunm8Sp3ZSXZbDVFeB7P2kSDLzB8cZipnvEquM5";
 const POSTHOG_HOST = "https://us.i.posthog.com";
 if (POSTHOG_KEY) {
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-  // Cookieless: nothing is stored on the visitor's device, so no consent banner is needed.
-  posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, persistence: "memory", person_profiles: "identified_only" });
+  // Cookieless until the visitor accepts; then PostHog may remember them so return visits link up.
+  let consent = null;
+  try { consent = localStorage.getItem("boki-consent"); } catch (e) {}
+  posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, persistence: consent === "yes" ? "localStorage+cookie" : "memory", person_profiles: "identified_only" });
+  const bar = document.getElementById("consent");
+  const choose = (v) => {
+    try { localStorage.setItem("boki-consent", v); } catch (e) {}
+    if (v === "yes") posthog.set_config({ persistence: "localStorage+cookie" });
+    else { posthog.set_config({ persistence: "memory" }); try { posthog.persistence && posthog.persistence.clear(); } catch (e) {} }
+    bar.classList.remove("show"); setTimeout(() => { bar.hidden = true; }, 300);
+  };
+  const open = () => { bar.hidden = false; requestAnimationFrame(() => bar.classList.add("show")); };
+  if (bar) {
+    bar.querySelector("[data-yes]").addEventListener("click", () => choose("yes"));
+    bar.querySelector("[data-no]").addEventListener("click", () => choose("no"));
+    if (!consent) setTimeout(open, 1200);
+    document.querySelectorAll(".js-cookies").forEach((a) => { a.hidden = false; a.addEventListener("click", (e) => { e.preventDefault(); open(); }); });
+  }
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[href]"); if (!a) return;
     const h = a.href;
