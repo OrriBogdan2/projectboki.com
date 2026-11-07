@@ -31,8 +31,8 @@ h1, h2, h3 { font-family: "Lilita", sans-serif; font-weight: 400; line-height: 1
 h2 { font-size: clamp(42px, 6vw, 88px); }
 section { position: relative; }
 .head { text-align: center; margin-bottom: clamp(36px, 5vw, 60px); }
-.head .sub { margin-top: 14px; font-family: "Lilita"; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.15; color: var(--sun); }
-.head .sub.one { white-space: nowrap; font-size: min(clamp(22px, 2.4vw, 32px), calc((100vw - 44px) / 24)); }
+.head .sub { margin-inline: auto; max-width: 30ch; text-wrap: balance; margin-top: 14px; font-family: "Lilita"; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.15; color: var(--sun); }
+.head .sub.one { max-width: none; white-space: nowrap; font-size: min(clamp(22px, 2.4vw, 32px), calc((100vw - 44px) / 21.5)); }
 .head p { text-wrap: balance; max-width: 34em; margin-inline: auto; margin-top: 18px; font-size: clamp(19px, 1.7vw, 23px); color: var(--soft); }
 
 /* ---------- buttons ---------- */
@@ -141,7 +141,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .info { position: absolute; left: 0; bottom: 0; z-index: 1; width: min(560px, 100%); padding: 0 40px 36px; }
 .stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,13,24,.8) 0%, rgba(8,13,24,.35) 32%, rgba(8,13,24,0) 55%, rgba(8,13,24,0) 66%, rgba(8,13,24,.55) 100%), linear-gradient(0deg, rgba(8,13,24,.85) 0%, rgba(8,13,24,0) 45%); }
 .title { font-family: "Lilita"; font-size: 20px; color: var(--sun); letter-spacing: .06em; text-transform: uppercase; }
-.info h3 { font-size: clamp(52px, 6vw, 84px); margin-top: 2px; }
+.info h3 { font-size: clamp(52px, 6vw, 84px); line-height: 1; }
+.info .title { margin-top: 8px; }
 .info p { margin-top: 10px; font-size: 20px; font-weight: 600; }
 .relic { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 7px 14px 7px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); font-size: 16px; font-weight: 700; }
 .relic span { padding: 2px 10px; border-radius: 999px; background: var(--sun); color: #0a1222; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
