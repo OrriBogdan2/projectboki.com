@@ -115,7 +115,7 @@ const HUNTERS = [
   ["tarek", "Tenzo", "The Stone Seer", true],
   ["lisette", "Lace", "The Red Stitch", true],
   ["grimble", "Grimble", "The Scrap King", true],
-  ["claire", "Neve", "The Snowglider", true],
+  ["claire", "Neve", "The Snowglide", true],
   ["ryzz", "Sparkle", "The Storm Chaser", true],
   ["breaker", "Mossy", "The Barnacle Knight", true],
   ["sable", "Sable", "The Silver Thief", true],
