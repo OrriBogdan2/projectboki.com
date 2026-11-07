@@ -174,18 +174,24 @@ if (pick) {
   }
 
   // Big letters have a wider side bearing than small ones, so line the title up with the name's ink, not its box.
-  const ink = (el, ch) => { // px from the text origin to the first painted column of ch
+  const ink = (el, ch, mid) => { // px from the text origin to the first painted column of ch
     const cs = getComputedStyle(el), px = parseFloat(cs.fontSize), w = Math.ceil(px * 2), h = Math.ceil(px * 1.6);
     const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
     const c = cv.getContext("2d", { willReadFrequently: true });
     c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; c.textBaseline = "top"; c.fillText(ch, px / 2, px / 4);
-    const d = c.getImageData(0, 0, w, h).data;
-    for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) if (d[(y * w + x) * 4 + 3] > 96) return x - px / 2;
-    return 0;
+    const d = c.getImageData(0, 0, w, h).data, on = (x, y) => d[(y * w + x) * 4 + 3] > 96;
+    let top = -1, bot = -1; // the glyph's rows, then the left edge of its middle band: V or A read by their body, not their tips
+    for (let y = 0; y < h && top < 0; y++) for (let x = 0; x < w; x++) if (on(x, y)) { top = y; break; }
+    for (let y = h - 1; y >= 0 && bot < 0; y--) for (let x = 0; x < w; x++) if (on(x, y)) { bot = y; break; }
+    if (top < 0) return 0;
+    const y0 = mid ? Math.round(top + (bot - top) * 0.3) : top, y1 = mid ? Math.round(top + (bot - top) * 0.7) : bot;
+    let sum = 0, n = 0; // average left edge over the band, so round (C) and slanted (V) letters line up by eye
+    for (let y = y0; y <= y1; y++) for (let x = 0; x < w; x++) if (on(x, y)) { sum += x; n++; break; }
+    return n ? sum / n - px / 2 : 0;
   };
   function alignTitle() {
     const n = $("h-name"), t = $("h-title");
-    t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0]) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
+    t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0], true) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
   }
   alignTitle();
   document.fonts && document.fonts.ready.then(alignTitle);
