@@ -142,6 +142,7 @@ scene.environment=new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironme
 scene.add(new THREE.HemisphereLight(0xffffff,0x444455,0.6));
 const sun=new THREE.DirectionalLight(0xffffff,1.4);sun.position.set(2,4,3);scene.add(sun);
 const camera=new THREE.PerspectiveCamera(30,1,0.01,1000);
+const FACE=-1; // the game exports face -Z, so start in front of the model
 const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.autoRotate=!matchMedia("(prefers-reduced-motion: reduce)").matches;controls.autoRotateSpeed=1.4;
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 addEventListener("resize",resize);resize();
@@ -174,12 +175,17 @@ async function setModel(src){
     const buf=await getGlb(src); if(my!==token)return;
     const g=await new Promise((res,rej)=>loader.parse(buf,"",res,rej)); if(my!==token)return;
     if(model)scene.remove(model); model=g.scene; scene.add(model); setupAnims(g);
-    const box=new THREE.Box3().setFromObject(model), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+    // Fit to the posed model: skinned meshes need their bones updated first, or the box comes out at bind-pose scale.
+    if(mixer)mixer.update(0); model.updateMatrixWorld(true);
+    const box=new THREE.Box3();
+    model.traverse(o=>{if(!o.isMesh||!o.visible)return; if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld))}else{if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld))}});
+    if(box.isEmpty())box.setFromObject(model);
+    const size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
     const R=size.length()/2, r=Math.max(size.x,size.y,size.z);
     const vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
-    const d=Math.max(R/Math.sin(vf),R/Math.sin(hf))*1.08;
+    const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12; // fit height or width, whichever binds
     controls.target.set(c.x,c.y+size.y*0.1,c.z);
-    const dir=new THREE.Vector3(0.38,0.12,1).normalize();
+    const dir=new THREE.Vector3(0.38,0.12,FACE).normalize();
     camera.position.copy(controls.target).addScaledVector(dir,d); camera.near=r/100; camera.far=r*100; camera.updateProjectionMatrix();
     controls.minDistance=d*0.25; controls.maxDistance=d*3;
     load.textContent="";
@@ -196,7 +202,7 @@ function showRev(key){const r=REV[key], el=document.getElementById("rev");
 
 function chip(x,i){const b=document.createElement("button");b.className="chip";b.id="c-"+x.kind+x.id;
   b.innerHTML=`<b>${x.kind==="h"?`<span class="dot ${x.s==="new"?"new":""}"></span>`:""}${x.n}</b><span>${x.m} [${x.id}]</span>`;
-  b.onclick=()=>show(i,true);chips.push(b);return b}
+  b.onclick=()=>window.__show&&window.__show(i,true);chips.push(b);return b}
 let KEY=null;
 async function deriveKey(pw){const k=await (await fetch("d/key.json",{cache:"no-store"})).json();
   const b64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
@@ -222,6 +228,7 @@ function show(i,user){cur=(i+all.length)%all.length;const x=all[cur];
   chips.forEach((c,j)=>c.setAttribute("aria-pressed",j===cur));
   if(user){try{history.replaceState(null,"","#"+x.id)}catch(e){location.hash=x.id}
     document.querySelector(".stage").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest"})}}
+window.__show=show;
 document.getElementById("prev").onclick=()=>show(cur-1,true);
 document.getElementById("next").onclick=()=>show(cur+1,true);
 addEventListener("keydown",e=>{if(e.key==="ArrowRight")show(cur+1,true);if(e.key==="ArrowLeft")show(cur-1,true)});
