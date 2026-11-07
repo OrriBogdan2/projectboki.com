@@ -135,7 +135,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 
 /* ---------- hunters ---------- */
 .hunters { padding: calc(var(--sec) * .8) 0 calc(var(--sec) * .6); background: radial-gradient(ellipse 80% 60% at 50% 0%, #15213a 0%, var(--bg) 70%); }
-.stage { border: 1px solid rgba(255,255,255,.08); position: relative; border-radius: var(--r); overflow: hidden; background: var(--bg-2); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+.stage { margin-inline: auto; max-width: calc((100svh - 290px) * 1.792); border: 1px solid rgba(255,255,255,.08); position: relative; border-radius: var(--r); overflow: hidden; background: var(--bg-2); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
 .shot img { width: 100%; aspect-ratio: 2000 / 1116; object-fit: cover; transition: opacity .22s ease, transform .5s ease; }
 .shot img.out { opacity: 0; transform: scale(1.015); }
 .info { position: absolute; left: 0; bottom: 0; z-index: 1; width: min(560px, 100%); padding: 0 40px 36px; }
@@ -147,9 +147,14 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .relic { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 7px 14px 7px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); font-size: 16px; font-weight: 700; }
 .relic span { padding: 2px 10px; border-radius: 999px; background: var(--sun); color: #0a1222; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
 .relic em { font-style: normal; }
-.fig { position: absolute; right: 2%; bottom: 2%; z-index: 2; height: 38%; aspect-ratio: 480 / 600; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; transition: opacity .25s ease, transform .4s cubic-bezier(.2,.7,.2,1); }
+.fig { position: absolute; right: 2%; bottom: 2%; z-index: 2; height: 27%; aspect-ratio: 480 / 600; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; transition: opacity .25s ease, transform .4s cubic-bezier(.2,.7,.2,1); }
 .fig::before { content: ""; position: absolute; inset: 18% -6% -2%; z-index: -1; border-radius: 50%; background: radial-gradient(ellipse 50% 50% at 50% 60%, rgba(8,13,24,.75), rgba(8,13,24,0) 70%); }
 .fig.grab { cursor: grabbing; }
+@media (min-width: 1700px) {
+  #hunters .stage { overflow: visible; }
+  #hunters .shot, #hunters .stage::after { border-radius: inherit; overflow: hidden; }
+  #hunters .fig { right: auto; left: calc(100% + 12px); bottom: 0; height: 52%; }
+}
 .fig.swap { opacity: 0; transform: translateY(14px); }
 .fig-img { width: 100%; height: 100%; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); pointer-events: none; }
 .fig-hint { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.8); opacity: 0; transition: opacity .3s; pointer-events: none; }
@@ -172,7 +177,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 
 /* ---------- boki browser ---------- */
 .boki { padding: calc(var(--sec) * .5) 0 calc(var(--sec) * .8); }
-.bk { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 0; border-radius: var(--r); overflow: hidden; background: var(--bg-2); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+.bk { margin-inline: auto; max-width: calc((100svh - 230px) / .46); display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 0; border-radius: var(--r); overflow: hidden; background: var(--bg-2); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
 .bk-stage { --g: #a6ff3a; --b: #4a2f5c; --dir: 1; position: relative; aspect-ratio: 1 / .86; overflow: hidden; isolation: isolate; touch-action: pan-y; background: #0b1120; }
 .bk-glow { position: absolute; inset: 0; z-index: -1; transition: background .6s ease; background:
   radial-gradient(ellipse 42% 40% at 50% 54%, color-mix(in srgb, var(--g) 42%, transparent), transparent 72%),
@@ -202,6 +207,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-meta { display: flex; flex-wrap: wrap; gap: 8px; }
 .bk-meta span { padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid var(--line); font-size: 15px; font-weight: 700; }
 .bk-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; margin-top: 16px; padding: 4px 2px 8px; }
+@media (min-width: 1001px) { .bk-pick, .pick-label:has(+ .bk-pick) { --pw: min(100vw - 48px, 1560px); margin-inline: calc((100% - var(--pw)) / 2); } .bk-pick { grid-template-columns: repeat(21, minmax(0, 1fr)); gap: 8px; } .bk-pick button { border-radius: 12px; } }
 .bk-pick::-webkit-scrollbar { display: none; }
 .bk-pick button { all: unset; box-sizing: border-box; aspect-ratio: 1; cursor: pointer; position: relative; border-radius: 16px; scroll-snap-align: center; border: 1px solid rgba(255,255,255,.08); background: radial-gradient(ellipse 60% 55% at 50% 55%, color-mix(in srgb, var(--g) 22%, transparent), transparent 75%), var(--bg-2); opacity: .6; transition: opacity .2s, transform .2s, border-color .2s, box-shadow .2s; }
 .bk-pick button img { width: 100%; height: 100%; object-fit: contain; padding: 8%; }
@@ -296,6 +302,14 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .bk-traits div { grid-template-columns: 92px 1fr; }
   .bk-pick { display: flex; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
   .bk-pick button { flex: 0 0 76px; }
+  /* Phones: Boki art, then the picker, then the stats card, so the art and the picker share a screen */
+  #boki .wrap { display: flex; flex-direction: column; }
+  #boki .bk { display: contents; }
+  #boki .head { order: 0; }
+  #boki .bk-stage { order: 1; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); }
+  #boki .pick-label { order: 2; }
+  #boki .bk-pick { order: 3; }
+  #boki .bk-sheet { order: 4; margin-top: 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: var(--bg-2); }
   .foot { flex-direction: column; text-align: center; }
   .foot nav { justify-content: center; }
 }
