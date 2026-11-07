@@ -173,6 +173,7 @@ if (pick) {
   }
 
   $("h-prev").addEventListener("click", () => show(current - 1));
+  arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
   $("h-next").addEventListener("click", () => show(current + 1));
   swipe(document.querySelector(".stage .shot"), (d) => show(current + d));
   nudge(pick);
@@ -277,6 +278,7 @@ if (bkPick) {
   }
 
   $("bk-prev").addEventListener("click", () => show(at - 1, -1));
+  arrowKeys(document.getElementById("boki"), bkPick, (d) => show(at + d, d));
   $("bk-next").addEventListener("click", () => show(at + 1, 1));
   bkPick.addEventListener("keydown", (e) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
@@ -313,4 +315,23 @@ function nudge(strip) {
     }, 500);
   }, { threshold: 0.9 });
   io.observe(strip);
+}
+
+/* Left/right arrow keys switch Hunter or Boki while the mouse is over that section.
+   (The picker strips handle their own keys when focused, so skip those.) */
+function arrowKeys(section, strip, go) {
+  if (!section) return;
+  let over = false;
+  section.addEventListener("pointerenter", () => { over = true; });
+  section.addEventListener("pointerleave", () => { over = false; });
+  document.addEventListener("keydown", (e) => {
+    if (!over || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (strip && strip.contains(document.activeElement)) return;
+    const t = document.activeElement && document.activeElement.tagName;
+    if (t === "INPUT" || t === "TEXTAREA" || t === "SELECT") return;
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    go(d);
+  });
 }
