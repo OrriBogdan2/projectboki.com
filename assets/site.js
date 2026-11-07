@@ -108,18 +108,18 @@ function spinner(box, el) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model]
 const HUNTERS = [
-  ["vex", "Vex", "Hired Gun", true],
-  ["breaker", "Mossy", "Barnacle Knight", true],
-  ["ryzz", "Sparkle", "Storm Chaser", true],
+  ["vex", "Vex", "The Hired Gun", true],
+  ["breaker", "Mossy", "The Barnacle Knight", true],
+  ["ryzz", "Sparkle", "The Storm Chaser", true],
   ["kael", "Kael", "The Unbroken", true],
-  ["lisette", "Lace", "Red Stitch", true],
-  ["claire", "Neve", "Snowglide", true],
-  ["grimble", "Grimble", "Scrap King", true],
+  ["lisette", "Lace", "The Red Stitch", true],
+  ["claire", "Neve", "The Snowglide", true],
+  ["grimble", "Grimble", "The Scrap King", true],
   ["pip", "Meeko", "The Dawnfox", true],
-  ["cinder", "Cinder", "Flame Queen", true],
-  ["tarek", "Tenzo", "Stone Seer", true],
-  ["motley", "Motley", "Void Jester", true],
-  ["sable", "Sable", "Silver Thief", true],
+  ["cinder", "Cinder", "The Flame Queen", true],
+  ["tarek", "Tenzo", "The Stone Seer", true],
+  ["motley", "Motley", "The Void Jester", true],
+  ["sable", "Sable", "The Silver Thief", true],
 ];
 
 const pick = document.getElementById("h-pick");
