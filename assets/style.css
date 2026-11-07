@@ -257,7 +257,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 @keyframes beam { 50% { opacity: .55; transform: translateX(-50%) scaleX(1.25); } }
 .join-bg .embers { position: absolute; inset: 0; background-image: radial-gradient(2px 2px at 12% 80%, rgba(255,190,90,.9), transparent), radial-gradient(1.5px 1.5px at 28% 60%, rgba(255,255,255,.7), transparent), radial-gradient(2px 2px at 44% 90%, rgba(226,92,255,.9), transparent), radial-gradient(1.5px 1.5px at 63% 70%, rgba(255,190,90,.8), transparent), radial-gradient(2px 2px at 78% 85%, rgba(74,230,200,.9), transparent), radial-gradient(1.5px 1.5px at 90% 65%, rgba(255,255,255,.7), transparent); background-size: 100% 100%; animation: embers 14s linear infinite; opacity: .9; }
 @keyframes embers { from { transform: translateY(10%); } to { transform: translateY(-60%); } }
-.signup { width: min(520px, 100%); margin: 34px auto 0; text-align: center; }
+.signup { width: min(520px, 100%); margin: 34px auto 0; text-align: center; box-sizing: border-box; }
+@media (max-width: 720px) { .signup { width: min(340px, 100%); } .su-row .btn { padding: 0 16px; } }
 .signup label { display: block; margin-bottom: 12px; font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.7); }
 .su-row { display: flex; gap: 8px; padding: 6px; border-radius: 16px; border: 1px solid rgba(255,255,255,.2); background: rgba(8,13,24,.5); backdrop-filter: blur(14px); }
 .su-row input { flex: 1; min-width: 0; border: 0; background: none; color: #fff; font: inherit; font-size: 17px; padding: 0 14px; outline: none; }
