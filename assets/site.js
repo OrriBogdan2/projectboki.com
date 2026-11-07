@@ -108,7 +108,7 @@ function spinner(box, el) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const HUNTERS = [
-  ["vex", "Vex", "The Hired Gun", true, "Rifleman"],
+  ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["cinder", "Cinder", "The Flame Queen", true, "Burner"],
   ["pip", "Meeko", "The Dawnfox", true, "Medic"],
