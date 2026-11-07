@@ -136,6 +136,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 /* ---------- hunters ---------- */
 .hunters { padding: calc(var(--sec) * .8) 0 calc(var(--sec) * .6); background: radial-gradient(ellipse 80% 60% at 50% 0%, #15213a 0%, var(--bg) 70%); }
 .stage { margin-inline: auto; max-width: calc((100svh - 290px) * 1.792); border: 1px solid rgba(255,255,255,.08); position: relative; border-radius: var(--r); overflow: hidden; background: var(--bg-2); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+.shot { touch-action: pan-y; } /* let horizontal swipes reach the hero switcher on touch screens */
 .shot img { width: 100%; aspect-ratio: 2000 / 1116; object-fit: cover; transition: opacity .22s ease, transform .5s ease; }
 .shot img.out { opacity: 0; transform: scale(1.015); }
 .info { position: absolute; left: 0; bottom: 0; z-index: 1; width: min(560px, 100%); padding: 0 40px 36px; }
