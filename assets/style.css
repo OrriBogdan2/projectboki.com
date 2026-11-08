@@ -378,6 +378,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .pk-body h2:first-child { margin-top: 0; }
 .pk-body p { color: var(--soft); max-width: 40em; }
 .pk-key { display: block; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); }
+.pk-key + .pk-key { margin-top: 14px; }
 .pk-key img { display: block; width: 100%; height: auto; }
 .pk-body p + p { margin-top: 12px; }
 .pk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
