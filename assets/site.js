@@ -31,15 +31,22 @@ if ("IntersectionObserver" in window && !calm) {
 }
 
 const media = document.getElementById("hero-media");
+// The portrait wall only drifts while it can be seen.
+if (media && "IntersectionObserver" in window) {
+  new IntersectionObserver(([e]) => media.classList.toggle("paused", !e.isIntersecting)).observe(document.querySelector(".hero-wrap") || media);
+}
 
 // Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
 const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
 if (heroIn && !calm) {
   let ticking = false;
   const ease = (v) => 1 - Math.pow(1 - v, 2);
+  let done = false;
   const draw = () => {
     ticking = false;
     const h = heroEl.offsetHeight, t = Math.min(1, Math.max(0, window.scrollY / h)), e = ease(t);
+    if (t === 1 && done) return; // covered: nothing changes
+    done = t === 1;
     heroIn.style.transform = `translate3d(0, ${(-h * 0.14 * e).toFixed(1)}px, 0) scale(${(1 - 0.1 * e).toFixed(4)})`;
     heroIn.style.opacity = String(Math.max(0, 1 - t * 1.6).toFixed(3));
     if (media) media.style.transform = `scale(${(1 + 0.12 * e).toFixed(4)})`;
@@ -464,13 +471,17 @@ if (POSTHOG_KEY) {
   if (!cards.length || calm) return;
   cards.forEach((c) => { const s = document.createElement("i"); s.className = "step-shade"; c.appendChild(s); });
   const clamp = (v) => Math.min(1, Math.max(0, v));
-  let ticking = false;
+  let ticking = false, sticks = [];
+  const measure = () => { sticks = cards.map((c) => parseFloat(getComputedStyle(c.parentElement).top) || 0); };
+  measure();
   const frame = () => {
     ticking = false;
     const vh = innerHeight;
-    const prog = cards.map((c) => {
+    const first = cards[0].parentElement.getBoundingClientRect(), lastR = cards[cards.length - 1].parentElement.getBoundingClientRect();
+    if (first.top > vh * 1.2 || lastR.bottom < -vh) return; // the whole stack is off screen
+    const prog = cards.map((c, i) => {
       const top = c.parentElement.getBoundingClientRect().top;
-      const stick = parseFloat(getComputedStyle(c.parentElement).top) || 0;
+      const stick = sticks[i];
       return clamp((vh - top) / Math.max(1, vh - stick)); // 0 = just below the screen, 1 = pinned
     });
     cards.forEach((c, i) => {
@@ -483,7 +494,7 @@ if (POSTHOG_KEY) {
   };
   const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
   addEventListener("scroll", req, { passive: true });
-  addEventListener("resize", req);
+  addEventListener("resize", () => { measure(); req(); });
   frame();
 })();
 
@@ -500,13 +511,27 @@ if (POSTHOG_KEY) {
     l.el.style.setProperty("--f", (k * Math.pow(l.t, 0.7)).toFixed(3)); // red rises inside the letters that fall furthest
   });
   if (calm) { paint(1); return; }
-  let ticking = false;
-  const frame = () => {
-    ticking = false;
+  // The scroll sets where the letters should be; they ease there (falling with some weight, mending quicker),
+  // so a fast flick doesn't snap them apart in one frame.
+  let cur = -1, raf = 0, last = 0;
+  const target = () => {
     const r = h.getBoundingClientRect(), vh = innerHeight;
-    paint(clamp((vh * 0.55 - (r.top + r.height / 2)) / (vh * 0.3))); // whole until it passes mid-screen, apart near the top; scrolling back down past the middle mends it
+    if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
+    return clamp((vh * 0.55 - (r.top + r.height / 2)) / (vh * 0.3)); // whole until it passes mid-screen, apart near the top
   };
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
-  addEventListener("resize", frame);
-  frame();
+  const frame = (now) => {
+    raf = 0;
+    const want = target();
+    if (want === null) { last = 0; return; }
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
+    if (cur < 0) cur = want;
+    cur += (want - cur) * (1 - Math.exp(-dt / (want > cur ? 0.2 : 0.11)));
+    if (Math.abs(want - cur) < 0.002) cur = want;
+    paint(cur);
+    if (cur !== want) raf = requestAnimationFrame(frame); else last = 0;
+  };
+  const req = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener("scroll", req, { passive: true });
+  addEventListener("resize", req);
+  req();
 })();
