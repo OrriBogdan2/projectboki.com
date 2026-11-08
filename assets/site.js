@@ -221,10 +221,42 @@ if (pick) {
     pick.appendChild(b);
   });
 
+  // Desktop: the stage holds under the nav and scrolling steps through every Hunter (scroll fast, go fast), then lets go.
+  // Picking one by click, arrow or key moves the page to that Hunter's spot, so scrolling carries on from there.
+  const track = $("h-track"), pinEl = track && track.querySelector(".h-pin"), sec = document.getElementById("hunters");
+  const wide = matchMedia("(min-width: 1024px) and (min-height: 640px) and (hover: hover) and (pointer: fine)");
+  let pin = null, fromScroll = false;
+  const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
+  const layoutPin = () => {
+    if (!track) return;
+    const on = wide.matches && !calm;
+    sec.classList.toggle("pinned", on);
+    if (!on) { track.style.height = ""; pinEl.style.top = ""; pin = null; return; }
+    track.style.height = "";
+    const vh = innerHeight, h = pinEl.offsetHeight, top = Math.max(80, Math.round((vh - h) / 2 + 34));
+    const step = Math.max(220, Math.round(vh * 0.3));
+    pinEl.style.top = top + "px";
+    track.style.height = Math.round(h + step * (HUNTERS.length - 0.3)) + "px"; // the last Hunter gets its beat too, then it lets go
+    pin = { start: docTop(track) - top, step };
+  };
+  const pinScroll = () => {
+    if (!pin) return;
+    const i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor((scrollY - pin.start) / pin.step)));
+    if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
+  };
+  let pinTick = false;
+  addEventListener("scroll", () => { if (pin && !pinTick) { pinTick = true; requestAnimationFrame(() => { pinTick = false; pinScroll(); }); } }, { passive: true });
+  addEventListener("resize", layoutPin);
+  addEventListener("load", layoutPin);
+  wide.addEventListener && wide.addEventListener("change", layoutPin);
+  layoutPin();
+
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (i === current) return;
     current = i;
+    if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
+      scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); // the page follows the pick
     $("h-n").textContent = String(i + 1).padStart(2, "0");
     const [id, name, title, model, role] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
@@ -590,7 +622,9 @@ if (POSTHOG_KEY) {
 (function () {
   if (calm) return;
   const phone = matchMedia("(max-width: 720px)");
-  const els = () => [...document.querySelectorAll(phone.matches ? "#hunters .head, #boki .head, #faq .head" : "#hunters .head, #hunters .stage, #boki .head, #boki .bk, #faq .head")];
+  const els = () => [...document.querySelectorAll(phone.matches ? "#hunters .head, #boki .head, #faq .head"
+    : document.querySelector("#hunters.pinned") ? "#hunters .head, #boki .head, #boki .bk, #faq .head"
+    : "#hunters .head, #hunters .stage, #boki .head, #boki .bk, #faq .head")];
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; }; // layout position, ignoring scroll-linked transforms
   let idle = 0, touching = false, settling = false;
   const settle = () => {

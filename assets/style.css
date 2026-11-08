@@ -535,3 +535,13 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 #hunters .stage, #boki .bk { scroll-margin-top: 88px; }
 #faq .head { scroll-margin-top: 110px; }
 @media (max-width: 720px) { #hunters .head, #boki .head { scroll-margin-top: 80px; } }
+
+/* Desktop: the Hunters stage holds while scrolling steps through all twelve (site.js sizes the track and the hold) */
+#hunters.pinned .h-pin { position: sticky; }
+.pick-label .scrollcue { display: none; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--soft); }
+.pick-label .scrollcue svg { width: 16px; height: 16px; transform: rotate(90deg); animation: nudge-y 1.4s ease-in-out infinite; }
+#hunters.pinned .pick-label .scrollcue { display: inline-flex; }
+#hunters.pinned .pick-label .swipe { display: none; }
+@keyframes nudge-y { 0%, 100% { translate: 0 0; } 50% { translate: 0 3px; } }
+@media (prefers-reduced-motion: reduce) { .pick-label .scrollcue svg { animation: none; } }
+.js #hunters.pinned .pick-label[data-r], .js #hunters.pinned .pick[data-r] { opacity: 1; transform: none; } /* held near the screen's bottom edge: always shown */
