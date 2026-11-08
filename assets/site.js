@@ -57,57 +57,111 @@ if (heroIn && !calm) {
   draw();
 }
 
-/* ---------- Hunter figure: 24-frame turntable, drag to turn ---------- */
+/* ---------- Hunter figure: faces you, emotes when picked, idles, and now and then emotes again; drag to turn ---------- */
+// Pose sheets are 10 columns, 80 ms a frame. POSE[id] = [[frames of each emote], idle frames]:
+// <id>-pose.webp holds the first emote then the idle loop; <id>-e2.webp, -e3... hold the others.
+// The spin sheet (6x4) is the 24-frame turntable for dragging; its first frame is the pose's angle.
 function spinner(box, el) {
-  const FRAMES = 24, COLS = 6, ROWS = 4;
-  let f = 0, id = "", timer = null, drag = null, idle = null, ready = false, seen = false;
-  const pos = () => {
-    const c = f % COLS, r = Math.floor(f / COLS);
-    el.style.backgroundPosition = `${(c / (COLS - 1)) * 100}% ${(r / (ROWS - 1)) * 100}%`;
+  const SPIN = 24, SC = 6, SR = 4, PC = 10;
+  let id = "", mode = "", timer = null, drag = null, back = null, seen = false, sn = 0;
+  let em = [], ni = 0, urls = [], ready = [], spin = null;
+  let seg = 0, f = 0, wait = 0, played = 0;   // seg: the emote playing, or -1 for idle; f: frame within it
+  const url = (k) => `assets/img/hunters/3d/${id}-${k ? `e${k + 1}` : "pose"}.webp?v=${MODEL_V}`;
+  const rowsOf = (k) => Math.ceil((k ? em[k] : em[0] + ni) / PC);
+  const draw = () => {
+    const k = seg < 0 ? 0 : seg, n = seg < 0 ? em[0] + f : f, rows = rowsOf(k), key = "p" + k;
+    if (mode !== key) { mode = key; el.style.backgroundImage = `url(${urls[k]})`; el.style.backgroundSize = `${PC * 100}% ${rows * 100}%`; }
+    const c = n % PC, r = Math.floor(n / PC);
+    el.style.backgroundPosition = `${(c / (PC - 1)) * 100}% ${rows > 1 ? (r / (rows - 1)) * 100 : 0}%`;
   };
-  const tick = () => { f = (f + 1) % FRAMES; pos(); };
-  const play = () => { if (!timer && ready && seen && !calm) timer = setInterval(tick, 140); };
+  const showSpin = (n) => {
+    sn = n;
+    if (mode !== "spin") { mode = "spin"; el.style.backgroundImage = `url(${spin})`; el.style.backgroundSize = `${SC * 100}% ${SR * 100}%`; }
+    el.style.backgroundPosition = `${((n % SC) / (SC - 1)) * 100}% ${(Math.floor(n / SC) / (SR - 1)) * 100}%`;
+  };
+  const idleFor = () => 70 + Math.floor(Math.random() * 40);   // frames of idle between emotes: about 5.5 to 9 s
+  const tick = () => {
+    if (seg >= 0) {
+      if (++f < em[seg]) return draw();
+      played++; seg = -1; f = 0; wait = idleFor(); fetchNext();
+    } else {
+      f = (f + 1) % ni;
+      if (--wait <= 0 && f === 0) {           // start the next emote at the top of an idle loop
+        const k = played % em.length;
+        if (ready[k]) { seg = k; f = 0; }
+      }
+    }
+    draw();
+  };
   const stop = () => { clearInterval(timer); timer = null; };
-  const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play() : stop(); });
-  io.observe(box);
+  const play = () => {
+    if (timer || !ready[0] || !seen || drag || back) return;
+    if (calm) { seg = -1; f = 0; draw(); return; }
+    timer = setInterval(tick, 80);
+  };
+  // the other emotes load one at a time, only once the first has played and only while this Hunter is up
+  const fetchNext = () => {
+    const k = ready.indexOf(false); if (k < 0) return;
+    const want = id, im = new Image();
+    im.onload = () => { if (id === want) ready[k] = true; };
+    im.src = urls[k];
+  };
+  new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play() : stop(); }).observe(box);
+  const fetchSpin = () => {
+    if (spin || !id) return;
+    const want = id, u = `assets/img/hunters/3d/${id}-spin.webp?v=${MODEL_V}`, im = new Image();
+    im.onload = () => { if (id === want) spin = u; };
+    im.src = u;
+  };
+  box.addEventListener("pointerenter", fetchSpin);
   box.addEventListener("pointerdown", (e) => {
-    if (!ready) return;
-    drag = { x: e.clientX, f }; stop(); clearTimeout(idle);
+    fetchSpin();
+    if (!ready[0]) return;
+    stop(); clearInterval(back); clearTimeout(back); back = null;
+    const n = mode === "spin" ? sn : 0;
+    drag = { x: e.clientX, n, last: n };
     box.setPointerCapture(e.pointerId); box.classList.add("grab");
   });
   box.addEventListener("pointermove", (e) => {
-    if (!drag) return;
+    if (!drag || !spin) return;
     const step = Math.round((e.clientX - drag.x) / 14);
-    f = (((drag.f - step) % FRAMES) + FRAMES) % FRAMES; pos();
+    drag.last = (((drag.n - step) % SPIN) + SPIN) % SPIN;
+    showSpin(drag.last);
   });
   const end = () => {
     if (!drag) return;
-    drag = null; box.classList.remove("grab");
-    idle = setTimeout(play, 2500);
+    let n = drag.last; drag = null; box.classList.remove("grab");
+    if (mode !== "spin") { play(); return; }
+    // after a moment, turn back to face you the short way round, then pick the idle back up
+    back = setTimeout(() => {
+      back = setInterval(() => {
+        if (n === 0) { clearInterval(back); back = null; seg = -1; f = 0; wait = idleFor(); draw(); play(); return; }
+        n = n <= SPIN / 2 ? n - 1 : (n + 1) % SPIN; showSpin(n);
+      }, calm ? 0 : 45);
+    }, 1400);
   };
   box.addEventListener("pointerup", end);
   box.addEventListener("pointercancel", end);
   return {
     load(next, name) {
       if (next === id) return;
-      id = next; ready = false; stop(); f = 0;
+      id = next; stop(); clearInterval(back); clearTimeout(back); back = null; drag = null;
+      spin = null; mode = ""; seg = 0; f = 0; played = 0;
       box.hidden = !next;
       if (!next) return;
-      el.setAttribute("aria-label", `${name}'s in-game model on a stand`);
+      [em, ni] = POSE[next] || [[1], 1];
+      urls = em.map((_, k) => url(k)); ready = em.map(() => false);
+      el.setAttribute("aria-label", `${name}'s in-game model`);
       box.classList.add("swap");
-      const still = `assets/img/hunters/3d/${next}.webp?v=${MODEL_V}`, sheet = `assets/img/hunters/3d/${next}-spin.webp?v=${MODEL_V}`;
+      const still = `assets/img/hunters/3d/${next}.webp?v=${MODEL_V}`;
       const im = new Image();
       im.onload = () => {
         if (id !== next) return;
         el.style.backgroundImage = `url(${still})`; el.style.backgroundSize = "100% 100%"; el.style.backgroundPosition = "0 0";
         box.classList.remove("swap");
-        const sp = new Image();
-        sp.onload = () => {
-          if (id !== next) return;
-          el.style.backgroundImage = `url(${sheet})`; el.style.backgroundSize = `${COLS * 100}% ${ROWS * 100}%`;
-          pos(); ready = true; play();
-        };
-        sp.src = sheet;
+        const ps = new Image();
+        ps.onload = () => { if (id !== next) return; ready[0] = true; draw(); play(); };
+        ps.src = urls[0];
       };
       setTimeout(() => { im.src = still; }, 180);
     },
@@ -116,7 +170,8 @@ function spinner(box, el) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const MODEL_V = "2026-11-08"; // bump when the turntables are re-rendered so browsers fetch the new ones
+const MODEL_V = "2026-11-08c";
+const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
