@@ -455,3 +455,15 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .lb-x:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 html.lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
+#hunters .head .sub { margin-top: 24px; }
+/* "crumbling." in blood red, with a few slow drips off the letters */
+.head h2.h-bleed { background: none; color: #fff; }
+.head h2.h-bleed .h-w { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.head h2 .bleed { position: relative; display: inline-block; isolation: isolate; }
+.head h2 .bleed-t { background: linear-gradient(180deg, #ff6b6b 0%, #e2203a 45%, #8f0f22 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 18px rgba(226,32,58,.35)); }
+.bleed .drip { position: absolute; left: var(--x); top: 80%; width: .11em; margin-left: -.055em; height: var(--h); border-radius: 0 0 .06em .06em; background: linear-gradient(180deg, #a8142c, #ff3550); transform-origin: top; transform: scaleY(0); animation: drip-grow 5.5s var(--d) cubic-bezier(.45,0,.2,1) infinite; }
+.bleed .drip::after { content: ""; position: absolute; left: 50%; bottom: -.07em; width: .16em; height: .18em; transform: translateX(-50%); border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; background: #ff3550; box-shadow: 0 0 .2em rgba(255,53,80,.5); }
+.bleed .drip::before { content: ""; position: absolute; left: 50%; top: 100%; width: .12em; height: .14em; margin-left: -.06em; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; background: #ff3550; opacity: 0; animation: drip-fall 5.5s var(--d) ease-in infinite; }
+@keyframes drip-grow { 0%, 8% { transform: scaleY(0); } 55%, 82% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+@keyframes drip-fall { 0%, 58% { opacity: 0; transform: translateY(0); } 62% { opacity: 1; } 80% { opacity: 0; transform: translateY(.5em); } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bleed .drip { animation: none; transform: scaleY(1); } .bleed .drip::before { display: none; } }
