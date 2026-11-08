@@ -113,7 +113,7 @@ const MODEL_V = "2026-11-08"; // bump when the turntables are re-rendered so bro
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
-  ["cinder", "Cinder", "The Ashen Kiss", true, "Pyro"],
+  ["cinder", "Cinder", "The Ashen Kiss", true, "Engage"],
   ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
