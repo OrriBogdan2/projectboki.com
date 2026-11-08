@@ -283,7 +283,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 @keyframes grid-drift { to { background-position: 0 56px, 56px 0; } }
 @media (prefers-reduced-motion: reduce) { .join-bg::before { animation: none; } }
 .join-q { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 30px); color: var(--ink-2); }
-.join h2 { margin: 6px 0 34px; font-size: clamp(52px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #fff 35%, #cfd8ea 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
+.join h2 { margin: 6px 0 clamp(40px, 5vw, 64px); font-size: clamp(52px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #fff 35%, #cfd8ea 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
 .join .cta { width: min(460px, 100%); margin-inline: auto; display: grid; grid-template-columns: 1fr; gap: 10px; }
 .join .cta .btn { justify-content: center; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
