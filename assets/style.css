@@ -238,10 +238,13 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .how-stack { gap: 14svh; }
   .step { top: calc(76px + var(--i) * 10px); }
   /* Phones: art on top in a wider frame so the whole squad stays in view, text below */
-  .step-card { height: auto; border-radius: 22px; }
-  .step-media { position: relative; aspect-ratio: 4 / 3; }
-  .step-media::after { background: linear-gradient(0deg, var(--bg-2) 0%, transparent 35%); }
-  .step-text { position: relative; left: auto; right: auto; bottom: auto; padding: 4px 20px 24px; margin-top: -28px; }
+  /* Phones: nearly edge to edge, tall square frame showing the full height of the art, text underneath */
+  .how { padding-inline: 8px; }
+  .step-card { height: auto; border-radius: 20px; }
+  .step-media { position: relative; aspect-ratio: 1; }
+  .step-media img { object-position: var(--mp, 50% 50%) !important; }
+  .step-media::after { background: none; }
+  .step-text { position: relative; left: auto; right: auto; bottom: auto; padding: 16px 18px 22px; }
   .step h3 { font-size: clamp(44px, 13vw, 60px); }
 }
 @media (prefers-reduced-motion: reduce) { .step-card { transform: none !important; } .step-shade { display: none; } }
@@ -284,7 +287,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 @media (prefers-reduced-motion: reduce) { .join-bg::before { animation: none; } }
 .join-q { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 30px); color: var(--ink-2); }
 .join h2 { margin: 6px 0 34px; font-size: clamp(52px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #fff 35%, #cfd8ea 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
-.join .cta { width: min(460px, 100%); margin-inline: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.join .cta { width: min(460px, 100%); margin-inline: auto; display: grid; grid-template-columns: 1fr; gap: 10px; }
 .join .cta .btn { justify-content: center; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .su-or { display: flex; align-items: center; gap: 14px; margin: 22px 0 14px; font-size: 14px; font-weight: 700; color: var(--ink-3); }
