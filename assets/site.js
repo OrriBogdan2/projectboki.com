@@ -482,3 +482,26 @@ if (POSTHOG_KEY) {
   addEventListener("resize", req);
   frame();
 })();
+
+/* ---------- "fallen apart.": scrolling down pulls the letters loose, scrolling up puts them back ---------- */
+(function () {
+  const h = document.querySelector(".h-crumble");
+  if (!h) return;
+  const ls = [...h.querySelectorAll(".crumble i[data-t]")].map((el) => ({ el, t: +el.dataset.t, x: +el.dataset.x, y: +el.dataset.y, r: +el.dataset.r }));
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const ease = (v) => v * v * (3 - 2 * v);
+  const paint = (p) => ls.forEach((l) => {
+    const k = ease(clamp((p - (1 - l.t) * 0.45) / 0.55)); // the end of the word goes first
+    l.el.style.transform = `translate(${(l.x * k).toFixed(3)}em, ${(l.y * k).toFixed(3)}em) rotate(${(l.r * k).toFixed(2)}deg)`;
+  });
+  if (calm) { paint(1); return; }
+  let ticking = false;
+  const frame = () => {
+    ticking = false;
+    const r = h.getBoundingClientRect(), vh = innerHeight;
+    paint(clamp((vh * 0.8 - (r.top + r.height / 2)) / (vh * 0.5))); // whole while low on screen, fully apart near the top
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
+  addEventListener("resize", frame);
+  frame();
+})();

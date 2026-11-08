@@ -466,8 +466,6 @@ html.lb-open { overflow: hidden; }
 .head h2.h-crumble .h-w, .crumble i { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .head h2 .crumble { white-space: nowrap; }
 /* "crumbling." comes apart: the last letters loosen and slip as the heading comes into view */
-.crumble i { display: inline-block; font-style: normal; transition: transform 1.8s cubic-bezier(.45,0,.2,1) var(--dl, .5s); }
+.crumble i { display: inline-block; font-style: normal; will-change: transform; }
 .crumble i.sp { width: .22em; }
-.head.in .crumble i { transform: var(--tf); }
 #hunters .head .sub { margin-top: 28px; }
-@media (prefers-reduced-motion: reduce) { .crumble i { transition: none; } }
