@@ -318,6 +318,9 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .consent-b { display: flex; gap: 6px; flex: none; }
 .consent-b .btn { padding: 9px 16px; font-size: 14px; border-radius: 999px; }
 @media (max-width: 600px) { .consent { bottom: 12px; width: calc(100% - 24px); max-width: none; flex-direction: column; align-items: stretch; gap: 10px; padding: 14px; border-radius: 20px; } .consent p { white-space: normal; text-align: center; } .consent-b .btn { flex: 1; } }
+/* Last screen: the join section and the footer fill the viewport together, so the page ends on a whole composition */
+.join { min-height: calc(100svh - var(--fh, 290px)); padding: calc(72px + clamp(28px, 4vh, 56px)) 0 clamp(36px, 6vh, 72px); }
+.foot { padding-bottom: max(36px, var(--ch, 0px)); transition: padding-bottom .3s ease; }
 .foot-c { width: min(var(--max), 100%); margin: 28px auto 0; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px; color: rgba(255,255,255,.45); }
 
 /* ---------- tablet ---------- */
@@ -387,9 +390,13 @@ h1, h2, h3, .band p { text-wrap: balance; }
   #boki .pick-label { order: 2; }
   #boki .bk-pick { order: 3; }
   #boki .bk-sheet { order: 4; margin-top: 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: var(--bg-2); }
-  .foot-in { flex-direction: column; text-align: center; }
-  .foot nav { justify-content: center; }
-  .foot-c { text-align: center; }
+  .foot-in { flex-direction: column; text-align: center; gap: 14px; }
+  .foot { padding-top: 36px; }
+  .foot-wm img { width: 128px; }
+  .foot nav { justify-content: center; font-size: 15px; gap: 0; }
+  .foot nav a { padding: 0 10px; }
+  .foot-c { text-align: center; margin-top: 14px; padding-top: 16px; }
+  .join { padding-top: calc(64px + 24px); }
 }
 
 /* ---------- press kit ---------- */
