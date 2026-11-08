@@ -453,3 +453,32 @@ if (POSTHOG_KEY) {
     open(src, img && img.alt);
   });
 })();
+
+/* ---------- How it works: cards grow in and stack as you scroll ---------- */
+(function () {
+  const cards = [...document.querySelectorAll(".how .step-card")];
+  if (!cards.length || calm) return;
+  cards.forEach((c) => { const s = document.createElement("i"); s.className = "step-shade"; c.appendChild(s); });
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  let ticking = false;
+  const frame = () => {
+    ticking = false;
+    const vh = innerHeight;
+    const prog = cards.map((c) => {
+      const top = c.parentElement.getBoundingClientRect().top;
+      const stick = parseFloat(getComputedStyle(c.parentElement).top) || 0;
+      return clamp((vh - top) / Math.max(1, vh - stick)); // 0 = just below the screen, 1 = pinned
+    });
+    cards.forEach((c, i) => {
+      const grow = 0.86 + 0.14 * prog[i];                 // arrives small, settles full size
+      const under = i + 1 < cards.length ? prog[i + 1] : 0; // how far the next card has covered it
+      const sink = 1 - 0.07 * under;
+      c.style.transform = `scale(${(grow * sink).toFixed(4)})`;
+      c.querySelector(".step-shade").style.opacity = (0.55 * under).toFixed(3);
+    });
+  };
+  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+  addEventListener("scroll", req, { passive: true });
+  addEventListener("resize", req);
+  frame();
+})();
