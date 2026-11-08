@@ -529,17 +529,44 @@ if (POSTHOG_KEY) {
     else if (h.includes("itch.io")) posthog.capture("click_play", { where });
     else if (h.endsWith("#join")) posthog.capture("click_beta", { where });
   });
-  const form = document.getElementById("signup");
-  if (form) {
-    form.hidden = false;
+  // Every email form (hero, nav pop-out, end of page) signs up the same way; once you're on the list, they all say so.
+  const forms = [...document.querySelectorAll("form.signup")];
+  let signed = false; try { signed = localStorage.getItem("boki-signed") === "1"; } catch (e) {}
+  const done = () => forms.forEach((f) => { f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true; f.querySelector(".su-done").hidden = false; });
+  forms.forEach((form) => {
+    if (form.id !== "nav-su") form.hidden = false;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = form.email.value.trim(); if (!email) return;
       posthog.identify(email, { email });
-      posthog.capture("email_signup", { email });
-      form.querySelector(".su-row").hidden = true; form.querySelector("label").hidden = true;
-      form.querySelector(".su-done").hidden = false;
+      posthog.capture("email_signup", { email, where: form.id });
+      try { localStorage.setItem("boki-signed", "1"); } catch (e) {}
+      done();
     });
+  });
+  if (signed) done();
+  // Coming from another page's "Join the beta": land on the hero and put the cursor in the email field.
+  if (location.hash === "#beta") { history.replaceState(null, "", location.pathname + location.search); const i = document.getElementById("hero-email"); if (i && !i.closest(".su-row").hidden && matchMedia("(pointer: fine)").matches) setTimeout(() => i.focus({ preventScroll: true }), 400); }
+  document.querySelectorAll(".su-fallback").forEach((a) => a.remove());
+  // The nav's "Join the beta" opens a small email field under it instead of jumping to the bottom of the page.
+  const nj = document.getElementById("nav-join"), ns = document.getElementById("nav-su");
+  if (nj && ns) {
+    const set = (on) => {
+      ns.hidden = !on; nj.setAttribute("aria-expanded", on);
+      if (on) requestAnimationFrame(() => { ns.classList.add("show"); const i = ns.querySelector("input"); if (i && !ns.querySelector(".su-row").hidden) i.focus({ preventScroll: true }); });
+      else ns.classList.remove("show");
+    };
+    nj.addEventListener("click", (e) => {
+      e.preventDefault();
+      const hero = document.getElementById("hero-su");
+      if (hero && !hero.hidden && hero.getBoundingClientRect().bottom > 0 && hero.getBoundingClientRect().top < innerHeight && scrollY < innerHeight * 0.5) { hero.querySelector(".su-row").hidden ? 0 : hero.querySelector("input").focus(); return; }
+      set(ns.hidden);
+      posthog.capture("click_beta", { where: "nav" });
+    });
+    document.addEventListener("pointerdown", (e) => { if (!ns.hidden && !ns.contains(e.target) && e.target !== nj) set(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !ns.hidden) { set(false); nj.focus(); } });
+    ns.addEventListener("focusout", (e) => { if (e.relatedTarget && !ns.contains(e.relatedTarget) && e.relatedTarget !== nj) set(false); });
+    addEventListener("scroll", () => { if (!ns.hidden && document.activeElement !== ns.querySelector("input")) set(false); }, { passive: true });
   }
 }
 

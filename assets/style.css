@@ -415,7 +415,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .pk-key img { display: block; width: 100%; height: auto; }
 .pk-body p + p { margin-top: 12px; }
 .pk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.pk-grid a { border-radius: 14px; overflow: hidden; background: var(--bg-2); }
+.pk-grid a { position: relative; border-radius: 14px; overflow: hidden; background: var(--bg-2); }
 .pk-grid img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .4s; }
 .pk-grid a:hover img { transform: scale(1.04); }
 .pk-grid .tile { display: grid; place-items: center; aspect-ratio: 16 / 9; border: 1px solid var(--line); }
@@ -557,3 +557,33 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 @keyframes nudge-y { 0%, 100% { translate: 0 0; } 50% { translate: 0 3px; } }
 @media (prefers-reduced-motion: reduce) { .pick-label .scrollcue svg { animation: none; } }
 .js #hunters.pinned .pick-label[data-r], .js #hunters.pinned .pick[data-r] { opacity: 1; transform: none; } /* held near the screen's bottom edge: always shown */
+
+/* ---------- Email signup at the top ---------- */
+.hero-cta { align-items: stretch; flex-wrap: nowrap; }
+.hero-su { width: min(440px, 100%); margin: 0; }
+.hero-su .su-row { border-color: rgba(255,255,255,.28); background: rgba(8,13,24,.55); }
+.hero-su .su-row .btn { white-space: nowrap; }
+.hero-su .su-done { margin: 0; padding: 14px 0; font-size: 18px; }
+.hero-cta .js-discord { flex: none; }
+.nav-cta { position: relative; }
+.nav-su { position: absolute; top: calc(100% + 12px); right: 0; width: 380px; margin: 0; padding: 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.12); background: rgba(10,15,28,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 24px 60px -20px rgba(0,0,0,.9); text-align: left; opacity: 0; transform: translateY(-6px); transition: opacity .2s ease, transform .25s cubic-bezier(.2,.8,.2,1); }
+.nav-su.show { opacity: 1; transform: none; }
+.nav-su-t { margin: 0 0 10px 4px; font-size: 15px; font-weight: 700; color: var(--soft); }
+.nav-su .su-row input { font-size: 16px; }
+.nav-su .su-done { margin: 2px 4px; }
+@media (max-width: 720px) {
+  .hero-cta { flex-direction: column; }
+  .hero-su { width: 100%; }
+  .nav-su { position: fixed; top: 72px; left: 12px; right: 12px; width: auto; }
+}
+
+/* Press kit: names on the art, and the Boki gallery */
+.pk-cap { position: absolute; z-index: 1; left: 12px; bottom: 9px; font-family: "Lilita"; font-size: 18px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.85); pointer-events: none; }
+.pk-grid a:has(.pk-cap)::after { content: ""; position: absolute; inset: 55% 0 0; background: linear-gradient(transparent, rgba(4,7,14,.7)); pointer-events: none; }
+.pk-grid-boki { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.pk-grid .pk-boki { display: block; border: 1px solid var(--line); background: radial-gradient(circle at 50% 45%, rgba(154,125,255,.22), transparent 65%), var(--bg-2); }
+.pk-grid .pk-boki img { box-sizing: border-box; height: auto; aspect-ratio: 1; object-fit: contain; padding: 8% 10% 18%; }
+@media (max-width: 600px) { .pk-grid-boki { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .pk-grid .pk-boki .pk-cap { font-size: 13px; bottom: 6px; } }
+.pk-grid .pk-boki .pk-cap { left: 0; right: 0; text-align: center; font-size: 16px; }
+@media (min-width: 1001px) { .pk-grid-boki { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; } .pk-grid .pk-boki .pk-cap { font-size: 14px; bottom: 6px; } }
+@media (min-width: 601px) and (max-width: 1000px) { .pk-grid-boki { grid-template-columns: repeat(7, minmax(0, 1fr)); } .pk-grid .pk-boki .pk-cap { font-size: 13px; } }

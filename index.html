@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=108">
+<link rel="stylesheet" href="assets/style.css?v=109">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -48,7 +48,16 @@
   </nav>
   <div class="nav-cta">
     <a class="icon-btn js-discord" href="#" target="_blank" rel="noopener" aria-label="Discord" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg></a>
-    <a class="btn btn-solid btn-sm" href="#join">Join the beta</a>
+    <a class="btn btn-solid btn-sm" href="#join" id="nav-join" aria-controls="nav-su" aria-expanded="false">Join the beta</a>
+    <form class="signup nav-su" id="nav-su" hidden>
+      <label class="sr" for="nav-email">Email for beta invites</label>
+      <p class="nav-su-t">Get a beta invite by email.</p>
+      <div class="su-row">
+        <input id="nav-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+        <button class="btn btn-solid btn-sm" type="submit">Notify me</button>
+      </div>
+      <p class="su-done" role="status" hidden>You're on the list.</p>
+    </form>
   </div>
 </header>
 
@@ -63,8 +72,16 @@
   <div class="hero-in" id="hero-in">
     <h1 class="lockup"><img class="wordmark" src="assets/img/wordmark-1280.webp" srcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" sizes="(max-width: 720px) 90vw, 720px" width="2053" height="956" alt="Project Boki" fetchpriority="high"></h1>
     <p class="tag">Raise infinitely unique creatures.<br>Survive deadly extractions.</p>
-    <div class="cta">
-      <a class="btn btn-solid" href="#join">Join the beta</a>
+    <div class="cta hero-cta">
+      <form class="signup hero-su" id="hero-su" hidden>
+        <label class="sr" for="hero-email">Email for beta invites</label>
+        <div class="su-row">
+          <input id="hero-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+          <button class="btn btn-solid btn-sm" type="submit">Join the beta</button>
+        </div>
+        <p class="su-done" role="status" hidden>You're on the list.</p>
+      </form>
+      <a class="btn btn-solid su-fallback" href="#join">Join the beta</a>
       <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
     </div>
   </div>
@@ -105,7 +122,7 @@
 <section id="boki" class="boki">
   <div class="wrap">
     <header class="head" data-r="stagger">
-      <h2>Fight alongside your very own Boki!</h2>
+      <h2>Fight alongside your very own Boki.</h2>
       <div class="sub">All Boki evolve independently, gaining new traits, mutations and even personalities.</div>
     </header>
     <div class="bk" data-r>
@@ -227,6 +244,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=93"></script>
+<script src="assets/site.js?v=94"></script>
 </body>
 </html>
