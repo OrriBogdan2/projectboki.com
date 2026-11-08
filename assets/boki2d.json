@@ -1,1 +1,267 @@
-{}
+{
+ "barokat": {
+  "name": "Barokat",
+  "v": "1d438fde1136",
+  "by": "auto"
+ },
+ "bellowary": {
+  "name": "Bellowary",
+  "v": "143aa7190631",
+  "by": "auto"
+ },
+ "blossmink": {
+  "name": "Blossmink",
+  "v": "30eebdbceb87",
+  "by": "auto"
+ },
+ "bubblisk": {
+  "name": "Bubblisk",
+  "v": "d42c680022b7",
+  "by": "auto"
+ },
+ "burrlet": {
+  "name": "Burrlet",
+  "v": "359bf5fd19e6",
+  "by": "auto"
+ },
+ "caecilith": {
+  "name": "Caecilith",
+  "v": "e711281f5d73",
+  "by": "auto"
+ },
+ "canvastross": {
+  "name": "Canvastross",
+  "v": "c2e6a71c8818",
+  "by": "auto"
+ },
+ "chuggamus": {
+  "name": "Chuggamus",
+  "v": "da616bdecc13",
+  "by": "auto"
+ },
+ "cindowary": {
+  "name": "Cindowary",
+  "v": "b5b3e8f5a06e",
+  "by": "auto"
+ },
+ "effigeetle": {
+  "name": "Effigeetle",
+  "v": "1a042f761a36",
+  "by": "auto"
+ },
+ "ermink": {
+  "name": "Ermink",
+  "v": "23529eb46016",
+  "by": "auto"
+ },
+ "flarmink": {
+  "name": "Flarmink",
+  "v": "937a3e8b376b",
+  "by": "auto"
+ },
+ "gibbelle": {
+  "name": "Gibbelle",
+  "v": "f489c3dc73a3",
+  "by": "auto"
+ },
+ "glintmole": {
+  "name": "Glintmole",
+  "v": "023aa53b9a81",
+  "by": "auto"
+ },
+ "gloamshell": {
+  "name": "Gloamshell",
+  "v": "d1af1471d24b",
+  "by": "auto"
+ },
+ "glomwort": {
+  "name": "Glomwort",
+  "v": "7a34eef04618",
+  "by": "auto"
+ },
+ "goliathite": {
+  "name": "Goliathite",
+  "v": "d6f7efb21857",
+  "by": "auto"
+ },
+ "gongibbon": {
+  "name": "Gongibbon",
+  "v": "0e258534ac16",
+  "by": "auto"
+ },
+ "hoarheron": {
+  "name": "Hoarheron",
+  "v": "214445c45752",
+  "by": "auto"
+ },
+ "jarmit": {
+  "name": "Jarmit",
+  "v": "940363f32fa0",
+  "by": "auto"
+ },
+ "kerchick": {
+  "name": "Kerchick",
+  "v": "85963ce9d065",
+  "by": "auto"
+ },
+ "kestrike": {
+  "name": "Kestrike",
+  "v": "7975c7144805",
+  "by": "auto"
+ },
+ "lilybara": {
+  "name": "Lilybara",
+  "v": "88f31d357b88",
+  "by": "auto"
+ },
+ "lockatara": {
+  "name": "Lockatara",
+  "v": "76e23f18f298",
+  "by": "auto"
+ },
+ "lunink": {
+  "name": "Lunink",
+  "v": "16443873bad8",
+  "by": "auto"
+ },
+ "lunowl": {
+  "name": "Lunowl",
+  "v": "ad3694c6aba4",
+  "by": "auto"
+ },
+ "mirrolin": {
+  "name": "Mirrolin",
+  "v": "cb6bfeeeed6f",
+  "by": "auto"
+ },
+ "murmurling": {
+  "name": "Murmurling",
+  "v": "b93b84fe2915",
+  "by": "auto"
+ },
+ "mycroll": {
+  "name": "Mycroll",
+  "v": "04b23f195368",
+  "by": "auto"
+ },
+ "nacrolin": {
+  "name": "Nacrolin",
+  "v": "34655ef976f7",
+  "by": "auto"
+ },
+ "opalisk": {
+  "name": "Opalisk",
+  "v": "aebe43360df7",
+  "by": "auto"
+ },
+ "prismander": {
+  "name": "Prismander",
+  "v": "fbe5643aafeb",
+  "by": "auto"
+ },
+ "prismink": {
+  "name": "Prismink",
+  "v": "bf6e96e9c16e",
+  "by": "auto"
+ },
+ "puffamus": {
+  "name": "Puffamus",
+  "v": "af2f7d81f3b4",
+  "by": "auto"
+ },
+ "rimeshrew": {
+  "name": "Rimeshrew",
+  "v": "b78062e5ba72",
+  "by": "auto"
+ },
+ "rimink": {
+  "name": "Rimink",
+  "v": "6ebab82d3c0e",
+  "by": "auto"
+ },
+ "rippmink": {
+  "name": "Rippmink",
+  "v": "64459d22d8af",
+  "by": "auto"
+ },
+ "scaldamus": {
+  "name": "Scaldamus",
+  "v": "356119c85e78",
+  "by": "auto"
+ },
+ "selenfin": {
+  "name": "Selenfin",
+  "v": "d57c26cc7c64",
+  "by": "auto"
+ },
+ "sentrikat": {
+  "name": "Sentrikat",
+  "v": "17a1278db15e",
+  "by": "auto"
+ },
+ "skateron": {
+  "name": "Skateron",
+  "v": "47b44ce32924",
+  "by": "auto"
+ },
+ "soakybara": {
+  "name": "Soakybara",
+  "v": "7d72ca6e59db",
+  "by": "auto"
+ },
+ "sporcupine": {
+  "name": "Sporcupine",
+  "v": "e9582edfcd5b",
+  "by": "auto"
+ },
+ "squalltross": {
+  "name": "Squalltross",
+  "v": "0309f71d3f0b",
+  "by": "auto"
+ },
+ "teapotamus": {
+  "name": "Teapotamus",
+  "v": "a25debcd7077",
+  "by": "auto"
+ },
+ "tuatrune": {
+  "name": "Tuatrune",
+  "v": "a6c57f1014ac",
+  "by": "auto"
+ },
+ "umbrathere": {
+  "name": "Umbrathere",
+  "v": "3a4fbbc161be",
+  "by": "auto"
+ },
+ "umbrink": {
+  "name": "Umbrink",
+  "v": "bd822709de2a",
+  "by": "auto"
+ },
+ "vespox": {
+  "name": "Vespox",
+  "v": "9ac06b43278e",
+  "by": "auto"
+ },
+ "vespyx": {
+  "name": "Vespyx",
+  "v": "ae2b70c0043d",
+  "by": "auto"
+ },
+ "voltmink": {
+  "name": "Voltmink",
+  "v": "50db93c4e235",
+  "by": "auto"
+ },
+ "wyrmink": {
+  "name": "Wyrmink",
+  "v": "6472ad4a7dba",
+  "by": "auto"
+ },
+ "zippelith": {
+  "name": "Zippelith",
+  "v": "ec71ffed52ed",
+  "by": "auto"
+ }
+}
