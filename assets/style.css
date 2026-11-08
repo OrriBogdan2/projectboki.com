@@ -605,3 +605,58 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .h-expand:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (min-width: 721px) { .bk-arrow { width: 26px; height: 26px; margin-top: -13px; } .bk-arrow svg { width: 13px; height: 13px; } }
 @media (max-width: 720px) { .bk-arrow::before { width: 22px; height: 22px; margin: -11px 0 0 -11px; } .bk-arrow svg { width: 11px; height: 11px; } .h-expand { right: 10px; bottom: 10px; width: 30px; height: 30px; } .h-expand svg { width: 13px; height: 13px; } }
+
+/* ---------- Boki wall: staggered columns of cards that drift as you scroll ---------- */
+.bw { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 22px); align-items: start; width: min(1040px, 100%); margin-inline: auto; }
+.bw-col { display: grid; gap: clamp(12px, 1.6vw, 22px); will-change: transform; }
+.bw-col:nth-child(2) { margin-top: clamp(40px, 6vw, 96px); }
+.bw-col:nth-child(3) { margin-top: clamp(14px, 2vw, 32px); }
+.bw-col:nth-child(4) { margin-top: clamp(60px, 8vw, 128px); }
+@media (max-width: 999px) { .bw { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .bw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bw-col:nth-child(2) { margin-top: 48px; } }
+.bw-card { all: unset; box-sizing: border-box; position: relative; display: block; cursor: pointer; border-radius: 22px; overflow: hidden; isolation: isolate;
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--g) 30%, transparent), transparent 62%), linear-gradient(180deg, #121a2d, #0b111f);
+  border: 1px solid rgba(255,255,255,.09); transition: transform .5s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .5s ease; }
+.bw-art { display: block; aspect-ratio: 1; padding: 10% 10% 2%; }
+.bw-art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 16px 22px rgba(0,0,0,.55)); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+.bw-txt { display: grid; gap: 2px; padding: 0 18px 18px; }
+.bw-txt b { font-family: "Lilita"; font-weight: 400; font-size: clamp(19px, 1.7vw, 23px); line-height: 1.05; color: #fff; }
+.bw-txt i { font-style: normal; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+@media (hover: hover) {
+  .bw-card:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--g) 55%, transparent); box-shadow: 0 26px 60px -24px color-mix(in srgb, var(--g) 55%, transparent); }
+  .bw-card:hover .bw-art img { transform: scale(1.06) rotate(-2deg); }
+}
+.bw-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-width: 639px) { .bw-card { border-radius: 18px; } .bw-txt { padding: 0 14px 14px; } .bw-txt b { font-size: 19px; } .bw-txt i { font-size: 11px; } }
+.js .bw-card { opacity: 0; transform: translateY(40px) scale(.96); }
+.js .bw-card.in { opacity: 1; transform: none; transition: opacity .7s ease var(--d, 0s), transform .9s cubic-bezier(.2,.8,.2,1) var(--d, 0s), border-color .3s ease, box-shadow .5s ease; }
+@media (hover: hover) { .js .bw-card.in:hover { transform: translateY(-6px); transition-delay: 0s; } }
+.bw-more { display: flex; justify-content: center; margin-top: clamp(28px, 4vw, 56px); }
+@media (prefers-reduced-motion: reduce) { .js .bw-card { opacity: 1; transform: none; } .bw-col { transform: none !important; } }
+
+/* A closer look at one Boki */
+.bm { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: clamp(12px, 3vw, 40px); background: rgba(4,7,14,.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transition: opacity .22s ease; }
+.bm.show { opacity: 1; }
+.bm-card { position: relative; width: min(940px, 100%); display: grid; grid-template-columns: 1fr 1fr; border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.12);
+  background: radial-gradient(circle at 25% 45%, color-mix(in srgb, var(--g) 26%, transparent), transparent 55%), linear-gradient(160deg, #141c31, #0a101d);
+  box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); transform: translateY(14px) scale(.98); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.bm.show .bm-card { transform: none; }
+.bm-art { aspect-ratio: 1; padding: 8%; touch-action: pan-y; }
+.bm-art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 24px 30px rgba(0,0,0,.55)); opacity: 0; transform: scale(.96); transition: opacity .3s ease, transform .45s cubic-bezier(.2,.8,.2,1); }
+.bm-art img.on { opacity: 1; transform: none; }
+.bm-txt { align-self: center; padding: 40px 48px 40px 8px; }
+.bm-mix { font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--g); }
+.bm-txt h3 { font-family: "Lilita"; font-weight: 400; font-size: clamp(40px, 5vw, 64px); line-height: 1; margin: 6px 0 14px; }
+.bm-txt p { color: var(--soft); font-size: 18px; }
+.bm .bk-meta { margin-top: 20px; }
+.bm .bk-arrow { top: 50%; }
+.bm .bk-arrow.prev { left: 14px; } .bm .bk-arrow.next { right: 14px; }
+.bm .lb-x { top: 12px; right: 12px; }
+@media (max-width: 720px) {
+  .bm { align-items: end; padding: 10px; }
+  .bm-card { grid-template-columns: 1fr; border-radius: 22px; }
+  .bm-art { padding: 10% 14% 2%; }
+  .bm-txt { padding: 4px 24px 26px; }
+  .bm-txt p { font-size: 16px; }
+  .bm .bk-arrow { top: 36%; }
+}

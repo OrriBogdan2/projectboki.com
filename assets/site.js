@@ -392,83 +392,108 @@ const BOKI = [
   ["zephyrak", "Zephyrak", "Moray eel + Swift", "Small", "Stormcoil's egg", "#9ff4ff", "#2f6f9a", "A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static.", [0.8, 0.45, 0.65, 0.85]],
   ["cairnback", "Cairnback", "Tortoise + Ibex", "Large", "The Stone Colossus's egg", "#ffd36a", "#6a6f7a", "A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell.", [0.85, 0.8, 0.25, 0.35]],
 ];
-const TRAITS = ["Bravery", "Loyalty", "Temper", "Curiosity"];
-
-const bkPick = document.getElementById("bk-pick");
-if (bkPick) {
-  const $ = (id) => document.getElementById(id);
-  const stage = $("bk-stage"), img = $("bk-img");
+/* ---------- Boki: a wall of cards in staggered columns that drift at different speeds as you scroll past.
+   Nothing to step through: tap any Boki for a closer look, or keep scrolling. A dozen show; the rest are one tap away. ---------- */
+const bw = document.getElementById("bw");
+if (bw) {
+  const FEATURED = innerWidth < 640 ? 8 : 12; // a short wall on phones
   const pic = (id, w) => `assets/img/boki/${id}-${w}.webp`;
-  let at = -1;
-  $("bk-total").textContent = String(BOKI.length).padStart(2, "0");
-
-  BOKI.forEach(([id, name], i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.setAttribute("aria-label", name);
-    b.style.setProperty("--g", BOKI[i][5]);
-    b.innerHTML = `<img src="${pic(id, 240)}" alt="" loading="lazy" width="240" height="240"><span>${name}</span>`;
-    b.addEventListener("click", () => show(i));
-    bkPick.appendChild(b);
+  const cards = BOKI.map(([id, name, mix, , , glow, body], i) => {
+    const c = document.createElement("button");
+    c.type = "button"; c.className = "bw-card"; c.setAttribute("role", "listitem");
+    c.style.setProperty("--g", glow); c.style.setProperty("--b", body);
+    c.innerHTML = `<span class="bw-art"><img src="${pic(id, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
+    c.querySelector("b").textContent = name; c.querySelector("i").textContent = mix;
+    c.setAttribute("aria-label", `${name}, ${mix}`);
+    if (i >= FEATURED) c.hidden = true;
+    c.addEventListener("click", () => openCard(i));
+    return c;
   });
-
-  const traits = $("bk-traits");
-  traits.innerHTML = TRAITS.map((t) => `<div><dt>${t}</dt><dd><i></i></dd></div>`).join("");
-  const bars = traits.querySelectorAll("i");
-
-  function fill(i) {
-    const [id, name, mix, size, found, glow, body, flavor, p] = BOKI[i];
-    stage.style.setProperty("--g", glow);
-    stage.style.setProperty("--b", body);
-    traits.style.setProperty("--g", glow);
-    img.src = pic(id, 900);
-    img.alt = `${name}, ${mix.toLowerCase().replace(" + ", " and ")}`;
-    $("bk-name").textContent = name;
-    $("bk-mix").textContent = mix;
-    $("bk-flavor").textContent = flavor;
-    $("bk-size").textContent = size;
-    $("bk-found").textContent = found;
-    $("bk-n").textContent = String(i + 1).padStart(2, "0");
-    bars.forEach((bar, k) => { bar.style.transform = `scaleX(${p[k]})`; });
+  // columns: 4 on desktop, 3 on tablets, 2 on phones; cards dealt left to right so the order still reads row by row
+  let cols = [];
+  const deal = () => {
+    const n = innerWidth >= 1000 ? 4 : innerWidth >= 640 ? 3 : 2;
+    if (cols.length === n) return;
+    bw.innerHTML = ""; cols = [];
+    for (let k = 0; k < n; k++) { const col = document.createElement("div"); col.className = "bw-col"; bw.appendChild(col); cols.push(col); }
+    cards.forEach((c, i) => cols[i % n].appendChild(c));
+    drift();
+  };
+  const more = document.getElementById("bw-more");
+  if (BOKI.length > FEATURED) {
+    more.hidden = false; more.textContent = `See all ${BOKI.length} Boki`;
+    more.addEventListener("click", () => {
+      cards.forEach((c, i) => { if (c.hidden) { c.hidden = false; c.style.setProperty("--d", ((i - FEATURED) % 8) * 50 + "ms"); c.classList.add("pop"); } });
+      more.parentElement.hidden = true; drift();
+    });
   }
+  // the drift: alternate columns rise and sink a little against the scroll, so the wall feels alive without moving you
+  let tick = false;
+  const drift = () => {
+    if (calm || !cols.length) return;
+    const r = bw.getBoundingClientRect(), vh = innerHeight;
+    if (r.bottom < -200 || r.top > vh + 200) return;
+    const p = (vh - r.top) / (vh + r.height) - 0.5; // -0.5 entering … 0.5 leaving
+    const amp = innerWidth >= 640 ? 70 : 34;
+    cols.forEach((col, k) => { col.style.transform = `translate3d(0, ${(-(k % 2 ? 1 : -0.4) * amp * p * 2).toFixed(1)}px, 0)`; });
+  };
+  addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; drift(); }); } }, { passive: true });
+  addEventListener("resize", deal);
+  deal();
+  // cards fade up as they come into view
+  const seen = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  cards.forEach((c, i) => { c.style.setProperty("--d", (i % 4) * 70 + "ms"); seen.observe(c); });
 
-  function show(i, dir = 1) {
-    i = (i + BOKI.length) % BOKI.length;
-    if (i === at) return;
-    const first = at < 0;
-    dir = first ? 0 : dir;
-    at = i;
-    bkPick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
-    const btn = bkPick.children[i];
-    if (!first) bkPick.scrollTo({ left: btn.offsetLeft - (bkPick.clientWidth - btn.clientWidth) / 2, behavior: "smooth" });
-    if (first) { fill(i); return; }
-    stage.style.setProperty("--dir", dir);
-    stage.classList.add("out");
-    const next = new Image();
-    next.src = pic(BOKI[i][0], 900);
-    const swap = () => {
-      if (at !== i) return;
-      fill(i);
-      stage.classList.remove("out");
-      stage.classList.add("in");
-      requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove("in")));
-    };
-    setTimeout(() => (next.decode ? next.decode().then(swap, swap) : swap()), 180);
+  // A closer look: big art, what it's made of, and its one line. Arrows, swipes and keys browse; Esc closes.
+  let box, at = 0, back = null;
+  const build = () => {
+    box = document.createElement("div");
+    box.className = "bm"; box.hidden = true;
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Boki");
+    box.innerHTML = `<div class="bm-card"><div class="bm-art"><img alt=""></div><div class="bm-txt"><div class="bm-mix"></div><h3></h3><p></p><div class="bk-meta"><span class="bm-size"></span><span class="bm-found"></span></div></div>
+      <button class="bk-arrow prev" type="button" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="bk-arrow next" type="button" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
+    document.body.appendChild(box);
+    box.addEventListener("click", (e) => { if (e.target === box) closeCard(); });
+    box.querySelector(".lb-x").addEventListener("click", closeCard);
+    box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
+    box.querySelector(".next").addEventListener("click", () => fill(at + 1));
+    swipe(box.querySelector(".bm-art"), (d) => fill(at + d));
+    document.addEventListener("keydown", (e) => {
+      if (box.hidden) return;
+      if (e.key === "Escape") closeCard();
+      else if (e.key === "ArrowRight") fill(at + 1);
+      else if (e.key === "ArrowLeft") fill(at - 1);
+    });
+  };
+  const fill = (i) => {
+    at = (i + BOKI.length) % BOKI.length;
+    const [id, name, mix, size, found, glow, body, flavor] = BOKI[at];
+    const card = box.querySelector(".bm-card");
+    card.style.setProperty("--g", glow); card.style.setProperty("--b", body);
+    const img = box.querySelector(".bm-art img");
+    img.classList.remove("on"); img.src = pic(id, 900); img.alt = `${name}, ${mix.toLowerCase().replace(" + ", " and ")}`;
+    const on = () => img.classList.add("on");
+    if (img.decode) img.decode().then(on, on); else on();
+    box.querySelector(".bm-mix").textContent = mix;
+    box.querySelector("h3").textContent = name;
+    box.querySelector("p").textContent = flavor;
+    box.querySelector(".bm-size").textContent = size;
+    box.querySelector(".bm-found").textContent = found;
+  };
+  function openCard(i) {
+    if (!box) build();
+    back = document.activeElement; fill(i);
+    box.hidden = false; document.documentElement.classList.add("lb-open");
+    requestAnimationFrame(() => box.classList.add("show"));
+    box.querySelector(".lb-x").focus({ preventScroll: true });
   }
-
-  $("bk-prev").addEventListener("click", () => show(at - 1, -1));
-  arrowKeys(document.getElementById("boki"), bkPick, (d) => show(at + d, d));
-  $("bk-next").addEventListener("click", () => show(at + 1, 1));
-  bkPick.addEventListener("keydown", (e) => {
-    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-    if (!d) return;
-    e.preventDefault(); show(at + d, d); bkPick.children[at].focus({ preventScroll: true });
-  });
-
-  swipe(stage, (d) => show(at + d, d));
-  nudge(bkPick);
-
-  show(0);
+  function closeCard() {
+    box.classList.remove("show"); document.documentElement.classList.remove("lb-open");
+    setTimeout(() => { box.hidden = true; }, 220);
+    if (back) back.focus({ preventScroll: true });
+  }
 }
 
 /* ---------- shared: swipe to switch, and a one-time nudge so the strip reads as scrollable ---------- */
@@ -679,9 +704,7 @@ if (POSTHOG_KEY) {
 (function () {
   if (calm) return;
   const phone = matchMedia("(max-width: 720px)");
-  const els = () => [...document.querySelectorAll(phone.matches ? "#boki .head, #faq .head"
-    : document.querySelector("#hunters.pinned") ? "#boki .head, #boki .bk, #faq .head"
-    : "#boki .head, #boki .bk, #faq .head")];
+  const els = () => []; // only the Hunters scene below: anywhere else the page stays exactly where you leave it
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; }; // layout position, ignoring scroll-linked transforms
   let idle = 0, touching = false, settling = false;
   const settle = () => {

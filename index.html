@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=113">
+<link rel="stylesheet" href="assets/style.css?v=114">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -123,24 +123,8 @@
       <h2>Fight alongside your very own Boki.</h2>
       <div class="sub">All Boki evolve independently, gaining new traits, mutations and even personalities.</div>
     </header>
-    <div class="bk" data-r>
-      <div class="bk-stage" id="bk-stage">
-        <div class="bk-glow"></div>
-        <img id="bk-img" src="assets/img/boki/vespyx-900.webp" width="900" height="900" alt="Vespyx, part fox and part scorpion" loading="lazy">
-        <button class="bk-arrow prev" type="button" id="bk-prev" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="bk-arrow next" type="button" id="bk-next" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <div class="bk-count"><b id="bk-n">01</b> / <span id="bk-total">21</span></div>
-      </div>
-      <div class="bk-sheet" aria-live="polite">
-        <div class="bk-mix" id="bk-mix">Fox + Scorpion</div>
-        <h3 id="bk-name">Vespyx</h3>
-        <p id="bk-flavor">A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.</p>
-        <dl class="bk-traits" id="bk-traits"></dl>
-        <div class="bk-meta"><span id="bk-size">Small</span><span id="bk-found">Starter egg</span></div>
-      </div>
-    </div>
-    <div class="pick-label" data-r><b>Choose your Boki</b><span class="swipe">Swipe for all 21 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-    <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose your Boki" data-r></div>
+    <div class="bw" id="bw" role="list" aria-label="Boki"></div>
+    <div class="bw-more"><button class="btn btn-glass" type="button" id="bw-more" hidden>See all Boki</button></div>
   </div>
 </section>
 <section id="how" class="how" aria-label="How it works">
@@ -242,6 +226,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=98"></script>
+<script src="assets/site.js?v=99"></script>
 </body>
 </html>
