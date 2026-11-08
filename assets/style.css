@@ -34,7 +34,7 @@ h2 { font-size: clamp(42px, 6vw, 88px); }
 section { position: relative; }
 .head { text-align: center; margin-bottom: clamp(36px, 5vw, 60px); }
 .head .sub { margin-inline: auto; max-width: 30ch; text-wrap: balance; margin-top: 14px; font-family: "Lilita"; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.2; color: var(--ink-2); }
-.head .sub.one { max-width: none; white-space: nowrap; font-size: min(clamp(22px, 2.4vw, 32px), calc((100vw - 44px) / 26.5)); }
+.head .sub.one { max-width: none; white-space: nowrap; font-size: min(clamp(18px, 2.4vw, 32px), calc((100vw - 48px) / 28.5)); }
 .head p { text-wrap: balance; max-width: 34em; margin-inline: auto; margin-top: 18px; font-size: clamp(19px, 1.7vw, 23px); color: var(--soft); }
 
 /* ---------- buttons ---------- */

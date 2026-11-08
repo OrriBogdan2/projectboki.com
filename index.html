@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=92">
+<link rel="stylesheet" href="assets/style.css?v=93">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -44,7 +44,7 @@
   </nav>
   <div class="nav-cta">
     <a class="icon-btn js-discord" href="#" target="_blank" rel="noopener" aria-label="Discord" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg></a>
-    <a class="btn btn-solid btn-sm" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener">Play</a>
+    <a class="btn btn-solid btn-sm" href="#join">Join the beta</a>
   </div>
 </header>
 
@@ -60,7 +60,7 @@
     <h1 class="lockup"><img class="wordmark" src="assets/img/wordmark-1280.webp" srcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" sizes="(max-width: 720px) 90vw, 720px" width="2053" height="956" alt="Project Boki" fetchpriority="high"></h1>
     <p class="tag">Raise infinitely unique creatures.<br>Survive deadly extractions.</p>
     <div class="cta">
-      <a class="btn btn-solid" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
+      <a class="btn btn-solid" href="#join">Join the beta</a>
       <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
     </div>
   </div>
@@ -71,7 +71,7 @@
   <div class="wrap">
     <header class="head" data-r>
       <h2 class="h-crumble"><span class="h-w">Solmere has</span> <span class="crumble"><span class="sr">fallen apart.</span><span aria-hidden="true"><i data-t="0.000" data-x="0.000" data-y="0.000" data-r="0.0">f</i><i data-t="0.091" data-x="0.000" data-y="0.007" data-r="0.2">a</i><i data-t="0.182" data-x="0.001" data-y="0.019" data-r="1.9">l</i><i data-t="0.273" data-x="0.003" data-y="0.034" data-r="0.4">l</i><i data-t="0.364" data-x="0.005" data-y="0.053" data-r="4.0">e</i><i data-t="0.455" data-x="0.008" data-y="0.074" data-r="0.4">n</i><i class="sp"> </i><i data-t="0.545" data-x="0.012" data-y="0.097" data-r="6.2">a</i><i data-t="0.636" data-x="0.016" data-y="0.122" data-r="0.3">p</i><i data-t="0.727" data-x="0.021" data-y="0.149" data-r="8.5">a</i><i data-t="0.818" data-x="0.027" data-y="0.178" data-r="0.2">r</i><i data-t="0.909" data-x="0.033" data-y="0.208" data-r="10.8">t</i><i data-t="1.000" data-x="0.040" data-y="0.300" data-r="8.0">.</i></span></span></h2>
-      <div class="sub one">Only a Hero's Relic can piece it back together.</div>
+      <div class="sub one">Only a Hunter's Relic can piece the fallen Kingdom back together.</div>
     </header>
     <div class="stage" data-r>
       <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -172,16 +172,16 @@
   </div>
 </section>
 
-<section class="join">
+<section class="join" id="join">
   <div class="join-bg" aria-hidden="true"></div>
   <div class="wrap" data-r>
     <p class="join-q">Miss SUPERVIVE or Battlerite?</p>
-    <h2>Join the playtest.</h2>
+    <h2>Join the closed beta.</h2>
     <div class="cta">
       <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
     </div>
     <form class="signup" id="signup" hidden>
-      <label class="sr" for="su-email">Email for playtest invites</label>
+      <label class="sr" for="su-email">Email for beta invites</label>
       <p class="su-or"><span>or get invites by email</span></p>
       <div class="su-row">
         <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
@@ -198,7 +198,6 @@
   <div class="foot-in">
     <a class="foot-wm" href="#top" aria-label="Project Boki, back to top"><img src="assets/img/wordmark-640.webp" width="640" height="298" alt="Project Boki" loading="lazy"></a>
     <nav aria-label="Footer">
-    <a href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener">itch.io</a>
     <a class="js-discord" href="#" target="_blank" rel="noopener" hidden>Discord</a>
     <a href="https://github.com/OrriBogdan2/project-boki" target="_blank" rel="noopener">GitHub</a>
     <a href="presskit.html">Press kit</a>
@@ -220,6 +219,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=77"></script>
+<script src="assets/site.js?v=78"></script>
 </body>
 </html>

@@ -1,10 +1,12 @@
 #!/bin/bash
 # Render each Hunter's turntable from the branch holding its newest model.
 G=/home/claude/godot/Godot_v4.6.2-stable_linux.x86_64
-OUT=/home/claude/shots/h3d_v2
+OUT=${OUT:-/home/claude/shots/h3d_v2}
+ONLY=${ONLY:-}   # e.g. ONLY="gunslinger tender" to render just those
 mkdir -p $OUT
 cd /home/claude/project-boki
 while read br id zoom; do
+  [ -n "$ONLY" ] && [[ " $ONLY " != *" $id "* ]] && continue
   echo "=== $br $id $(date +%T)"
   git fetch -q --depth 1 origin "$br" || { echo "FETCH FAIL $br"; continue; }
   git checkout -q -f FETCH_HEAD && git clean -fdq tools/web 2>/dev/null

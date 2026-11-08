@@ -397,6 +397,7 @@ if (POSTHOG_KEY) {
     const where = a.closest("section, header, footer")?.id || a.closest("section, header, footer")?.className || "page";
     if (h.includes("discord")) posthog.capture("click_discord", { where });
     else if (h.includes("itch.io")) posthog.capture("click_play", { where });
+    else if (h.endsWith("#join")) posthog.capture("click_beta", { where });
   });
   const form = document.getElementById("signup");
   if (form) {
