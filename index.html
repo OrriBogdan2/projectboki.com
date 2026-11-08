@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=67">
+<link rel="stylesheet" href="assets/style.css?v=69">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -91,13 +91,6 @@
 </section>
 
 
-<section class="lore" aria-labelledby="lore-heart" id="how">
-  <div class="wrap"><header class="head" data-r><h2 id="lore-heart">Drop in.</h2><div class="sub wide">Fight through monsters and rival squads.<br>Find Boki eggs and wild Boki waiting for a home.</div></header></div>
-  <div class="lore-art"><picture>
-    <img src="assets/img/lore/throne-1600.webp" srcset="assets/img/lore/throne-960.webp 960w, assets/img/lore/throne-1600.webp 1600w, assets/img/lore/throne-2400.webp 2400w" sizes="100vw" width="2576" height="1438" alt="Vex, Sparkle, Tenzo, Kael, Cinder and Lace face a masked figure reaching for a glowing heart before a broken throne" loading="lazy" decoding="async">
-  </picture></div>
-</section>
-
 <section id="boki" class="boki">
   <div class="wrap">
     <header class="head" data-r>
@@ -128,14 +121,30 @@
     </div>
   </div>
 </section>
-<section class="lore" aria-labelledby="lore-squad">
-  <div class="wrap"><header class="head" data-r><h2 id="lore-squad">Squad up.</h2><div class="sub wide">Squads of three.<br>Cover each other, or fall together.</div></header></div>
-  <div class="lore-art"><img src="assets/img/lore/squad-1600.webp" srcset="assets/img/lore/squad-960.webp 960w, assets/img/lore/squad-1600.webp 1600w, assets/img/lore/squad-2400.webp 2400w" sizes="100vw" width="2576" height="1438" alt="Mossy shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
-</section>
-
-<section class="lore" aria-labelledby="lore-trust">
-  <div class="wrap"><header class="head" data-r><h2 id="lore-trust">Get out alive.</h2><div class="sub wide">Extract and keep everything.<br>Go down and your Boki could be lost forever.</div></header></div>
-  <div class="lore-art"><img src="assets/img/lore/rivals-1600.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w, assets/img/lore/rivals-2400.webp 2400w" sizes="100vw" width="2576" height="1438" alt="Kael holds his blade to Vex's throat over a glowing heart" loading="lazy" decoding="async"></div>
+<section id="how" class="how" aria-label="How it works">
+  <div class="wrap how-grid" data-r="stagger">
+    <article class="step">
+      <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/drop-in.mp4" autoplay muted loop playsinline></video> -->
+      <div class="step-media" data-clip="drop-in"><img src="assets/img/lore/throne-960.webp" srcset="assets/img/lore/throne-960.webp 960w, assets/img/lore/throne-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Six Hunters face a masked figure at a broken throne" loading="lazy" decoding="async"></div>
+      <p class="step-n">01</p>
+      <h3>Drop in.</h3>
+      <p class="step-sub">Fight through monsters and rival squads.<br>Find Boki eggs and wild Boki waiting for a home.</p>
+    </article>
+    <article class="step">
+      <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/squad-up.mp4" autoplay muted loop playsinline></video> -->
+      <div class="step-media" data-clip="squad-up"><img src="assets/img/lore/squad-960.webp" srcset="assets/img/lore/squad-960.webp 960w, assets/img/lore/squad-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Mossy shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
+      <p class="step-n">02</p>
+      <h3>Squad up.</h3>
+      <p class="step-sub">Squads of three.<br>Cover each other, or fall together.</p>
+    </article>
+    <article class="step">
+      <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/get-out.mp4" autoplay muted loop playsinline></video> -->
+      <div class="step-media" data-clip="get-out"><img src="assets/img/lore/rivals-960.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Kael holds his blade to Vex's throat over a glowing heart" loading="lazy" decoding="async"></div>
+      <p class="step-n">03</p>
+      <h3>Get out alive.</h3>
+      <p class="step-sub">Extract and keep everything.<br>Go down and your Boki could be lost forever.</p>
+    </article>
+  </div>
 </section>
 
 <section id="faq" class="faq">

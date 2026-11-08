@@ -220,18 +220,14 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button[aria-pressed="true"] { opacity: 1; border-color: var(--g); box-shadow: 0 0 0 3px color-mix(in srgb, var(--g) 25%, transparent), 0 10px 30px -10px color-mix(in srgb, var(--g) 60%, transparent); }
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
-.lore { padding-top: calc(var(--sec) * .55); }
-.head .sub.wide { max-width: 44ch; }
-.lore .head h2 { font-size: clamp(64px, 10vw, 150px); line-height: .92; letter-spacing: -.01em; }
-.lore .head { margin-bottom: clamp(4px, 1.5vw, 16px); position: relative; z-index: 2; }
-.lore-art { position: relative; isolation: isolate; overflow: hidden; }
-.lore-art img { display: block; width: 100%; height: auto; max-height: 88svh; object-fit: cover; object-position: 50% 35%; }
-.lore-art::before, .lore-art::after { content: ""; position: absolute; left: 0; right: 0; height: 22%; z-index: 1; pointer-events: none; }
-.lore-art::before { top: 0; background: linear-gradient(var(--bg), transparent); }
-.lore-art::after { bottom: 0; background: linear-gradient(transparent, var(--bg)); }
-.lore:has(+ .faq) .lore-art::after { background: linear-gradient(transparent, var(--bg-2)); }
-.lore + .faq { border-top: 0; }
-@media (max-width: 720px) { .lore-art::before, .lore-art::after { height: 14%; } }
+.how { padding: calc(var(--sec) * .7) 0 var(--sec); }
+.how-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 2.4vw, 36px); }
+.step-media { position: relative; aspect-ratio: 16 / 10; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: var(--bg-2); }
+.step-media img, .step-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.step-n { margin-top: 22px; font-family: "Lilita"; font-size: 15px; letter-spacing: .14em; color: var(--ink-3); }
+.step h3 { margin-top: 4px; font-size: clamp(36px, 3.6vw, 54px); line-height: 1; }
+.step-sub { margin-top: 12px; font-size: 18px; line-height: 1.5; color: var(--soft); text-wrap: pretty; }
+@media (max-width: 860px) { .how-grid { grid-template-columns: 1fr; gap: 44px; } .step-sub { font-size: 17px; } }
 .band p { font-family: "Lilita"; font-size: clamp(20px, 2vw, 26px); }
 h1, h2, h3, .band p { text-wrap: balance; }
 /* Phones: the one-line Relic subline would shrink to ~13px, so let it wrap at a readable size */
