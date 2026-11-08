@@ -818,7 +818,9 @@ if (POSTHOG_KEY) {
   };
   const lock = (to) => {
     locked = true; lastWheel = performance.now();
-    root.style.overflow = "hidden"; document.body.style.overflow = "hidden"; // the browser stops scrolling on its own, with no fighting
+    // The browser stops scrolling on its own, with no fighting. The body is set to visible so it doesn't become its
+    // own scroll box (it has overflow-x: hidden), which would break the sticky stage while held.
+    root.style.overflow = "hidden"; document.body.style.overflow = "visible";
     addEventListener("wheel", block, { passive: false }); addEventListener("touchmove", block, { passive: false }); addEventListener("keydown", keys);
     const from = scrollY, d = to - from, t0 = performance.now(), dur = Math.min(420, 180 + Math.abs(d) * 0.6);
     const glide = (now) => {
@@ -827,7 +829,16 @@ if (POSTHOG_KEY) {
       if (k < 1) requestAnimationFrame(glide);
     };
     if (Math.abs(d) > 1) requestAnimationFrame(glide);
-    const wait = () => { if (t >= 1) setTimeout(() => waitRest(performance.now()), 120); else setTimeout(wait, 50); };
+    const wait = () => {
+      if (t < 1) { setTimeout(wait, 50); return; }
+      const sc = window.bokiScene, sec = document.getElementById("hunters");
+      if (sc && sec && !sec.classList.contains("pinned")) {
+        // Phones: carry straight on into the Hunters while still holding (the stage is pinned, so nothing jumps),
+        // and let go once the stage and the picker are fully in, so the next swipe starts from them.
+        scrollTo({ top: Math.round(sc.s0 + sc.crumble + sc.fade), behavior: "instant" });
+        setTimeout(() => waitRest(performance.now()), 950);
+      } else setTimeout(() => waitRest(performance.now()), 120);
+    };
     wait();
   };
   addEventListener("scroll", () => {
