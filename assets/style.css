@@ -225,6 +225,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .lore::before, .lore::after { content: ""; position: absolute; left: 0; right: 0; height: 22%; z-index: 1; pointer-events: none; }
 .lore::before { top: 0; background: linear-gradient(var(--bg), transparent); }
 .lore::after { bottom: 0; background: linear-gradient(transparent, var(--bg)); }
+.lore:has(+ .faq)::after { background: linear-gradient(transparent, var(--bg-2)); }
+.lore + .faq { border-top: 0; }
 .lore-copy { position: absolute; z-index: 2; left: 0; right: 0; bottom: clamp(24px, 6vw, 80px); text-align: center; }
 @media (max-width: 720px) { .lore::before, .lore::after { height: 14%; } }
 .band p { font-family: "Lilita"; font-size: clamp(20px, 2vw, 26px); }
