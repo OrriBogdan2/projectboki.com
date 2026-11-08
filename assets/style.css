@@ -460,7 +460,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 @media (max-width: 720px) { .qa summary { font-size: 17px; padding: 16px 14px 16px 18px; } .qa p { padding: 0 18px 18px; font-size: 16px; } .qa summary::after { flex-basis: 30px; height: 30px; } }
 @media (prefers-reduced-motion: reduce) { .qa details::details-content { transition: none; } }
 /* Full-screen art viewer */
-.shot, .step-media, .pk-grid a, .pk-key { cursor: zoom-in; }
+.step-media, .pk-grid a, .pk-key { cursor: zoom-in; }
 .lb { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: clamp(12px, 3vw, 40px); background: rgba(4,7,14,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .22s ease; cursor: zoom-out; }
 .lb.show { opacity: 1; }
 .lb img { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); transform: scale(.97); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
@@ -538,15 +538,10 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 
 /* Resting points for the gentle settle in site.js: where each one sits under the nav when you come to rest on it.
    Desktop: each section rests twice, on its heading, then on its stage. Phones: once, on the heading. */
-#hunters .h-hold, #boki .head { scroll-margin-top: max(96px, 16vh); }
-/* "broken apart." holds its place for a stretch of scroll while the letters fall, then lets go */
-.h-hold { --hold: 46vh; --stick: max(96px, 16vh); }
-.js .h-hold::after { content: ""; display: block; height: var(--hold); }
-.js .h-hold > .head { position: sticky; top: var(--stick); }
+#hunters .head, #boki .head { scroll-margin-top: max(96px, 16vh); }
 #hunters .stage, #boki .bk { scroll-margin-top: 88px; }
 #faq .head { scroll-margin-top: 110px; }
-@media (max-width: 720px) { #hunters .h-hold, #boki .head { scroll-margin-top: 80px; } .h-hold { --hold: 38vh; --stick: 80px; } }
-@media (prefers-reduced-motion: reduce) { .js .h-hold::after { display: none; } .js .h-hold > .head { position: static; } }
+@media (max-width: 720px) { #hunters .head, #boki .head { scroll-margin-top: 80px; } }
 
 /* Desktop: the Hunters stage holds while scrolling steps through all twelve (site.js sizes the track and the hold) */
 #hunters.pinned .h-pin { position: sticky; }
@@ -588,3 +583,20 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 @media (min-width: 1001px) { .pk-grid-boki { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; } .pk-grid .pk-boki .pk-cap { font-size: 14px; bottom: 6px; } }
 @media (min-width: 601px) and (max-width: 1000px) { .pk-grid-boki { grid-template-columns: repeat(7, minmax(0, 1fr)); } .pk-grid .pk-boki .pk-cap { font-size: 13px; } }
 .pk-soon { color: var(--ink-3); font-weight: 700; }
+
+/* ---------- Hunters scene: "broken apart." sits over the held stage, breaks, then fades into the Hunters ---------- */
+#hunters.scene .h-pin { position: sticky; }
+#hunters.scene .h-intro { position: absolute; inset: 0; z-index: 4; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; will-change: opacity, transform; }
+#hunters.scene .h-intro[data-r] { transition: none; }
+.js #hunters.scene .h-pin > .stage[data-r], .js #hunters.scene .h-pin > .pick-label[data-r], .js #hunters.scene .h-pin > .pick[data-r] { transition: none; will-change: opacity, transform; }
+#hunters.scene:not(.scene-on) .h-pin > .stage, #hunters.scene:not(.scene-on) .h-pin > .pick { pointer-events: none; }
+
+/* Hunter splash: a small expand button opens the full art; arrows are compact */
+.shot { position: relative; }
+.h-expand { all: unset; box-sizing: border-box; position: absolute; right: 14px; bottom: 14px; z-index: 3; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; cursor: pointer; color: #fff; background: rgba(8,13,24,.5); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); isolation: isolate; overflow: hidden; transition: color .35s ease; }
+.h-expand svg { width: 15px; height: 15px; }
+.h-expand::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: #fff; transform: scale(0); transition: transform .45s cubic-bezier(.22,.8,.24,1); }
+@media (hover: hover) { .h-expand:hover { color: #0a1222; } .h-expand:hover::after { transform: scale(1); } }
+.h-expand:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (min-width: 721px) { .bk-arrow { width: 26px; height: 26px; margin-top: -13px; } .bk-arrow svg { width: 13px; height: 13px; } }
+@media (max-width: 720px) { .bk-arrow::before { width: 22px; height: 22px; margin: -11px 0 0 -11px; } .bk-arrow svg { width: 11px; height: 11px; } .h-expand { right: 10px; bottom: 10px; width: 30px; height: 30px; } .h-expand svg { width: 13px; height: 13px; } }
