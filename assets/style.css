@@ -538,10 +538,15 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 
 /* Resting points for the gentle settle in site.js: where each one sits under the nav when you come to rest on it.
    Desktop: each section rests twice, on its heading, then on its stage. Phones: once, on the heading. */
-#hunters .head, #boki .head { scroll-margin-top: max(96px, 16vh); }
+#hunters .h-hold, #boki .head { scroll-margin-top: max(96px, 16vh); }
+/* "broken apart." holds its place for a stretch of scroll while the letters fall, then lets go */
+.h-hold { --hold: 46vh; --stick: max(96px, 16vh); }
+.js .h-hold::after { content: ""; display: block; height: var(--hold); }
+.js .h-hold > .head { position: sticky; top: var(--stick); }
 #hunters .stage, #boki .bk { scroll-margin-top: 88px; }
 #faq .head { scroll-margin-top: 110px; }
-@media (max-width: 720px) { #hunters .head, #boki .head { scroll-margin-top: 80px; } }
+@media (max-width: 720px) { #hunters .h-hold, #boki .head { scroll-margin-top: 80px; } .h-hold { --hold: 38vh; --stick: 80px; } }
+@media (prefers-reduced-motion: reduce) { .js .h-hold::after { display: none; } .js .h-hold > .head { position: static; } }
 
 /* Desktop: the Hunters stage holds while scrolling steps through all twelve (site.js sizes the track and the hold) */
 #hunters.pinned .h-pin { position: sticky; }

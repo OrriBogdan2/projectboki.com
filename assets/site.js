@@ -627,9 +627,9 @@ if (POSTHOG_KEY) {
 (function () {
   if (calm) return;
   const phone = matchMedia("(max-width: 720px)");
-  const els = () => [...document.querySelectorAll(phone.matches ? "#hunters .head, #boki .head, #faq .head"
-    : document.querySelector("#hunters.pinned") ? "#hunters .head, #boki .head, #boki .bk, #faq .head"
-    : "#hunters .head, #hunters .stage, #boki .head, #boki .bk, #faq .head")];
+  const els = () => [...document.querySelectorAll(phone.matches ? "#hunters .h-hold, #boki .head, #faq .head"
+    : document.querySelector("#hunters.pinned") ? "#hunters .h-hold, #boki .head, #boki .bk, #faq .head"
+    : "#hunters .h-hold, #hunters .stage, #boki .head, #boki .bk, #faq .head")];
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; }; // layout position, ignoring scroll-linked transforms
   let idle = 0, touching = false, settling = false;
   const settle = () => {
@@ -716,8 +716,13 @@ if (POSTHOG_KEY) {
     if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
     // whole until the heading is 80% down the screen; fully broken exactly where the scroll comes to rest on it
     // (the heading's snap point, its scroll-margin-top), so the break finishes as you arrive and you get a beat to read it
-    const rest = parseFloat(getComputedStyle(head).scrollMarginTop) || vh * 0.16, start = vh * 0.8;
-    return clamp((start - head.getBoundingClientRect().top) / Math.max(1, start - rest));
+    // The heading cracks on the way in, then holds (sticky) while the scroll pulls the pieces down: arriving gets
+    // you the glowing crack, the next stretch of scroll is the fall, and only then does the page move on.
+    const hold = document.getElementById("h-hold") || head;
+    const rest = parseFloat(getComputedStyle(hold).scrollMarginTop) || vh * 0.16, start = vh * 0.8;
+    const top = hold.getBoundingClientRect().top, len = Math.max(1, hold.offsetHeight - head.offsetHeight);
+    const a = clamp((start - top) / Math.max(1, start - rest)), b = clamp((rest - top) / len);
+    return 0.25 * a + 0.75 * clamp(b / 0.8); // fully fallen at 80% of the hold, then a still beat to read it
   };
   const frame = (now) => {
     raf = 0;
