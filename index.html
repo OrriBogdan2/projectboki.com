@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=74">
+<link rel="stylesheet" href="assets/style.css?v=75">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -177,15 +177,17 @@
 </section>
 
 <section class="join">
-  <div class="join-bg" aria-hidden="true"><i class="beam"></i><i class="embers"></i></div>
+  <div class="join-bg" aria-hidden="true"></div>
   <div class="wrap" data-r>
-    <h2>Miss SUPERVIVE or Battlerite?<br>Join the playtest.</h2>
+    <p class="join-q">Miss SUPERVIVE or Battlerite?</p>
+    <h2>Join the playtest.</h2>
     <div class="cta">
       <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join the Discord</a>
       <a class="btn btn-glass" href="https://projectboki.itch.io/project-boki" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-play"/></svg>Play on itch.io</a>
     </div>
     <form class="signup" id="signup" hidden>
-      <label for="su-email">Or get playtest invites by email</label>
+      <label class="sr" for="su-email">Email for playtest invites</label>
+      <p class="su-or"><span>or get invites by email</span></p>
       <div class="su-row">
         <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
         <button class="btn btn-solid btn-sm" type="submit">Notify me</button>
