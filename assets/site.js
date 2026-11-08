@@ -86,7 +86,7 @@ function spinner(box, el) {
       if (!next) return;
       el.setAttribute("aria-label", `${name}'s in-game model on a stand`);
       box.classList.add("swap");
-      const still = `assets/img/hunters/3d/${next}.webp`, sheet = `assets/img/hunters/3d/${next}-spin.webp`;
+      const still = `assets/img/hunters/3d/${next}.webp?v=${MODEL_V}`, sheet = `assets/img/hunters/3d/${next}-spin.webp?v=${MODEL_V}`;
       const im = new Image();
       im.onload = () => {
         if (id !== next) return;
@@ -107,6 +107,7 @@ function spinner(box, el) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
+const MODEL_V = "2026-11-08"; // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
