@@ -1,7 +1,7 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
-ref origin/ext/release-integ-0243
-commit 87740413fa59d69ebebbed724a4791a2fe4db6cf
-built 2026-11-08T13:54Z
+ref origin/main
+commit d255acbee32b7e7e90dae98ac81779f9ab6737fa
+built 2026-11-08T16:41Z
 h_vex 540fffb132671a19d5301da91b47bc9413d65022 art/wardens/vex/vex.glb 5ee4b1279 2026-11-06
 h_breaker 3957d26ffd4f15437cd2416d08231d9ab326f2be art/wardens/breaker/breaker.glb 471b681ee 2026-11-05
 h_claire 1293760cd7a44e87568a9c0bd0a22fbf52f5c732 art/wardens/claire/claire.glb 5638cc64c 2026-11-07
