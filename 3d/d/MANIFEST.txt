@@ -1,19 +1,19 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/ext/release-integ-0243
 commit 87740413fa59d69ebebbed724a4791a2fe4db6cf
-built 2026-11-08T09:44Z
+built 2026-11-08T13:54Z
 h_vex 540fffb132671a19d5301da91b47bc9413d65022 art/wardens/vex/vex.glb 5ee4b1279 2026-11-06
+h_breaker 3957d26ffd4f15437cd2416d08231d9ab326f2be art/wardens/breaker/breaker.glb 471b681ee 2026-11-05
+h_claire 1293760cd7a44e87568a9c0bd0a22fbf52f5c732 art/wardens/claire/claire.glb 5638cc64c 2026-11-07
 h_kael 574f5ea6193e0c459c84cdb4a462b1ae3973c55a art/wardens/kael/kael.glb 36c5f7ea7 2026-11-08
 h_cinder 0dfadbbead3f0677764b94c32a21216f7c5836bf art/wardens/cinder/cinder.glb 766b44cdd 2026-11-07
-h_pip 512d845135566eb2f8b5e87a25a7cfabbc94d3f6 art/wardens/pip/pip.glb 399f2b017 2026-11-08
 h_tarek 47dddb44bf9f8597e956410a39e2de8f857e27d8 art/wardens/tarek/tarek.glb 7747ad995 2026-11-07
-h_hem 3e1af7ed2c6f8f19d84ba048f7a6dc15c957827f art/wardens/hem/hem.glb 91c6905ba 2026-11-07
-h_dredge 9c6ae38958c0c61574c14a6f0d50756b3618cee1 art/wardens/dredge/dredge.glb 54df2f18a 2026-11-07
-h_claire 1293760cd7a44e87568a9c0bd0a22fbf52f5c732 art/wardens/claire/claire.glb 5638cc64c 2026-11-07
-h_ostra ae32846ca795a13922fddfe580cad01ce825d186 art/wardens/ostra/ostra.glb 76f589389 2026-11-08
-h_breaker 3957d26ffd4f15437cd2416d08231d9ab326f2be art/wardens/breaker/breaker.glb 471b681ee 2026-11-05
 h_ryzz a7deb6b3cd7ebe9fbfab202958ad82939d98a083 art/wardens/ryzz/ryzz.glb 6355dee78 2026-11-07
+h_dredge 9c6ae38958c0c61574c14a6f0d50756b3618cee1 art/wardens/dredge/dredge.glb 54df2f18a 2026-11-07
+h_pip 512d845135566eb2f8b5e87a25a7cfabbc94d3f6 art/wardens/pip/pip.glb 399f2b017 2026-11-08
 h_sable cd6410d5bf2567d084ba7bfcc957fbb0d060731d art/wardens/sable/sable.glb 3e1816a6e 2026-11-07
+h_hem 3e1af7ed2c6f8f19d84ba048f7a6dc15c957827f art/wardens/hem/hem.glb 91c6905ba 2026-11-07
+h_ostra ae32846ca795a13922fddfe580cad01ce825d186 art/wardens/ostra/ostra.glb 76f589389 2026-11-08
 b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
 b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
 b_cairnback sha256:0959fad3084d43f0219ee10da162c49e4a5d27f3 snapshot
