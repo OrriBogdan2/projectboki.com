@@ -584,12 +584,41 @@ if (POSTHOG_KEY) {
   frame();
 })();
 
+/* ---------- Guided, not controlled: when you stop scrolling close to a resting point (a section's heading, then its
+   stage), the page eases the last bit into place. Far from one, it leaves you exactly where you stopped; any new
+   scroll, touch or key cancels it. (CSS scroll-snap was tried: browsers pull far too hard.) ---------- */
+(function () {
+  if (calm) return;
+  const phone = matchMedia("(max-width: 720px)");
+  const els = () => [...document.querySelectorAll(phone.matches ? "#hunters .head, #boki .head, #faq .head" : "#hunters .head, #hunters .stage, #boki .head, #boki .bk, #faq .head")];
+  const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; }; // layout position, ignoring scroll-linked transforms
+  let idle = 0, touching = false, settling = false;
+  const settle = () => {
+    if (touching) return;
+    const vh = innerHeight, y = scrollY;
+    let best = null;
+    els().forEach((el) => {
+      const to = docTop(el) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+      if (!best || Math.abs(to - y) < Math.abs(best - y)) best = to;
+    });
+    if (best === null || Math.abs(best - y) < 3 || Math.abs(best - y) > vh * 0.2) return; // close: ease in; far: leave it
+    settling = true;
+    scrollTo({ top: best, behavior: "smooth" });
+  };
+  addEventListener("scroll", () => { clearTimeout(idle); idle = setTimeout(() => { if (settling) { settling = false; return; } settle(); }, 180); }, { passive: true });
+  addEventListener("touchstart", () => { touching = true; settling = false; }, { passive: true });
+  addEventListener("touchend", () => { touching = false; }, { passive: true });
+  ["wheel", "keydown", "mousedown"].forEach((ev) => addEventListener(ev, () => { settling = false; }, { passive: true }));
+  addEventListener("hashchange", () => { settling = true; });
+})();
+
 /* ---------- "broken apart.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
    each letter, the letter splits into two shards along it, and the shards drop and tumble apart shedding chips, the red
    rising in them as they fall. Scroll up and it all runs backwards: chips back, shards rejoin, the crack seals and cools. ---------- */
 (function () {
   const h = document.querySelector(".h-crumble");
   if (!h) return;
+  const head = h.closest(".head") || h;
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const ease = (v) => v * v * (3 - 2 * v);
   let seed = 7;
@@ -646,7 +675,10 @@ if (POSTHOG_KEY) {
   const target = () => {
     const r = h.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
-    return clamp((vh * 0.62 - (r.top + r.height / 2)) / (vh * 0.48)); // whole until just above mid-screen, fully apart as it reaches the top
+    // whole until the heading is 80% down the screen; fully broken exactly where the scroll comes to rest on it
+    // (the heading's snap point, its scroll-margin-top), so the break finishes as you arrive and you get a beat to read it
+    const rest = parseFloat(getComputedStyle(head).scrollMarginTop) || vh * 0.16, start = vh * 0.8;
+    return clamp((start - head.getBoundingClientRect().top) / Math.max(1, start - rest));
   };
   const frame = (now) => {
     raf = 0;
