@@ -24,6 +24,7 @@ const revealed = document.querySelectorAll("[data-r]");
 if ("IntersectionObserver" in window && !calm) {
   // Rises into place on the way down; sinks back when you scroll up past it, so it rises again next time.
   // (Things that leave off the top stay put, so nothing flickers above you.)
+  document.querySelectorAll('[data-r="stagger"]').forEach((g) => [...g.children].forEach((c, i) => c.style.setProperty("--i", i)));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) e.target.classList.add("in");
@@ -583,12 +584,13 @@ if (POSTHOG_KEY) {
 (function () {
   const h = document.querySelector(".h-crumble");
   if (!h) return;
-  const ls = [...h.querySelectorAll(".crumble i[data-t]")].map((el) => ({ el, t: +el.dataset.t, x: +el.dataset.x, y: +el.dataset.y, r: +el.dataset.r }));
+  const ls = [...h.querySelectorAll(".crumble i[data-t]")].map((el) => ({ el, t: +el.dataset.t, x: +el.dataset.x, y: +el.dataset.y, r: +el.dataset.rot }));
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const ease = (v) => v * v * (3 - 2 * v);
   const paint = (p) => ls.forEach((l) => {
-    const k = ease(clamp((p - (1 - l.t) * 0.45) / 0.55)); // the end of the word goes first
-    l.el.style.transform = `translate(${(l.x * k).toFixed(3)}em, ${(l.y * k).toFixed(3)}em) rotate(${(l.r * k).toFixed(2)}deg)`;
+    const lin = clamp((p - (1 - l.t) * 0.5) / 0.5), k = ease(lin); // the end of the word goes first
+    // tips over first, then drops faster and faster, like it's actually falling
+    l.el.style.transform = `translate(${(l.x * k).toFixed(3)}em, ${(l.y * lin * lin).toFixed(3)}em) rotate(${(l.r * k).toFixed(2)}deg)`;
     l.el.style.setProperty("--f", (k * Math.pow(l.t, 0.7)).toFixed(3)); // red rises inside the letters that fall furthest
   });
   if (calm) { paint(1); return; }
@@ -598,7 +600,7 @@ if (POSTHOG_KEY) {
   const target = () => {
     const r = h.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
-    return clamp((vh * 0.55 - (r.top + r.height / 2)) / (vh * 0.3)); // whole until it passes mid-screen, apart near the top
+    return clamp((vh * 0.62 - (r.top + r.height / 2)) / (vh * 0.48)); // whole until just above mid-screen, fully apart as it reaches the top
   };
   const frame = (now) => {
     raf = 0;

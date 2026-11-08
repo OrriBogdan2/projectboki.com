@@ -34,7 +34,7 @@ h2 { font-size: clamp(42px, 6vw, 88px); }
 section { position: relative; }
 .head { text-align: center; margin-bottom: clamp(36px, 5vw, 60px); }
 .head .sub { margin-inline: auto; max-width: 30ch; text-wrap: balance; margin-top: 14px; font-family: "Lilita"; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.2; color: var(--ink-2); }
-.head .sub.one { max-width: none; white-space: nowrap; font-size: min(clamp(18px, 2.4vw, 32px), calc((100vw - 48px) / 28.5)); }
+.head .sub.one { max-width: none; white-space: nowrap; font-size: min(clamp(15px, 2.4vw, 32px), calc((100vw - 48px) / 33)); }
 .head p { text-wrap: balance; max-width: 34em; margin-inline: auto; margin-top: 18px; font-size: clamp(19px, 1.7vw, 23px); color: var(--soft); }
 
 /* ---------- buttons ---------- */
@@ -110,11 +110,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .js [data-r="stagger"] { opacity: 1; transform: none; }
 .js [data-r="stagger"] > * { opacity: 0; transform: translateY(32px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
 .js [data-r="stagger"].in > * { opacity: 1; transform: none; }
-.js [data-r="stagger"].in > :nth-child(2) { transition-delay: .08s; }
-.js [data-r="stagger"].in > :nth-child(3) { transition-delay: .16s; }
-.js [data-r="stagger"].in > :nth-child(4) { transition-delay: .24s; }
-.js [data-r="stagger"].in > :nth-child(5) { transition-delay: .32s; }
-.js [data-r="stagger"].in > :nth-child(6) { transition-delay: .4s; }
+.js [data-r="stagger"].in > * { transition-delay: calc(var(--i, 0) * 90ms); } /* one after another on the way in; together on the way out */
 @media (prefers-reduced-motion: reduce) {
   .js .hero-in > *, .js .hero-media, .js [data-r], .js [data-r="stagger"] > * { opacity: 1 !important; transform: none !important; transition: none !important; }
   .cast .row { animation: none; }
@@ -254,7 +250,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .band p { font-family: "Lilita"; font-size: clamp(20px, 2vw, 26px); }
 h1, h2, h3, .band p { text-wrap: balance; }
 /* Phones: the one-line Relic subline would shrink to ~13px, so let it wrap at a readable size */
-@media (max-width: 560px) { .head .sub.one { white-space: normal; font-size: 18px; max-width: 24ch; } }
+@media (max-width: 560px) { .head .sub.one { white-space: normal; font-size: 17px; max-width: 40ch; } }
 @media (max-width: 720px) { #boki .band { order: 5; flex-direction: column; text-align: center; padding: 22px; } #boki .band .btn { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { #bk-img { animation: none; } }
 
@@ -518,3 +514,6 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .su-row { transition: border-color .3s ease, background .3s ease; }
 .su-row:focus-within { border-color: rgba(255,255,255,.55); background: rgba(8,13,24,.7); }
 .su-row input:focus { outline: none; }
+/* FAQ cards: rise in one after another, but hover changes respond right away */
+.js .qa[data-r="stagger"] > details { transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1), background .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.js .qa[data-r="stagger"].in > details { transition-delay: calc(var(--i, 0) * 90ms), calc(var(--i, 0) * 90ms), 0s, 0s, 0s; }
