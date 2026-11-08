@@ -737,22 +737,29 @@ if (POSTHOG_KEY) {
   if (calm) { paint(0, true); return; } // reduced motion: cracked and glowing, nothing moves
   // The scroll sets where the letters should be; they ease there (falling with some weight, mending quicker),
   // so a fast flick doesn't snap them apart in one frame.
-  let cur = -1, raf = 0, last = 0;
+  const hold = document.getElementById("h-hold") || head;
+  const restOf = () => parseFloat(getComputedStyle(hold).scrollMarginTop) || innerHeight * 0.16;
+  let cur = -1, raf = 0, last = 0, floor = 0, play = null;
   const target = () => {
     const r = h.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
-    // whole until the heading is 80% down the screen; fully broken exactly where the scroll comes to rest on it
-    // (the heading's snap point, its scroll-margin-top), so the break finishes as you arrive and you get a beat to read it
     // The heading cracks on the way in, then holds (sticky) while the scroll pulls the pieces down: arriving gets
     // you the glowing crack, the next stretch of scroll is the fall, and only then does the page move on.
-    const hold = document.getElementById("h-hold") || head;
-    const rest = parseFloat(getComputedStyle(hold).scrollMarginTop) || vh * 0.16, start = vh * 0.8;
+    const rest = restOf(), start = vh * 0.8;
     const top = hold.getBoundingClientRect().top, len = Math.max(1, hold.offsetHeight - head.offsetHeight);
     const a = clamp((start - top) / Math.max(1, start - rest)), b = clamp((rest - top) / len);
-    return 0.25 * a + 0.75 * clamp(b / 0.8); // fully fallen at 80% of the hold, then a still beat to read it
+    if (floor && top > start) floor = 0; // back above it: from here on the scroll drives it both ways
+    return Math.max(floor, 0.25 * a + 0.75 * clamp(b / 0.8)); // fully fallen at 80% of the hold, then a still beat
   };
   const frame = (now) => {
     raf = 0;
+    if (play) { // the one-time showing: time drives it, not the scroll
+      const k = clamp((now - play.t0) / play.dur);
+      cur = play.from + (1 - play.from) * (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+      paint(cur);
+      if (k < 1) raf = requestAnimationFrame(frame); else { play = null; floor = 1; }
+      return;
+    }
     const want = target();
     if (want === null) { last = 0; return; }
     const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
@@ -762,8 +769,55 @@ if (POSTHOG_KEY) {
     paint(cur);
     if (cur !== want) raf = requestAnimationFrame(frame); else last = 0;
   };
+  // First time only: when your own scrolling brings the heading to its resting spot, the page pauses for a moment
+  // and plays the whole break, so a fast flick can't skip it. After that (and on later visits) the scroll is yours.
+  let seen = false; try { seen = localStorage.getItem("boki-crumbled") === "1"; } catch (e) {}
+  let input = 0, prevTop = Infinity, lockY = -1;
+  const mark = () => { input = performance.now(); };
+  addEventListener("wheel", mark, { passive: true }); addEventListener("touchmove", mark, { passive: true });
+  addEventListener("keydown", (e) => { if (/^(ArrowDown|PageDown|Space| |End)$/.test(e.key)) mark(); });
+  const block = (e) => { if (lockY >= 0) e.preventDefault(); };
+  const keys = (e) => { if (lockY >= 0 && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault(); };
+  const unlock = () => {
+    lockY = -1; document.documentElement.style.overflow = "";
+    removeEventListener("wheel", block); removeEventListener("touchmove", block); removeEventListener("keydown", keys);
+  };
+  const show = () => {
+    seen = true; try { localStorage.setItem("boki-crumbled", "1"); } catch (e) {}
+    lockY = Math.round(scrollY + hold.getBoundingClientRect().top - restOf());
+    if (matchMedia("(pointer: coarse)").matches) document.documentElement.style.overflow = "hidden"; // stops a phone's momentum
+    addEventListener("wheel", block, { passive: false }); addEventListener("touchmove", block, { passive: false }); addEventListener("keydown", keys);
+    scrollTo({ top: lockY, behavior: "instant" });
+    const from = Math.max(0, Math.min(cur < 0 ? 0 : cur, 0.25));
+    play = { t0: performance.now(), dur: 1500, from }; req();
+    setTimeout(unlock, 1650);
+  };
+  addEventListener("scroll", () => {
+    if (lockY >= 0) { if (Math.abs(scrollY - lockY) > 1) scrollTo({ top: lockY, behavior: "instant" }); return; }
+    const top = hold.getBoundingClientRect().top, rest = restOf();
+    if (!seen && prevTop > rest + 1 && top <= rest + 1 && top > rest - innerHeight && performance.now() - input < 600) show();
+    prevTop = top;
+  }, { passive: true });
   const req = () => { if (!raf) raf = requestAnimationFrame(frame); };
   addEventListener("scroll", req, { passive: true });
   addEventListener("resize", req);
   req();
+})();
+
+/* ---------- Press kit: Boki art comes from the /2d upload room (assets/boki2d.json); until then, "Coming soon." ---------- */
+(function () {
+  const grid = document.getElementById("pk-boki");
+  if (!grid) return;
+  fetch("assets/boki2d.json", { cache: "no-store" }).then((r) => r.json()).then((man) => {
+    const ids = Object.keys(man);
+    if (!ids.length) return;
+    ids.sort((a, b) => (man[a].name || a).localeCompare(man[b].name || b)).forEach((id) => {
+      const v = encodeURIComponent(man[id].v || ""), a = document.createElement("a");
+      a.className = "pk-boki"; a.href = `assets/img/boki2d/${id}-2400.webp?v=${v}`; a.target = "_blank";
+      a.innerHTML = `<img src="assets/img/boki2d/${id}-480.webp?v=${v}" alt="" loading="lazy"><span class="pk-cap"></span>`;
+      a.querySelector("img").alt = (man[id].name || id) + " art"; a.querySelector(".pk-cap").textContent = man[id].name || id;
+      grid.append(a);
+    });
+    grid.hidden = false; document.getElementById("pk-soon").hidden = true;
+  }).catch(() => {});
 })();

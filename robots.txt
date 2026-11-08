@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /3d/
+Disallow: /2d/
 
 Sitemap: https://projectboki.com/sitemap.xml
