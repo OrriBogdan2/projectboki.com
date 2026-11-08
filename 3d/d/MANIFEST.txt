@@ -1,0 +1,37 @@
+# Model Room source manifest (not secret). Stale check: build3d.py WORK --check
+ref origin/main
+commit 7907d9afef5ff44ed359d68e13b6bd912c3c8d91
+built 2026-11-08T05:30Z
+h_vex 81ed98ce499682e3e3b41653df6d256b9eed099d art/wardens/vex/vex.glb 3a5881e84 2026-11-05
+h_breaker 3957d26ffd4f15437cd2416d08231d9ab326f2be art/wardens/breaker/breaker.glb 471b681ee 2026-11-05
+h_ryzz 9770fda98e4abdc6d705fd7e0b3e20d80ecfaa2a art/wardens/ryzz/ryzz.glb 3a5881e84 2026-11-05
+h_kael a1d157565a7f165a00a2d407e97f148cc8c4b19e art/wardens/kael/kael.glb 8d37f24ca 2026-11-05
+h_hem d7db8baea6651a9a52b7c912a76e2f8e6c0555c0 art/wardens/hem/hem.glb 3a5881e84 2026-11-05
+h_claire 542a6f4ef11a26d3cbab854e4d75487791c1e8e9 art/wardens/claire/claire.glb 3a5881e84 2026-11-05
+h_dredge e1a6fd7ce677d2fa2c7845bf0c4a6ec2b39353e8 art/wardens/dredge/dredge.glb 3a5881e84 2026-11-05
+h_pip 877fa7ff25d43d27547308a73d0acd9bd2223e08 art/wardens/pip/pip.glb 3a5881e84 2026-11-05
+h_cinder 12f184fa53998c8b7fc1350b662a2c23b8a63c35 art/wardens/cinder/cinder.glb 3a5881e84 2026-11-05
+h_tarek 8d04cbf091b7d6ead7daf8a10be3f75b3738d9cb art/wardens/tarek/tarek.glb 3a5881e84 2026-11-05
+h_ostra a01fb6a52bfbd5f948e0f75fde452ae7c3e2d9f6 art/wardens/ostra/ostra.glb d8539695e 2026-11-05
+h_sable 74e7c1f4befec1ca855b823e6fa718994c53be44 art/wardens/sable/sable.glb 3a5881e84 2026-11-05
+b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
+b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
+b_cairnback sha256:0959fad3084d43f0219ee10da162c49e4a5d27f3 snapshot
+b_glintmole sha256:494f0ba86fce7dc07c70f0b39dc04a0cecf68847 snapshot
+b_mossgrade sha256:bfd02536bd144a6f9c621b4dc66bb074a5292c60 snapshot
+b_kestrike sha256:bba7bbee4287cbc4da43030281699faba3c8fd84 snapshot
+b_thrumbird sha256:ea83b46a315c58602ea95dc9bfd8dd3d7018c896 snapshot
+b_selenfin sha256:40f1c364a97ebfebcd1d030c965a96ec80218d20 snapshot
+b_burrlet sha256:63c87e53596c933de7fcaa34ca3ae7bb58edbaa1 snapshot
+b_puddlet sha256:22ebf3e432f54bdbcedb220bfbc2119ccadcaac0 snapshot
+b_wisplet sha256:c1a6a11e4f3bcea35a868c7164b92e74e2b59c57 snapshot
+b_zapple sha256:43944b45bcb8b683b888c090ae793bf19ee35adb snapshot
+b_hivara sha256:3d3def7496aad2d6baa90db0628620248d36c989 snapshot
+b_zephyrak sha256:060e9b7222a1a5b128bb76368e23a21b4f5d8abe snapshot
+b_kindlewren sha256:9bf398bd6f4c41abe0f93235237b105739c49ac1 snapshot
+b_rimeshrew sha256:88439b7a67444a2be55b89ba20ba56ba8de3e9c1 snapshot
+b_gloamshell sha256:2087311b533eb5557cb7b60dae9351722c5cfe22 snapshot
+b_nettlynx sha256:253af2e3d5d0927d0aa252738bb5630dcaa032ed snapshot
+b_lodestick sha256:de85d7b6fb3aa419b0c344db4c3178dc4d850f81 snapshot
+b_marchleaf sha256:30682dd6aa822ff9fcde45fe4445e8be8e5e2a2b snapshot
+b_glomwort sha256:a1c8a9456db96c701e65f446453aa3d468f3ca25 snapshot
