@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project Boki: raise unique creatures, survive deadly extractions</title>
-<meta name="description" content="Project Boki is a creature raising game where you catch new creatures through entering deadly extractions. It feels like a MOBA, but uses WASD controls and a complex physics system.">
+<meta name="description" content="Project Boki is a creature-raising game where you catch new creatures in deadly extractions. It plays like a MOBA, with WASD controls and real physics.">
 <meta name="theme-color" content="#080d18">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=89">
+<link rel="stylesheet" href="assets/style.css?v=90">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -113,12 +113,8 @@
         <div class="bk-meta"><span id="bk-size">Small</span><span id="bk-found">Starter egg</span></div>
       </div>
     </div>
-    <div class="pick-label" data-r><b>Choose a Boki</b><span class="swipe">Swipe for all 21 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-    <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose a Boki" data-r></div>
-    <div class="band" data-r>
-      <p>Your first Boki is waiting in the playtest.</p>
-      <a class="btn btn-solid btn-sm js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
-    </div>
+    <div class="pick-label" data-r><b>Choose your Boki</b><span class="swipe">Swipe for all 21 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+    <div class="bk-pick" id="bk-pick" role="group" aria-label="Choose your Boki" data-r></div>
   </div>
 </section>
 <section id="how" class="how" aria-label="How it works">
@@ -141,7 +137,7 @@
         <div class="step-text">
           <p class="step-n">02</p>
           <h3>Squad up.</h3>
-          <p class="step-sub"><span>Squads of three.</span><span>Cover each other, or fall together.</span></p>
+          <p class="step-sub"><span>Three Hunters.</span><span>Cover each other, or fall together.</span></p>
         </div>
       </div>
     </article>
@@ -160,18 +156,15 @@
 </section>
 
 <section id="faq" class="faq">
-  <div class="wrap faq-grid">
-    <div class="faq-side" data-r>
-      <h2>FAQ</h2>
-      <img class="faq-boki" src="assets/img/boki/vespyx-900.webp" width="900" height="900" alt="" loading="lazy">
-    </div>
+  <div class="wrap faq-in">
+    <header class="head" data-r><h2>FAQ</h2></header>
     <div class="qa" data-r="stagger">
-      <details><summary><i>01</i><span>What is Project Boki?</span></summary><div class="a"><p>Project Boki is a creature raising game where you catch new creatures through entering deadly extractions. It feels like a MOBA, but uses WASD controls and a complex physics system.</p></div></details>
-      <details><summary><i>02</i><span>What are Boki?</span></summary><div class="a"><p>Boki are mini AI creatures that learn to fight with you, bond with you, and grow into a unique pet. You can claim more by heading into expeditions - just be careful not to die...</p></div></details>
-      <details><summary><i>03</i><span>Can I lose my Boki?</span></summary><div class="a"><p>At higher tiers, yes. Go down and another squad can take your Boki home. You can track who took it, then try to negotiate to get it back.</p></div></details>
-      <details><summary><i>04</i><span>Is it pay to win?</span></summary><div class="a"><p>No. Boki and power are never sold. You only pay for the game and cosmetics.</p></div></details>
-      <details><summary><i>05</i><span>Are there loot boxes or paid eggs?</span></summary><div class="a"><p>No loot boxes, no paid eggs or rolls, and no energy or timers.</p></div></details>
-      <details><summary><i>06</i><span>How do I play?</span></summary><div class="a"><p>The current build is on itch.io. Join our Discord to get into playtests.</p></div></details>
+      <details><summary>What is Project Boki?</summary><div class="a"><p>A creature-raising game where you catch new creatures in deadly extractions. It plays like a MOBA, with WASD controls and real physics.</p></div></details>
+      <details><summary>What are Boki?</summary><div class="a"><p>Small creatures that learn to fight beside you, bond with you and grow into a pet like no other. Find more in extractions. Just try not to die.</p></div></details>
+      <details><summary>Can I lose my Boki?</summary><div class="a"><p>At higher tiers, yes. Go down and another squad can take your Boki home. You can track who took it and negotiate to get it back.</p></div></details>
+      <details><summary>Is it pay to win?</summary><div class="a"><p>No. Boki and power are never sold. You only pay for the game and cosmetics.</p></div></details>
+      <details><summary>Are there loot boxes or paid eggs?</summary><div class="a"><p>No loot boxes, no paid eggs or rolls, and no energy or timers.</p></div></details>
+      <details><summary>How do I play?</summary><div class="a"><p>The current build is on itch.io. Join our Discord to get into playtests.</p></div></details>
     </div>
   </div>
 </section>
