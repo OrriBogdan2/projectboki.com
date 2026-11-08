@@ -221,7 +221,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
 .lore { padding-top: calc(var(--sec) * .55); }
-.head .sub.wide { max-width: 40ch; }
+.head .sub.wide { max-width: 44ch; }
+.lore .eyebrow { margin-bottom: 10px; }
 .lore .head { margin-bottom: clamp(4px, 1.5vw, 16px); position: relative; z-index: 2; }
 .lore-art { position: relative; isolation: isolate; overflow: hidden; }
 .lore-art img { display: block; width: 100%; height: auto; max-height: 88svh; object-fit: cover; object-position: 50% 35%; }
