@@ -586,10 +586,15 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 
 /* ---------- Hunters scene: "broken apart." sits over the held stage, breaks, then fades into the Hunters ---------- */
 #hunters.scene .h-pin { position: sticky; }
-#hunters.scene .h-intro { position: absolute; inset: 0; z-index: 4; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; will-change: opacity, transform; }
-#hunters.scene .h-intro[data-r] { transition: none; }
-.js #hunters.scene .h-pin > .stage[data-r], .js #hunters.scene .h-pin > .pick-label[data-r], .js #hunters.scene .h-pin > .pick[data-r] { transition: none; will-change: opacity, transform; }
-#hunters.scene:not(.scene-on) .h-pin > .stage, #hunters.scene:not(.scene-on) .h-pin > .pick { pointer-events: none; }
+.js #hunters.scene .h-intro[data-r] { position: absolute; inset: 0; z-index: 4; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;
+  opacity: 1; transform: none; transition: opacity .5s ease .25s, transform .7s cubic-bezier(.2,.8,.2,1) .25s; }
+.js #hunters.scene.scene-on .h-intro[data-r] { opacity: 0; transform: translate3d(0, -26px, 0) scale(.97); transition-delay: 0s, 0s; }
+.js #hunters.scene .h-pin > .stage[data-r], .js #hunters.scene .h-pin > .pick-label[data-r], .js #hunters.scene .h-pin > .pick[data-r] {
+  opacity: 0; transform: translate3d(0, 26px, 0) scale(.97); transition: opacity .4s ease, transform .5s ease; pointer-events: none; }
+.js #hunters.scene.scene-on .h-pin > .stage[data-r], .js #hunters.scene.scene-on .h-pin > .pick-label[data-r], .js #hunters.scene.scene-on .h-pin > .pick[data-r] {
+  opacity: 1; transform: none; pointer-events: auto; transition: opacity .6s ease .3s, transform .8s cubic-bezier(.2,.8,.2,1) .3s; }
+.js #hunters.scene.scene-on .h-pin > .pick-label[data-r] { transition-delay: .4s, .4s; }
+.js #hunters.scene.scene-on .h-pin > .pick[data-r] { transition-delay: .48s, .48s; }
 
 /* Hunter splash: a small expand button opens the full art; arrows are compact */
 .shot { position: relative; }

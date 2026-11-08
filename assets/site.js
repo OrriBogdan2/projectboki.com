@@ -231,17 +231,15 @@ if (pick) {
   // The Hunters scene: the stage holds in place (sticky) for a stretch. "broken apart." arrives over it, breaks while
   // you scroll, then fades out as the stage fades in, so the heading turns into the Hunters instead of scrolling away.
   // On desktop the stage then keeps holding while the scroll steps through every Hunter.
-  const intro = $("h-intro"), fadeEls = [...track.querySelectorAll(".h-pin > .stage, .h-pin > .pick-label, .h-pin > .pick")];
-  let scn = null;
+  // Once the break has played and you scroll on, the heading fades out and the stage fades in (timed, in CSS).
+  let scn = null, sceneOn = false;
   const sceneFrame = () => {
     if (!scn) return;
-    const f = Math.min(1, Math.max(0, (scrollY - scn.s0 - scn.crumble) / scn.fade)), e = f * f * (3 - 2 * f);
-    intro.style.opacity = (1 - Math.min(1, e / 0.5)).toFixed(3); // out first, then the stage comes in: never text over art
-    intro.style.transform = `translate3d(0, ${(-28 * e).toFixed(1)}px, 0) scale(${(1 - 0.04 * e).toFixed(4)})`;
-    const g = Math.min(1, Math.max(0, (e - 0.38) / 0.62));
-    fadeEls.forEach((el) => { el.style.opacity = g.toFixed(3); el.style.transform = `translate3d(0, ${(26 * (1 - g)).toFixed(1)}px, 0) scale(${(0.97 + 0.03 * g).toFixed(4)})`; });
-    sec.classList.toggle("scene-on", g > 0.5);
+    const y = scrollY, done = !window.bokiCrumble || window.bokiCrumble.done();
+    const want = sceneOn ? y > scn.s0 + scn.crumble * 0.6 : (y >= scn.s0 + scn.crumble && done) || y > scn.s0 + scn.crumble + scn.fade;
+    if (want !== sceneOn) { sceneOn = want; sec.classList.toggle("scene-on", want); }
   };
+  window.bokiSceneTick = sceneFrame;
   const layoutPin = () => {
     if (!track) return;
     const on = wide.matches && !calm;
@@ -251,7 +249,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const crumble = Math.round(vh * (on ? 0.46 : 0.38)), fade = Math.round(vh * 0.4), lead = crumble + fade;
+    const crumble = Math.round(vh * (on ? 0.46 : 0.38)), fade = Math.round(vh * 0.22), lead = crumble + fade;
     const step = Math.max(220, Math.round(vh * 0.3));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
@@ -268,7 +266,11 @@ if (pick) {
   };
   let pinTick = false;
   addEventListener("scroll", () => { if (scn && !pinTick) { pinTick = true; requestAnimationFrame(() => { pinTick = false; sceneFrame(); pinScroll(); }); } }, { passive: true });
-  addEventListener("resize", layoutPin);
+  let lw = innerWidth, lh = innerHeight;
+  addEventListener("resize", () => { // phones resize as the toolbar hides on scroll: only re-measure on a real change
+    if (innerWidth === lw && Math.abs(innerHeight - lh) < 160 && matchMedia("(pointer: coarse)").matches) return;
+    lw = innerWidth; lh = innerHeight; layoutPin();
+  });
   addEventListener("load", layoutPin);
   wide.addEventListener && wide.addEventListener("change", layoutPin);
   layoutPin();
@@ -757,70 +759,49 @@ if (POSTHOG_KEY) {
     });
   });
   if (calm) { paint(0, true); return; } // reduced motion: cracked and glowing, nothing moves
-  // The scroll sets where the letters should be; they ease there (falling with some weight, mending quicker),
-  // so a fast flick doesn't snap them apart in one frame.
-  let cur = -1, raf = 0, last = 0, floor = 0, play = null;
-  const target = () => {
-    const r = h.getBoundingClientRect(), vh = innerHeight, sc = window.bokiScene;
-    if (!sc || r.bottom < -vh * 0.5 || r.top > vh * 1.5) return null; // far off screen: leave it
-    // Arriving cracks it (the stage holds still from here); the next stretch of scroll pulls the pieces down,
-    // fully fallen at 80% of it, a still beat, then the heading fades into the Hunters.
-    const a = clamp(1 - (sc.s0 - scrollY) / (vh * 0.55)), b = clamp((scrollY - sc.s0) / sc.crumble);
-    if (floor && a <= 0) floor = 0; // back above it: from here on the scroll drives it both ways
-    return Math.max(floor, 0.25 * a + 0.75 * clamp(b / 0.8));
-  };
+  // Timed, not scrubbed, so it looks the same however you scroll: reach the heading and it breaks over 1.5s;
+  // scroll well back above it and it mends. The first pass on each visit also pauses the page until the break is done.
+  const FWD = 1.5, BACK = 0.7;
+  const inout = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+  let t = 0, dir = 0, raf = 0, last = 0;
   const frame = (now) => {
     raf = 0;
-    if (play) { // the one-time showing: time drives it, not the scroll
-      const k = clamp((now - play.t0) / play.dur);
-      cur = play.from + (1 - play.from) * (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
-      paint(cur);
-      if (k < 1) raf = requestAnimationFrame(frame); else { play = null; floor = 1; }
-      return;
-    }
-    const want = target();
-    if (want === null) { last = 0; return; }
     const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
-    if (cur < 0) cur = want;
-    cur += (want - cur) * (1 - Math.exp(-dt / (want > cur ? 0.2 : 0.11)));
-    if (Math.abs(want - cur) < 0.002) cur = want;
-    paint(cur);
-    if (cur !== want) raf = requestAnimationFrame(frame); else last = 0;
+    t = clamp(t + dir * dt / (dir > 0 ? FWD : BACK));
+    paint(inout(t));
+    if ((dir > 0 && t < 1) || (dir < 0 && t > 0)) raf = requestAnimationFrame(frame);
+    else { last = 0; if (window.bokiSceneTick) window.bokiSceneTick(); }
   };
-  // First time only: when your own scrolling brings the heading to its resting spot, the page pauses for a moment
-  // and plays the whole break, so a fast flick can't skip it. After that (and on later visits) the scroll is yours.
-  let seen = false; try { seen = localStorage.getItem("boki-crumbled") === "1"; } catch (e) {}
-  let input = 0, prevTop = scrollY, lockY = -1;
-  const mark = () => { input = performance.now(); };
-  addEventListener("wheel", mark, { passive: true }); addEventListener("touchmove", mark, { passive: true });
-  addEventListener("keydown", (e) => { if (/^(ArrowDown|PageDown|Space| |End)$/.test(e.key)) mark(); });
-  const block = (e) => { if (lockY >= 0) e.preventDefault(); };
-  const keys = (e) => { if (lockY >= 0 && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault(); };
+  const go = (d) => { if (d === dir) return; dir = d; last = 0; if (!raf) raf = requestAnimationFrame(frame); };
+  window.bokiCrumble = { done: () => t >= 1 };
+  paint(0);
+
+  let played = false, locked = false, lockY = 0, jump = 0, prevY = scrollY;
+  document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
+  addEventListener("hashchange", () => { jump = performance.now(); });
+  const block = (e) => { if (locked) e.preventDefault(); };
+  const keys = (e) => { if (locked && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault(); };
   const unlock = () => {
-    lockY = -1; document.documentElement.style.overflow = "";
+    locked = false; document.documentElement.style.overflow = ""; document.body.style.overflow = "";
     removeEventListener("wheel", block); removeEventListener("touchmove", block); removeEventListener("keydown", keys);
   };
-  const show = () => {
-    seen = true; try { localStorage.setItem("boki-crumbled", "1"); } catch (e) {}
-    lockY = Math.round(window.bokiScene.s0);
-    if (matchMedia("(pointer: coarse)").matches) document.documentElement.style.overflow = "hidden"; // stops a phone's momentum
+  const lock = (y) => {
+    locked = true; lockY = y;
+    if (matchMedia("(pointer: coarse)").matches) { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; } // stops a phone's momentum
     addEventListener("wheel", block, { passive: false }); addEventListener("touchmove", block, { passive: false }); addEventListener("keydown", keys);
-    scrollTo({ top: lockY, behavior: "instant" });
-    const from = Math.max(0, Math.min(cur < 0 ? 0 : cur, 0.25));
-    play = { t0: performance.now(), dur: 1500, from }; req();
-    setTimeout(unlock, 1650);
+    scrollTo({ top: y, behavior: "instant" });
+    setTimeout(unlock, Math.max(600, (1 - t) * FWD * 1000 + 200));
   };
   addEventListener("scroll", () => {
-    if (lockY >= 0) { if (Math.abs(scrollY - lockY) > 1) scrollTo({ top: lockY, behavior: "instant" }); return; }
+    if (locked) { if (Math.abs(scrollY - lockY) > 1) scrollTo({ top: lockY, behavior: "instant" }); return; }
     const sc = window.bokiScene; if (!sc) return;
-    const y = scrollY;
-    if (!seen && prevTop < sc.s0 - 1 && y >= sc.s0 - 1 && y < sc.s0 + sc.crumble && performance.now() - input < 600) show();
-    prevTop = y;
+    const y = scrollY, vh = innerHeight;
+    if (y >= sc.s0 - vh * 0.15) go(1);
+    else if (y < sc.s0 - vh * 0.4) go(-1);
+    if (!played && prevY < sc.s0 && y >= sc.s0 && y < sc.s0 + sc.crumble + sc.fade && performance.now() - jump > 1500) { played = true; if (t < 1) lock(Math.round(sc.s0)); }
+    else if (y >= sc.s0) played = true; // already past it (a link, or a reload lower down): no pause this visit
+    prevY = y;
   }, { passive: true });
-  const req = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  addEventListener("scroll", req, { passive: true });
-  addEventListener("resize", req);
-  req();
 })();
 
 /* ---------- Press kit: Boki art comes from the /2d upload room (assets/boki2d.json); until then, "Coming soon." ---------- */
