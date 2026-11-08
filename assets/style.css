@@ -220,15 +220,17 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button[aria-pressed="true"] { opacity: 1; border-color: var(--g); box-shadow: 0 0 0 3px color-mix(in srgb, var(--g) 25%, transparent), 0 10px 30px -10px color-mix(in srgb, var(--g) 60%, transparent); }
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
-.lore { position: relative; isolation: isolate; overflow: hidden; }
-.lore img { display: block; width: 100%; height: auto; max-height: 92svh; object-fit: cover; object-position: 50% 35%; }
-.lore::before, .lore::after { content: ""; position: absolute; left: 0; right: 0; height: 22%; z-index: 1; pointer-events: none; }
-.lore::before { top: 0; background: linear-gradient(var(--bg), transparent); }
-.lore::after { bottom: 0; background: linear-gradient(transparent, var(--bg)); }
-.lore:has(+ .faq)::after { background: linear-gradient(transparent, var(--bg-2)); }
+.lore { padding-top: calc(var(--sec) * .55); }
+.head .sub.wide { max-width: 40ch; }
+.lore .head { margin-bottom: clamp(4px, 1.5vw, 16px); position: relative; z-index: 2; }
+.lore-art { position: relative; isolation: isolate; overflow: hidden; }
+.lore-art img { display: block; width: 100%; height: auto; max-height: 88svh; object-fit: cover; object-position: 50% 35%; }
+.lore-art::before, .lore-art::after { content: ""; position: absolute; left: 0; right: 0; height: 22%; z-index: 1; pointer-events: none; }
+.lore-art::before { top: 0; background: linear-gradient(var(--bg), transparent); }
+.lore-art::after { bottom: 0; background: linear-gradient(transparent, var(--bg)); }
+.lore:has(+ .faq) .lore-art::after { background: linear-gradient(transparent, var(--bg-2)); }
 .lore + .faq { border-top: 0; }
-.lore-copy { position: absolute; z-index: 2; left: 0; right: 0; bottom: clamp(24px, 6vw, 80px); text-align: center; }
-@media (max-width: 720px) { .lore::before, .lore::after { height: 14%; } }
+@media (max-width: 720px) { .lore-art::before, .lore-art::after { height: 14%; } }
 .band p { font-family: "Lilita"; font-size: clamp(20px, 2vw, 26px); }
 h1, h2, h3, .band p { text-wrap: balance; }
 /* Phones: the one-line Relic subline would shrink to ~13px, so let it wrap at a readable size */
