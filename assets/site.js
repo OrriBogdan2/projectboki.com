@@ -22,9 +22,14 @@ if (calm) {
 // Reveal sections as they come into view.
 const revealed = document.querySelectorAll("[data-r]");
 if ("IntersectionObserver" in window && !calm) {
+  // Rises into place on the way down; sinks back when you scroll up past it, so it rises again next time.
+  // (Things that leave off the top stay put, so nothing flickers above you.)
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-  }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+    entries.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add("in");
+      else if (e.boundingClientRect.top > innerHeight * 0.5) e.target.classList.remove("in");
+    });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.06 });
   revealed.forEach((el) => io.observe(el));
 } else {
   revealed.forEach((el) => el.classList.add("in"));
@@ -38,6 +43,7 @@ if (media && "IntersectionObserver" in window) {
 
 // Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
 const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
+const hunIn = document.querySelector("#hunters > .wrap"); // trails the sheet a little as it slides up, then settles
 if (heroIn && !calm) {
   let ticking = false;
   const ease = (v) => 1 - Math.pow(1 - v, 2);
@@ -51,6 +57,7 @@ if (heroIn && !calm) {
     heroIn.style.opacity = String(Math.max(0, 1 - t * 1.6).toFixed(3));
     if (media) media.style.transform = `scale(${(1 + 0.12 * e).toFixed(4)})`;
     if (heroDim) heroDim.style.opacity = (0.75 * t).toFixed(3);
+    if (hunIn) hunIn.style.transform = t < 1 ? `translate3d(0, ${(110 * (1 - e)).toFixed(1)}px, 0)` : "";
   };
   window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(draw); } }, { passive: true });
   window.addEventListener("resize", draw);
