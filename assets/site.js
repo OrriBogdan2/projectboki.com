@@ -32,19 +32,21 @@ if ("IntersectionObserver" in window && !calm) {
 
 const media = document.getElementById("hero-media");
 
-// Hero content drifts back and fades as you scroll past it.
-const heroIn = document.getElementById("hero-in");
+// Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
+const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
 if (heroIn && !calm) {
   let ticking = false;
+  const ease = (v) => 1 - Math.pow(1 - v, 2);
   const draw = () => {
     ticking = false;
-    const h = window.innerHeight, y = Math.min(window.scrollY, h);
-    const t = y / h;
-    heroIn.style.transform = `translate3d(0, ${y * 0.3}px, 0)`;
-    heroIn.style.opacity = String(Math.max(0, 1 - t * 1.5));
-    if (media) media.style.transform = `translate3d(0, ${y * 0.25}px, 0)`;
+    const h = heroEl.offsetHeight, t = Math.min(1, Math.max(0, window.scrollY / h)), e = ease(t);
+    heroIn.style.transform = `translate3d(0, ${(-h * 0.14 * e).toFixed(1)}px, 0) scale(${(1 - 0.1 * e).toFixed(4)})`;
+    heroIn.style.opacity = String(Math.max(0, 1 - t * 1.6).toFixed(3));
+    if (media) media.style.transform = `scale(${(1 + 0.12 * e).toFixed(4)})`;
+    if (heroDim) heroDim.style.opacity = (0.75 * t).toFixed(3);
   };
   window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(draw); } }, { passive: true });
+  window.addEventListener("resize", draw);
   draw();
 }
 

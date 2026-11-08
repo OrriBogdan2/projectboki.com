@@ -81,6 +81,12 @@ section { position: relative; }
   linear-gradient(180deg, rgba(5,8,15,.65) 0%, rgba(5,8,15,0) 18%),
   linear-gradient(0deg, var(--bg) 0%, rgba(8,13,24,.92) 16%, rgba(8,13,24,.55) 38%, rgba(8,13,24,0) 62%),
   radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(5,8,15,.7) 100%), radial-gradient(ellipse 55% 45% at 50% 70%, rgba(5,8,15,.55), transparent 80%); }
+/* The hero pins while the Hunters section slides up over it like a sheet */
+.hero-wrap { height: calc(2 * max(100vh, 620px)); height: calc(2 * max(100svh, 620px)); }
+.hero { position: sticky; top: 0; }
+.hero-wrap + .hunters { position: relative; z-index: 2; margin-top: calc(-1 * max(100vh, 620px)); margin-top: calc(-1 * max(100svh, 620px)); border-radius: 32px 32px 0 0; box-shadow: 0 -24px 60px -12px rgba(0,0,0,.65), 0 -1px 0 rgba(255,255,255,.08); }
+.hero-dim { position: absolute; inset: 0; z-index: 1; background: #04070e; opacity: 0; pointer-events: none; }
+.hero-in { position: relative; z-index: 2; }
 .hero-in { display: flex; flex-direction: column; align-items: center; will-change: transform, opacity; }
 .lockup { display: block; margin: 0; line-height: 0; }
 .lockup .wordmark { width: clamp(300px, 46vw, 720px); height: auto; filter: drop-shadow(0 12px 40px rgba(0,0,0,.6)); }
