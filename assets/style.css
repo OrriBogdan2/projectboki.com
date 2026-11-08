@@ -359,10 +359,12 @@ h1, h2, h3, .band p { text-wrap: balance; }
   .tiles li { flex: 0 0 72%; scroll-snap-align: start; }
   .stage { border-radius: 18px; }
   .stage::after { display: none; }
-  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 50%; grid-template-areas: "shot shot" "info fig"; align-items: end; }
+  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 42%; grid-template-areas: "shot shot" "info fig"; align-items: end; }
   .shot { grid-area: shot; }
-  .info { grid-area: info; position: static; width: auto; padding: 18px 0 24px 20px; }
-  .fig { grid-area: fig; position: relative; right: auto; height: auto; width: 100%; margin-top: -40%; }
+  .info { grid-area: info; position: static; width: auto; padding: 18px 0 24px 20px; position: relative; z-index: 3; pointer-events: none; }
+  .info h3, .info .title { white-space: nowrap; }
+  .info .title { font-size: 15px; letter-spacing: .05em; }
+  .fig { grid-area: fig; position: relative; right: auto; height: auto; width: 119%; margin-left: -19%; margin-top: -48%; } /* same size as before; its clear left edge overlaps the text column */
   .fig-hint { display: none; }
   .info h3 { font-size: 42px; }
   .relic { font-size: 13px; white-space: nowrap; gap: 8px; padding-right: 12px; }

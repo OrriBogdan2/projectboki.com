@@ -262,7 +262,26 @@ if (pick) {
     for (let y = y0; y <= y1; y++) for (let x = 0; x < w; x++) if (on(x, y)) { sum += x; n++; break; }
     return n ? sum / n - px / 2 : 0;
   };
+  // Phones: every name and title stays on one line, all sized to fit the longest, so the box keeps one height.
+  const fitInfo = () => {
+    const n = $("h-name"), t = $("h-title"), info = t.closest(".info");
+    n.style.fontSize = t.style.fontSize = "";
+    if (getComputedStyle(t).whiteSpace !== "nowrap") return;
+    const cs = getComputedStyle(info), room = info.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;
+    const widest = (el, k) => {
+      const c = getComputedStyle(el), sp = document.createElement("span");
+      Object.assign(sp.style, { font: c.font, letterSpacing: c.letterSpacing, textTransform: c.textTransform, whiteSpace: "nowrap", position: "absolute", visibility: "hidden" });
+      document.body.appendChild(sp);
+      const w = Math.max(...HUNTERS.map((h) => { sp.textContent = h[k]; return sp.getBoundingClientRect().width; }));
+      sp.remove(); return w;
+    };
+    [[n, 1], [t, 2]].forEach(([el, k]) => {
+      const w = widest(el, k);
+      if (w > room) el.style.fontSize = (Math.floor(parseFloat(getComputedStyle(el).fontSize) * room / w * 2) / 2) + "px";
+    });
+  };
   function alignTitle() {
+    fitInfo();
     const n = $("h-name"), t = $("h-title");
     t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0], true) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
     $("h-role").style.marginLeft = t.style.paddingLeft;
