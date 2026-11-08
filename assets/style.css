@@ -660,3 +660,11 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .bm-txt p { font-size: 16px; }
   .bm .bk-arrow { top: 36%; }
 }
+
+/* Press kit Boki art: wide turnaround sheets, name underneath */
+#pk-boki { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+#pk-boki .pk-boki { display: grid; background: var(--bg-2); border: 1px solid var(--line); }
+#pk-boki .pk-boki::after { display: none; }
+#pk-boki .pk-boki img { aspect-ratio: 16 / 9; height: auto; padding: 0; object-fit: contain; background: #e9e6f0; }
+#pk-boki .pk-boki .pk-cap { position: static; padding: 9px 12px 10px; text-align: left; font-size: 16px; text-shadow: none; }
+@media (max-width: 600px) { #pk-boki { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } #pk-boki .pk-boki .pk-cap { font-size: 14px; padding: 7px 10px 8px; } }

@@ -860,12 +860,13 @@ if (POSTHOG_KEY) {
   const grid = document.getElementById("pk-boki");
   if (!grid) return;
   fetch("assets/boki2d.json", { cache: "no-store" }).then((r) => r.json()).then((man) => {
-    const ids = Object.keys(man);
+    const HIDE = ["glintmole", "gloamshell", "glomwort", "rimeshrew", "selenfin"]; // working pose grids, not press art: hidden until they have turnarounds
+    const ids = Object.keys(man).filter((id) => !HIDE.includes(id));
     if (!ids.length) return;
     ids.sort((a, b) => (man[a].name || a).localeCompare(man[b].name || b)).forEach((id) => {
       const v = encodeURIComponent(man[id].v || ""), a = document.createElement("a");
       a.className = "pk-boki"; a.href = `assets/img/boki2d/${id}-2400.webp?v=${v}`; a.target = "_blank";
-      a.innerHTML = `<img src="assets/img/boki2d/${id}-480.webp?v=${v}" alt="" loading="lazy"><span class="pk-cap"></span>`;
+      a.innerHTML = `<img src="assets/img/boki2d/${id}-480.webp?v=${v}" srcset="assets/img/boki2d/${id}-480.webp?v=${v} 480w, assets/img/boki2d/${id}-1200.webp?v=${v} 1200w" sizes="(max-width: 600px) 50vw, 300px" alt="" loading="lazy"><span class="pk-cap"></span>`;
       a.querySelector("img").alt = (man[id].name || id) + " art"; a.querySelector(".pk-cap").textContent = man[id].name || id;
       grid.append(a);
     });
