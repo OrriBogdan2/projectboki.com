@@ -308,7 +308,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
   .bk { grid-template-columns: 1fr; }
   .bk-sheet { border-left: 0; border-top: 1px solid var(--line); }
   .bk-sheet p { min-height: 0; }
-  .pick { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 16px 8px 18px; margin-inline: -8px; margin-top: 2px; margin-bottom: -10px; }
+  .pick { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 16px 16px 18px; margin-inline: -16px; scroll-padding-inline: 16px; margin-top: 2px; margin-bottom: -10px; }
   .pick::-webkit-scrollbar { display: none; }
   .pick button { flex: 0 0 104px; scroll-snap-align: start; }
 }
