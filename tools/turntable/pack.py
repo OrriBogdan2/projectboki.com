@@ -17,9 +17,29 @@ the true order, with the range eased so the small ones stay readable. Pack all t
 Prints the POSE table for assets/site.js: id -> [[frames of each emote], idle frames]."""
 import sys, os, json, numpy as np
 from PIL import Image
-src, dst, args = sys.argv[1], sys.argv[2], sys.argv[3:]
+src, dst, args = sys.argv[1], sys.argv[2], [a for a in sys.argv[3:] if not a.startswith("--")]
+STAND = "--stand" in sys.argv   # renders made with --no-stand: draw one identical stand under every Hunter
 PC, W, H = 10, 450, 450   # square frames: room for wide Hunters (Albert's hammer and shield)
 CW = 900                  # the 720x900 renders are centred on a 900x900 canvas
+FEET = 806                # with --stand: where every Hunter's feet land (the stand's top face is centred just above)
+SR, SE, ST = 172, 0.27, 34  # stand radius (px), ellipse squash (the camera's tilt), side thickness (px)
+
+def stand_img():
+    """The display stand, drawn once: dark base, a darker top face, a gold ring near the rim (as hunters.gd's _stand)."""
+    from PIL import ImageDraw
+    q = 4; W = CW * q; im = Image.new("RGBA", (W, W)); d = ImageDraw.Draw(im)
+    cx, cy = CW / 2 * q, (FEET - 0.25 * SR * SE) * q
+    r, ry, t = SR * q, SR * SE * q, ST * q
+    rb = r * 1.075                                       # the base flares a little at the bottom
+    d.ellipse([cx - rb, cy + t - rb * SE, cx + rb, cy + t + rb * SE], fill=(18, 23, 36, 255))
+    d.polygon([(cx - r, cy), (cx + r, cy), (cx + rb, cy + t), (cx - rb, cy + t)], fill=(26, 32, 48, 255))
+    d.ellipse([cx - r, cy - ry, cx + r, cy + ry], fill=(30, 37, 56, 255))
+    ri = r * 0.94; w = max(3, int(5.5 * q))
+    d.ellipse([cx - ri, cy - ri * SE, cx + ri, cy + ri * SE], outline=(255, 176, 46, 255), width=w)
+    rt = r * 0.9
+    d.ellipse([cx - rt, cy - rt * SE, cx + rt, cy + rt * SE], fill=(28, 35, 53, 255))
+    return im.resize((CW, CW), Image.LANCZOS)
+STAND_IM = stand_img() if STAND else None
 table = {}
 fit = {}
 for arg in args:
@@ -28,7 +48,7 @@ for arg in args:
     except FileNotFoundError: print(h, "has no .fit: not rescaled", file=sys.stderr)
 EASE, FILL = 0.6, 840   # size follows height^EASE; the tallest stands FILL px of the 900 frame
 def px_h(h):
-    a = np.asarray(Image.open(f"{src}/{h}/pose/idle/00.png"))[:, :, 3]
+    a = np.asarray(Image.open(f"{src}/{h}/pose/idle/00.png"))[:, :, 3]   # (includes the old stand when rendered with one)
     ys = np.where(a.max(1) > 20)[0]; return ys.max() - ys.min()
 px = {h: px_h(h) for h in fit}
 world = {h: px[h] * fit[h] for h in fit}
@@ -45,11 +65,16 @@ for arg in args:
     emotes = [load(p, int(segs[p])) for p in picks]
     idle = load("idle", int(segs["idle"]))
     spin = [Image.open(f"{src}/{h}/{i:02d}.png").convert("RGBA") for i in range(24)]
-    bottom = max(np.where(np.asarray(f)[:, :, 3].max(1) > 20)[0].max() for f in spin + idle)   # the stand; a swing may dip below it
-    dy = (900 - 8) - bottom
-    k = FILL * (world[h] / TALL) ** EASE / px[h] if h in world else 1.0
+    if STAND:   # no stand in the render: the feet are the lowest ink near the turntable's axis while idle (not a sword tip)
+        bottom = max(np.where(np.asarray(f)[:, 360 - 90:360 + 90, 3].max(1) > 20)[0].max() for f in idle)
+    else:       # the rendered stand's base; a swing may dip below it
+        bottom = max(np.where(np.asarray(f)[:, :, 3].max(1) > 20)[0].max() for f in spin + idle)
+    floor = FEET if STAND else 892
+    dy = floor - bottom
+    fill = (FEET - 14) if STAND else FILL
+    k = fill * (world[h] / TALL) ** EASE / px[h] if h in world else 1.0
     top = min(np.where(np.asarray(f)[:, :, 3].max(1) > 20)[0].min() for f in spin + idle + [f for e in emotes for f in e]) + dy
-    k = min(k, 884 / max(1, 892 - top))   # nothing pokes out of the top of the frame
+    k = min(k, (floor - 8) / max(1, floor - top))   # nothing pokes out of the top of the frame
     def half(f):
         xs = np.where(np.asarray(f)[:, :, 3].max(0) > 20)[0]; return max(360 - xs.min(), xs.max() - 360)
     k = min(k, (CW / 2 - 6) / max(1, max(half(f) for f in spin + idle)))   # or out of the sides while he stands or turns
@@ -57,7 +82,9 @@ for arg in args:
         g = Image.new("RGBA", (CW, 900)); g.paste(f, ((CW - 720) // 2, dy))
         if abs(k - 1) > 0.001:
             sc = g.resize((round(CW * k), round(900 * k)), Image.LANCZOS)
-            g = Image.new("RGBA", (CW, 900)); g.paste(sc, (round(CW / 2 - CW / 2 * k), round(892 - 892 * k)))
+            g = Image.new("RGBA", (CW, 900)); g.paste(sc, (round(CW / 2 - CW / 2 * k), round(floor - floor * k)))
+        if STAND_IM is not None:
+            base = STAND_IM.copy(); base.alpha_composite(g); g = base
         return g
     sheet = Image.new("RGBA", (600 * 6, 600 * 4))
     for i, f in enumerate(spin):

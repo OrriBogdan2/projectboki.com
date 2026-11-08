@@ -584,20 +584,62 @@ if (POSTHOG_KEY) {
   frame();
 })();
 
-/* ---------- "fallen apart.": scrolling down pulls the letters loose, scrolling up puts them back ---------- */
+/* ---------- "broken apart.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
+   each letter, the letter splits into two shards along it, and the shards drop and tumble apart shedding chips, the red
+   rising in them as they fall. Scroll up and it all runs backwards: chips back, shards rejoin, the crack seals and cools. ---------- */
 (function () {
   const h = document.querySelector(".h-crumble");
   if (!h) return;
-  const ls = [...h.querySelectorAll(".crumble i[data-t]")].map((el) => ({ el, t: +el.dataset.t, x: +el.dataset.x, y: +el.dataset.y, r: +el.dataset.rot }));
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const ease = (v) => v * v * (3 - 2 * v);
-  const paint = (p) => ls.forEach((l) => {
-    const lin = clamp((p - (1 - l.t) * 0.5) / 0.5), k = ease(lin); // the end of the word goes first
-    // tips over first, then drops faster and faster, like it's actually falling
-    l.el.style.transform = `translate(${(l.x * k).toFixed(3)}em, ${(l.y * lin * lin).toFixed(3)}em) rotate(${(l.r * k).toFixed(2)}deg)`;
-    l.el.style.setProperty("--f", (k * Math.pow(l.t, 0.7)).toFixed(3)); // red rises inside the letters that fall furthest
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647); // the same cracks on every visit
+  const pct = (x, y) => `${x.toFixed(1)}% ${y.toFixed(1)}%`;
+  const ls = [...h.querySelectorAll(".crumble i[data-t]")].map((el) => {
+    const ch = el.textContent;
+    // a jagged crack from the top of the letter to the bottom
+    const pts = [];
+    let x = 42 + rnd() * 16;
+    for (let i = 0; i <= 5; i++) { pts.push([x, -30 + i * 32]); x = Math.min(68, Math.max(32, x + (rnd() - 0.5) * 26)); }
+    const left = `polygon(-40% -30%, ${pts.map(([x, y]) => pct(x + 1.2, y)).join(", ")}, -40% 130%)`; // overlaps the right shard a hair: no seam while whole
+    const right = `polygon(140% -30%, ${pts.map(([x, y]) => pct(x, y)).join(", ")}, 140% 130%)`;
+    const w = 3.2; // the seam: a thin band along the crack, where the glow shows
+    const seam = `polygon(${pts.map(([x, y]) => pct(x - w, y)).join(", ")}, ${pts.slice().reverse().map(([x, y]) => pct(x + w, y)).join(", ")})`;
+    el.textContent = "";
+    el.classList.add("L");
+    const mk = (cls, txt, clip) => { const b = document.createElement("b"); b.className = cls; if (txt) b.textContent = txt; if (clip) b.style.clipPath = b.style.webkitClipPath = clip; el.appendChild(b); return b; };
+    mk("base", ch);
+    const glow = mk("seam", ch, seam);
+    const a = mk("sh", ch, left), z = mk("sh", ch, right);
+    a.style.transformOrigin = `${pts[5][0] - 18}% 90%`; z.style.transformOrigin = `${pts[5][0] + 18}% 90%`;
+    const chips = [0.3, 0.52, 0.74].map((fy, i) => {
+      const c = mk("chip"); const p = pts[Math.min(5, Math.round(fy * 5))];
+      c.style.left = `${p[0]}%`; c.style.top = `${fy * 100}%`;
+      return { el: c, dx: (i % 2 ? 1 : -1) * (0.05 + rnd() * 0.08), spin: (rnd() - 0.5) * 540, fall: 0.6 + rnd() * 0.5 };
+    });
+    return { el, glow, a, z, chips, t: +el.dataset.t, x: +el.dataset.x, y: +el.dataset.y, r: +el.dataset.rot, tw: 4 + rnd() * 6 };
   });
-  if (calm) { paint(1); return; }
+  const paint = (p, still) => ls.forEach((l) => {
+    const k = still ? 0.2 : clamp((p - (1 - l.t) * 0.5) / 0.5);  // the end of the word goes first
+    const crack = ease(clamp(k / 0.2));                          // the crack opens and glows
+    const f = clamp((k - 0.16) / 0.84), fe = ease(f);            // then it falls, faster and faster
+    const big = Math.min(1, l.y / 0.2);                          // the first letters only crack; the end of the word really goes
+    // like land along a fault: the halves shear (one side slips lower) and sink, the glowing crack between them.
+    // Every letter stays in its own column, so the word still reads.
+    const gap = 0.01 * crack + 0.012 * fe * big, drop = l.y * f * f * 0.85, drift = 0.24 * l.t * fe, tilt = l.r * 0.1 * fe; // the word spreads as it breaks
+    const slip = (0.012 * crack + 0.07 * fe * big) * (l.tw > 7 ? 1 : -1);   // which side slips is the crack's own
+    l.a.style.transform = `translate(${(drift - gap).toFixed(3)}em, ${(drop + Math.max(0, -slip)).toFixed(3)}em) rotate(${(tilt - (0.6 + l.tw * 0.12) * fe * big - crack).toFixed(2)}deg)`;
+    l.z.style.transform = `translate(${(drift + gap).toFixed(3)}em, ${(drop * 1.06 + Math.max(0, slip)).toFixed(3)}em) rotate(${(tilt + (0.6 + l.tw * 0.15) * fe * big + crack).toFixed(2)}deg)`;
+    l.glow.style.opacity = (crack * (0.45 + 0.55 * big) * (1 - 0.5 * fe)).toFixed(3);
+    l.glow.style.transform = `translate(${drift.toFixed(3)}em, ${(drop * 1.04).toFixed(3)}em) rotate(${tilt.toFixed(2)}deg)`;
+    l.el.style.setProperty("--f", (Math.max(crack * 0.15, fe) * Math.pow(l.t, 0.7)).toFixed(3)); // red rises in the falling shards
+    l.chips.forEach((c) => {
+      const cf = still ? 0 : clamp((k - 0.12) / 0.7);
+      c.el.style.opacity = (cf > 0 ? Math.min(1, cf * 6) * (1 - cf * cf) * big : 0).toFixed(3);
+      c.el.style.transform = `translate(${(c.dx * cf + drift).toFixed(3)}em, ${((l.y + 0.25) * c.fall * cf * cf * 1.6).toFixed(3)}em) rotate(${(c.spin * cf).toFixed(1)}deg)`;
+    });
+  });
+  if (calm) { paint(0, true); return; } // reduced motion: cracked and glowing, nothing moves
   // The scroll sets where the letters should be; they ease there (falling with some weight, mending quicker),
   // so a fast flick doesn't snap them apart in one frame.
   let cur = -1, raf = 0, last = 0;

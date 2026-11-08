@@ -470,6 +470,13 @@ html.lb-open { overflow: hidden; }
 .hero-media.paused .row { animation-play-state: paused; }
 @media (max-width: 720px) { .nav.scrolled { background: rgba(8,13,24,.94); backdrop-filter: none; -webkit-backdrop-filter: none; } }
 .head h2.h-crumble .crumble i { background-image: linear-gradient(0deg, #9e0f1a 0%, #e8333a calc(var(--f, 0) * 115% - 8%), #c8d3e6 calc(var(--f, 0) * 115% + 4%), #ffffff 72%); }
+/* the shattering letters: an invisible copy keeps the width, two shards split along a crack, a glowing seam, chips */
+.head h2.h-crumble .crumble i.L { position: relative; background: none; color: transparent; will-change: auto; }
+.crumble i.L > b { position: absolute; left: 0; top: 0; font: inherit; font-weight: inherit; line-height: inherit; }
+.crumble i.L > .base { position: static; visibility: hidden; }
+.head h2.h-crumble .crumble i.L > .sh { background-image: linear-gradient(0deg, #9e0f1a calc(var(--f, 0) * 115% - 30%), #e8333a calc(var(--f, 0) * 115% - 12%), #c8d3e6 calc(var(--f, 0) * 115%), #ffffff 72%); -webkit-background-clip: text; background-clip: text; color: transparent; will-change: transform; }
+.crumble i.L > .seam { color: #ffb08a; opacity: 0; text-shadow: 0 0 .04em #ff5a36, 0 0 .14em rgba(255,58,40,.95), 0 0 .38em rgba(255,40,30,.6); will-change: opacity, transform; }
+.crumble i.L > .chip { width: .07em; height: .07em; margin: -.035em 0 0 -.035em; border-radius: 1px; background: linear-gradient(180deg, #fff1ea, #e8333a); opacity: 0; will-change: transform, opacity; }
 .crumble i.sp { width: .22em; }
 #hunters .head .sub { margin-top: 28px; }
 
