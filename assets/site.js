@@ -181,16 +181,16 @@ const MODEL_V = "2026-11-08c";
 const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
+  ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
+  ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["cinder", "Cinder", "The Ashen Kiss", true, "Engage"],
-  ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
-  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
-  ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
-  ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
-  ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
+  ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
+  ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
+  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
 
