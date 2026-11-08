@@ -759,9 +759,9 @@ if (POSTHOG_KEY) {
     });
   });
   if (calm) { paint(0, true); return; } // reduced motion: cracked and glowing, nothing moves
-  // Timed, not scrubbed, so it looks the same however you scroll: reach the heading and it breaks over 1.5s;
+  // Timed, not scrubbed, so it looks the same however you scroll: reach the heading and it breaks over 1.4s;
   // scroll well back above it and it mends. The first pass on each visit also pauses the page until the break is done.
-  const FWD = 1.5, BACK = 0.7;
+  const FWD = 1.4, BACK = 0.7;
   const inout = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
   let t = 0, dir = 0, raf = 0, last = 0;
   const frame = (now) => {
@@ -776,30 +776,47 @@ if (POSTHOG_KEY) {
   window.bokiCrumble = { done: () => t >= 1 };
   paint(0);
 
-  let played = false, locked = false, lockY = 0, jump = 0, prevY = scrollY;
+  // The pause, built to feel like a landing rather than a wall: the page glides the last bit onto the heading,
+  // holds while it breaks, and only lets go once your wheel or trackpad has come to rest, so leftover momentum
+  // can't fling you past the Hunters the instant it's done.
+  let played = false, locked = false, jump = 0, prevY = scrollY, lastWheel = 0;
   document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
   addEventListener("hashchange", () => { jump = performance.now(); });
-  const block = (e) => { if (locked) e.preventDefault(); };
+  const block = (e) => { if (locked) { e.preventDefault(); lastWheel = performance.now(); } };
   const keys = (e) => { if (locked && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault(); };
-  const unlock = () => {
-    locked = false; document.documentElement.style.overflow = ""; document.body.style.overflow = "";
+  const root = document.documentElement;
+  const release = () => {
+    locked = false; root.style.overflow = ""; document.body.style.overflow = "";
     removeEventListener("wheel", block); removeEventListener("touchmove", block); removeEventListener("keydown", keys);
   };
-  const lock = (y) => {
-    locked = true; lockY = y;
-    if (matchMedia("(pointer: coarse)").matches) { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; } // stops a phone's momentum
+  const waitRest = (t0) => { // hold until the wheel has been still for a moment (at most 0.7s more)
+    if (performance.now() - lastWheel > 180 || performance.now() - t0 > 700) release();
+    else setTimeout(() => waitRest(t0), 60);
+  };
+  const lock = (to) => {
+    locked = true; lastWheel = performance.now();
+    root.style.overflow = "hidden"; document.body.style.overflow = "hidden"; // the browser stops scrolling on its own, with no fighting
     addEventListener("wheel", block, { passive: false }); addEventListener("touchmove", block, { passive: false }); addEventListener("keydown", keys);
-    scrollTo({ top: y, behavior: "instant" });
-    setTimeout(unlock, Math.max(600, (1 - t) * FWD * 1000 + 200));
+    const from = scrollY, d = to - from, t0 = performance.now(), dur = Math.min(420, 180 + Math.abs(d) * 0.6);
+    const glide = (now) => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      scrollTo({ top: Math.round(from + d * e), behavior: "instant" });
+      if (k < 1) requestAnimationFrame(glide);
+    };
+    if (Math.abs(d) > 1) requestAnimationFrame(glide);
+    const wait = () => { if (t >= 1) setTimeout(() => waitRest(performance.now()), 120); else setTimeout(wait, 50); };
+    wait();
   };
   addEventListener("scroll", () => {
-    if (locked) { if (Math.abs(scrollY - lockY) > 1) scrollTo({ top: lockY, behavior: "instant" }); return; }
+    if (locked) return;
     const sc = window.bokiScene; if (!sc) return;
     const y = scrollY, vh = innerHeight;
     if (y >= sc.s0 - vh * 0.15) go(1);
     else if (y < sc.s0 - vh * 0.4) go(-1);
-    if (!played && prevY < sc.s0 && y >= sc.s0 && y < sc.s0 + sc.crumble + sc.fade && performance.now() - jump > 1500) { played = true; if (t < 1) lock(Math.round(sc.s0)); }
-    else if (y >= sc.s0) played = true; // already past it (a link, or a reload lower down): no pause this visit
+    if (!played && y > prevY && y >= sc.s0 - vh * 0.12 && performance.now() - jump > 1500) {
+      played = true;
+      if (y < sc.s0 + sc.crumble + sc.fade && t < 1) lock(Math.round(sc.s0)); // already well past it (a reload lower down): no pause
+    }
     prevY = y;
   }, { passive: true });
 })();
