@@ -117,7 +117,7 @@ const HUNTERS = [
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
-  ["breaker", "Mossy", "The Barnacle Knight", true, "Tank"],
+  ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
@@ -327,7 +327,7 @@ function swipe(el, go) {
   el.addEventListener("pointerup", (e) => {
     if (x0 === null) return;
     const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { el._swiped = Date.now(); go(dx < 0 ? 1 : -1); }
   });
   el.addEventListener("pointercancel", () => { x0 = null; });
 }
@@ -408,3 +408,48 @@ if (POSTHOG_KEY) {
     });
   }
 }
+
+/* ---------- Full-screen art viewer ---------- */
+// Click any art (Hunter splash, How it works cards, press kit art) to see it full size.
+(function () {
+  const full = (el) => {
+    if (el.matches("a[href$='.webp'], a[href$='.jpg'], a[href$='.png']")) return el.getAttribute("href");
+    const img = el.matches("img") ? el : el.querySelector("img");
+    if (!img) return null;
+    return img.dataset.full || (img.currentSrc || img.src).replace(/-(960|1280|1600)\.webp/, (m, w) => w === "1280" ? "-2560.webp" : "-2400.webp");
+  };
+  let lb, pic, last;
+  const build = () => {
+    lb = document.createElement("div");
+    lb.className = "lb"; lb.hidden = true;
+    lb.setAttribute("role", "dialog"); lb.setAttribute("aria-modal", "true"); lb.setAttribute("aria-label", "Full-size art");
+    lb.innerHTML = '<img alt=""><button class="lb-x" type="button" aria-label="Close">&times;</button>';
+    pic = lb.querySelector("img");
+    document.body.appendChild(lb);
+    lb.addEventListener("click", close);
+  };
+  const open = (src, alt) => {
+    if (!lb) build();
+    last = document.activeElement;
+    pic.src = src; pic.alt = alt || "";
+    lb.hidden = false; document.documentElement.classList.add("lb-open");
+    requestAnimationFrame(() => lb.classList.add("show"));
+    lb.querySelector(".lb-x").focus({ preventScroll: true });
+  };
+  function close() {
+    lb.classList.remove("show"); document.documentElement.classList.remove("lb-open");
+    setTimeout(() => { lb.hidden = true; pic.removeAttribute("src"); }, 220);
+    if (last) last.focus({ preventScroll: true });
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb && !lb.hidden) close(); });
+  const targets = ".shot, .step-media, .pk-grid a, .pk-key";
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest(targets);
+    if (!t || e.target.closest("button, .fig")) return;
+    if (t._swiped && Date.now() - t._swiped < 500) return;
+    const src = full(t); if (!src) return;
+    e.preventDefault();
+    const img = t.matches("img") ? t : t.querySelector("img");
+    open(src, img && img.alt);
+  });
+})();

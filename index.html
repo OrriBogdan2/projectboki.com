@@ -21,7 +21,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/img/wordmark-1280.webp" imagesrcset="assets/img/wordmark-640.webp 640w, assets/img/wordmark-1280.webp 1280w, assets/img/wordmark-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=71">
+<link rel="stylesheet" href="assets/style.css?v=72">
 <script>
   // Hold the hero until the display font is in, so nothing jumps on load.
   (function (d) {
@@ -74,7 +74,7 @@
       <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="bk-count h-count"><b id="h-n">01</b> / <span>12</span></div>
-      <div class="shot"><img id="h-art" src="assets/img/hunters/vex-1600.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy"></div>
+      <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/vex-1600.webp" srcset="assets/img/hunters/vex-960.webp 960w, assets/img/hunters/vex-1600.webp 1600w, assets/img/hunters/vex-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Vex, the Hired Gun" loading="lazy"></div>
       <div class="info" aria-live="polite">
         <h3 id="h-name">Vex</h3>
         <div class="title" id="h-title">The Hired Gun</div>
@@ -125,21 +125,21 @@
   <div class="wrap how-grid" data-r="stagger">
     <article class="step">
       <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/drop-in.mp4" autoplay muted loop playsinline></video> -->
-      <div class="step-media" data-clip="drop-in"><img src="assets/img/lore/throne-960.webp" srcset="assets/img/lore/throne-960.webp 960w, assets/img/lore/throne-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Six Hunters face a masked figure at a broken throne" loading="lazy" decoding="async"></div>
+      <div class="step-media" data-clip="drop-in"><img data-full="assets/img/lore/throne-2400.webp" src="assets/img/lore/throne-card-800.webp" srcset="assets/img/lore/throne-card-800.webp 800w, assets/img/lore/throne-card-1200.webp 1200w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Six Hunters face a masked figure at a broken throne" loading="lazy" decoding="async"></div>
       <p class="step-n">01</p>
       <h3>Drop in.</h3>
       <p class="step-sub"><span>Fight through monsters and rival squads.</span><span>Find Boki eggs and wild Boki waiting for a home.</span></p>
     </article>
     <article class="step">
       <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/squad-up.mp4" autoplay muted loop playsinline></video> -->
-      <div class="step-media" data-clip="squad-up"><img src="assets/img/lore/squad-960.webp" srcset="assets/img/lore/squad-960.webp 960w, assets/img/lore/squad-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Mossy shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
+      <div class="step-media" data-clip="squad-up"><img data-full="assets/img/lore/squad-2400.webp" src="assets/img/lore/squad-card-800.webp" srcset="assets/img/lore/squad-card-800.webp 800w, assets/img/lore/squad-card-1200.webp 1200w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Albert shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
       <p class="step-n">02</p>
       <h3>Squad up.</h3>
       <p class="step-sub"><span>Squads of three.</span><span>Cover each other, or fall together.</span></p>
     </article>
     <article class="step">
       <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/get-out.mp4" autoplay muted loop playsinline></video> -->
-      <div class="step-media" data-clip="get-out"><img src="assets/img/lore/rivals-960.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Kael holds his blade to Vex's throat over a glowing heart" loading="lazy" decoding="async"></div>
+      <div class="step-media" data-clip="get-out"><img data-full="assets/img/lore/rivals-2400.webp" src="assets/img/lore/rivals-960.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 33vw" width="960" height="536" alt="Kael holds his blade to Vex's throat over a glowing heart" loading="lazy" decoding="async"></div>
       <p class="step-n">03</p>
       <h3>Get out alive.</h3>
       <p class="step-sub"><span>Extract and keep everything.</span><span>Go down and your Boki could be lost forever.</span></p>
@@ -211,6 +211,6 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=69"></script>
+<script src="assets/site.js?v=70"></script>
 </body>
 </html>

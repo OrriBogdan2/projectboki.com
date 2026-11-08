@@ -221,7 +221,7 @@ async function decFetch(path){const r=await fetch(path);if(!r.ok)throw new Error
   return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12))}
 function boot(man){
   // Final display names (Nov 7); the bundle still carries some earlier ones.
-  const NAMES={vex:"Vex",breaker:"Mossy",ryzz:"Sparkle",kael:"Kael",hem:"Lace",lisette:"Lace",archer:"Lace",claire:"Neve",dredge:"Grimble",grimble:"Grimble",pip:"Meeko",cinder:"Cinder",tarek:"Tenzo",ostra:"Motley",motley:"Motley",sable:"Sable"};
+  const NAMES={vex:"Vex",breaker:"Albert",ryzz:"Sparkle",kael:"Kael",hem:"Lace",lisette:"Lace",archer:"Lace",claire:"Neve",dredge:"Grimble",grimble:"Grimble",pip:"Meeko",cinder:"Cinder",tarek:"Tenzo",ostra:"Motley",motley:"Motley",sable:"Sable"};
   all=man.items.map(x=>({...x,src:x.f,n:x.kind==="h"&&NAMES[x.id]?NAMES[x.id]:x.n})); all.forEach(x=>{if(x.r)REV[(x.kind==="h"?"h_":"b_")+x.id]=x.r});
   document.getElementById("lock").hidden=true; document.getElementById("app").hidden=false; resize();
 all.forEach((x,i)=>document.getElementById(x.kind==="h"?"hgrid":"bgrid").appendChild(chip(x,i)));

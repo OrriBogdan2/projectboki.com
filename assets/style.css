@@ -429,3 +429,13 @@ h1, h2, h3, .band p { text-wrap: balance; }
 @media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; gap: 24px; } .faq-side { flex-direction: row; justify-content: center; gap: 20px; } .faq-boki { width: 120px; margin: 0; } }
 @media (max-width: 720px) { .qa summary { grid-template-columns: 38px 1fr 30px; font-size: 18px; padding: 20px 2px; } .qa p { padding: 0 6px 20px 40px; font-size: 17px; } }
 @media (prefers-reduced-motion: reduce) { .qa details::details-content { transition: none; } }
+/* Full-screen art viewer */
+.shot, .step-media, .pk-grid a, .pk-key { cursor: zoom-in; }
+.lb { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: clamp(12px, 3vw, 40px); background: rgba(4,7,14,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .22s ease; cursor: zoom-out; }
+.lb.show { opacity: 1; }
+.lb img { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); transform: scale(.97); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.lb.show img { transform: none; }
+.lb-x { all: unset; position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; font-size: 30px; line-height: 1; color: #fff; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); cursor: pointer; }
+.lb-x:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+html.lb-open { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
