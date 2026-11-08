@@ -2,13 +2,13 @@
 Usage: pack.py SRC_DIR DEST_DIR id[:clip+clip...] [id[:clips] ...]
   e.g. pack.py /tmp/h3d assets/img/hunters/3d sable:emote+encore_dance vex
 
-SRC_DIR/<id>/NN.png              24 turntable frames, 720x900 -> <id>-spin.webp (6x4 sheet, 480x600 a frame)
+SRC_DIR/<id>/NN.png              24 turntable frames, 720x900 -> <id>-spin.webp (6x4 sheet, 600x600 a frame)
 SRC_DIR/<id>/pose.txt            "<clip> <frames>" per rendered emote, then "idle <frames>" (from hunters.gd)
 SRC_DIR/<id>/pose/<clip>/NN.png  the front pose, 80 ms a frame
-Outputs, 10 columns at 360x450 a frame:
+Outputs, 10 columns at 450x450 a frame:
   <id>-pose.webp    the first emote, then the idle loop (what plays when a Hunter is picked)
   <id>-e2.webp ...  each further emote on its own sheet (the site loads them only while that Hunter is shown)
-  <id>.webp         the first pose frame (480x600), shown while the sheets load
+  <id>.webp         the first pose frame (600x600), shown while the sheets load
 Without :clips, only the first rendered clip (the Hunter's emote) is used.
 Every frame is shifted by the same amount so the stand's base sits on the frame floor.
 Relative size: SRC_DIR/<id>.fit holds the render's camera distance, so a Hunter's in-game height is its pixel height
@@ -18,7 +18,8 @@ Prints the POSE table for assets/site.js: id -> [[frames of each emote], idle fr
 import sys, os, json, numpy as np
 from PIL import Image
 src, dst, args = sys.argv[1], sys.argv[2], sys.argv[3:]
-PC, W, H = 10, 360, 450
+PC, W, H = 10, 450, 450   # square frames: room for wide Hunters (Albert's hammer and shield)
+CW = 900                  # the 720x900 renders are centred on a 900x900 canvas
 table = {}
 fit = {}
 for arg in args:
@@ -51,18 +52,18 @@ for arg in args:
     k = min(k, 884 / max(1, 892 - top))   # nothing pokes out of the top of the frame
     def half(f):
         xs = np.where(np.asarray(f)[:, :, 3].max(0) > 20)[0]; return max(360 - xs.min(), xs.max() - 360)
-    k = min(k, 354 / max(1, max(half(f) for f in spin + idle)))   # or out of the sides while he stands or turns
+    k = min(k, (CW / 2 - 6) / max(1, max(half(f) for f in spin + idle)))   # or out of the sides while he stands or turns
     def shift(f):
-        g = Image.new("RGBA", f.size); g.paste(f, (0, dy))
+        g = Image.new("RGBA", (CW, 900)); g.paste(f, ((CW - 720) // 2, dy))
         if abs(k - 1) > 0.001:
-            small = g.resize((round(720 * k), round(900 * k)), Image.LANCZOS)
-            g = Image.new("RGBA", f.size); g.paste(small, (round(360 - 360 * k), round(892 - 892 * k)))
+            sc = g.resize((round(CW * k), round(900 * k)), Image.LANCZOS)
+            g = Image.new("RGBA", (CW, 900)); g.paste(sc, (round(CW / 2 - CW / 2 * k), round(892 - 892 * k)))
         return g
-    sheet = Image.new("RGBA", (480 * 6, 600 * 4))
+    sheet = Image.new("RGBA", (600 * 6, 600 * 4))
     for i, f in enumerate(spin):
-        sheet.paste(shift(f).resize((480, 600), Image.LANCZOS), ((i % 6) * 480, (i // 6) * 600))
+        sheet.paste(shift(f).resize((600, 600), Image.LANCZOS), ((i % 6) * 600, (i // 6) * 600))
     sheet.save(f"{dst}/{h}-spin.webp", "WEBP", quality=80, method=6)
-    shift(emotes[0][0]).resize((480, 600), Image.LANCZOS).save(f"{dst}/{h}.webp", "WEBP", quality=85, method=6)
+    shift(emotes[0][0]).resize((600, 600), Image.LANCZOS).save(f"{dst}/{h}.webp", "WEBP", quality=85, method=6)
     def pack(frames, out):
         rows = -(-len(frames) // PC)
         ps = Image.new("RGBA", (W * PC, H * rows))

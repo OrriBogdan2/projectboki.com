@@ -1,8 +1,8 @@
 # Hunter turntables for the site
 
 Renders each Hunter's in-game model on a stand, two ways, and packs them into `assets/img/hunters/3d/`:
-- `{id}-pose.webp`: facing you (three-quarter), the Hunter's emote once, then an idle loop. 80 ms a frame, 10 columns, 360x450 a frame. The site plays this when a Hunter is picked.
-- `{id}-spin.webp`: a 24-frame turntable (6x4 sheet, 480x600 a frame) for dragging. Its first frame matches the pose angle.
+- `{id}-pose.webp`: facing you (three-quarter), the Hunter's emote once, then an idle loop. 80 ms a frame, 10 columns, 450x450 a frame. The site plays this when a Hunter is picked.
+- `{id}-spin.webp`: a 24-frame turntable (6x4 sheet, 600x600 a frame) for dragging. Its first frame matches the pose angle.
 - `{id}.webp`: the first pose frame, shown while the sheets load.
 
 1. In the game repo (`OrriBogdan2/project-boki`, branch `main`): copy `hunters.gd` and `hunters.tscn` to `tools/web/` (local only, don't commit), then run `godot --headless --path . --import`.
@@ -13,7 +13,7 @@ Renders each Hunter's in-game model on a stand, two ways, and packs them into `a
    `python3 tools/turntable/pack.py /tmp/h3d assets/img/hunters/3d vex:emote+e kael:emote+spin+riposte cinder:emote+stoke pip:emote+hearth+toss tarek:emote_toss+e_row+sense lisette:emote+deadeye grimble:flex+emote claire:emote+rime ryzz:emote+sky+gum breaker:emote+x_wind+e_mend sable:emote+encore_dance motley:arrive+empower+flurry`
    The render makes every candidate clip in `CANDS` (hunters.gd); the picks above are the ones that read well (checked by eye on a contact sheet, Nov 8 2026). If a pick is missing after a model update, drop it from the list. The first pick plays when the Hunter is chosen; the rest cycle every 6 to 9 s.
    It prints a `const POSE = {...};` line: replace the `const POSE` line in `assets/site.js` with it (every Hunter needs an entry, or its figure stays a still).
-   Sizes: each render writes `<id>.fit` (camera distance). In-game height = pixel height x distance; pack.py scales each Hunter so the tallest fills the frame and the rest follow height^0.6 (true order, eased so the small ones stay readable), capped so nobody leaves the frame.
+   Sizes: each render writes `<id>.fit` (camera distance). In-game height = pixel height x distance; pack.py scales each Hunter so the tallest fills the frame and the rest follow height^0.6 (true order, eased so the small ones stay readable), capped so nobody leaves the frame. Frames are square (the 720x900 renders sit on a 900x900 canvas) so wide Hunters like Albert have room to stand at full size.
 4. Look at every still next to its portrait (`assets/img/hunters/{id}-face-640.webp`). Every Hunter shows a model (4th field of each entry in `HUNTERS` in `assets/site.js` stays true) unless it's really broken; a rough base skin is fine. Bump `site.js?v=` in `index.html` if you change that array.
 
 Newest models live on branches until they're merged. Render each Hunter from its branch (as of Nov 8 2026):
