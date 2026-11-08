@@ -497,6 +497,7 @@ if (POSTHOG_KEY) {
   const paint = (p) => ls.forEach((l) => {
     const k = ease(clamp((p - (1 - l.t) * 0.45) / 0.55)); // the end of the word goes first
     l.el.style.transform = `translate(${(l.x * k).toFixed(3)}em, ${(l.y * k).toFixed(3)}em) rotate(${(l.r * k).toFixed(2)}deg)`;
+    l.el.style.setProperty("--f", (k * Math.pow(l.t, 0.7)).toFixed(3)); // red rises inside the letters that fall furthest
   });
   if (calm) { paint(1); return; }
   let ticking = false;
