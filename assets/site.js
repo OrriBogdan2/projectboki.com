@@ -499,7 +499,7 @@ if (POSTHOG_KEY) {
   const frame = () => {
     ticking = false;
     const r = h.getBoundingClientRect(), vh = innerHeight;
-    paint(clamp((vh * 0.8 - (r.top + r.height / 2)) / (vh * 0.5))); // whole while low on screen, fully apart near the top
+    paint(clamp((vh * 0.55 - (r.top + r.height / 2)) / (vh * 0.3))); // whole until it passes mid-screen, apart near the top; scrolling back down past the middle mends it
   };
   addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
   addEventListener("resize", frame);
