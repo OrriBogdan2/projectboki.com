@@ -11,6 +11,7 @@ var ids: Array = []
 var frames := 24
 var zoom := {}  # id -> camera distance factor, for models whose bounds frame them badly (--zoom=tender:0.3,bulwark:1.25)
 var size := Vector2i(720, 900)
+var stand := true  # --no-stand: leave the stand out (pack.py draws one identical stand under every Hunter)
 var pose := true  # also render the front pose: the emote once, then an idle loop (dir/<id>/pose/NN.png + pose.txt)
 const PDT := 0.08  # seconds per pose frame (the site plays them at 80 ms)
 
@@ -19,6 +20,7 @@ func _ready() -> void:
 		if a.begins_with("--ids="): ids = Array(a.substr(6).split(","))
 		if a.begins_with("--frames="): frames = int(a.substr(9))
 		if a == "--no-pose": pose = false
+		if a == "--no-stand": stand = false
 		if a.begins_with("--out="): out_dir = a.substr(6)
 		if a.begins_with("--zoom="):
 			for kv in a.substr(7).split(","): zoom[kv.get_slice(":", 0)] = float(kv.get_slice(":", 1))
@@ -86,7 +88,8 @@ func _hero(id: String) -> void:
 		await get_tree().process_frame
 		var bb := _box(h); lo = lo.min(bb.position); hi = hi.max(bb.end)
 	var foot := clampf(maxf(hi.x - lo.x, hi.z - lo.z) / 1.6, 0.22, 1.15)
-	var st := _stand(); st.scale = Vector3.ONE * foot; turn.add_child(st)
+	if stand:
+		var st := _stand(); st.scale = Vector3.ONE * foot; turn.add_child(st)
 	lo.y = minf(lo.y, -0.2 * foot)
 	var tall := hi.y - lo.y
 	var wide := maxf(maxf(hi.x - lo.x, hi.z - lo.z), 1.75 * foot)

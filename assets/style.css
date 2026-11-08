@@ -517,3 +517,7 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 /* FAQ cards: rise in one after another, but hover changes respond right away */
 .js .qa[data-r="stagger"] > details { transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1), background .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .js .qa[data-r="stagger"].in > details { transition-delay: calc(var(--i, 0) * 90ms), calc(var(--i, 0) * 90ms), 0s, 0s, 0s; }
+
+/* keyboard: a skip link that shows only when focused */
+.skip { position: fixed; left: 16px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 999px; background: #fff; color: #0a1222; font-weight: 700; transition: top .2s ease; }
+.skip:focus { top: 14px; }

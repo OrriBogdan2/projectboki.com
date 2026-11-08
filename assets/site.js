@@ -115,6 +115,10 @@ function spinner(box, el) {
     im.src = urls[k];
   };
   new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play() : stop(); }).observe(box);
+  // Nothing downloads until the figure is about a screen away, so the top of the page loads light.
+  let near = false, pending = null;
+  new IntersectionObserver(([e]) => { if (e.isIntersecting && !near) { near = true; if (pending) { const f = pending; pending = null; f(); } } }, { rootMargin: "25% 0px" }).observe(box);
+  const whenNear = (f) => { if (near) f(); else pending = f; };
   const fetchSpin = () => {
     if (spin || !id) return;
     const want = id, u = `assets/img/hunters/3d/${id}-spin.webp?v=${MODEL_V}`, im = new Image();
@@ -171,7 +175,7 @@ function spinner(box, el) {
         ps.onload = () => { if (id !== next) return; ready[0] = true; draw(); play(); };
         ps.src = urls[0];
       };
-      setTimeout(() => { im.src = still; }, 180);
+      whenNear(() => setTimeout(() => { im.src = still; }, 180));
     },
   };
 }
