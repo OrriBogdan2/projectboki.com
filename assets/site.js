@@ -249,6 +249,20 @@ if (pick) {
     jag.forEach((j, i) => { const y = (-2 + i * (104 / n)).toFixed(1), c = 50 + j * bend; L.push(`${(c - w).toFixed(2)}% ${y}%`); R.unshift(`${(c + w).toFixed(2)}% ${y}%`); });
     return `polygon(${L.join(", ")}, ${R.join(", ")})`;
   };
+  // the rift: the glowing fault that runs out from the broken words, up and down the stage, along the line the art then splits on
+  const rift = shot && (() => {
+    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "h-rift"); svg.setAttribute("viewBox", "0 0 100 100"); svg.setAttribute("preserveAspectRatio", "none"); svg.setAttribute("aria-hidden", "true");
+    const n = jag.length - 1, pt = (i) => `${(50 + jag[i]).toFixed(2)} ${(-2 + i * (104 / n)).toFixed(2)}`, mid = n / 2;
+    const half = (to) => { const idx = []; for (let i = mid; to < mid ? i >= to : i <= to; i += to < mid ? -1 : 1) idx.push(i); return "M" + idx.map(pt).join(" L"); };
+    const paths = [];
+    ["glow", "core"].forEach((cls) => [half(0), half(n)].forEach((d) => {
+      const p = document.createElementNS(ns, "path"); p.setAttribute("d", d); p.setAttribute("class", cls);
+      p.setAttribute("vector-effect", "non-scaling-stroke"); svg.appendChild(p); paths.push(p);
+    }));
+    shot.appendChild(svg);
+    return { svg, paths };
+  })();
   const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
   let scn = null, sceneOn = false, lastQ = -1;
   const paintScene = (q) => {
@@ -256,23 +270,30 @@ if (pick) {
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
       tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden";
-      if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = "";
+      if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
-      const io = 1 - sm(clamp((q - 0.02) / 0.42)); // the broken heading lifts away
+      // 1) the fault runs out from the broken words, up and down the stage, while the words dim and lift away
+      const io = 1 - sm(clamp((q - 0.1) / 0.42));
       intro.style.opacity = io.toFixed(3); intro.style.visibility = io < 0.005 ? "hidden" : "";
-      intro.style.transform = `translate3d(0, ${(-56 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
-      const f = sm(clamp(q / 0.16)); // the stage's frame surfaces
-      stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.97 + 0.03 * f).toFixed(4)})`;
-      const r = sm(clamp((q - 0.06) / 0.58)); // the crack opens, glowing ember, cooling as it widens
+      intro.style.transform = `translate3d(0, ${(-48 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.05 * (1 - io)).toFixed(4)})`;
+      const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under it
+      stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
+      const draw = sm(clamp((q - 0.02) / 0.3));
+      // 2) then it splits open along that line, glowing ember, cooling as it widens
+      const r = sm(clamp((q - 0.3) / 0.46));
+      if (rift) {
+        rift.svg.style.opacity = (Math.min(1, draw * 1.6) * (1 - sm(clamp(r / 0.55)))).toFixed(3);
+        const e = (50 - 52 * draw).toFixed(2); rift.svg.style.clipPath = `inset(${e}% -20% ${e}% -20%)`; // runs out from the middle
+      }
       if (cw) cw.style.clipPath = cw.style.webkitClipPath = r > 0 ? crack(r) : "polygon(50% 0, 50% 0, 50% 0)";
       shot.style.filter = r > 0 && r < 1 ? `drop-shadow(0 0 ${(4 + 14 * r).toFixed(1)}px rgba(255, 96, 48, ${(0.95 * (1 - r)).toFixed(3)}))` : "";
       shot.style.setProperty("--zr", (0.12 * (1 - r)).toFixed(4)); // and the art settles from close up
-      const o = sm(clamp((q - 0.5) / 0.34)); // then the name, the count and the arrows
+      const o = sm(clamp((q - 0.62) / 0.26)); // 3) then the name, the count and the arrows
       late.forEach((el) => { el.style.transition = "none"; el.style.opacity = o.toFixed(3); el.style.translate = `0 ${(16 * (1 - o)).toFixed(1)}px`; });
-      [[plab, 0.62], [pick, 0.7]].forEach(([el, s]) => { if (!el) return; const p = sm(clamp((q - s) / 0.3)); // then the picker
+      [[plab, 0.7], [pick, 0.76]].forEach(([el, s]) => { if (!el) return; const p = sm(clamp((q - s) / 0.24)); // then the picker
         el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
     }
-    const on = q > 0.6;
+    const on = q > 0.7;
     if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); }
   };
   const render = (y) => {
@@ -316,7 +337,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 0.62 : 0.56)), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (on ? 0.85 : 0.75)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go

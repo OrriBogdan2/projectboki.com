@@ -592,6 +592,12 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .js #hunters.scene .h-pin > .stage[data-r], .js #hunters.scene .h-pin > .pick-label[data-r], .js #hunters.scene .h-pin > .pick[data-r] { transform: none; pointer-events: none; }
 .js #hunters.scene.scene-on .h-pin > .stage[data-r], .js #hunters.scene.scene-on .h-pin > .pick-label[data-r], .js #hunters.scene.scene-on .h-pin > .pick[data-r] { opacity: 1; pointer-events: auto; }
 .shot-c { position: relative; }
+.h-rift { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: visible; opacity: 0; }
+.h-rift { filter: drop-shadow(0 0 3px rgba(255, 90, 50, .95)) drop-shadow(0 0 12px rgba(255, 50, 30, .7)); }
+.h-rift path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.h-rift .glow { stroke: rgba(255, 80, 45, .8); stroke-width: 6px; }
+.h-rift .core { stroke: #ffe4d4; stroke-width: 2px; }
+#hunters:not(.scene) .h-rift { display: none; }
 .shot img { scale: calc(1 + var(--zr, 0) + var(--zs, 0)); }
 .h-bar { display: none; flex: 0 1 240px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; }
 .h-bar i { display: block; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,.55), #fff); transform: scaleX(0); transform-origin: left; }
