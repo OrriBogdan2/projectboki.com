@@ -742,6 +742,7 @@ function factsHTML(v,e){
   if(d.theme)cells.push(cell("Theme",esc(cap1(d.theme))));
   if(d.group)cells.push(cell("Group",esc(d.group)));
   {const gt=d.sexNote||SEXTXT[d.sex];if(gt)cells.push(cell("Gender",esc(gt),1));}
+  if(d.quirk)cells.push(cell("Quirk",esc(d.quirk),2));
   return`<dl class="facts">${cells.join("")}</dl>${(h||w||v.size)?'<p class="mut" style="margin:-4px 0 8px;font-size:.78rem">Each one rolls its own size inside these ranges, so no two are exactly alike.</p>':""}`;
 }
 const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["vari","Variants"],["more","More"]];
