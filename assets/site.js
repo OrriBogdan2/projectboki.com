@@ -299,6 +299,7 @@ if (pick) {
   // a second and a half instead of skipping it, and slow scrolling is fully in your hands. No scroll-jacking on desktop.
   const stage = pinEl && pinEl.querySelector(".stage"), intro = $("h-intro"), shot = stage && stage.querySelector(".shot");
   const plab = pinEl && pinEl.querySelector(".pick-label");
+  const ask = pinEl && pinEl.querySelector(".h-ask"), askWords = ask ? [...ask.querySelectorAll("span:not(.sk)")] : [];
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
@@ -340,14 +341,25 @@ if (pick) {
     if (q === lastQ) return;
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
-      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden";
+      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (ask) ask.style.visibility = "hidden";
       if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
-      // 1) the fault runs out from the broken words, up and down the stage, while the words dim and lift away
-      const io = 1 - sm(clamp((q - 0.1) / 0.42));
+      // 1) the broken heading lifts away
+      const io = 1 - sm(clamp((q - 0.02) / 0.15));
       intro.style.opacity = io.toFixed(3); intro.style.visibility = io < 0.005 ? "hidden" : "";
-      intro.style.transform = `translate3d(0, ${(-48 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.05 * (1 - io)).toFixed(4)})`;
-      const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under it
+      intro.style.transform = `translate3d(0, ${(-70 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
+      // 2) "Will you save the Skylands?" rises in word by word, holds, then lifts away as the fault opens
+      if (ask) {
+        const out = sm(clamp((q - 0.4) / 0.12));
+        ask.style.visibility = q > 0.08 && out < 1 ? "visible" : "hidden";
+        askWords.forEach((w, k) => {
+          const a = sm(clamp((q - 0.15 - k * 0.025) / 0.13));
+          w.style.opacity = (a * (1 - out)).toFixed(3);
+          w.style.transform = `translate3d(0, ${(34 * (1 - a) - 30 * out).toFixed(1)}px, 0) scale(${(0.86 + 0.14 * a + 0.04 * out).toFixed(4)})`;
+        });
+      }
+      q = clamp((q - 0.38) / 0.62); // the rest plays out after the question
+      const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under the fault
       stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
       const draw = sm(clamp((q - 0.02) / 0.3));
       // 2) then it splits open along that line, glowing ember, cooling as it widens
@@ -364,7 +376,7 @@ if (pick) {
       [[plab, 0.7], [pick, 0.76]].forEach(([el, s]) => { if (!el) return; const p = sm(clamp((q - s) / 0.24)); // then the picker
         el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
     }
-    const on = q > 0.7;
+    const on = q > 0.8;
     if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); }
   };
   const render = (y) => {
@@ -389,7 +401,7 @@ if (pick) {
     if (ys === null || !scn) ys = y;
     let d = y - ys;
     if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
-    const inScene = ys > scn.s0 - vh * 0.45 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
+    const inScene = ys > scn.s0 - vh * 0.31 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
     const cap = (inScene ? (breaking ? (touchy ? 0.28 : 0.55) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
@@ -409,7 +421,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 0.85 : 0.75)), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (on ? 1.35 : 1.2)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go
@@ -490,6 +502,7 @@ if (pick) {
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
       addEventListener("touchmove", block, { passive: false }); addEventListener("wheel", block, { passive: false }); addEventListener("keydown", keys);
       target = Math.round(scn.s0 + scn.lead);
+      if (ys !== null && ys < scn.s0 - innerHeight * 0.31) ys = Math.round(scn.s0 - innerHeight * 0.31); // start the break right away, no dead wait
       scrollTo({ top: target, behavior: "instant" }); // the stage is held in place, so nothing jumps
       kick();
       const t0 = performance.now();
