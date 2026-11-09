@@ -370,6 +370,15 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
   .dcard,.dcard .hero img,.dcard .hero .himg,.btn,.tbtn,.mnav,.mclose,.dtabs a,.nav a,.mtabs button,.dbar select{transition-property:color,background,border-color,box-shadow!important}
   .dcard:hover,.mnav:hover,.btn:hover,.tbtn:hover{transform:none}
 }
+/* owner 11-09: decision boxes */
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.dec{min-height:64px;font-size:18px;font-weight:800;letter-spacing:.02em;border-radius:14px;border:2px solid var(--dc);background:color-mix(in srgb,var(--dc) 14%,transparent);color:var(--dc);cursor:pointer}
+.dec-approve{--dc:#22c55e}.dec-revise{--dc:#eab308}.dec-reject{--dc:#ef4444}
+.dec.on{background:var(--dc);color:#0b0d12;box-shadow:0 10px 30px -10px var(--dc)}
+.card.locked .dec:not(.on){opacity:.35}
+.card.locked .auto,.card.locked .mid{opacity:.35;filter:grayscale(1);pointer-events:none;user-select:none}
+.card.locked .mid :is(input,textarea){cursor:not-allowed}
+@media (max-width:560px){.dec{min-height:56px;font-size:16px}}
 </style>
 
 </head>
