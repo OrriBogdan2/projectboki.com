@@ -602,6 +602,11 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .h-bar { display: none; flex: 0 1 240px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; }
 .h-bar i { display: block; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,.55), #fff); transform: scaleX(0); transform-origin: left; }
 #hunters.pinned .h-bar { display: block; }
+.h-skip { all: unset; display: none; box-sizing: border-box; cursor: pointer; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); font-size: 13px; font-weight: 700; color: var(--ink-3); transition: color .2s, border-color .2s, background-color .2s; }
+.h-skip:hover { color: #fff; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.06); }
+.h-skip:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+#hunters.pinned .h-skip { display: inline-block; }
+#hunters.pinned .pick-label .h-bar { margin-left: auto; }
 
 /* Hunter splash: a small expand button opens the full art; arrows are compact */
 .shot { position: relative; }

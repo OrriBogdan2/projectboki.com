@@ -3,7 +3,7 @@ from PIL import Image, ImageFilter
 from scipy import ndimage
 SITE=__import__('os').path.abspath(__import__('os').path.join(__import__('os').path.dirname(__file__), '..', '..'))
 def front(key, src=None):
-    im=Image.open(src or f'{SITE}/assets/img/boki2d/{key}-2400.webp').convert('RGB')
+    im=Image.open(src if src is not None else f'{SITE}/assets/img/boki2d/{key}-2400.webp').convert('RGB')
     a=np.asarray(im).astype(int); h,w,_=a.shape
     border=np.concatenate([a[0],a[-1],a[:,0],a[:,-1]]); bg=np.median(border,axis=0)
     d=np.abs(a-bg).sum(2)

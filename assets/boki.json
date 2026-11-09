@@ -2,47 +2,36 @@
  "total": 124,
  "revealed": [
   {
-   "id": "barokat",
-   "name": "Barokat",
+   "id": "amanitusk",
+   "name": "Amanitusk",
    "types": [
-    "storm",
-    "wild"
+    "spore",
+    "venom"
    ],
-   "stage": 1,
-   "from": null,
-   "fromHidden": false,
-   "into": [],
-   "desc": "A meerkat with a barometer in its belly; when the needle spins, lightning is coming and so is the enemy. Alert and bossy; cannot relax unless it is the one keeping watch.",
-   "v": "1d438fde1136"
-  },
-  {
-   "id": "bellowary",
-   "name": "Bellowary",
-   "types": [
-    "ember",
-    "wild"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [
-    null
-   ],
-   "desc": "A cassowary whose head crest is a leather bellows; every stride pumps it and it blasts a gust of embers. Proud and territorial, loyal to its rider; wheezes the bellows as a warning before it charges.",
-   "v": "143aa7190631"
-  },
-  {
-   "id": "blossmink",
-   "name": "Blossmink",
-   "types": [
-    "bloom"
-   ],
-   "stage": 2,
-   "from": "Ermink",
+   "stage": 3,
+   "from": "Sporcupine",
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "30eebdbceb87"
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "anvilbrock",
+   "name": "Anvilbrock",
+   "types": [
+    "ember",
+    "gravity"
+   ],
+   "stage": 2,
+   "from": "Tinbrock",
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A honey badger with a red-hot anvil for a back; it headbutts you and the anvil rings. Fearless and grumpy; picks fights it cannot win and wins them.",
+   "v": "s1794187725",
+   "shot": true
   },
   {
    "id": "bubblisk",
@@ -58,21 +47,23 @@
     null
    ],
    "desc": "A lizard that blows a soap-bubble copy of itself and runs while you pop the bubble. A show-off that startles easily; runs first, poses later.",
-   "v": "d42c680022b7"
+   "v": "s1794187725",
+   "shot": true
   },
   {
-   "id": "canvastross",
-   "name": "Canvastross",
+   "id": "cairnback",
+   "name": "Cairnback",
    "types": [
-    "tempest",
-    "tide"
+    "titan",
+    "stone"
    ],
-   "stage": 3,
+   "stage": 1,
    "from": null,
-   "fromHidden": true,
+   "fromHidden": false,
    "into": [],
-   "desc": "An albatross with patched ship sails for wings; grab the rigging under it and it carries you across the gap. Easygoing, fearless, a wanderer; restless when it has not seen the sea.",
-   "v": "c2e6a71c8818"
+   "desc": "A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell. Hatched from the Stone Colossus's egg.",
+   "v": "s1794187725",
+   "shot": true
   },
   {
    "id": "chuggamus",
@@ -86,7 +77,452 @@
    "fromHidden": false,
    "into": [],
    "desc": "A hippo that is half steam engine: smokestack ears, a boiler belly, a cowcatcher jaw, and it charges like a runaway train. Lazy until crossed, then unstoppable; yawns steam at you to say it likes you.",
-   "v": "da616bdecc13"
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "crofthorn",
+   "name": "Crofthorn",
+   "types": [
+    "bloom",
+    "wild"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A highland cow with a walled garden on its back; you ride sitting on the garden wall. Gentle and stubborn, grazes mid-fight; bellows proudly when you climb on.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "gloamshell",
+   "name": "Gloamshell",
+   "types": [
+    "shadow",
+    "lunar"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A snail whose shell is smoked obsidian glass. It drinks the light around it and leaves a trail of dusk behind.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "glomwort",
+   "name": "Glomwort",
+   "types": [
+    "spore",
+    "venom"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A yellow slime mold that creeps like a net and fruits little puffballs. Step on one and the spores hold you fast.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "hivara",
+   "name": "Hivara",
+   "types": [
+    "swarm",
+    "titan"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A honeybee with a praying mantis's folded blades, wearing a crown of wax. A swarm of tiny bees follows it everywhere. Hatched from the Brood Mother's egg.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "lanternmit",
+   "name": "Lanternmit",
+   "types": [
+    "tide",
+    "ember"
+   ],
+   "stage": 2,
+   "from": "Jarmit",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "lunowl",
+   "name": "Lunowl",
+   "types": [
+    "lunar",
+    "tempest"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    "Eclipsowl"
+   ],
+   "desc": "A moonlit owl with soft moth wings. It flits on moondust and dazzles foes with silver light.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "marchleaf",
+   "name": "Marchleaf",
+   "types": [
+    "swarm",
+    "bloom"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A leafcutter ant hauling a leaf ten times its size, with a column of tiny workers marching behind. It never stops working.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "murmurling",
+   "name": "Murmurling",
+   "types": [
+    "swarm",
+    "echo"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A starling with pan-pipes for a tail; every note it plays flies off as another tiny bird. Sociable, noisy, lonely in a second; mimics your footsteps.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "nettlynx",
+   "name": "Nettlynx",
+   "types": [
+    "venom",
+    "bloom"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A lynx kitten whose ear tufts and tail are stinging nettle. Pet it the wrong way and you'll know.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "oarlet",
+   "name": "Oarlet",
+   "types": [
+    "tide"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "rampartoad",
+   "name": "Rampartoad",
+   "types": [
+    "stone",
+    "tide"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A toad with a castle wall on its back; sit behind it and nothing gets through, and it pulls stones out of itself to throw. Placid, heavy, a creature of habit; croaks once, deeply, when it disapproves.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "seamwyrm",
+   "name": "Seamwyrm",
+   "types": [
+    "shadow",
+    "wyrm"
+   ],
+   "stage": 3,
+   "from": "Zippelith",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "skidlet",
+   "name": "Skidlet",
+   "types": [
+    "frost"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Skateron"
+   ],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "stormit",
+   "name": "Stormit",
+   "types": [
+    "tide",
+    "storm"
+   ],
+   "stage": 2,
+   "from": "Jarmit",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "terrarimit",
+   "name": "Terrarimit",
+   "types": [
+    "tide",
+    "bloom"
+   ],
+   "stage": 2,
+   "from": "Jarmit",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "thrumbird",
+   "name": "Thrumbird",
+   "types": [
+    "echo",
+    "tempest"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A hummingbird whose forked tail rings like a tuning fork. Its hum steadies your aim and rattles your foes.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "vespox",
+   "name": "Vespox",
+   "types": [
+    "venom"
+   ],
+   "stage": 2,
+   "from": "Vespyx",
+   "fromHidden": false,
+   "into": [
+    "Glaivyx",
+    null
+   ],
+   "desc": null,
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "zephyrak",
+   "name": "Zephyrak",
+   "types": [
+    "tempest",
+    "wyrm"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static. Hatched from Stormcoil's egg.",
+   "v": "s1794187725",
+   "shot": true
+  },
+  {
+   "id": "arcestrel",
+   "name": "Arcestrel",
+   "types": [
+    "storm",
+    "tempest"
+   ],
+   "stage": 2,
+   "from": "Kestrike",
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "barokat",
+   "name": "Barokat",
+   "types": [
+    "storm",
+    "wild"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A meerkat with a barometer in its belly; when the needle spins, lightning is coming and so is the enemy. Alert and bossy; cannot relax unless it is the one keeping watch.",
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "barrelmander",
+   "name": "Barrelmander",
+   "types": [
+    "storm",
+    "tide"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    null
+   ],
+   "desc": "A giant salamander with a rain barrel strapped on its back; your loot goes in the barrel, and a hard hit bursts it in a flash flood. Lazy and good-natured, dozes in puddles; comes alive in a storm.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "bellowary",
+   "name": "Bellowary",
+   "types": [
+    "ember",
+    "wild"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    null
+   ],
+   "desc": "A cassowary whose head crest is a leather bellows; every stride pumps it and it blasts a gust of embers. Proud and territorial, loyal to its rider; wheezes the bellows as a warning before it charges.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "blossmink",
+   "name": "Blossmink",
+   "types": [
+    "bloom"
+   ],
+   "stage": 2,
+   "from": "Ermink",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "30eebdbceb87",
+   "shot": false
+  },
+  {
+   "id": "boltstrich",
+   "name": "Boltstrich",
+   "types": [
+    "storm",
+    "tempest"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    null
+   ],
+   "desc": "A thundercloud ostrich in rubber boots; ride it and your hair stands up. Skittish and fast, afraid of nothing but boredom; races anything that moves.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "canvastross",
+   "name": "Canvastross",
+   "types": [
+    "tempest",
+    "tide"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "An albatross with patched ship sails for wings; grab the rigging under it and it carries you across the gap. Easygoing, fearless, a wanderer; restless when it has not seen the sea.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "dribbara",
+   "name": "Dribbara",
+   "types": [
+    "bloom",
+    "tide"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Soakybara"
+   ],
+   "desc": null,
+   "v": "d1794188069",
+   "shot": false
+  },
+  {
+   "id": "echolop",
+   "name": "Echolop",
+   "types": [
+    "echo",
+    "shadow"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null,
+    null
+   ],
+   "desc": "A long-eared hare with bat wings. It hears everything coming and fires ringing pulses of sound.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "eclipsowl",
+   "name": "Eclipsowl",
+   "types": [
+    "lunar",
+    "shadow"
+   ],
+   "stage": 3,
+   "from": "Lunowl",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "effigeetle",
@@ -100,7 +536,8 @@
    "fromHidden": false,
    "into": [],
    "desc": "A beetle the size of a cart whose shell is a marble statue's face; it splits open down the nose when it flies you across the gap. Earnest and hard-working, a gentle giant; polishes its face when it is proud of you.",
-   "v": "1a042f761a36"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "ermink",
@@ -123,7 +560,8 @@
     "Wyrmink"
    ],
    "desc": "A stoat whose tail is a calligraphy brush, its cream coat as blank as a fresh page. Dip its tail in an Ink and it becomes something new.",
-   "v": "23529eb46016"
+   "v": "23529eb46016",
+   "shot": false
   },
   {
    "id": "flarmink",
@@ -136,7 +574,90 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "937a3e8b376b"
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "frigatee",
+   "name": "Frigatee",
+   "types": [
+    "frost",
+    "tide"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    null
+   ],
+   "desc": "A manatee carrying an old icebox on its back; your loot stays cold in its drawers until someone kicks them open. Kind and slow, everyone's friend; hums low songs you feel through your boots.",
+   "v": "d1794188069",
+   "shot": false
+  },
+  {
+   "id": "galleotter",
+   "name": "Galleotter",
+   "types": [
+    "tide",
+    "titan"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "glaivyx",
+   "name": "Glaivyx",
+   "types": [
+    "venom",
+    "titan"
+   ],
+   "stage": 3,
+   "from": "Vespox",
+   "fromHidden": false,
+   "into": [],
+   "desc": null,
+   "v": "d1794183803",
+   "shot": false
+  },
+  {
+   "id": "glassolotl",
+   "name": "Glassolotl",
+   "types": [
+    "prism",
+    "tide"
+   ],
+   "stage": 2,
+   "from": "Prismander",
+   "fromHidden": false,
+   "into": [
+    null,
+    null
+   ],
+   "desc": null,
+   "v": "d1794188069",
+   "shot": false
+  },
+  {
+   "id": "glintmole",
+   "name": "Glintmole",
+   "types": [
+    "stone",
+    "prism"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A star-nosed mole whose back is a split geode full of quartz. It feels the ground shake long before you do.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "gongibbon",
@@ -151,7 +672,23 @@
     null
    ],
    "desc": "A gibbon whose belly is a temple bell; it swings by its arms and clangs itself to stun everyone. Loud, joyful, a show-off; sings when happy and louder when scared.",
-   "v": "0e258534ac16"
+   "v": "0e258534ac16",
+   "shot": false
+  },
+  {
+   "id": "gravadillo",
+   "name": "Gravadillo",
+   "types": [
+    "gravity",
+    "swarm"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "An armadillo with a rhino beetle's horn. It rolls up in heavy plates and bends gravity to slam foes down.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "jarmit",
@@ -163,12 +700,13 @@
    "from": null,
    "fromHidden": false,
    "into": [
-    null,
-    null,
-    null
+    "Lanternmit",
+    "Stormit",
+    "Terrarimit"
    ],
    "desc": null,
-   "v": "940363f32fa0"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "kerchick",
@@ -184,7 +722,8 @@
     null
    ],
    "desc": null,
-   "v": "85963ce9d065"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "kestrike",
@@ -197,10 +736,74 @@
    "from": null,
    "fromHidden": false,
    "into": [
-    null
+    "Arcestrel"
    ],
    "desc": "A kestrel with a copper crest that draws lightning. It hangs still in the wind, then strikes like the bolt it caught.",
-   "v": "7975c7144805"
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "kindlewren",
+   "name": "Kindlewren",
+   "types": [
+    "ember",
+    "tempest"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A cocky little wren that carries a live coal in its cocked-up tail. It darts in, scorches, and is gone.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "kitlet",
+   "name": "Kitlet",
+   "types": [
+    "wyrm"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Ribbonwyrm"
+   ],
+   "desc": null,
+   "v": "d1794176709",
+   "shot": false
+  },
+  {
+   "id": "knotwyrm",
+   "name": "Knotwyrm",
+   "types": [
+    "spore",
+    "wyrm"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A rope snake with mushroom caps growing from its knots; lay it across a path and whoever steps over it gets rooted. Quiet, thoughtful, an old soul; likes damp shade and long naps.",
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "lanterloris",
+   "name": "Lanterloris",
+   "types": [
+    "lunar",
+    "ember"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A slow loris that is a paper lantern: its belly glows, and when it is scared it floats up like a balloon. Soft-spoken, sleepy by day, wide awake at night; clings to you when frightened.",
+   "v": "d1794188069",
+   "shot": false
   },
   {
    "id": "lockatara",
@@ -216,7 +819,8 @@
     null
    ],
    "desc": "A lizard with a padlock shackle for a crest and a keyhole for a third eye; its tail is the key. Ancient, calm, faintly amused; watches you through the keyhole when you are not looking.",
-   "v": "76e23f18f298"
+   "v": "76e23f18f298",
+   "shot": false
   },
   {
    "id": "lunink",
@@ -229,23 +833,8 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "16443873bad8"
-  },
-  {
-   "id": "lunowl",
-   "name": "Lunowl",
-   "types": [
-    "lunar",
-    "tempest"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [
-    null
-   ],
-   "desc": "A moonlit owl with soft moth wings. It flits on moondust and dazzles foes with silver light.",
-   "v": "ad3694c6aba4"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "mirrolin",
@@ -259,21 +848,23 @@
    "fromHidden": false,
    "into": [],
    "desc": "A pangolin covered in mirror tiles; curl it up and it is a disco ball that bounces every shot back. Timid but stubborn; curls up when spoken to sharply, unrolls for snacks.",
-   "v": "cb6bfeeeed6f"
+   "v": "d1794176599",
+   "shot": false
   },
   {
-   "id": "murmurling",
-   "name": "Murmurling",
+   "id": "mossgrade",
+   "name": "Mossgrade",
    "types": [
-    "swarm",
-    "echo"
+    "bloom",
+    "titan"
    ],
    "stage": 1,
    "from": null,
    "fromHidden": false,
    "into": [],
-   "desc": "A starling with pan-pipes for a tail; every note it plays flies off as another tiny bird. Sociable, noisy, lonely in a second; mimics your footsteps.",
-   "v": "b93b84fe2915"
+   "desc": "A plump water bear wearing a cushion of moss. Dry it out and it curls into a pebble; one drop of water and it's back.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "mycroll",
@@ -288,7 +879,38 @@
     "Sporcupine"
    ],
    "desc": "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.",
-   "v": "04b23f195368"
+   "v": "d1794173106",
+   "shot": false
+  },
+  {
+   "id": "parasolth",
+   "name": "Parasolth",
+   "types": [
+    "shadow"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Umbrathere"
+   ],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
+  },
+  {
+   "id": "pipewurm",
+   "name": "Pipewurm",
+   "types": [
+    "venom"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A velvet-cake worm with icing nozzles for a face; it pipes sticky poison icing that glues your feet down. Looks sweet, hunts like a cat; loves being stroked, hates being ignored.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "prismander",
@@ -301,10 +923,11 @@
    "from": null,
    "fromHidden": false,
    "into": [
-    null
+    "Glassolotl"
    ],
    "desc": "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.",
-   "v": "fbe5643aafeb"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "prismink",
@@ -317,7 +940,25 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "bf6e96e9c16e"
+   "v": "bf6e96e9c16e",
+   "shot": false
+  },
+  {
+   "id": "prowyak",
+   "name": "Prowyak",
+   "types": [
+    "frost",
+    "titan"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    null
+   ],
+   "desc": "A yak with an icebreaker's iron prow for horns; it ploughs through the snow and anything standing in it. Steady and warm-hearted; snorts frost when it laughs.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "puffamus",
@@ -332,7 +973,39 @@
     "Chuggamus"
    ],
    "desc": null,
-   "v": "af2f7d81f3b4"
+   "v": "af2f7d81f3b4",
+   "shot": false
+  },
+  {
+   "id": "ribbonwyrm",
+   "name": "Ribbonwyrm",
+   "types": [
+    "wyrm",
+    "tempest"
+   ],
+   "stage": 2,
+   "from": "Kitlet",
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": null,
+   "v": "d1794190127",
+   "shot": false
+  },
+  {
+   "id": "rimeshrew",
+   "name": "Rimeshrew",
+   "types": [
+    "frost"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A tiny shrew with a frost-feathered coat that never melts. It has to eat every hour, so it never stops moving.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "rimink",
@@ -345,7 +1018,8 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "6ebab82d3c0e"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "rippmink",
@@ -358,7 +1032,23 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "64459d22d8af"
+   "v": "64459d22d8af",
+   "shot": false
+  },
+  {
+   "id": "selenfin",
+   "name": "Selenfin",
+   "types": [
+    "lunar",
+    "tide"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "A silver hatchetfish that swims through the air, a moonstone glowing in its keel. Where it floats, wounds close.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "skateron",
@@ -368,13 +1058,31 @@
     "tempest"
    ],
    "stage": 2,
+   "from": "Skidlet",
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A heron on ice skates with an ice-pick beak; it glides in, stabs, glides out. Patient, severe, says little; approves of you only when you stand still.",
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "snuffapi",
+   "name": "Snuffapi",
+   "types": [
+    "shadow",
+    "ember"
+   ],
+   "stage": 2,
    "from": null,
    "fromHidden": true,
    "into": [
     null
    ],
-   "desc": "A heron on ice skates with an ice-pick beak; it glides in, stabs, glides out. Patient, severe, says little; approves of you only when you stand still.",
-   "v": "47b44ce32924"
+   "desc": "An okapi with a candelabra for horns; snuff the candles and it is gone, leaving a smoke copy behind. Shy and graceful, vanishes when strangers come; trusts one rider and only one.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "soakybara",
@@ -384,13 +1092,29 @@
     "tide"
    ],
    "stage": 2,
-   "from": null,
-   "fromHidden": true,
+   "from": "Dribbara",
+   "fromHidden": false,
    "into": [
     null
    ],
    "desc": "A capybara with a hot spring on its back; you ride sitting in the bath, and the steam heals the squad. Calm and sociable, the friend of everything; nothing ruffles it.",
-   "v": "7d72ca6e59db"
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "spirevark",
+   "name": "Spirevark",
+   "types": [
+    "swarm",
+    "stone"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [],
+   "desc": "An aardvark with a termite cathedral on its back; climb the spire and shoot from the belfry. Easy-going and nosy; talks to its termites more than to you.",
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "sporcupine",
@@ -402,11 +1126,12 @@
    "from": "Mycroll",
    "fromHidden": false,
    "into": [
-    null,
+    "Amanitusk",
     null
    ],
    "desc": null,
-   "v": "e9582edfcd5b"
+   "v": "e9582edfcd5b",
+   "shot": false
   },
   {
    "id": "teapotamus",
@@ -422,7 +1147,24 @@
     "Puffamus"
    ],
    "desc": null,
-   "v": "a25debcd7077"
+   "v": "a25debcd7077",
+   "shot": false
+  },
+  {
+   "id": "tinbrock",
+   "name": "Tinbrock",
+   "types": [
+    "ember"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Anvilbrock"
+   ],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "umbrathere",
@@ -432,11 +1174,12 @@
     "tempest"
    ],
    "stage": 2,
-   "from": null,
-   "fromHidden": true,
+   "from": "Parasolth",
+   "fromHidden": false,
    "into": [],
    "desc": "A giant ground sloth with a ragged umbrella for a back; it opens it and your whole squad disappears underneath. Brooding and protective; shelters smaller Boki under its arms when it rains.",
-   "v": "3a4fbbc161be"
+   "v": "d1794173106",
+   "shot": false
   },
   {
    "id": "umbrink",
@@ -449,23 +1192,8 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "bd822709de2a"
-  },
-  {
-   "id": "vespox",
-   "name": "Vespox",
-   "types": [
-    "venom"
-   ],
-   "stage": 2,
-   "from": "Vespyx",
-   "fromHidden": false,
-   "into": [
-    null,
-    null
-   ],
-   "desc": null,
-   "v": "9ac06b43278e"
+   "v": "d1794176599",
+   "shot": false
   },
   {
    "id": "vespyx",
@@ -480,7 +1208,8 @@
     "Vespox"
    ],
    "desc": "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.",
-   "v": "ae2b70c0043d"
+   "v": "ae2b70c0043d",
+   "shot": false
   },
   {
    "id": "voltmink",
@@ -493,7 +1222,8 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "50db93c4e235"
+   "v": "50db93c4e235",
+   "shot": false
   },
   {
    "id": "wyrmink",
@@ -506,7 +1236,24 @@
    "fromHidden": false,
    "into": [],
    "desc": null,
-   "v": "6472ad4a7dba"
+   "v": "d1794176599",
+   "shot": false
+  },
+  {
+   "id": "zipling",
+   "name": "Zipling",
+   "types": [
+    "shadow"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Zippelith"
+   ],
+   "desc": null,
+   "v": "d1794187725",
+   "shot": false
   },
   {
    "id": "zippelith",
@@ -516,142 +1263,23 @@
     "stone"
    ],
    "stage": 2,
-   "from": null,
-   "fromHidden": true,
+   "from": "Zipling",
+   "fromHidden": false,
    "into": [
-    null
+    "Seamwyrm"
    ],
    "desc": "A worm that unzips the ground: it dives into a seam, zips it shut behind it, and comes up somewhere else. Secretive and sly; loves surprises, appears where you least expect it, grinning.",
-   "v": "ec71ffed52ed"
+   "v": "ec71ffed52ed",
+   "shot": false
   }
  ],
  "hidden": [
-  {
-   "t": "titan",
-   "sil": "cairnback"
-  },
-  {
-   "t": "spore",
-   "sil": null
-  },
-  {
-   "t": "gravity",
-   "sil": null
-  },
-  {
-   "t": "echo",
-   "sil": "echolop"
-  },
-  {
-   "t": "ember",
-   "sil": null
-  },
-  {
-   "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "stone",
-   "sil": "glintmole"
-  },
-  {
-   "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "ember",
-   "sil": null
-  },
-  {
-   "t": "shadow",
-   "sil": "gloamshell"
-  },
-  {
-   "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "venom",
-   "sil": null
-  },
-  {
-   "t": "spore",
-   "sil": "glomwort"
-  },
-  {
-   "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "stone",
-   "sil": null
-  },
-  {
-   "t": "gravity",
-   "sil": "gravadillo"
-  },
-  {
-   "t": "shadow",
-   "sil": null
-  },
-  {
-   "t": "prism",
-   "sil": null
-  },
-  {
-   "t": "swarm",
-   "sil": "hivara"
-  },
-  {
-   "t": "echo",
-   "sil": null
-  },
-  {
-   "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "ember",
-   "sil": "kindlewren"
-  },
-  {
-   "t": "frost",
-   "sil": null
-  },
-  {
-   "t": "bloom",
-   "sil": null
-  },
   {
    "t": "gravity",
    "sil": "lodestick"
   },
   {
-   "t": "wyrm",
-   "sil": null
-  },
-  {
-   "t": "frost",
-   "sil": null
-  },
-  {
-   "t": "swarm",
-   "sil": "marchleaf"
-  },
-  {
-   "t": "bloom",
-   "sil": null
-  },
-  {
-   "t": "stone",
-   "sil": null
-  },
-  {
-   "t": "bloom",
-   "sil": "mossgrade"
-  },
-  {
-   "t": "lunar",
+   "t": "gravity",
    "sil": null
   },
   {
@@ -660,7 +1288,51 @@
   },
   {
    "t": "venom",
-   "sil": "nettlynx"
+   "sil": null
+  },
+  {
+   "t": "storm",
+   "sil": null
+  },
+  {
+   "t": "stone",
+   "sil": null
+  },
+  {
+   "t": "shadow",
+   "sil": null
+  },
+  {
+   "t": "prism",
+   "sil": null
+  },
+  {
+   "t": "echo",
+   "sil": null
+  },
+  {
+   "t": "storm",
+   "sil": null
+  },
+  {
+   "t": "frost",
+   "sil": null
+  },
+  {
+   "t": "wyrm",
+   "sil": null
+  },
+  {
+   "t": "frost",
+   "sil": null
+  },
+  {
+   "t": "stone",
+   "sil": null
+  },
+  {
+   "t": "ember",
+   "sil": null
   },
   {
    "t": "storm",
@@ -671,32 +1343,12 @@
    "sil": null
   },
   {
-   "t": "frost",
-   "sil": "rimeshrew"
-  },
-  {
-   "t": "frost",
-   "sil": null
-  },
-  {
    "t": "prism",
    "sil": null
   },
   {
-   "t": "lunar",
-   "sil": "selenfin"
-  },
-  {
    "t": "ember",
    "sil": null
-  },
-  {
-   "t": "tide",
-   "sil": null
-  },
-  {
-   "t": "echo",
-   "sil": "thrumbird"
   },
   {
    "t": "prism",
@@ -707,10 +1359,6 @@
    "sil": null
   },
   {
-   "t": "tempest",
-   "sil": "zephyrak"
-  },
-  {
    "t": "bloom",
    "sil": null
   },
@@ -719,14 +1367,6 @@
    "sil": null
   },
   {
-   "t": "venom",
-   "sil": null
-  },
-  {
-   "t": "prism",
-   "sil": null
-  },
-  {
    "t": "echo",
    "sil": null
   },
@@ -743,23 +1383,7 @@
    "sil": null
   },
   {
-   "t": "wyrm",
-   "sil": null
-  },
-  {
-   "t": "spore",
-   "sil": null
-  },
-  {
    "t": "frost",
-   "sil": null
-  },
-  {
-   "t": "lunar",
-   "sil": null
-  },
-  {
-   "t": "tide",
    "sil": null
   },
   {
@@ -783,35 +1407,11 @@
    "sil": null
   },
   {
-   "t": "tide",
-   "sil": null
-  },
-  {
-   "t": "shadow",
-   "sil": null
-  },
-  {
-   "t": "venom",
-   "sil": null
-  },
-  {
-   "t": "frost",
-   "sil": null
-  },
-  {
    "t": "ember",
    "sil": null
   },
   {
-   "t": "stone",
-   "sil": null
-  },
-  {
    "t": "swarm",
-   "sil": null
-  },
-  {
-   "t": "wyrm",
    "sil": null
   },
   {
@@ -820,30 +1420,6 @@
   },
   {
    "t": "swarm",
-   "sil": null
-  },
-  {
-   "t": "shadow",
-   "sil": null
-  },
-  {
-   "t": "frost",
-   "sil": null
-  },
-  {
-   "t": "shadow",
-   "sil": null
-  },
-  {
-   "t": "swarm",
-   "sil": null
-  },
-  {
-   "t": "tide",
-   "sil": null
-  },
-  {
-   "t": "tide",
    "sil": null
   },
   {
@@ -863,19 +1439,11 @@
    "sil": null
   },
   {
-   "t": "ember",
-   "sil": null
-  },
-  {
    "t": "titan",
    "sil": null
   },
   {
    "t": "storm",
-   "sil": null
-  },
-  {
-   "t": "shadow",
    "sil": null
   },
   {

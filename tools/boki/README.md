@@ -11,3 +11,16 @@
 - Pose-grid sheets (tall sheets on a light backdrop) are detected and stay hidden until they have a turnaround.
 
 Rerun it after new art lands in /2d or the roster changes, then commit the output.
+
+## The Bokidex is the art source now
+
+`/bokidex` (password-gated, same key as `/3d`) holds the approved art. The build reads it directly:
+
+    pip install --break-system-packages "rembg[cpu]" cryptography
+    BOKIDEX_PW=<the /3d password> python3 -I tools/boki/build.py --game ../project-boki
+
+Per species, the card art is (best first): its newest approved **portrait** shot (the 3/4 shots made for the
+front page), else its newest approved **2D sheet** (first figure), else the old `/2d` upload. Both Bokidex kinds
+are cut out with rembg (`isnet-general-use`). Female forms are skipped. The password is only read from the
+environment and never written anywhere. The wall shows the portrait shots first, 12 cards on desktop.
+

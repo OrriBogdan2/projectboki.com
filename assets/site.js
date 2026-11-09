@@ -240,6 +240,11 @@ if (pick) {
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
+  const skip = plab && (() => { // desktop: jump past the twelve steps straight to the Boki
+    const b = document.createElement("button"); b.type = "button"; b.className = "h-skip"; b.textContent = "Skip to Boki";
+    b.addEventListener("click", () => { const to = document.getElementById("boki"); if (to) to.scrollIntoView({ behavior: "instant", block: "start" }); });
+    plab.appendChild(b); return b;
+  })();
   const bar = plab && (() => { const s = document.createElement("span"); s.className = "h-bar"; s.setAttribute("aria-hidden", "true"); s.innerHTML = "<i></i>"; plab.insertBefore(s, plab.querySelector(".swipe")); return s.firstChild; })();
   const clamp = (v) => Math.min(1, Math.max(0, v)), sm = (v) => v * v * (3 - 2 * v);
   let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
@@ -529,7 +534,7 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const LIST = data.revealed;
-  const FEATURED = innerWidth < 640 ? 18 : LIST.length; // phones show a shorter wall; the rest are one tap away
+  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 9; // two or three tidy rows, the front-page shots first; the rest are one tap away
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
   const cards = LIST.map((b, i) => {
     const c = document.createElement("button");
@@ -565,7 +570,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     const r = bw.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -200 || r.top > vh + 200) return;
     const p = (vh - r.top) / (vh + r.height) - 0.5;
-    const amp = innerWidth >= 640 ? 60 : 26;
+    const amp = innerWidth >= 640 ? 22 : 10; // a gentle drift, not a race
     cols.forEach((col, k) => { col.style.transform = `translate3d(0, ${(-(k % 2 ? 1 : -0.4) * amp * p * 2).toFixed(1)}px, 0)`; });
   };
   addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; drift(); }); } }, { passive: true });
