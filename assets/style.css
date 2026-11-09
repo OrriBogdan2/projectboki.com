@@ -391,6 +391,18 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .consent p { font-size: 14px; line-height: 1.4; color: var(--soft); white-space: nowrap; }
 .consent p a { color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; margin-left: 4px; }
 .legal .pk-body { max-width: 760px; }
+.dl .wrap { max-width: 820px; }
+.pk.dl h1 { margin-bottom: 10px; }
+.dl-sub { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 26px); color: var(--ink-2); margin-bottom: 44px; }
+.dl-list { display: grid; gap: 28px; }
+.dl-post { padding: clamp(20px, 3vw, 32px); border-radius: var(--r); background: var(--bg-2); border: 1px solid var(--line); }
+.dl-post time { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.dl-post h2 { font-size: clamp(30px, 3.4vw, 42px); margin: 8px 0 18px; }
+.dl-img { display: block; margin-bottom: 18px; border-radius: 14px; overflow: hidden; }
+.dl-img img { display: block; width: 100%; height: auto; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+@media (hover: hover) { .dl-img:hover img { transform: scale(1.02); } }
+.dl-post p { color: var(--soft); font-size: 17px; }
+.dl-post p + p { margin-top: 10px; }
 .legal-date { font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3) !important; }
 .legal .pk-body p b { color: #fff; }
 .legal .pk-body p + p { margin-top: 12px; }

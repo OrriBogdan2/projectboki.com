@@ -668,7 +668,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
   const cards = LIST.map((b, i) => {
     const c = document.createElement("button");
-    c.type = "button"; c.className = "bw-card"; c.setAttribute("role", "listitem");
+    c.type = "button"; c.className = "bw-card";
     c.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
     c.innerHTML = `<span class="bw-art"><img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
     c.querySelector("b").textContent = b.name; c.querySelector("i").textContent = b.types.map(cap).join(" · ");
@@ -1257,7 +1257,8 @@ if (POSTHOG_KEY) {
   const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
   const baseImg = wrap.querySelector(".bub-base"), fullImg = btn.querySelector("img");
   let tBase, tFull, ready = false;
-  Promise.all([load(baseImg.currentSrc || baseImg.src), load(fullImg.currentSrc || fullImg.src)]).then(([b, f]) => {
+  const near = () => new Promise((ok) => new IntersectionObserver(([en], o) => { if (en.isIntersecting) { o.disconnect(); ok(); } }, { rootMargin: "800px 0px" }).observe(wrap));
+  near().then(() => Promise.all([load(baseImg.currentSrc || baseImg.src), load(fullImg.currentSrc || fullImg.src)])).then(([b, f]) => {
     tBase = texOf(b); tFull = texOf(f); ready = true; wrap.insertBefore(cv, wrap.firstChild); wrap.classList.add("gl"); size(); loop();
   }).catch(() => { gl = null; });
   const size = () => { const w = wrap.offsetWidth, dpr = Math.min(2, devicePixelRatio || 1); cv.width = cv.height = Math.round(w * dpr); };
