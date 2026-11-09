@@ -44,6 +44,24 @@ const media = document.getElementById("hero-media");
 if (media && "IntersectionObserver" in window) {
   new IntersectionObserver(([e]) => media.classList.toggle("paused", !e.isIntersecting)).observe(document.querySelector(".hero-wrap") || media);
 }
+// Same for the moving grid behind "Join the closed beta": it repaints every frame, so only while it's on screen.
+{ const jb = document.querySelector(".join-bg");
+  if (jb && "IntersectionObserver" in window) new IntersectionObserver(([e]) => jb.classList.toggle("paused", !e.isIntersecting)).observe(jb); }
+
+// Touch: everything tappable dips slightly the moment a finger lands, and springs back on release. Uses the separate
+// "scale" property so it never fights an element's own transforms or transitions.
+if (matchMedia("(hover: none)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches && Element.prototype.animate) {
+  const SEL = ".bw-card, .pick button, .bk-pick button, .faq-ask, .h-skip, .h-expand, .pk-grid a, .pk-key, .dl-img, .bk-arrow, .bk-sil"; // .btn has its own CSS press
+  let held = null;
+  const up = () => { if (held) { held.animate([{ scale: getComputedStyle(held).scale === "none" ? 0.96 : getComputedStyle(held).scale }, { scale: 1 }], { duration: 260, easing: "cubic-bezier(.2,1.4,.4,1)" }); held.style.scale = ""; held = null; } };
+  addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "touch") return; const el = e.target.closest(SEL); if (!el) return;
+    held = el; el.style.scale = el.matches(".h-expand, .bk-arrow") ? "0.9" : "0.96";
+    el.animate([{ scale: 1 }, { scale: el.style.scale }], { duration: 70, easing: "ease-out" });
+  }, { passive: true });
+  ["pointerup", "pointercancel"].forEach((t) => addEventListener(t, up, { passive: true }));
+  addEventListener("scroll", () => { if (held) up(); }, { passive: true }); // a scroll, not a tap: let go at once
+}
 
 // Phones: touch a portrait and it lights up the same way for a moment.
 if (media && matchMedia("(pointer: coarse)").matches) {

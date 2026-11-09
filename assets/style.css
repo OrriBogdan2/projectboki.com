@@ -166,7 +166,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .tiles li { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); position: relative; aspect-ratio: 3 / 4; border-radius: var(--r); overflow: hidden; isolation: isolate; background: var(--bg-2); }
 .tiles img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .6s ease; }
-.tiles li:hover img { transform: scale(1.05); }
+@media (hover: hover) { .tiles li:hover img { transform: scale(1.05); } } /* mouse only: no sticky hover after a tap */
 .tiles li::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(8,13,24,0) 45%, rgba(8,13,24,.88) 100%); }
 .tiles b { position: absolute; top: 18px; left: 20px; font-family: "Lilita"; font-weight: 400; font-size: 18px; color: var(--ink-3); letter-spacing: .08em; }
 .tiles h3 { position: absolute; left: 20px; bottom: 18px; font-size: clamp(30px, 2.8vw, 40px); }
@@ -200,13 +200,13 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .fig.swap { opacity: 0; transform: translateY(14px); }
 .fig-img { width: 100%; height: 100%; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); pointer-events: none; }
 .fig-hint { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700;  color: rgba(255,255,255,.8); opacity: 0; transition: opacity .3s; pointer-events: none; }
-.fig:hover .fig-hint { opacity: 1; }
+@media (hover: hover) { .fig:hover .fig-hint { opacity: 1; } } /* mouse only: no sticky hover after a tap */
 .pick { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
 @media (min-width: 1001px) { .pick, .pick-label:has(+ .pick) { --pw: min(100vw - 48px, 1560px); margin-inline: calc((100% - var(--pw)) / 2); } }
 .pick button { all: unset; box-sizing: border-box; position: relative; cursor: pointer; border-radius: 14px; overflow: hidden; aspect-ratio: 1; border: 2px solid transparent; opacity: .72; filter: saturate(.8); transition: opacity .2s, filter .2s, border-color .2s, transform .2s; }
 .pick button img { width: 100%; height: 100%; object-fit: cover; }
 .pick button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.pick button:hover { opacity: .9; filter: none; transform: translateY(-2px); }
+@media (hover: hover) { .pick button:hover { opacity: .9; filter: none; transform: translateY(-2px); } } /* mouse only: no sticky hover after a tap */
 .pick button[aria-pressed="true"] { opacity: 1; filter: none; border-color: #fff; transform: translateY(-6px) scale(1.14); box-shadow: 0 0 0 4px rgba(255,255,255,.14), 0 16px 30px -12px rgba(0,0,0,.8); z-index: 1; }
 .pick button img { transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .pick button[aria-pressed="true"] img { transform: scale(1.18); }
@@ -254,7 +254,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button { all: unset; box-sizing: border-box; aspect-ratio: 1; cursor: pointer; position: relative; border-radius: 16px; scroll-snap-align: center; border: 1px solid rgba(255,255,255,.08); background: radial-gradient(ellipse 60% 55% at 50% 55%, color-mix(in srgb, var(--g) 22%, transparent), transparent 75%), var(--bg-2); opacity: .6; transition: opacity .2s, transform .2s, border-color .2s, box-shadow .2s; }
 .bk-pick button img { width: 100%; height: 100%; object-fit: contain; padding: 8%; }
 .bk-pick button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.bk-pick button:hover { opacity: 1; transform: translateY(-2px); }
+@media (hover: hover) { .bk-pick button:hover { opacity: 1; transform: translateY(-2px); } } /* mouse only: no sticky hover after a tap */
 .bk-pick button[aria-pressed="true"] { opacity: 1; border-color: var(--g); box-shadow: 0 0 0 3px color-mix(in srgb, var(--g) 25%, transparent), 0 10px 30px -10px color-mix(in srgb, var(--g) 60%, transparent); }
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
@@ -308,7 +308,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .bub-wrap { position: relative; animation: faq-bob 5s ease-in-out infinite; filter: drop-shadow(0 18px 28px rgba(0,0,0,.5)); }
 .bub { all: unset; position: absolute; inset: 0; cursor: pointer; clip-path: circle(12.9% at 17.6% 56.6%); -webkit-clip-path: circle(12.9% at 17.6% 56.6%); transform-origin: 17.6% 56.6%; }
 .bub img { display: block; width: 100%; height: auto; }
-.bub:hover { filter: brightness(1.08); }
+@media (hover: hover) { .bub:hover { filter: brightness(1.08); } } /* mouse only: no sticky hover after a tap */
 .bub-wrap.pop .bub { animation: bub-pop .26s ease-in forwards; }
 .bub-wrap.grow .bub { transform-origin: 27% 52%; animation: bub-grow 1s cubic-bezier(.2,1.4,.4,1) both; }
 @keyframes bub-pop { 0% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
@@ -324,7 +324,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .faq-ask { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px; border-radius: 999px; font-family: "Lilita"; font-size: 18px; letter-spacing: .02em; color: #fff;
   background: linear-gradient(#141a2b, #141a2b) padding-box, linear-gradient(100deg, #5fe3d5, #c96bff) border-box; border: 2px solid transparent; transition: transform .2s ease, box-shadow .2s ease; }
 .faq-ask svg { width: 20px; height: 20px; }
-.faq-ask:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(170,120,255,.6); }
+@media (hover: hover) { .faq-ask:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(170,120,255,.6); } } /* mouse only: no sticky hover after a tap */
 .qa .qn { flex: none; width: 2.2em; font-family: "Lilita"; font-size: 15px; letter-spacing: .08em; color: rgba(255,255,255,.35); transition: color .25s ease; }
 .qa .qt { flex: 1; font-family: "Lilita"; font-weight: 400; font-size: clamp(20px, 1.8vw, 24px); letter-spacing: .01em; }
 .qa details[open] .qn { color: #9fe8ff; }
@@ -338,12 +338,12 @@ h1, h2, h3, .band p { text-wrap: balance; }
 }
 .qa { display: grid; gap: 10px; }
 .qa details { border-radius: 18px; border: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.025); transition: background .25s ease, border-color .25s ease, box-shadow .25s ease; }
-.qa details:hover { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.12); }
+@media (hover: hover) { .qa details:hover { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.12); } } /* mouse only: no sticky hover after a tap */
 .qa details[open] { background: rgba(255,255,255,.05); border-color: rgba(167,139,250,.28); box-shadow: 0 20px 50px -30px rgba(124,92,255,.55); }
 .qa summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 20px 20px 20px 26px; font-size: clamp(18px, 1.5vw, 20px); font-weight: 700; }
 .qa summary::-webkit-details-marker { display: none; }
 .qa summary::after { content: ""; flex: 0 0 24px; height: 24px; border-radius: 0; background-color: transparent; box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E"); background-position: center; background-size: 14px; background-repeat: no-repeat; opacity: .6; transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .2s; }
-.qa summary:hover::after { opacity: 1; }
+@media (hover: hover) { .qa summary:hover::after { opacity: 1; } } /* mouse only: no sticky hover after a tap */
 .qa details[open] summary::after { transform: rotate(45deg); opacity: 1; }
 .qa summary:focus-visible { outline: 3px solid #fff; outline-offset: 2px; border-radius: 18px; }
 :root { interpolate-size: allow-keywords; }
@@ -381,7 +381,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .foot { padding: clamp(48px, 6vw, 80px) var(--pad) 36px; border-top: 1px solid var(--line); background: radial-gradient(ellipse 50% 80% at 50% 0%, rgba(226,92,255,.06), transparent 70%); }
 .foot-in { width: min(var(--max), 100%); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
 .foot-wm img { display: block; width: clamp(150px, 16vw, 210px); height: auto; opacity: .95; transition: transform .3s; }
-.foot-wm:hover img { transform: translateY(-2px); }
+@media (hover: hover) { .foot-wm:hover img { transform: translateY(-2px); } } /* mouse only: no sticky hover after a tap */
 .foot nav { display: grid; grid-template-columns: repeat(4, auto); justify-content: end; justify-items: start; gap: 0 6px; font-weight: 700; font-size: 16px; } /* two rows: Discord GitHub Press kit Devlog / Contact Privacy Cookies */
 .foot nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; color: rgba(255,255,255,.75); }
 
@@ -508,7 +508,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .pk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .pk-grid a { position: relative; border-radius: 14px; overflow: hidden; background: var(--bg-2); }
 .pk-grid img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .4s; }
-.pk-grid a:hover img { transform: scale(1.04); }
+@media (hover: hover) { .pk-grid a:hover img { transform: scale(1.04); } } /* mouse only: no sticky hover after a tap */
 .pk-grid .tile { display: grid; place-items: center; aspect-ratio: 16 / 9; border: 1px solid var(--line); }
 .pk-grid .tile img { width: auto; height: 60%; aspect-ratio: auto; object-fit: contain; }
 @media (max-width: 1000px) { .pk-cols { grid-template-columns: 1fr; gap: 40px; } .pk aside { position: static; } }
@@ -917,3 +917,12 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 body { -webkit-user-select: none; user-select: none; }
 .qa .a, .bm-desc, .bm-line, .hm-style, .hm-kit span, input, textarea, .pk, .consent p a { -webkit-user-select: text; user-select: text; }
 .pk .btn, .pk-grid a, .pk-key { -webkit-user-select: none; user-select: none; }
+
+/* Touch feel: no grey tap flash, no double-tap zoom delay, and every tappable thing answers the press at once */
+a, button, summary, label, .bw-card, .bk-sil { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+@media (hover: none) { .qa summary:active { background: rgba(255,255,255,.05); } .foot nav a:active { opacity: .6; } }
+/* Phones: the frosted glass over the drifting portraits is recomputed every frame; a solid tint looks the same and costs nothing */
+@media (pointer: coarse) {
+  .hero .btn-glass, .hero .su-row { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(10,14,28,.74); }
+}
+.join-bg.paused::before { animation-play-state: paused; }
