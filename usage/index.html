@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Boki Usage</title>
+<style>:root{--bg:#f6f5f2;--fg:#1d1c1a;--mut:#6b6862;--card:#fff;--line:#dedbd4;--acc:#3d6fd6}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--fg:#ecebe7;--mut:#9b978f;--card:#1e1d1b;--line:#33312d;--acc:#7aa2f7}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,sans-serif;display:grid;place-items:center;min-height:100vh;padding:0 16px}
+form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:340px;width:100%;box-sizing:border-box}
+h1{font-size:20px;margin:0 0 4px}p{color:var(--mut);margin:0 0 18px;font-size:14px}
+input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font-size:16px}
+label{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mut);margin:12px 0}
+button{width:100%;padding:10px;border:0;border-radius:8px;background:var(--acc);color:#fff;font-size:16px;cursor:pointer}#err{min-height:20px;font-size:14px;margin-top:10px;color:#c0392b}</style></head>
+<body><form id="lf"><h1>Boki Usage</h1><p>Same password as the Model Room.</p>
+<input id="pw" type="password" autocomplete="current-password" placeholder="Password" required>
+<label><input id="rem" type="checkbox" checked> Remember on this device</label><button>Unlock</button><div id="err" role="status"></div></form>
+<script>
+const b64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function key(pw){const k=await (await fetch("../3d/d/key.json",{cache:"no-store"})).json();
+ const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+ const d=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",salt:b64(k.salt),iterations:k.iter,hash:"SHA-256"},base,512));
+ const chk=[...new Uint8Array(await crypto.subtle.digest("SHA-256",d.slice(32)))].map(x=>x.toString(16).padStart(2,"0")).join("");
+ if(chk!==k.check)throw new Error("wrong password");
+ return crypto.subtle.importKey("raw",b64(k.wrapped).map((x,i)=>x^d[i]),{name:"AES-GCM"},false,["decrypt"])}
+async function unlock(pw,rem){const K=await key(pw);
+ const b=new Uint8Array(await (await fetch("d/page.bin",{cache:"no-store"})).arrayBuffer());
+ const html=new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},K,b.slice(12)));
+ try{if(rem)localStorage.setItem("bmr",pw)}catch(e){}
+ document.open();document.write(html);document.close()}
+document.getElementById("lf").addEventListener("submit",async e=>{e.preventDefault();const er=document.getElementById("err");er.textContent="Checking…";
+ try{await unlock(document.getElementById("pw").value,document.getElementById("rem").checked)}catch(x){er.textContent="Wrong password."}});
+(async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){}if(p){try{await unlock(p,false)}catch(e){}}})();
+</script></body></html>
