@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Build the homepage Boki data (assets/boki.json) and the front-view card art (assets/img/boki-front/).
 
-    BOKIDEX_PW=... python3 -I tools/boki/build.py --game ../project-boki --ref origin/ext/roster-109
+    python3 -I tools/boki/build.py --game ../project-boki --ref origin/ext/roster-109
 
 Reads every species file (content/kin_v2/*.json) at that ref of the game repo and picks each one's card art,
 best first:
-  1. its newest approved portrait shot in the Bokidex (/bokidex): the 3/4 hero shots made for the front page,
-     cut out with rembg (pip install "rembg[cpu]"); needs BOKIDEX_PW, the /3d password, which is never stored
+  1. its newest approved portrait shot in the Bokidex (/bokidex, bokidex/d/data.json): the 3/4 hero shots made
+     for the front page, cut out with rembg (pip install "rembg[cpu]")
   2. its newest approved 2D sheet in the Bokidex, first figure (the front view) cut out the same way
   3. its 2D art from the old /2d upload room (assets/boki2d.json), same crop
 and writes:
@@ -36,26 +36,22 @@ art = json.load(open(f"{SITE}/assets/boki2d.json"))
 renders = {os.path.basename(f)[:-9] for f in os.listdir(f"{SITE}/assets/img/boki") if f.endswith("-480.webp")}
 by_id = {d["id"]: d for d in rows}
 
-# ---- the Bokidex (encrypted with the /3d key; decrypted here only, in memory) ----
-DEX = {"portrait": {}, "2d": {}}
-pw = os.environ.get("BOKIDEX_PW")
-if pw:
-    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-    k = json.load(open(f"{SITE}/3d/d/key.json"))
-    dk = hashlib.pbkdf2_hmac("sha256", pw.encode(), base64.b64decode(k["salt"]), k["iter"], 64)
-    if hashlib.sha256(dk[32:]).hexdigest() != k["check"]: sys.exit("BOKIDEX_PW is wrong")
-    aes = AESGCM(bytes(x ^ y for x, y in zip(base64.b64decode(k["wrapped"]), dk)))
-    def dec(name):
-        b = open(f"{SITE}/bokidex/d/{name}", "rb").read(); return aes.decrypt(b[:12], b[12:], None)
-    data = json.loads(dec("data.bin")); alias = data["dex"]["aliases"]
+# ---- the Bokidex (/bokidex): its data and images are public files in this repo
+DEX = {"portrait": {}, "2d": {}, "hero": {}}
+dpath = f"{SITE}/bokidex/d/data.json"
+if os.path.exists(dpath):
+    data = json.load(open(dpath)); alias = data["dex"]["aliases"]; files = data["files"]
+    blob = lambda key: open(f"{SITE}/bokidex/d/{files[key]}", "rb").read()
     for g in sorted(data["gens"], key=lambda g: g.get("created", 0)):  # newest wins
-        if g.get("status") != "approved" or g.get("form") == "f" or not g.get("images"): continue
+        if g.get("status") != "approved" or g.get("form") == "f" or not g.get("images") or g["images"][0] not in files: continue
         kind = "portrait" if g["kind"] == "portrait" else "2d" if g["kind"] == "2d" and not g.get("sheet") else None
         if not kind: continue
-        n = g["name"].lower(); DEX[kind][alias.get(n, n)] = (g["images"][0], g.get("created", 0), dec(data["files"][g["images"][0]]))
-    print(f"Bokidex: {len(DEX['portrait'])} portrait shots, {len(DEX['2d'])} 2D sheets")
+        n = g["name"].lower(); DEX[kind][alias.get(n, n)] = (g["images"][0], g.get("created", 0), blob(g["images"][0]))
+    for e in data["dex"]["entries"]:   # the dex's own hero picture: only used for silhouettes of Boki still hidden
+        if e.get("hero") and "dex/" + e["hero"] in files: DEX["hero"][e["id"]] = DEX["hero"][e["name"].lower()] = ("dex/" + e["hero"], 0, blob("dex/" + e["hero"]))
+    print(f"Bokidex: {len(DEX['portrait'])} portrait shots, {len(DEX['2d'])} 2D sheets, {len(set(v[0] for v in DEX['hero'].values()))} dex pictures")
 else:
-    print("BOKIDEX_PW not set: using the /2d art only")
+    print("No Bokidex export found: using the /2d art only")
 def dex_of(kind, d):
     n = d["name"].lower(); return DEX[kind].get(n) or DEX[kind].get(d["id"])
 _rembg = None
@@ -126,14 +122,18 @@ for d in sorted(rows, key=lambda d: d["name"]):
         })
     else:
         sil = slug if slug in renders else (d["id"] if d["id"] in renders else None)
+        pic = dex_of("hero", d)
+        if pic:  # a silhouette from the dex's picture (cut out, then drawn black by the page)
+            img = cut_portrait(pic[2], first=True)
+            img.resize((240, 240), Image.LANCZOS).save(f"{SITE}/assets/img/boki/{slug}-240.webp", "WEBP", quality=80, method=6, alpha_quality=90)
+            sil = slug
         hidden.append({"t": types[0], "sil": sil})
-# real silhouettes spread through the first rows, eggs around them
+# silhouettes and eggs, alternating
 sils = [h for h in hidden if h["sil"]]; eggs = [h for h in hidden if not h["sil"]]
 mixed = []
 while sils or eggs:
     if sils: mixed.append(sils.pop(0))
-    for _ in range(2):
-        if eggs: mixed.append(eggs.pop(0))
+    if eggs: mixed.append(eggs.pop(0))
 revealed.sort(key=lambda b: not b["shot"])  # the front-page shots lead the wall
 json.dump({"total": len(rows), "revealed": revealed, "hidden": mixed, "all": sorted(d["name"] for d in rows), "grids": sorted(GRIDS), "roster": a.ref}, open(f"{SITE}/assets/boki.json", "w"), indent=1)
 print(f"{a.ref}: {len(rows)} Boki: {len(revealed)} revealed, {len(mixed)} hidden ({sum(1 for h in mixed if h['sil'])} silhouettes)")
