@@ -122,7 +122,11 @@
     if (document.getElementById("bxo-btn")) return; style();
     var b = h("button", { id: "bxo-btn", class: "bxo-btn", text: "Owner", type: "button", title: "Owner audit" }); b.onclick = function () {
       if (!(window.BKX && window.BKX.data())) { alert("Open the Bokidex first."); return; }
-      signin(true).then(function (ok) { if (ok) open(); });
+      signin(true).then(function (ok) {
+        if (!ok) return;
+        api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; })
+          .catch(function () {}).then(open);   // pending art stays hidden if the key or bundle fails; ratings still work
+      });
     };
     document.body.appendChild(b);
   }

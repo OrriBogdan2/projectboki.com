@@ -14,11 +14,6 @@ var c=h.getAttribute("data-theme");
 if(t)h.setAttribute("data-theme",t);
 else if(c!=="light"&&c!=="dark"){try{h.setAttribute("data-theme",matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){h.setAttribute("data-theme","light")}}})();</script>
 <style>
-#lock{min-height:100vh;display:grid;place-items:center;padding:24px}
-#lock form{width:min(380px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:10px;box-shadow:0 10px 30px var(--shadow)}
-#lock h1{margin:0;font:800 1.8rem/1.1 var(--display)} #lock p{margin:0;color:var(--mute);font-size:.9rem}
-#lock input[type=password]{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font:inherit}
-#lock .rem{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--mute)} #lerr{min-height:1.2em;color:var(--bad);font-weight:700;font-size:.85rem}
 /* Bokidex: one page, two audiences. #dex is the public creature dex (grid + entry + viewer); #edit and #audit are the owner's Rating Room and audit trail. */
 :root{
   color-scheme:light;
@@ -464,10 +459,6 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 
 </head>
 <body>
-<div id="lock"><form id="lf"><h1>Bokidex</h1><p>Project Boki creature dex. Enter the password to look around. It is the same password as the Model Room.</p>
-<label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>
-<label class="rem"><input id="rem" type="checkbox"> Remember on this device</label>
-<button class="btn pri" type="submit">Open the Bokidex</button><div id="lerr" role="alert"></div></form></div>
 <div class="wrap" id="app" hidden>
 <header>
   <div class="brand"><span class="lens" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor">
@@ -919,50 +910,31 @@ function setTheme(t,save){
 }
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",ev=>{let s=null;try{s=localStorage.getItem("bokidex-theme")}catch{}if(!s)setTheme(ev.matches?"dark":"light",false)})}catch{}
 document.querySelectorAll("[data-theme-toggle]").forEach(b=>b.setAttribute("aria-pressed",String(curTheme()==="dark")));
-/* ---------- gate: same scheme and password as /3d. key.json is read from the site, never copied. ---------- */
-let KEY=null, DATA=null;
-const PH="data:image/gif;base64,R0lGODlhAQABAAAAACw=#", BLOB={}, PEND={}, SEEN=new WeakSet();
+/* ---------- open (owner 11-09: no password). Public data is plain; the owner panel unlocks the pending bundle. ---------- */
+let DATA=null, PKEY=null, PF={};
+const BLOB={}, PEND={};
 const MIME={webp:"image/webp",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",glb:"model/gltf-binary"};
-const P=p=>p?(BLOB[p]||PH+encodeURIComponent(p)):"";
+const P=p=>p&&DATA&&DATA.files[p]?"d/"+DATA.files[p]:(BLOB[p]||"");
 const b64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
-async function deriveKey(pw){
-  const k=await (await fetch("../3d/d/key.json",{cache:"no-store"})).json();
-  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
-  const d=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",salt:b64(k.salt),iterations:k.iter,hash:"SHA-256"},base,512));
-  const chk=[...new Uint8Array(await crypto.subtle.digest("SHA-256",d.slice(32)))].map(x=>x.toString(16).padStart(2,"0")).join("");
-  if(chk!==k.check)throw new Error("wrong password");
-  const w=b64(k.wrapped), m=w.map((x,i)=>x^d[i]);
-  return crypto.subtle.importKey("raw",m,{name:"AES-GCM"},false,["decrypt"]);
-}
 async function decFetch(name){const r=await fetch("d/"+name);if(!r.ok)throw new Error("missing file "+name);const b=new Uint8Array(await r.arrayBuffer());
-  return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12))}
+  return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},PKEY,b.slice(12))}
 function blobOf(p){
+  if(DATA.files[p])return Promise.resolve("d/"+DATA.files[p]);
   if(BLOB[p])return Promise.resolve(BLOB[p]);
-  return PEND[p]||(PEND[p]=(async()=>{const n=DATA.files[p];if(!n)throw new Error("no file "+p);
+  return PEND[p]||(PEND[p]=(async()=>{const n=PF[p];if(!n||!PKEY)throw new Error("no file "+p);
     const u=URL.createObjectURL(new Blob([await decFetch(n)],{type:MIME[p.split(".").pop()]||"application/octet-stream"}));BLOB[p]=u;return u})().catch(x=>{delete PEND[p];throw x}));
 }
-const pathOf=s=>s&&s.startsWith(PH)?decodeURIComponent(s.slice(PH.length)):null;
-function hyd(el){
-  if(el.tagName==="IMG"){const p=pathOf(el.getAttribute("src"));if(p)blobOf(p).then(u=>{if(pathOf(el.getAttribute("src"))===p)el.src=u}).catch(()=>{})}
-  else{const st=el.getAttribute("style")||"",m=st.match(/data:image\/gif;base64,R0lGODlhAQABAAAAACw=#([^')"]+)/);
-    if(m){const p=decodeURIComponent(m[1]);blobOf(p).then(u=>{el.setAttribute("style",(el.getAttribute("style")||"").replace(PH+m[1],u))}).catch(()=>{})}}
+async function ownerUnlock(k){
+  PKEY=await crypto.subtle.importKey("raw",b64(k),{name:"AES-GCM"},false,["decrypt"]);
+  const j=JSON.parse(new TextDecoder().decode(await decFetch("pending.bin")));DATA.pending=j.pending||[];PF=j.files||{};
 }
-const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){io.unobserve(en.target);SEEN.delete(en.target);hyd(en.target)}}),{rootMargin:"700px"});
-let scanQ=false;
-function scan(){scanQ=false;document.querySelectorAll('img[src^="'+PH+'"],[style*="'+PH+'"]').forEach(el=>{if(!SEEN.has(el)){SEEN.add(el);io.observe(el)}})}
-new MutationObserver(()=>{if(!scanQ){scanQ=true;requestAnimationFrame(scan)}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["src","style"]});
-async function unlock(pw,remember){
-  KEY=await deriveKey(pw);
-  DATA=JSON.parse(new TextDecoder().decode(await decFetch("data.bin")));
-  try{if(remember)localStorage.setItem("bmr",pw)}catch(e){}
-  gens=DATA.gens; window.BKX={data:()=>DATA,blob:blobOf}; $("#lock").hidden=true; $("#app").hidden=false; loadDex();
+(async()=>{
+  try{const r=await fetch("d/data.json",{cache:"no-cache"});if(!r.ok)throw new Error(r.status);DATA=await r.json()}
+  catch(x){document.body.insertAdjacentHTML("afterbegin",'<p style="padding:24px">The Bokidex did not load. Reload the page.</p>');return}
+  DATA.pending=[];gens=DATA.gens;window.BKX={data:()=>DATA,blob:blobOf,ownerUnlock};$("#app").hidden=false;loadDex();
   document.dispatchEvent(new Event("bokidex-unlocked"));
-}
-$("#lf").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lerr");err.textContent="Checking…";
-  try{await unlock($("#pw").value,$("#rem").checked);err.textContent=""}
-  catch(x){KEY=null;err.textContent=/wrong password/.test(x?.message)?"Wrong password.":"Could not open the Bokidex ("+(x?.message||x)+")."}});
-(async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){}if(p){try{await unlock(p,false)}catch(e){try{localStorage.removeItem("bmr")}catch(_){}}}})();
+})();
 </script>
-<script src="owner.js?v=057b6fa1fa"></script>
+<script src="owner.js?v=174bf0b020"></script>
 </body>
 </html>
