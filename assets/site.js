@@ -45,6 +45,18 @@ if (media && "IntersectionObserver" in window) {
   new IntersectionObserver(([e]) => media.classList.toggle("paused", !e.isIntersecting)).observe(document.querySelector(".hero-wrap") || media);
 }
 
+// Phones: touch a portrait and it lights up the same way for a moment.
+if (media && matchMedia("(pointer: coarse)").matches) {
+  const hero = document.getElementById("hero"); let lit = null, off = 0;
+  media.addEventListener("pointerdown", (e) => {
+    const li = e.target.closest("li"); if (!li) return;
+    const r = hero.getBoundingClientRect();
+    hero.style.setProperty("--hx", `${(e.clientX - r.left).toFixed(0)}px`); hero.style.setProperty("--hy", `${(e.clientY - r.top).toFixed(0)}px`);
+    if (lit && lit !== li) lit.classList.remove("tap");
+    lit = li; li.classList.add("tap"); hero.classList.add("lit");
+    clearTimeout(off); off = setTimeout(() => { li.classList.remove("tap"); hero.classList.remove("lit"); lit = null; }, 1600);
+  });
+}
 // Hovering a portrait lights it up (CSS); the wash over the wall clears in a spotlight that follows the pointer.
 if (media && matchMedia("(hover: hover) and (pointer: fine)").matches) {
   const hero = document.getElementById("hero");
@@ -55,6 +67,41 @@ if (media && matchMedia("(hover: hover) and (pointer: fine)").matches) {
   });
   media.addEventListener("pointerleave", () => hero.classList.remove("lit"));
 }
+
+// The logo breaks as you scroll away from the hero: BOKI splits down the crack in its egg, both halves glowing
+// ember at the break, and the PROJECT plaque pieces drift further apart. Scroll back up and it all comes together.
+const wmBreak = (() => {
+  const img = document.querySelector(".lockup .wordmark");
+  if (!img || calm) return null;
+  const crack = [[50, -6], [48.5, 18], [52, 36], [47.5, 58], [51, 78], [49, 106]];
+  const P = (pts) => pts.map(([x, y]) => `${x}% ${y}%`).join(", ");
+  const L = `polygon(-10% -10%, ${P(crack.map(([x, y]) => [x + 0.3, y]))}, -10% 110%)`;
+  const R = `polygon(${P(crack)}, 110% 110%, 110% -10%)`;
+  const band = (o) => crack.map(([x, y]) => `${x},${y}`).join(" ") + " " + crack.slice().reverse().map(([x, y]) => `${x + o},${y}`).join(" ");
+  const wrap = document.createElement("span"); wrap.className = "wm-wrap";
+  img.parentNode.insertBefore(wrap, img); wrap.appendChild(img);
+  const half = (cls, clip, o) => {
+    const s = document.createElement("span"); s.className = "wm-half " + cls; s.style.clipPath = s.style.webkitClipPath = clip;
+    const c = img.cloneNode(); c.removeAttribute("fetchpriority"); c.alt = ""; c.className = "";
+    s.appendChild(c);
+    s.insertAdjacentHTML("beforeend", `<svg class="wm-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="${band(o)}"/></svg>`);
+    const svg = s.querySelector("svg"), mask = () => { const u = `url("${c.currentSrc || c.src}")`; svg.style.webkitMaskImage = svg.style.maskImage = u; };
+    c.complete ? mask() : c.addEventListener("load", mask, { once: true }); // the glow only shows on the logo itself
+    wrap.appendChild(s); return s;
+  };
+  const l = half("wm-l", L, -1.6), r = half("wm-r", R, 1.6);
+  wrap.classList.add("split");
+  const pl = document.querySelector(".pj-l"), pr = document.querySelector(".pj-r"), chips = [...document.querySelectorAll(".pj-chip")];
+  return (k) => {
+    const e = k * k * (3 - 2 * k);
+    l.style.transform = `translate(${(-8 * e).toFixed(2)}%, ${(3 * e).toFixed(2)}%) rotate(${(-8 * e).toFixed(2)}deg)`;
+    r.style.transform = `translate(${(8 * e).toFixed(2)}%, ${(7 * e).toFixed(2)}%) rotate(${(9 * e).toFixed(2)}deg)`;
+    wrap.style.setProperty("--k", e.toFixed(3));
+    if (pl) pl.style.transform = `translate(${(-0.3 - 1.4 * e).toFixed(3)}em, ${(-0.12 - 0.3 * e).toFixed(3)}em) rotate(${(-5 - 9 * e).toFixed(2)}deg)`;
+    if (pr) pr.style.transform = `translate(${(0.3 + 1.4 * e).toFixed(3)}em, ${(0.22 + 0.6 * e).toFixed(3)}em) rotate(${(4 + 10 * e).toFixed(2)}deg)`;
+    chips.forEach((c, i) => { c.style.translate = `${((i - 1) * 0.6 * e).toFixed(2)}em ${(2.4 * e * (1 + i * 0.4)).toFixed(2)}em`; c.style.opacity = (1 - e * 0.8).toFixed(3); });
+  };
+})();
 
 // Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
 const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
@@ -69,7 +116,8 @@ if (heroIn && !calm) {
     if (t === 1 && done) return; // covered: nothing changes
     done = t === 1;
     heroIn.style.transform = `translate3d(0, ${(-h * 0.14 * e).toFixed(1)}px, 0) scale(${(1 - 0.1 * e).toFixed(4)})`;
-    heroIn.style.opacity = String(Math.max(0, 1 - t * 1.6).toFixed(3));
+    heroIn.style.opacity = String(Math.min(1, Math.max(0, 1 - (t - 0.12) * 1.9)).toFixed(3));
+    if (wmBreak) wmBreak(Math.min(1, t / 0.5));
     if (media) media.style.transform = `scale(${(1 + 0.12 * e).toFixed(4)})`;
     if (heroDim) heroDim.style.opacity = (0.75 * t).toFixed(3);
     if (hunIn) hunIn.style.transform = t < 1 ? `translate3d(0, ${(110 * (1 - e)).toFixed(1)}px, 0)` : "";
@@ -254,9 +302,13 @@ if (pick) {
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
-  const skip = plab && (() => { // desktop: jump past the twelve steps straight to the Boki
-    const b = document.createElement("button"); b.type = "button"; b.className = "h-skip"; b.textContent = "Skip to Boki";
-    b.addEventListener("click", () => { const to = document.getElementById("boki"); if (to) to.scrollIntoView({ behavior: "instant", block: "start" }); });
+  const skip = plab && (() => { // jump past the twelve steps to the next section
+    const b = document.createElement("button"); b.type = "button"; b.className = "h-skip";
+    b.innerHTML = 'Skip to next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    b.addEventListener("click", () => { // the section after the Hunters
+      let to = sec.nextElementSibling; while (to && to.tagName !== "SECTION") to = to.nextElementSibling;
+      if (to) to.scrollIntoView({ behavior: "instant", block: "start" });
+    });
     plab.appendChild(b); return b;
   })();
   const bar = plab && (() => { const s = document.createElement("span"); s.className = "h-bar"; s.setAttribute("aria-hidden", "true"); s.innerHTML = "<i></i>"; plab.insertBefore(s, plab.querySelector(".swipe")); return s.firstChild; })();
@@ -455,7 +507,7 @@ if (pick) {
 
     // Phones: one swipe, one Hunter. Inside the Hunters a vertical swipe glides to the next (or previous) Hunter
     // instead of flinging past them all; at the first or last Hunter it scrolls on normally, and sideways swipes
-    // still browse the strip. "Skip to Boki" jumps straight past.
+    // still browse the strip. "Skip to next" jumps straight past.
     if (touchy) {
       let sy = 0, sx = 0, mode = -1, glide = 0;
       const last = () => HUNTERS.length - 1;
@@ -643,7 +695,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const dark = document.getElementById("bk-dark");
   if (dark) {
     dark.querySelector(".bk-dark-n").textContent = `${data.total} Boki to find.`;
-    dark.querySelector(".bk-dark-s").textContent = `${LIST.length} revealed so far. The other ${data.hidden.length} are still in the dark.`;
+    dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
     data.hidden.forEach((h) => {
       const t = document.createElement("span");
