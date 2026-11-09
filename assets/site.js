@@ -480,7 +480,7 @@ if (pick) {
   // carries it into the Hunters while the scene plays, and lets go the moment the picker is in.
   if (!calm) {
     const coarse = matchMedia("(pointer: coarse)"), root = document.documentElement;
-    let played = false, held = false, jump = 0, prevY = scrollY;
+    let played = false, held = false, jump = 0, prevY = scrollY, target = 0;
     document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
     addEventListener("hashchange", () => { jump = performance.now(); });
     const block = (e) => { if (held) e.preventDefault(); };
@@ -489,7 +489,8 @@ if (pick) {
       held = true;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
       addEventListener("touchmove", block, { passive: false }); addEventListener("wheel", block, { passive: false }); addEventListener("keydown", keys);
-      scrollTo({ top: Math.round(scn.s0 + scn.lead), behavior: "instant" }); // the stage is held in place, so nothing jumps
+      target = Math.round(scn.s0 + scn.lead);
+      scrollTo({ top: target, behavior: "instant" }); // the stage is held in place, so nothing jumps
       kick();
       const t0 = performance.now();
       const wait = () => {
@@ -501,7 +502,10 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY;
-      if (!played && !held && scn && coarse.matches && y > prevY && y >= scn.s0 - innerHeight * 0.2 && y < scn.s0 + scn.lead * 0.6 && performance.now() - jump > 1500) { played = true; hold(); }
+      if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; return; } // leftover momentum can't move it
+      if (scn && y < scn.s0 - innerHeight * 0.5) played = false; // well back above the heading: the next pass down is held again
+      // any pass down into the heading, even a flick that jumps clean past it in one frame
+      if (!played && scn && coarse.matches && y > prevY && prevY < scn.s0 + scn.lead && y >= scn.s0 - innerHeight * 0.2 && performance.now() - jump > 1500) { played = true; hold(); }
       prevY = y;
     }, { passive: true });
 
