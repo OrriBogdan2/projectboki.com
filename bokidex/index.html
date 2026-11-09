@@ -440,7 +440,7 @@ function heroOf(e){
   if(o?.hero&&o.hero.fresh){if(o.hero.sheet)probe(o.hero.src);return o.hero}
   const dark=curTheme()==="dark", want=dark?e.heroDark:e.heroLight, other=dark?e.heroLight:e.heroDark;
   if(want)return{src:assetURL(want),cut:true};
-  if(e.hero)return{src:assetURL(e.hero),bg:e.bg};
+  if(e.hero)return{src:assetURL(e.hero),cut:true}; // all dex heroes are transparent cutouts now (hero_site/hero_cut), so the type glow shows
   if(other)return{src:assetURL(other),cut:true};
   return null;
 }
