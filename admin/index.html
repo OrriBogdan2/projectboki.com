@@ -52,8 +52,6 @@ h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}h1{font-size:20px}h2{fon
 .wordmark{font-size:22px;font-weight:700;letter-spacing:-.02em}
 .wordmark small{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
 #gsi{display:flex;justify-content:center;min-height:44px;margin:26px 0 12px}
-.linklike{background:none;border:0;padding:4px;color:var(--muted);font-size:12.5px}.linklike:hover{color:var(--ink);background:none;text-decoration:underline}
-#ownerform{margin-top:14px;display:grid;gap:8px}
 .err{color:var(--crit);font-size:13px;min-height:18px;margin-top:8px}
 
 /* app shell */
@@ -176,11 +174,6 @@ td .ell{max-width:420px}td .cell{display:contents}
     <div class="wordmark">Project Boki<small>Control Room</small></div>
     <div id="gsi"></div>
     <div id="gsi-msg" class="muted small"></div>
-    <button class="linklike" id="ownerlink">Use owner code</button>
-    <form id="ownerform" class="hide" autocomplete="off">
-      <input type="password" id="code" placeholder="Owner code" autocomplete="current-password">
-      <button class="primary" type="submit">Sign in</button>
-    </form>
     <div class="err" id="signin-err"></div>
   </div>
 </div>
@@ -317,10 +310,6 @@ async function onGoogle(resp){
   try { const r = await api('/signin/google', {method:'POST', body:{credential: resp.credential}}); setToken(r.token); me = r.user; if(!['owner','admin'].includes(me.role)) return showSignin('Signed in, but this Google account is not an admin.'); showApp(); }
   catch(e) { $('#signin-err').textContent = e.message; }
 }
-$('#ownerlink').onclick = () => { $('#ownerform').classList.toggle('hide'); $('#code').focus(); };
-$('#ownerform').onsubmit = async ev => { ev.preventDefault(); $('#signin-err').textContent='';
-  try { const r = await api('/signin/owner', {method:'POST', body:{code: $('#code').value}}); setToken(r.token); me = r.user; showApp(); }
-  catch(e) { $('#signin-err').textContent = e.status === 429 ? 'Too many attempts, wait a minute.' : (e.message || 'Sign-in failed'); } };
 function setToken(t){ token = t; try{ localStorage.setItem(TOKEN_KEY, t); }catch(e){} }
 async function signout(call=true){ if (call) { try { await api('/signout', {method:'POST'}); } catch(e){} } token=null; me=null; try{localStorage.removeItem(TOKEN_KEY);}catch(e){} clearInterval(timer); closeDrawer(); showSignin(); }
 $('#signout').onclick = () => signout(true);

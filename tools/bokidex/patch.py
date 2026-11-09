@@ -8,6 +8,8 @@ It is safe to run more than once. It adds:
   1. share tags (link preview image assets/img/og-bokidex.jpg, made from tools/og/bokidex.html)
   2. the Project Boki icon in the header instead of the spinning radar (the radar spun off-centre on iOS Safari)
   3. swipe left / right between entries, and between pictures when one is zoomed
+  4. the shared top bar (assets/topbar.js: wordmark, links, Sign in / admin state, hamburger on phones) plus the
+     layout reserve for it, so the sticky header and filter bar sit under it
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -44,6 +46,15 @@ if "Swipe left / right on an open entry" not in s:
     at = s.find('<script src="owner.js')
     if at < 0: at = s.rfind("</body>")
     s = s[:at] + SWIPE + s[at:]
+
+# 4. shared top bar: a head-side layout reserve (no jump while the script loads) and the script itself
+TB_HEAD = '<!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->\n<script>document.documentElement.classList.add("tb-dex")</script>\n<style>html.tb-dex{--tbh:52px;--tbo:var(--tbh)}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>\n'
+if "tb-dex" not in s:
+    s = s.replace("</head>", TB_HEAD + "</head>", 1)
+if "<script src=\"/assets/topbar.js" not in s:
+    at = s.find('<script src="owner.js')
+    if at < 0: at = s.rfind("</body>")
+    s = s[:at] + '<script src="/assets/topbar.js?v=1" defer></script>\n' + s[at:]
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
