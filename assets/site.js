@@ -336,36 +336,40 @@ if (pick) {
   wide.addEventListener && wide.addEventListener("change", layoutPin);
   layoutPin();
 
-  // Mouse and trackpad: one flick, one stop. A hard flick lands on the first Hunter instead of flying past, and on
-  // desktop each flick after that moves one Hunter, like a carousel; whatever is left of that flick is absorbed.
-  // A new swipe (a pause, or the wheel picking up again), a click or a key starts fresh. Slow scrolling is never caught.
+  // Mouse and trackpad, the same both ways: a hard flick never flies past the Hunters. Coming in or going out it stops
+  // on the first or last Hunter; inside, it moves at most two Hunters, and the rest of that flick is held back.
+  // A new swipe, a click or a key starts fresh, and slow scrolling is never caught.
   if (!calm) {
-    let lastW = 0, peak = 0, dec = 0, caught = null, since = 0;
+    let lastW = 0, peak = 0, dec = 0, dir = 0, start = 0, caught = null, since = 0, spent = false;
     const spots = () => [Math.round(scn.s0 + scn.lead)].concat(pin ? HUNTERS.slice(1).map((_, i) => Math.round(pin.start + (i + 1.5) * pin.step)) : []);
-    ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { caught = null; }, { passive: true }));
+    const stopFor = () => { // where this flick should come to rest
+      const list = spots(), end = list[list.length - 1];
+      const ahead = dir > 0 ? list.filter((s) => s > start + 12) : list.filter((s) => s < start - 12).reverse();
+      return ahead.find((s, j) => j >= 1 || s === list[0] || s === end);
+    };
+    const crosses = (from, to, s) => s !== undefined && (dir > 0 ? from < s && to >= s : from > s && to <= s);
+    const land = (s, now) => { caught = s; since = now; scrollTo({ top: s, behavior: "instant" }); }; // the stage is held in place, so nothing jumps
+    ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { caught = null; spent = true; }, { passive: true }));
     addEventListener("wheel", (e) => {
-      if (!scn) return;
-      const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1), a = Math.abs(dy);
+      if (!scn || !e.deltaY) return;
+      const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1), a = Math.abs(dy), d = Math.sign(dy);
       // a new gesture, not the tail of the last one: a pause, a reversal, or (once a caught flick has had time to fade)
       // the wheel picking up hard again. A swipe ramps up as it starts, so that alone doesn't count.
-      const fresh = now - lastW > 220 || dy < 0 || (caught !== null && now - since > 300 && a > dec * 2 + 24);
+      const fresh = now - lastW > 220 || d !== dir || (caught !== null && now - since > 300 && a > dec * 2 + 24);
       lastW = now;
-      if (fresh) { peak = dec = a; caught = null; } else { peak = Math.max(peak, a); dec = Math.max(a, dec * 0.8); }
-      if (dy <= 0) return;
-      if (caught !== null) { if (now - since < 2200) { e.preventDefault(); return; } caught = null; } // the rest of a caught flick
-      if (peak < 45) return; // slow, steady scrolling
-      const y = scrollY, at = spots().find((s) => y < s && y + dy > s && y > s - innerHeight * 1.6);
-      if (at === undefined) return;
-      e.preventDefault(); caught = at; since = now;
-      scrollTo({ top: at, behavior: "instant" }); // the stage is held in place, so nothing jumps
+      if (fresh) { peak = dec = a; dir = d; start = scrollY; caught = null; spent = false; } else { peak = Math.max(peak, a); dec = Math.max(a, dec * 0.8); }
+      if (caught !== null) { if (now - since < 1600) { e.preventDefault(); return; } caught = null; spent = true; } // the rest of this flick is held back
+      if (spent || peak < 60) return; // slow, steady scrolling
+      const s = stopFor(), y = scrollY;
+      if (crosses(y, y + dy, s) && Math.abs(s - y) < innerHeight * 1.6) { e.preventDefault(); land(s, now); }
     }, { passive: false });
     let prevY = scrollY, prevT = 0;
     addEventListener("scroll", () => {
-      const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = (y - prevY) / Math.max(8, now - prevT) > 1.5;
-      if (caught !== null) { if (now - lastW < 600 && y > caught) scrollTo({ top: caught, behavior: "instant" }); } // hold until the glide is spent
-      else if (scn && live && (peak >= 45 || fast) && y > prevY) { // smooth-scrolling mice glide between wheel events: catch the glide too
-        const at = spots().find((s) => prevY < s && y > s);
-        if (at !== undefined) { caught = at; since = now; scrollTo({ top: at, behavior: "instant" }); }
+      const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = Math.abs(y - prevY) / Math.max(8, now - prevT) > 1.5;
+      if (caught !== null) { if (now - since < 1600 && (dir > 0 ? y > caught : y < caught)) scrollTo({ top: caught, behavior: "instant" }); }
+      else if (scn && live && !spent && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
+        const s = stopFor();
+        if (crosses(prevY, y, s)) land(s, now);
       }
       prevY = scrollY; prevT = now;
     }, { passive: true });
@@ -865,7 +869,7 @@ if (POSTHOG_KEY) {
     const k = still ? 0.2 : clamp((p - (1 - l.t) * 0.5) / 0.5);  // the end of the word goes first
     const crack = ease(clamp(k / 0.2));                          // the crack opens and glows
     const f = clamp((k - 0.16) / 0.84), fe = ease(f);            // then it falls, faster and faster
-    const big = Math.min(1, l.y / 0.2);                          // the first letters only crack; the end of the word really goes
+    const big = Math.min(1, 0.6 + l.y / 0.35);                   // every letter falls; the end of the word goes hardest
     // like land along a fault: the halves shear (one side slips lower) and sink, the glowing crack between them.
     // Every letter stays in its own column, so the word still reads.
     const gap = 0.01 * crack + 0.012 * fe * big, drop = l.y * f * f * 0.85, drift = 0.24 * l.t * fe, tilt = l.r * 0.1 * fe; // the word spreads as it breaks
@@ -874,7 +878,7 @@ if (POSTHOG_KEY) {
     l.z.style.transform = `translate(${(drift + gap).toFixed(3)}em, ${(drop * 1.06 + Math.max(0, slip)).toFixed(3)}em) rotate(${(tilt + (0.6 + l.tw * 0.15) * fe * big + crack).toFixed(2)}deg)`;
     l.glow.style.opacity = (crack * (0.45 + 0.55 * big) * (1 - 0.5 * fe)).toFixed(3);
     l.glow.style.transform = `translate(${drift.toFixed(3)}em, ${(drop * 1.04).toFixed(3)}em) rotate(${tilt.toFixed(2)}deg)`;
-    l.el.style.setProperty("--f", (Math.max(crack * 0.15, fe) * Math.pow(l.t, 0.7)).toFixed(3)); // red rises in the falling shards
+    l.el.style.setProperty("--f", (Math.max(crack * 0.15, fe) * (0.4 + 0.6 * Math.pow(l.t, 0.7))).toFixed(3)); // red rises in the falling shards
     l.chips.forEach((c) => {
       const cf = still ? 0 : clamp((k - 0.12) / 0.7);
       c.el.style.opacity = (cf > 0 ? Math.min(1, cf * 6) * (1 - cf * cf) * big : 0).toFixed(3);
