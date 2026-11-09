@@ -316,7 +316,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 0.62 : 0.56)), step = Math.max(220, Math.round(vh * 0.3));
+    const lead = Math.round(vh * (on ? 0.62 : 0.56)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go
@@ -336,38 +336,38 @@ if (pick) {
   wide.addEventListener && wide.addEventListener("change", layoutPin);
   layoutPin();
 
-  // Mouse and trackpad: a hard flick lands on the first Hunter (and, from there, on the last one) instead of flying
-  // past. Only that flick's leftover momentum is absorbed (it fades, so each event is smaller than the last);
-  // a fresh swipe goes straight through.
+  // Mouse and trackpad: one flick, one stop. A hard flick lands on the first Hunter instead of flying past, and on
+  // desktop each flick after that moves one Hunter, like a carousel; whatever is left of that flick is absorbed.
+  // A new swipe (a pause, or the wheel picking up again), a click or a key starts fresh. Slow scrolling is never caught.
   if (!calm) {
-    let catching = -1, lastW = 0, since = 0, peak = 0, rel = 0, pace = 0;
-    const armed = [true, true];
-    const hold = () => { clearTimeout(rel); rel = setTimeout(() => { catching = -1; }, 170); }; // the wheel went quiet: done
-    ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { catching = -1; }, { passive: true }));
-    const spots = () => [Math.round(scn.s0 + scn.lead), pin ? Math.round(pin.start + (HUNTERS.length - 0.5) * pin.step) : null];
+    let lastW = 0, peak = 0, dec = 0, caught = null, since = 0;
+    const spots = () => [Math.round(scn.s0 + scn.lead)].concat(pin ? HUNTERS.slice(1).map((_, i) => Math.round(pin.start + (i + 1.5) * pin.step)) : []);
+    ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { caught = null; }, { passive: true }));
     addEventListener("wheel", (e) => {
       if (!scn) return;
-      const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1);
-      if (catching >= 0) {
-        const fresh = dy < 0 || now - lastW > 160 || Math.abs(dy) > peak * 2 + 24 || now - since > 2000;
-        lastW = now; peak = Math.max(Math.abs(dy), peak * 0.8);
-        if (fresh) { catching = -1; return; }
-        e.preventDefault(); hold(); return;
-      }
-      pace = now - lastW > 160 ? Math.abs(dy) : Math.max(Math.abs(dy), pace * 0.85); lastW = now; // how hard you're scrolling
-      if (dy <= 0 || pace < 45) return; // slow, steady scrolling is never caught
-      spots().forEach((at, k) => {
-        if (catching < 0 && at !== null && armed[k] && scrollY > at - innerHeight * 1.6 && scrollY < at && scrollY + dy > at) {
-          armed[k] = false; catching = k; since = now; peak = Math.abs(dy);
-          e.preventDefault(); scrollTo({ top: at, behavior: "instant" }); hold(); // the stage is held in place, so nothing jumps
-        }
-      });
+      const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1), a = Math.abs(dy);
+      // a new gesture, not the tail of the last one: a pause, a reversal, or (once a caught flick has had time to fade)
+      // the wheel picking up hard again. A swipe ramps up as it starts, so that alone doesn't count.
+      const fresh = now - lastW > 220 || dy < 0 || (caught !== null && now - since > 300 && a > dec * 2 + 24);
+      lastW = now;
+      if (fresh) { peak = dec = a; caught = null; } else { peak = Math.max(peak, a); dec = Math.max(a, dec * 0.8); }
+      if (dy <= 0) return;
+      if (caught !== null) { if (now - since < 2200) { e.preventDefault(); return; } caught = null; } // the rest of a caught flick
+      if (peak < 45) return; // slow, steady scrolling
+      const y = scrollY, at = spots().find((s) => y < s && y + dy > s && y > s - innerHeight * 1.6);
+      if (at === undefined) return;
+      e.preventDefault(); caught = at; since = now;
+      scrollTo({ top: at, behavior: "instant" }); // the stage is held in place, so nothing jumps
     }, { passive: false });
+    let prevY = scrollY, prevT = 0;
     addEventListener("scroll", () => {
-      if (!scn) return;
-      const s = spots();
-      if (catching >= 0 && scrollY > s[catching]) scrollTo({ top: s[catching], behavior: "instant" });
-      s.forEach((at, k) => { if (at !== null && scrollY < at - innerHeight * 0.4) armed[k] = true; }); // back above it: catches again
+      const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = (y - prevY) / Math.max(8, now - prevT) > 1.5;
+      if (caught !== null) { if (now - lastW < 600 && y > caught) scrollTo({ top: caught, behavior: "instant" }); } // hold until the glide is spent
+      else if (scn && live && (peak >= 45 || fast) && y > prevY) { // smooth-scrolling mice glide between wheel events: catch the glide too
+        const at = spots().find((s) => prevY < s && y > s);
+        if (at !== undefined) { caught = at; since = now; scrollTo({ top: at, behavior: "instant" }); }
+      }
+      prevY = scrollY; prevT = now;
     }, { passive: true });
   }
 
