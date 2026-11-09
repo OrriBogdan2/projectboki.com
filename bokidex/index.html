@@ -454,8 +454,8 @@ header{padding-block:16px 4px}header::after{display:none}
 @media (prefers-reduced-motion:no-preference){.lens .sw{animation:sweep 2.4s cubic-bezier(.6,.1,.4,.9) infinite}}
 .dbar{border:0;background:none;box-shadow:none;padding:0;margin:8px 0 0;border-radius:0}
 .dbar input{background:var(--panel)}
-.tmeta{margin:0;gap:0}.tmeta::after,.tlbl{display:none}.tacts{margin-left:auto}
-.tf{display:flex;gap:6px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;
+.tmeta{margin:0;gap:0;height:auto;min-height:0}.tmeta:not(:has(.tacts *:not([hidden]))){display:none}.tmeta::after,.tlbl{display:none}.tacts{margin-left:auto}
+.tf{display:flex;flex-wrap:nowrap;gap:6px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;
   -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
 .tf::-webkit-scrollbar{display:none}
 .tbtn{flex:none;height:28px;border-radius:999px;padding:0 12px 0 10px;font-size:.74rem;gap:6px}
