@@ -390,9 +390,9 @@ header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb
 .rd i{width:1px;height:9px;background:var(--line);display:inline-block}
 .rd b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
 .lens{--s:46px;width:var(--s);height:var(--s);flex:none;position:relative;display:block;color:var(--accent)}
-.lens svg{width:100%;height:100%;overflow:visible;display:block}
+.lens img{width:100%;height:100%;display:block;border-radius:22%} /* the Project Boki icon (site repo); was a spinning radar */
 .lens .sw{transform-origin:32px 32px;transform:rotate(40deg)}
-@media (prefers-reduced-motion:no-preference){.lens .sw{animation:sweep 7s linear infinite}}
+
 @keyframes sweep{to{transform:rotate(400deg)}}
 .dbar{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:color-mix(in srgb,var(--panel) 90%,transparent);box-shadow:0 10px 30px -26px var(--shadow)}
 .dbar .drow{flex-wrap:nowrap;gap:8px}
@@ -455,8 +455,8 @@ header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb
 header{padding-block:16px 4px}header::after{display:none}
 .rd{display:none}
 .brand{gap:10px}.brand h1{font-size:1.5rem;letter-spacing:0}
-.lens{--s:28px}
-@media (prefers-reduced-motion:no-preference){.lens .sw{animation:sweep 2.4s cubic-bezier(.6,.1,.4,.9) infinite}}
+.lens{--s:32px}
+
 .dbar{border:0;background:none;box-shadow:none;padding:0;margin:8px 0 0;border-radius:0}
 .dbar input{background:var(--panel)}
 .tmeta{margin:0;gap:0;height:auto;min-height:0}.tmeta:not(:has(.tacts *:not([hidden]))){display:none}.tmeta::after,.tlbl{display:none}.tacts{margin-left:auto}
@@ -582,11 +582,7 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 <body>
 <div class="wrap" id="app" hidden>
 <header>
-  <div class="brand"><span class="lens" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round">
-<circle cx="32" cy="32" r="27" stroke-width="2" stroke-opacity=".28"/>
-<g class="sw"><path d="M32 5A27 27 0 0 1 59 32" stroke-width="3.2"/></g>
-<circle cx="32" cy="32" r="5" fill="currentColor" stroke="none"/>
-</svg></span><div><h1>Bokidex</h1><div class="rd"><span class="rdk">Field index</span><i></i><span>Specimens <b id="rdn">···</b></span></div><div class="sub">Project Boki creature dex</div></div></div>
+  <div class="brand"><a class="lens" href="/" aria-label="Project Boki home"><img src="/assets/img/brand-96.webp?v=2" alt="" width="96" height="96"></a><div><h1>Bokidex</h1><div class="rd"><span class="rdk">Field index</span><i></i><span>Specimens <b id="rdn">···</b></span></div><div class="sub">Project Boki creature dex</div></div></div>
   <div class="hr">
   <button class="btn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch between light and dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
   </div>
