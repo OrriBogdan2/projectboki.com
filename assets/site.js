@@ -1069,24 +1069,128 @@ if (POSTHOG_KEY) {
   }).catch(() => {});
 })();
 
-/* ---------- Bubblisk in the FAQ: tap his bubble and it pops into droplets, then he blows a new one ---------- */
+/* ---------- Bubblisk in the FAQ: he's alive. The painting is warped on a fine mesh (WebGL): his head leans after the
+   pointer, his body breathes and stretches after it, his tail sways, and he gets excited when you come close. Tap his
+   bubble and it pops into droplets; a moment later he blows a new one. Without WebGL (or with reduced motion) he's the
+   still picture and the pop still works. ---------- */
 (function () {
   const wrap = document.getElementById("bub"); if (!wrap) return;
   const btn = wrap.querySelector(".bub"), burst = wrap.querySelector(".bub-burst");
-  let busy = false;
+  const BC = [0.176, 0.566], BR = 0.129, MOUTH = [0.27, 0.52], HEAD = [0.33, 0.42];
+  let bub = { s: 1, a: 1, o: BC }; // bubble scale, alpha, scale origin (texture space)
+  let anim = null; // { t0, dur, from, to, origin, ease }
+  const tween = (to, dur, origin, ease) => { anim = { t0: performance.now(), dur, from: { s: bub.s, a: bub.a }, to, origin, ease }; bub.o = origin; };
+  let busy = false, gl = null;
   btn.addEventListener("click", () => {
     if (busy) return; busy = true;
-    wrap.classList.remove("grow"); wrap.classList.add("pop");
-    const r = wrap.offsetWidth * 0.129; // the bubble's radius on screen
-    let html = '<span class="ring" style="width:' + (r * 1.6).toFixed(0) + 'px;height:' + (r * 1.6).toFixed(0) + 'px;margin:' + (-r * .8).toFixed(0) + 'px 0 0 ' + (-r * .8).toFixed(0) + 'px"></span>';
+    const r = wrap.offsetWidth * BR;
+    let html = `<span class="ring" style="width:${(r * 1.6).toFixed(0)}px;height:${(r * 1.6).toFixed(0)}px;margin:${(-r * .8).toFixed(0)}px 0 0 ${(-r * .8).toFixed(0)}px"></span>`;
     for (let i = 0; i < 12; i++) {
       const a = (i / 12) * Math.PI * 2 + Math.random() * 0.4, d = r * (1.1 + Math.random() * 0.9), s = Math.max(4, r * (0.12 + Math.random() * 0.14));
       html += `<i style="--s:${s.toFixed(1)}px;--dx:${(Math.cos(a) * d).toFixed(1)}px;--dy:${(Math.sin(a) * d + r * 0.4).toFixed(1)}px;animation-delay:${(Math.random() * 60).toFixed(0)}ms"></i>`;
     }
-    burst.innerHTML = html;
-    setTimeout(() => { burst.innerHTML = ""; }, 900);
-    setTimeout(() => { wrap.classList.remove("pop"); wrap.classList.add("grow"); }, 1500);       // a beat, then a new bubble
-    setTimeout(() => { wrap.classList.remove("grow"); busy = false; }, 2600);
+    burst.innerHTML = html; setTimeout(() => { burst.innerHTML = ""; }, 900);
+    if (gl) { // swell, then burst
+      tween({ s: 1.14, a: 1 }, 110, BC, (k) => k);
+      setTimeout(() => tween({ s: 1.4, a: 0 }, 150, BC, (k) => k), 110);
+      setTimeout(() => { bub = { s: 0.05, a: 0.6, o: MOUTH }; tween({ s: 1, a: 1 }, 1000, MOUTH, (k) => 1 + 2.4 * Math.pow(k - 1, 3) + 1.4 * Math.pow(k - 1, 2)); }, 1500);
+      setTimeout(() => { busy = false; }, 2600);
+    } else {
+      wrap.classList.remove("grow"); wrap.classList.add("pop");
+      setTimeout(() => { wrap.classList.remove("pop"); wrap.classList.add("grow"); }, 1500);
+      setTimeout(() => { wrap.classList.remove("grow"); busy = false; }, 2600);
+    }
   });
+  if (calm) return;
+
+  // ---- the living version
+  const cv = document.createElement("canvas"); cv.className = "bub-gl";
+  gl = cv.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: true });
+  if (!gl) return;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null; };
+  const WARP = `
+    uniform vec2 uOff; uniform float uT, uBreath, uLean;
+    vec2 warp(vec2 p) {
+      vec2 h = p - vec2(${HEAD[0]}, ${HEAD[1]});
+      float wh = exp(-dot(h, h) / (2.0 * 0.17 * 0.17));                       // the head follows the pointer
+      vec2 d = uOff * wh;
+      vec2 b = p - vec2(0.55, 0.48); float wb = exp(-dot(b, b) / (2.0 * 0.24 * 0.24));
+      d.y += (p.y - 0.70) * uBreath * wb; d.x += (p.x - 0.55) * uBreath * 0.5 * wb; // breathing
+      float wt = smoothstep(0.6, 0.86, p.y) * smoothstep(0.5, 0.78, p.x);    // the tail curl sways
+      d.x += sin(uT * 1.7 + p.y * 6.0) * 0.012 * wt; d.y += cos(uT * 1.3 + p.x * 5.0) * 0.006 * wt;
+      d.x += uLean * (0.72 - p.y) * 0.35;                                       // the whole body leans a touch
+      return p + d;
+    }`;
+  const meshP = prog(`attribute vec2 a; varying vec2 v; ${WARP}
+    void main() { v = a; vec2 q = warp(a); gl_Position = vec4(q.x * 2.0 - 1.0, 1.0 - q.y * 2.0, 0.0, 1.0); }`,
+    `precision mediump float; varying vec2 v; uniform sampler2D tex; void main() { gl_FragColor = texture2D(tex, v); }`);
+  const bubP = prog(`attribute vec2 a; varying vec2 v; uniform mediump vec2 uC; uniform mediump float uR; uniform vec2 uO; uniform float uS; ${WARP}
+    void main() { vec2 c = uO + (uC - uO) * uS; vec2 m = warp(vec2(${MOUTH[0]}, ${MOUTH[1]})) - vec2(${MOUTH[0]}, ${MOUTH[1]});
+      vec2 q = c + m + (a * 2.0 - 1.0) * uR * uS; v = uC + (a * 2.0 - 1.0) * uR;
+      gl_Position = vec4(q.x * 2.0 - 1.0, 1.0 - q.y * 2.0, 0.0, 1.0); }`,
+    `precision mediump float; varying vec2 v; uniform sampler2D tex; uniform mediump vec2 uC; uniform mediump float uR; uniform float uA;
+     void main() { float d = length(v - uC) / uR; vec4 c = texture2D(tex, v); gl_FragColor = c * uA * (1.0 - smoothstep(0.96, 1.0, d)); }`);
+  if (!meshP || !bubP) { gl = null; return; }
+  // the mesh
+  const N = 48, pts = [], idx = [];
+  for (let y = 0; y <= N; y++) for (let x = 0; x <= N; x++) pts.push(x / N, y / N);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = y * (N + 1) + x; idx.push(i, i + 1, i + N + 1, i + 1, i + N + 2, i + N + 1); }
+  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pts), gl.STATIC_DRAW);
+  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+  const qb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, qb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
+  const texOf = (img) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; };
+  const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  const baseImg = wrap.querySelector(".bub-base"), fullImg = btn.querySelector("img");
+  let tBase, tFull, ready = false;
+  Promise.all([load(baseImg.currentSrc || baseImg.src), load(fullImg.currentSrc || fullImg.src)]).then(([b, f]) => {
+    tBase = texOf(b); tFull = texOf(f); ready = true; wrap.insertBefore(cv, wrap.firstChild); wrap.classList.add("gl"); size(); loop();
+  }).catch(() => { gl = null; });
+  const size = () => { const w = wrap.offsetWidth, dpr = Math.min(2, devicePixelRatio || 1); cv.width = cv.height = Math.round(w * dpr); };
+  addEventListener("resize", size);
+  // the pointer, in texture space
+  let px = null, py = null, lastMove = -1e9;
+  const track = (e) => { px = e.clientX; py = e.clientY; lastMove = performance.now(); };
+  addEventListener("pointermove", track, { passive: true }); addEventListener("pointerdown", track, { passive: true });
+  let ox = 0, oy = 0, lean = 0, ex = 0, vis = false, t = 0, last = 0;
+  new IntersectionObserver(([en]) => { vis = en.isIntersecting; if (vis && ready) loop(); }, { rootMargin: "100px" }).observe(wrap);
+  const loc = (u, n) => gl.getUniformLocation(u, n);
+  let raf = 0;
+  function loop() { if (!raf) raf = requestAnimationFrame(frame); }
+  function frame(now) {
+    raf = 0; if (!vis || !ready) return;
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now; t += dt;
+    const r = wrap.getBoundingClientRect(), hx = r.left + r.width * HEAD[0], hy = r.top + r.height * HEAD[1];
+    let tx = 0, ty = 0, tl = 0, near = 0;
+    if (px !== null && now - lastMove < 6000) {
+      const dx = px - hx, dy = py - hy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 420);
+      tx = (dx / d) * k * 0.058; ty = (dy / d) * k * 0.044; tl = (dx / d) * k * 0.065; near = Math.max(0, 1 - d / 320);
+    } else { tx = Math.sin(t * 0.5) * 0.02; ty = Math.sin(t * 0.37) * 0.012; } // idle: looks around
+    const f = 1 - Math.exp(-dt * 6);
+    ox += (tx - ox) * f; oy += (ty - oy) * f; lean += (tl - lean) * f; ex += (near - ex) * (1 - Math.exp(-dt * 3));
+    const breath = Math.sin(t * (2.2 + ex * 3.5)) * (0.010 + ex * 0.008);
+    if (anim) { const k = Math.min(1, (now - anim.t0) / anim.dur), e = anim.ease(k);
+      bub.s = anim.from.s + (anim.to.s - anim.from.s) * e; bub.a = anim.from.a + (anim.to.a - anim.from.a) * Math.min(1, k); if (k >= 1) anim = null; }
+    gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    const set = (p) => { gl.uniform2f(loc(p, "uOff"), ox, oy); gl.uniform1f(loc(p, "uT"), t); gl.uniform1f(loc(p, "uBreath"), breath); gl.uniform1f(loc(p, "uLean"), lean); };
+    gl.useProgram(meshP); set(meshP);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb); const am = gl.getAttribLocation(meshP, "a"); gl.enableVertexAttribArray(am); gl.vertexAttribPointer(am, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, tBase); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0);
+    if (bub.a > 0.01) {
+      gl.useProgram(bubP); set(bubP);
+      gl.uniform2f(loc(bubP, "uC"), BC[0], BC[1]); gl.uniform2f(loc(bubP, "uO"), bub.o[0], bub.o[1]); gl.uniform1f(loc(bubP, "uS"), bub.s); gl.uniform1f(loc(bubP, "uR"), BR); gl.uniform1f(loc(bubP, "uA"), bub.a);
+      gl.bindBuffer(gl.ARRAY_BUFFER, qb); const ab = gl.getAttribLocation(bubP, "a"); gl.enableVertexAttribArray(ab); gl.vertexAttribPointer(ab, 2, gl.FLOAT, false, 0, 0);
+      gl.bindTexture(gl.TEXTURE_2D, tFull); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    // the tap target and the burst ride along with the bubble
+    const mx = ox * Math.exp(-((MOUTH[0] - HEAD[0]) ** 2 + (MOUTH[1] - HEAD[1]) ** 2) / (2 * 0.17 * 0.17)) + lean * (0.72 - MOUTH[1]) * 0.35;
+    const my = oy * Math.exp(-((MOUTH[0] - HEAD[0]) ** 2 + (MOUTH[1] - HEAD[1]) ** 2) / (2 * 0.17 * 0.17));
+    btn.style.translate = `${(mx * 100).toFixed(2)}% ${(my * 100).toFixed(2)}%`; burst.style.translate = `${(mx * r.width).toFixed(1)}px ${(my * r.height).toFixed(1)}px`;
+    raf = requestAnimationFrame(frame);
+  }
 })();
 
