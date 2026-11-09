@@ -85,8 +85,21 @@ section { position: relative; }
 .hero-dim { position: absolute; inset: 0; z-index: 1; background: #04070e; opacity: 0; pointer-events: none; }
 .hero-in { position: relative; z-index: 2; }
 .hero-in { display: flex; flex-direction: column; align-items: center; will-change: transform, opacity; }
-.lockup { display: block; margin: 0; line-height: 0; }
-.lockup .wordmark { width: clamp(300px, 46vw, 720px); height: auto; filter: drop-shadow(0 12px 40px rgba(0,0,0,.6)); }
+.lockup { --wm: clamp(300px, 46vw, 720px); display: flex; flex-direction: column; align-items: center; margin: 0; line-height: 0; }
+.lockup .wordmark { width: var(--wm); height: auto; filter: drop-shadow(0 12px 40px rgba(0,0,0,.6)); }
+/* "PROJECT": a plaque over BOKI, cracked in two with ember in the gap (the broken kingdom). B4, the cosmic version, is in docs/brand/. */
+.pj { position: relative; z-index: 2; display: inline-flex; white-space: nowrap; font-family: "Lilita"; font-size: calc(var(--wm) * .054); line-height: 1; letter-spacing: .3em; color: #f3ecdd;
+  padding: .45em 1.5em .4em 1.8em; margin-bottom: -.5em; transform: rotate(-3deg); text-shadow: none; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
+.pj i { font-style: normal; display: inline-block; }
+.pj-ghost { visibility: hidden; }
+.pj-pc { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: inherit; }
+.pj-l { transform: translate(-.3em, -.12em) rotate(-5deg); }
+.pj-r { transform: translate(.3em, .22em) rotate(4deg); }
+.pj-pl, .pj-pl::after { position: absolute; clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
+.pj-pl { inset: 0; z-index: -1; background: linear-gradient(90deg, #4fd8cb, #c36bff); }
+.pj-pl::after { content: ""; inset: 3px 4px; background: #120d1d; }
+.pj-gap { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: -2; overflow: visible; filter: drop-shadow(0 0 6px #ff5a30) drop-shadow(0 0 16px rgba(255,60,30,.85)); }
+.pj-chip { position: absolute; width: .42em; height: .32em; background: linear-gradient(135deg, #8f7bff, #120d1d 45%); clip-path: polygon(0 20%, 60% 0, 100% 55%, 40% 100%); transform: rotate(var(--r, 0deg)); filter: drop-shadow(0 0 4px rgba(255,90,50,.7)); }
 .hero .mark { width: clamp(56px, 6.4vw, 96px); height: auto; aspect-ratio: 200 / 232; filter: drop-shadow(0 10px 24px rgba(0,0,0,.55)); }
 .hero h1 { font-size: clamp(60px, 9.4vw, 148px); line-height: .9; letter-spacing: -.005em; text-shadow: 0 8px 40px rgba(0,0,0,.55); padding-top: .06em; }
 .tag { margin: clamp(18px, 2.4vh, 28px) 0 clamp(26px, 3.6vh, 40px); font-size: clamp(19px, 2vw, 27px); font-weight: 600; line-height: 1.4; letter-spacing: .005em; text-shadow: 0 2px 18px rgba(0,0,0,.7); }
@@ -344,7 +357,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
   .hero { padding-bottom: 40px; }
   .cast { width: 260%; }
   .cast li { width: 34vw; border-radius: 14px; }
-  .lockup .wordmark { width: min(88vw, 420px); }
+  .lockup { --wm: min(88vw, 420px); }
   .hero .mark { width: 58px; }
   .hero h1 { font-size: clamp(54px, 15vw, 68px); }
   .tag { font-size: clamp(17px, 4.7vw, 20px); margin: 16px 0 28px; }
