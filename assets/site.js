@@ -330,6 +330,7 @@ if (pick) {
   };
   // the smoothed scroll: eases after the real one, never faster than the scene's speed limit
   let ys = null, raf = 0, lt = 0, zs = 0, zsGoal = 0;
+  const touchy = matchMedia("(pointer: coarse)").matches;
   const tick = (now) => {
     raf = 0;
     const y = scrollY, vh = innerHeight, dt = lt ? Math.min(0.05, (now - lt) / 1000) : 1 / 60; lt = now;
@@ -337,7 +338,7 @@ if (pick) {
     let d = y - ys;
     if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
     const inScene = ys > scn.s0 - vh * 0.45 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
-    const cap = (inScene ? (breaking ? 0.55 : 0.8) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt;
+    const cap = (inScene ? (breaking ? (touchy ? 0.28 : 0.55) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
     render(ys);
@@ -349,7 +350,7 @@ if (pick) {
   window.bokiSceneTick = () => { if (scn && ys !== null) { lastQ = -1; render(ys); } };
   const layoutPin = () => {
     if (!track) return;
-    const on = wide.matches && !calm;
+    const on = (wide.matches || touchy) && !calm; // phones step through the Hunters too, one swipe per Hunter (below)
     sec.classList.toggle("pinned", on); sec.classList.toggle("scene", !calm);
     track.style.height = ""; pinEl.style.top = ""; pin = null; scn = null;
     if (calm) return;
@@ -440,7 +441,7 @@ if (pick) {
       kick();
       const t0 = performance.now();
       const wait = () => {
-        if (ys !== scrollY && performance.now() - t0 < 3000) { setTimeout(wait, 60); return; }
+        if (ys !== scrollY && performance.now() - t0 < 6000) { setTimeout(wait, 60); return; }
         held = false; root.style.overflow = ""; document.body.style.overflow = "";
         removeEventListener("touchmove", block); removeEventListener("wheel", block); removeEventListener("keydown", keys);
       };
@@ -448,9 +449,46 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY;
-      if (!played && !held && scn && !pin && coarse.matches && y > prevY && y >= scn.s0 - innerHeight * 0.2 && y < scn.s0 + scn.lead * 0.6 && performance.now() - jump > 1500) { played = true; hold(); }
+      if (!played && !held && scn && coarse.matches && y > prevY && y >= scn.s0 - innerHeight * 0.2 && y < scn.s0 + scn.lead * 0.6 && performance.now() - jump > 1500) { played = true; hold(); }
       prevY = y;
     }, { passive: true });
+
+    // Phones: one swipe, one Hunter. Inside the Hunters a vertical swipe glides to the next (or previous) Hunter
+    // instead of flinging past them all; at the first or last Hunter it scrolls on normally, and sideways swipes
+    // still browse the strip. "Skip to Boki" jumps straight past.
+    if (touchy) {
+      let sy = 0, sx = 0, mode = -1, glide = 0;
+      const last = () => HUNTERS.length - 1;
+      const spot = (i) => Math.round(i === 0 ? pin.start + 2 : pin.start + (i + 0.5) * pin.step);
+      const idx = () => Math.min(last(), Math.max(0, Math.floor((scrollY - pin.start) / pin.step)));
+      const inTrack = () => pin && scrollY >= pin.start - 6 && scrollY <= spot(last()) + 6;
+      const glideTo = (to) => {
+        cancelAnimationFrame(glide);
+        const from = scrollY, d = to - from, t0 = performance.now(), dur = 420;
+        const f = (now) => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); scrollTo({ top: Math.round(from + d * e), behavior: "instant" }); if (k < 1) glide = requestAnimationFrame(f); };
+        glide = requestAnimationFrame(f);
+      };
+      addEventListener("touchstart", (e) => { const p = e.touches[0]; sy = p.clientY; sx = p.clientX; mode = !held && inTrack() ? 0 : -1; }, { passive: true });
+      addEventListener("touchmove", (e) => {
+        if (mode === -1) return;
+        const p = e.touches[0], dy = sy - p.clientY, dx = sx - p.clientX;
+        if (mode === 0) {
+          if (Math.abs(dy) < 8 && Math.abs(dx) < 8) return;
+          if (Math.abs(dx) > Math.abs(dy)) { mode = -1; return; }                              // sideways: the strip
+          const i = idx();
+          if ((dy < 0 && i === 0) || (dy > 0 && i === last() && scrollY >= spot(last()) - 6)) { mode = -1; return; } // leaving the Hunters
+          mode = 1;
+        }
+        e.preventDefault();
+      }, { passive: false });
+      addEventListener("touchend", (e) => {
+        if (mode !== 1) { mode = -1; return; }
+        mode = -1;
+        const dy = sy - e.changedTouches[0].clientY;
+        const i = idx(), j = Math.abs(dy) < 30 ? i : Math.max(0, Math.min(last(), i + Math.sign(dy)));
+        glideTo(spot(j));
+      }, { passive: true });
+    }
   }
 
   function show(i) {

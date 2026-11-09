@@ -730,3 +730,4 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 /* Art is never selectable or draggable, so a stray click-drag can't paint it blue or pull out a ghost copy */
 img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, .pj, .fig, .tiles, .pk-grid a, button, .btn, .nav a, .brand, .bk-arrow, .h-skip { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
 ::selection { background: rgba(160, 120, 255, .45); color: #fff; }
+@media (max-width: 720px) { #hunters.pinned .pick-label .h-bar, #hunters.pinned .pick-label .scrollcue { display: none; } #hunters.pinned .pick-label b, .h-skip { white-space: nowrap; } }
