@@ -16,17 +16,28 @@ from front import front
 from PIL import Image
 
 SITE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-GRIDS = {"glintmole", "gloamshell", "glomwort", "rimeshrew", "selenfin"}  # pose grids, not turnarounds
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--game", required=True); ap.add_argument("--ref", default="origin/main")
+ap.add_argument("--game", required=True); ap.add_argument("--ref", default="auto")
 a = ap.parse_args()
 git = lambda *x: subprocess.run(["git", "-C", a.game, *x], check=True, capture_output=True, text=True).stdout
-files = [f for f in git("ls-tree", "--name-only", a.ref, "content/kin_v2/").split() if f.endswith(".json")]
+def species(ref):
+    try: return [f for f in git("ls-tree", "--name-only", ref, "content/kin_v2/").split() if f.endswith(".json")]
+    except subprocess.CalledProcessError: return []
+if a.ref == "auto":  # the roster lives on whichever branch has the most species (ext/roster-109 until it merges)
+    a.ref = max(["origin/main", "origin/ext/roster-109"], key=lambda r: len(species(r)))
+files = species(a.ref)
 rows = [json.loads(git("show", f"{a.ref}:{f}")) for f in files]
 art = json.load(open(f"{SITE}/assets/boki2d.json"))
 renders = {os.path.basename(f)[:-9] for f in os.listdir(f"{SITE}/assets/img/boki") if f.endswith("-480.webp")}
 by_id = {d["id"]: d for d in rows}
+
+def is_grid(key):  # a pose grid (tall sheet on a light backdrop), not a turnaround: stays hidden until it has one
+    im = Image.open(f"{SITE}/assets/img/boki2d/{key}-480.webp").convert("RGB"); w, h = im.size
+    edge = [im.getpixel((x, 0)) for x in range(0, w, 8)] + [im.getpixel((0, y)) for y in range(0, h, 8)]
+    light = sum(sum(p) for p in edge) / len(edge) > 400   # the lone portrait (Vespyx) sits on a dark backdrop
+    return w / h < 1.3 and light
+GRIDS = {k for k in art if is_grid(k)}
 
 def art_key(d):
     n = d["name"].lower()
@@ -61,5 +72,5 @@ while sils or eggs:
     if sils: mixed.append(sils.pop(0))
     for _ in range(2):
         if eggs: mixed.append(eggs.pop(0))
-json.dump({"total": len(rows), "revealed": revealed, "hidden": mixed, "all": sorted(d["name"] for d in rows)}, open(f"{SITE}/assets/boki.json", "w"), indent=1)
-print(f"{len(rows)} Boki: {len(revealed)} revealed, {len(mixed)} hidden ({sum(1 for h in mixed if h['sil'])} silhouettes)")
+json.dump({"total": len(rows), "revealed": revealed, "hidden": mixed, "all": sorted(d["name"] for d in rows), "grids": sorted(GRIDS), "roster": a.ref}, open(f"{SITE}/assets/boki.json", "w"), indent=1)
+print(f"{a.ref}: {len(rows)} Boki: {len(revealed)} revealed, {len(mixed)} hidden ({sum(1 for h in mixed if h['sil'])} silhouettes)")

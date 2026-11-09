@@ -1008,5 +1008,13 @@
   "Zephyrak",
   "Zipling",
   "Zippelith"
- ]
+ ],
+ "grids": [
+  "glintmole",
+  "gloamshell",
+  "glomwort",
+  "rimeshrew",
+  "selenfin"
+ ],
+ "roster": "origin/ext/roster-109"
 }

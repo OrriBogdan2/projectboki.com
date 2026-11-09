@@ -860,8 +860,8 @@ if (POSTHOG_KEY) {
 (function () {
   const grid = document.getElementById("pk-boki");
   if (!grid) return;
-  fetch("assets/boki2d.json", { cache: "no-store" }).then((r) => r.json()).then((man) => {
-    const HIDE = ["glintmole", "gloamshell", "glomwort", "rimeshrew", "selenfin"]; // working pose grids, not press art: hidden until they have turnarounds
+  Promise.all([fetch("assets/boki2d.json", { cache: "no-store" }).then((r) => r.json()), fetch("assets/boki.json").then((r) => r.json()).catch(() => ({}))]).then(([man, roster]) => {
+    const HIDE = roster.grids || []; // working pose grids, not press art: hidden until they have turnarounds (tools/boki/build.py)
     const ids = Object.keys(man).filter((id) => !HIDE.includes(id));
     if (!ids.length) return;
     ids.sort((a, b) => (man[a].name || a).localeCompare(man[b].name || b)).forEach((id) => {
