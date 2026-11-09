@@ -382,11 +382,18 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 /* owner 11-09: dex console header */
 .brand{display:flex;align-items:center;gap:14px}
 .brand h1{font-size:2rem;letter-spacing:.02em}
-.lens{--s:44px;width:var(--s);height:var(--s);flex:none;border-radius:50%;position:relative;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,var(--panel)) 0 34%,var(--panel) 35% 100%);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,var(--line)),0 0 0 4px var(--soft),0 0 0 5px var(--line),0 0 22px -4px var(--accent);overflow:hidden}
-.lens::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 290deg,color-mix(in srgb,var(--accent) 70%,transparent) 360deg);animation:sweep 3.2s linear infinite}
-.lens::after{content:"";position:absolute;inset:38%;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.lens{--s:52px;width:var(--s);height:var(--s);flex:none;position:relative;display:block;color:var(--accent);filter:drop-shadow(0 0 10px color-mix(in srgb,var(--accent) 45%,transparent))}
+.lens svg{width:100%;height:100%;overflow:visible;display:block}
+.lens .r1{transform-origin:32px 32px;animation:sweep 14s linear infinite}
+.lens .r2{transform-origin:32px 32px;animation:sweep 5s linear infinite reverse}
+.lens .r3{transform-origin:32px 32px;animation:sweep 2.6s cubic-bezier(.6,.1,.4,.9) infinite}
+.lens .core{transform-origin:32px 32px;animation:pulse 2.6s ease-in-out infinite}
+.lens .scan{animation:scan 3.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(.82);opacity:.75}}
+@keyframes scan{0%,100%{transform:translateY(-15px);opacity:0}15%,85%{opacity:.9}50%{transform:translateY(15px)}}
+.brand:hover .lens .r2{animation-duration:1.4s}.brand:hover .lens .r3{animation-duration:1s}
 @keyframes sweep{to{transform:rotate(1turn)}}
-@media (prefers-reduced-motion:reduce){.lens::before{animation:none}}
+@media (prefers-reduced-motion:reduce){.lens *{animation:none!important}}
 .dbar{border:1px solid var(--line);border-radius:24px;padding:12px;margin-top:4px;background:color-mix(in srgb,var(--panel) 88%,transparent);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 6%,transparent) inset,0 22px 50px -32px var(--shadow)}
 .dbar .drow{flex-wrap:nowrap;gap:8px}
 .dbar .search{flex:1 1 auto}
@@ -408,7 +415,8 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 .ibtn:active{transform:scale(.94)}
 .ibtn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
 .ibtn:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#surprise:hover svg{animation:roll .5s ease}
+#surprise .qm{font:800 1.45rem/1 var(--body);color:var(--accent);display:block;transition:transform .2s}
+#surprise:hover .qm{animation:roll .5s ease}
 @keyframes roll{50%{transform:rotate(18deg) scale(1.1)}}
 .dbar .themebtn{border-radius:15px;width:46px;height:46px;background:var(--soft);color:var(--ink);border:1px solid transparent}
 .dbar .hint{margin:10px 4px 0}
@@ -442,6 +450,15 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 .card.locked .dec:not(.on){opacity:.35}
 .card.locked .auto,.card.locked .mid{opacity:.35;filter:grayscale(1);pointer-events:none;user-select:none}
 .card.locked .mid :is(input,textarea){cursor:not-allowed}
+.ctx{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:8px}
+.ctx p{margin:0;font-size:.88rem}
+.ctx .already{font-weight:700;color:#d29922}.ctx .first{color:var(--mute)}
+.ctx .role{font-weight:700}
+.cmp{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.cmp figure{margin:0;flex:0 0 auto;width:84px;display:grid;gap:3px;text-align:center}
+.cmp img{width:84px;height:84px;object-fit:contain;background:#e9e9ec;border-radius:8px;border:2px solid transparent;cursor:zoom-in}
+.cmp figcaption{font-size:.68rem;line-height:1.2;color:var(--mute)}
+.cmp .s-cur img{border-color:#4f8cff}.cmp .s-ap img{border-color:#3fb950}.cmp .s-redo img{border-color:#d29922}.cmp .s-rej img{border-color:#f85149;opacity:.7}
 @media (max-width:560px){.dec{min-height:56px;font-size:16px}}
 </style>
 
@@ -453,7 +470,17 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 <button class="btn pri" type="submit">Open the Bokidex</button><div id="lerr" role="alert"></div></form></div>
 <div class="wrap" id="app" hidden>
 <header>
-  <div class="brand"><span class="lens" aria-hidden="true"></span><div><h1>Bokidex</h1><div class="sub">Project Boki creature dex</div></div></div>
+  <div class="brand"><span class="lens" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor">
+<defs><clipPath id="lensclip"><circle cx="32" cy="32" r="17"/></clipPath><radialGradient id="lensg"><stop offset="0" stop-color="currentColor" stop-opacity=".35"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>
+<circle cx="32" cy="32" r="30" stroke-opacity=".25" stroke-width="1"/>
+<g class="r1" stroke-width="2" stroke-linecap="round" stroke-opacity=".7"><path d="M32 2.5v4M32 57.5v4M2.5 32h4M57.5 32h4"/><path d="M53 11l-2.4 2.4M11 53l2.4-2.4M53 53l-2.4-2.4M11 11l2.4 2.4" stroke-opacity=".45"/></g>
+<circle class="r2" cx="32" cy="32" r="23.5" stroke-width="1.6" stroke-dasharray="3 5.2" stroke-opacity=".6"/>
+<circle class="r3" cx="32" cy="32" r="19.5" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="26 96.5"/>
+<circle cx="32" cy="32" r="17" fill="url(#lensg)" stroke-width="1" stroke-opacity=".5"/>
+<g clip-path="url(#lensclip)"><rect class="scan" x="12" y="31" width="40" height="2" fill="currentColor" stroke="none"/></g>
+<path class="core" d="M32 22l8.5 10L32 42l-8.5-10z" fill="currentColor" stroke="none"/>
+<path d="M32 25.5l5 6.5-5 6.5" stroke="var(--panel)" stroke-width="1.2" stroke-opacity=".7" class="core"/>
+</svg></span><div><h1>Bokidex</h1><div class="sub">Project Boki creature dex</div></div></div>
   <div class="hr">
   <button class="btn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch between light and dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
   </div>
@@ -469,7 +496,7 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
         <option value="t+">Type</option>
       </select>
       <div class="seg" role="group" aria-label="Sort by"><button type="button" data-sk="n" aria-pressed="true">No.</button><button type="button" data-sk="a" aria-pressed="false">Name</button><button type="button" data-sk="t" aria-pressed="false">Type</button><button type="button" class="sdir" data-sdir aria-label="Reverse order" title="Reverse order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"/></svg></button></div>
-      <button class="ibtn" id="surprise" type="button" aria-label="Random Boki (R)" title="Random Boki (R)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.3" class="pip"/><circle cx="15.5" cy="15.5" r="1.3" class="pip"/><circle cx="12" cy="12" r="1.3" class="pip"/><circle cx="15.5" cy="8.5" r="1.3" class="pip"/><circle cx="8.5" cy="15.5" r="1.3" class="pip"/></svg></button>
+      <button class="ibtn" id="surprise" type="button" aria-label="Surprise me: random Boki (R)" title="Surprise me: jump to a random Boki (R)"><span class="qm" aria-hidden="true">?</span></button>
       <button class="ibtn keysbtn" id="keysbtn" type="button" aria-label="Keyboard shortcuts" aria-pressed="false" title="Keyboard shortcuts"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h1M10.5 10h1M14.5 10h1M8 14h8"/></svg></button>
       <button class="ibtn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Light or dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
     </div>
