@@ -533,9 +533,8 @@ h1, h2, h3, .band p { text-wrap: balance; }
 html.lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
 .head h2.h-crumble { background: none; color: #fff; }
-/* Boki heading: a warm sunset sweep, the Skylands sky */
-.head h2.hb { background: linear-gradient(100deg, #ffd29a 0%, #ff9fb4 40%, #c9a2ff 75%, #9fc4ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 26px rgba(255,150,180,.18)); }
+/* Boki heading: white melting into lavender */
+.head h2.hb { background: linear-gradient(180deg, #ffffff 15%, #d9c8ff 70%, #b79bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .head h2.h-crumble .h-w, .crumble i { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .head h2 .crumble, .head h2 .nw { white-space: nowrap; }
 /* "crumbling." comes apart: the last letters loosen and slip as the heading comes into view */
