@@ -646,7 +646,7 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const LIST = data.revealed;
-  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 9; // two or three tidy rows, the front-page shots first; the rest are one tap away
+  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 6; // two or three tidy rows, the front-page shots first; the rest are one tap away
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
   const cards = LIST.map((b, i) => {
     const c = document.createElement("button");
@@ -661,7 +661,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   });
   let cols = [];
   const deal = () => {
-    const n = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 4 : 3;
+    const n = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 4 : 2;
     if (cols.length === n) return;
     bw.innerHTML = ""; cols = [];
     for (let k = 0; k < n; k++) { const col = document.createElement("div"); col.className = "bw-col"; bw.appendChild(col); cols.push(col); }
