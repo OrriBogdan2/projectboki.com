@@ -22,6 +22,7 @@
     ".bxo-st{font-size:.85rem;font-weight:700;min-height:1.2em}.bxo-st.ok{color:#2e9e5b}.bxo-st.er{color:#cf4444}.bxo-empty{padding:40px 0;text-align:center;color:var(--mute,#666)}" +
     ".bxo-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}" +
     ".bxo-modal form{background:var(--panel,#fff);color:var(--ink,#111);border-radius:16px;padding:20px;width:min(340px,100%);display:grid;gap:10px;font:15px system-ui,sans-serif}" +
+    ".bxo-dexart{background:#f5c542;color:#2a1d00;font-weight:800}.s-dex figcaption{color:#c99a10;font-weight:700}.s-dex img{box-shadow:0 0 0 3px #f5c542}" +
     ".bxo-ctx{display:grid;gap:6px;border-top:1px solid var(--line,#ddd);padding-top:8px}.bxo-cmp{display:flex;gap:8px;overflow-x:auto}" +
     ".bxo-fig{margin:0;flex:0 0 auto;width:96px;text-align:center;font-size:12px;color:var(--muted,#777)}.bxo-fig img{width:96px;height:96px;object-fit:contain;border-radius:10px;border:3px solid transparent;background:var(--bg,#f3f3f3)}" +
     ".s-cur img{border-color:#2e6fdb}.s-ap img{border-color:#2e9d4f}.s-redo img{border-color:#d89a1c}.s-rej img{border-color:#c33}" +
@@ -132,6 +133,13 @@
     return "Approving makes this the Bokidex art (the newest approved 2D wins), replacing the one in the Bokidex now.";
   }
   function stName(st) { return st === "approve" || st === "approved" || st === "to2d" ? "approved" : st === "redo" ? "sent back" : st === "reject" || st === "rejected" ? "rejected" : "not decided"; }
+  /* owner 11-09: "this is the current Bokidex art" marker = the gen baked as an entry's/form's hero (heroGen) */
+  var DEXART = null;
+  function isDexArt(id) {
+    if (!DEXART) { DEXART = {}; var D = window.BKX && window.BKX.data(), j = D && D.dex, es = j ? (Array.isArray(j) ? j : (j.entries || [])) : [];
+      es.forEach(function (e) { [e].concat(e.forms || []).forEach(function (v) { if (v.heroGen) DEXART[v.heroGen] = v.name || e.name || e.id; }); }); }
+    return DEXART[id] || "";
+  }
   function ctx(g) {
     var box = h("div", { class: "bxo-ctx" }), x = dexEntry(g.name), e = x && x.e, ro = roleOf(g);
     var sib = gensAll().filter(function (o) { return o.id !== g.id && (o.name || "") === (g.name || "") && (o.kind || "") === (g.kind || ""); });
@@ -145,7 +153,7 @@
       box.appendChild(h("div", { class: "bxo-meta", text: "Other versions" }));
       box.appendChild(h("div", { class: "bxo-cmp" }, sib.slice(0, 8).map(function (o) {
         var st = curDec(o), cls = st === "approve" ? "s-ap" : st === "redo" ? "s-redo" : st === "reject" ? "s-rej" : "";
-        return fig((o.images || [])[0], cls, (o.attempt ? "#" + o.attempt + " " : "") + stName(st) + (scoreOf(o) >= 0 ? " " + fmt(scoreOf(o)) : ""));
+        return fig((o.images || [])[0], cls + (isDexArt(o.id) ? " s-dex" : ""), (isDexArt(o.id) ? "\u2605 Bokidex art \u00b7 " : "") + (o.attempt ? "#" + o.attempt + " " : "") + stName(st) + (scoreOf(o) >= 0 ? " " + fmt(scoreOf(o)) : ""));
       })));
       var all = sib.concat([g]).sort(function (a, b) { return (a.created || 0) - (b.created || 0) || (a.attempt || 1) - (b.attempt || 1); });
       var det = h("details", {}, [h("summary", { text: "History, " + all.length + " attempts" })]);
@@ -184,7 +192,7 @@
     if (de && de.e) { dl = h("a", { class: "bxo-dl", text: "In Bokidex as #" + de.e.num }); dl.onclick = function () { close(); try { location.hash = "#boki-" + de.e.id; } catch (er) {} }; }
     var meta = h("div", { class: "bxo-meta" }, [h("span", { text: [g.kind, g.form, "attempt " + (g.attempt || 1), toEST(g.created)].filter(Boolean).join(" · ") + (dl ? " · " : "") })]);
     if (dl) meta.appendChild(dl);
-    var kids = [h("div", { class: "bxo-hd" }, [h("b", { text: g.name || g.id }), h("span", { class: "bxo-pill " + pill[0], text: pill[1] })]), meta, imgs, ctx(g)];
+    var kids = [h("div", { class: "bxo-hd" }, [h("b", { text: g.name || g.id }), h("span", { class: "bxo-pill " + pill[0], text: pill[1] }), isDexArt(g.id) ? h("span", { class: "bxo-pill bxo-dexart", text: "\u2605 Current Bokidex art" }) : null]), meta, imgs, ctx(g)];
     var cs = g.cpu_score != null ? +g.cpu_score : null;
     if (cs != null || g.cpu_reason || (g.cpu_fixes && g.cpu_fixes.length)) {
       var au = h("div", { class: "bxo-auto" }, [h("div", {}, [h("b", { text: "Auto judge " }), h("span", { class: "bxo-sco " + (cs == null ? "" : cs >= BAR ? "hi" : "lo"), text: fmt(cs) + " / 10 (ship bar " + BAR + ")" })])]);
