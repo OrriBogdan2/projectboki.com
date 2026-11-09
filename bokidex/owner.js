@@ -1,11 +1,10 @@
 /* Bokidex owner panel (self-contained; injected by bokidex-site-export). Reads only window.BKX (set by the export's gate:
-   BKX.data() = decrypted bundle, BKX.blob(path) = decrypted image URL) and talks to the rating API. Credential = the Google
-   sign-in session token (localStorage boki_admin_token, set by assets/topbar.js), sent as a Bearer header; only owner/admin accounts
-   pass. Without it nothing appears except the "Admin sign in" action, which opens the top bar's sign-in modal. */
+   BKX.data() = decrypted bundle, BKX.blob(path) = decrypted image URL) and talks to the rating API. Without the owner
+   code nothing appears except the small "Admin sign in" button. */
 (function () {
   "use strict";
   var API = "https://87-99-130-182.sslip.io";           // rating API (Caddy -> bokidex-api on the Hetzner box)
-  var TOKEN_KEY = "boki_admin_token", wantOpen = false, busy = false, ratings = {}, filter = "todo", panel = null, BAR = 8.5, drafts = {}, unlocked = {}, kindF = "all", sortF = "name", qF = "", shown = 40, keyfn = null, lb = null, lbList = [], lbI = 0, bar = null;
+  var LSK = "bokidex-owner", code = "", ratings = {}, filter = "todo", panel = null, BAR = 8.5, drafts = {}, unlocked = {}, kindF = "all", sortF = "name", qF = "", shown = 40, keyfn = null, lb = null, lbList = [], lbI = 0, bar = null;
   var css = ".bxo-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1000;font:700 14px system-ui,sans-serif;" +
     "padding:10px 18px;border-radius:999px;border:0;background:#e8562a;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.35);opacity:1;cursor:pointer}" +
     ".bxo-btn:hover{opacity:1}.bxo-ov{position:fixed;inset:0;z-index:80;background:var(--bg,#fafafa);color:var(--ink,#111);overflow:auto;-webkit-overflow-scrolling:touch;font:15px/1.4 system-ui,sans-serif}" +
@@ -45,31 +44,37 @@
     (kids || []).forEach(function (c) { if (c) e.appendChild(c); });
     return e;
   }
-  function token() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
-  try { localStorage.removeItem("bokidex-owner"); } catch (e) {}   /* retired owner-code key, removed once and never read again */
+  function store(v) { try { if (v == null) localStorage.removeItem(LSK); else localStorage.setItem(LSK, v); } catch (e) {} }
+  function load() { try { return localStorage.getItem(LSK) || ""; } catch (e) { return ""; } }
   function api(path, opts) {
-    opts = opts || {}; var t = token(); opts.headers = Object.assign(t ? { Authorization: "Bearer " + t } : {}, opts.headers || {});
+    opts = opts || {}; opts.headers = Object.assign({ "X-Owner-Code": code }, opts.headers || {});
     return fetch(API + path, opts).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
   }
   function style() { if (!document.getElementById("bxo-css")) { var s = h("style", { id: "bxo-css" }); s.textContent = css; document.head.appendChild(s); } }
 
-  /* no valid session: open the top bar's Google sign-in modal; the `boki-auth` event then unlocks the panel */
-  function needSignin() {
-    if (window.BokiTopbar) { window.BokiTopbar.signIn(); return; }
-    try { document.dispatchEvent(new CustomEvent("boki-signin")); } catch (e) {}
-    if (!document.querySelector(".tb-ov")) alert("Sign in with Google at projectboki.com/admin, then reload this page.");
+  function ask(msg) {
+    return new Promise(function (res) {
+      var inp = h("input", { type: "password", autocomplete: "off", placeholder: "Admin code" }), err = h("div", { class: "bxo-st er", text: msg || "" });
+      var m = h("div", { class: "bxo-modal" }, [h("form", {}, [h("b", { text: "Admin sign in" }), inp, err, h("button", { type: "submit", text: "Sign in" }),
+        h("a", { text: "Cancel", style: "text-align:center;cursor:pointer;color:#888" })])]);
+      var f = m.firstChild; f.lastChild.onclick = function () { m.remove(); res(null); };
+      f.onsubmit = function (e) { e.preventDefault(); m.remove(); res(inp.value); };
+      document.body.appendChild(m); inp.focus();
+    });
   }
-  /* quiet unlock for a signed-in owner/admin session: /whoami, then /key, then admin mode. Resolves true when unlocked. */
-  function tryUnlock() {
-    if (isOn) return Promise.resolve(true);
-    if (!token() || !(window.BKX && window.BKX.data()) || busy) return Promise.resolve(false);
-    busy = true;
-    return api("/whoami").then(function (j) {
-      if (!j.ok) { busy = false; return false; }
-      return unlockKey().then(function () { busy = false; adminState(true); return true; });
-    }, function () { busy = false; return false; });
+  function signin(tryStored) {
+    var c = tryStored ? load() : "", msg = "";
+    var step = c ? Promise.resolve(c) : ask("");
+    return step.then(function (v) {
+      if (!v) return false; code = v;
+      return api("/whoami").then(function (j) {
+        if (j.ok) { store(code); return true; }
+        store(null); code = "";
+        if (j._status === 429) return ask("Too many tries, wait a minute.").then(function () { return false; });
+        return ask("Wrong code.").then(function (v2) { if (!v2) return false; code = v2; return api("/whoami").then(function (j2) { if (j2.ok) { store(code); return true; } code = ""; return false; }); });
+      }, function () { code = ""; alert("Could not reach the rating service."); return false; });
+    });
   }
-  function afterUnlock(ok) { if (ok && wantOpen) { wantOpen = false; if (!panel) open(); } }
 
   function gensAll() {
     var D = window.BKX && window.BKX.data(); if (!D) return [];
@@ -213,7 +218,7 @@
         api("/rate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ gen: g.id, score: score, note: note.value, decision: b[2] }) })
           .then(function (j) {
             if (j.ok) { ratings[g.id] = j.saved; delete drafts[g.id]; delete unlocked[g.id]; swap(g, root); return; }
-            btns.forEach(function (x) { x.disabled = false; }); st.className = "bxo-st er"; st.textContent = j._status === 401 ? "Session expired, sign in again." : "Not saved: " + (j.error || j._status);
+            btns.forEach(function (x) { x.disabled = false; }); st.className = "bxo-st er"; st.textContent = j._status === 401 ? "Code no longer valid, sign in again." : "Not saved: " + (j.error || j._status);
           }, function () { btns.forEach(function (x) { x.disabled = false; }); st.className = "bxo-st er"; st.textContent = "Not saved: no connection."; });
       }; return bt;
     });
@@ -278,7 +283,7 @@
   }
   function open() {
     style(); panel = h("div", { class: "bxo-ov" }); shown = 40;
-    var out = h("a", { text: "Sign out" }); out.onclick = function () { lock(); try { if (window.BokiTopbar) document.dispatchEvent(new CustomEvent("boki-signout")); } catch (e) {} };
+    var out = h("a", { text: "Sign out" }); out.onclick = function () { store(null); code = ""; ratings = {}; drafts = {}; unlocked = {}; close(); adminState(false); };
     var x = h("button", { text: "Close", type: "button" }); x.onclick = close;
     panel.appendChild(h("div", { class: "bxo-top" }, [h("h2", { text: "Admin audit" }), out, x]));
     var tabs = [["todo", "To rate"], ["redo", "Redo queued"], ["ok", "Approved"], ["all", "All"]].map(function (t) {
@@ -305,34 +310,46 @@
   }
   var isOn = false;
   function unlockKey() { return api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; }).catch(function () {}); }
-  function lock() { ratings = {}; drafts = {}; unlocked = {}; wantOpen = false; close(); adminState(false); }
-  /* API for the shared top bar (assets/topbar.js): open the audit panel (asks for sign-in if needed), lock on sign-out */
+  /* API for the shared top bar (assets/topbar.js): sign in with a code the bar already collected, open the audit panel, sign out */
   window.BKXOwner = {
     isAdmin: function () { return isOn; },
+    hasCode: function () { return !!load(); },
+    signInCode: function (c) {
+      if (!c) return Promise.resolve(false); code = c;
+      return api("/whoami").then(function (j) {
+        if (!j.ok) { code = ""; return false; }
+        store(code); return unlockKey().then(function () { adminState(true); return true; });
+      }, function () { code = ""; return false; });
+    },
     open: function () {
       if (!(window.BKX && window.BKX.data())) return;
-      if (isOn && token()) { if (!panel) open(); return; }
-      wantOpen = true;
-      if (!token()) { needSignin(); return; }
-      tryUnlock().then(function (ok) { if (ok) afterUnlock(true); else needSignin(); });   /* 401/403: expired or not an admin */
+      signin(true).then(function (ok) { if (ok) unlockKey().then(function () { adminState(true); open(); }); });
     },
-    signOut: lock
+    signOut: function () { store(null); code = ""; ratings = {}; drafts = {}; unlocked = {}; close(); adminState(false); }
   };
   function init() {
     if (document.getElementById("bxo-btn")) return; style();
-    /* the top bar tells us about sign-in/out; the bundle tells us when the page is ready. Either may come first. */
-    document.addEventListener("boki-auth", function (e) {
-      var u = e.detail && e.detail.user;
-      if (u && (u.role === "owner" || u.role === "admin")) tryUnlock().then(afterUnlock);
-      else if (isOn) lock();
-    });
-    document.addEventListener("bokidex-unlocked", function () { tryUnlock().then(afterUnlock); });
-    if (window.BokiTopbar || document.querySelector('script[src*="topbar.js"]')) return;   /* the top bar owns the sign-in entry point */
+    if (document.querySelector('script[src*="topbar.js"]')) {   /* the shared top bar owns sign-in: no floating button, same quiet re-unlock */
+      document.addEventListener("bokidex-unlocked", function () {
+        code = load(); if (!code) return;
+        api("/whoami").then(function (j) { if (j.ok) return unlockKey().then(function () { adminState(true); }); code = ""; }, function () { code = ""; });
+      });
+      return;
+    }
     var b = h("button", { id: "bxo-btn", class: "bxo-btn", text: "Admin sign in", type: "button", title: "Admin sign in" });
+    function unlock() { return api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; }).catch(function () {}); }
     b.onclick = function () {
       if (!(window.BKX && window.BKX.data())) { alert("Open the Bokidex first."); return; }
-      window.BKXOwner.open();
+      signin(true).then(function (ok) {
+        if (!ok) return;
+        unlock().then(function () { adminState(true); open(); });   // pending art stays hidden if the key or bundle fails; ratings still work
+      });
     };
+    /* a returning admin (code already stored) is signed in quietly when the page loads */
+    document.addEventListener("bokidex-unlocked", function () {
+      code = load(); if (!code) return;
+      api("/whoami").then(function (j) { if (j.ok) return unlock().then(function () { adminState(true); }); code = ""; }, function () { code = ""; });
+    });
     document.body.appendChild(b);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
