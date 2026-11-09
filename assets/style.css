@@ -527,7 +527,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .h-arrow { z-index: 3; }
 .h-count { z-index: 3; }
 .pick-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; }
-.pick-label b { font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.pick-label b { font-family: "Lilita"; font-weight: 400; font-size: clamp(18px, 1.6vw, 22px); color: #fff; white-space: nowrap; } /* what this row is: the scene's "Choose your Hunter." settles here */
 .pick-label .swipe { display: none; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; color: var(--soft); }
 .pick-label .swipe svg { width: 16px; height: 16px; animation: nudge-x 1.4s ease-in-out infinite; }
 @keyframes nudge-x { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
@@ -910,7 +910,7 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 }
 
 /* No stock-UI labels: slide counters, caps eyebrows, progress hairlines, list numbers */
-.h-count, .pick-label b, .h-bar, .step-n, .qa .qn { display: none !important; }
+.h-count, .h-bar, .step-n, .qa .qn { display: none !important; }
 
 /* Text selection: copyable reading text only. Display type, names, cards, questions, buttons and labels never highlight;
    answers, descriptions, ability text, the email field and the press kit, privacy and devlog pages do. */
@@ -926,3 +926,9 @@ a, button, summary, label, .bw-card, .bk-sil { -webkit-tap-highlight-color: tran
   .hero .btn-glass, .hero .su-row { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(10,14,28,.74); }
 }
 .join-bg.paused::before { animation-play-state: paused; }
+
+/* The portraits right behind the logo, tagline and buttons don't light up or take taps: a quiet shield behind that block */
+.hero-in::before { content: ""; position: absolute; inset: -28px -44px; z-index: -1; pointer-events: auto; }
+
+/* "Choose your Hunter.": the scene's second line, after the question */
+#hunters.scene .h-choose .hu { background: linear-gradient(100deg, #7ff5e6 0%, #c9a2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 0 24px rgba(140,200,255,.35)); }

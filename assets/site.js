@@ -308,7 +308,7 @@ if (pick) {
   const wide = matchMedia("(min-width: 1024px) and (min-height: 640px) and (hover: hover) and (pointer: fine)");
   let pin = null, fromScroll = false;
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
-  // The Hunters scene: the stage holds in place (sticky) for a stretch. "fallen down." arrives over it, breaks while
+  // The Hunters scene: the stage holds in place (sticky) for a stretch. "broken into pieces." arrives over it, breaks while
   // you scroll, then fades out as the stage fades in, so the heading turns into the Hunters instead of scrolling away.
   // On desktop the stage then keeps holding while the scroll steps through every Hunter.
   // Every bit of scroll here moves something: the heading breaks, then a glowing crack tears the Hunter's art open
@@ -317,7 +317,8 @@ if (pick) {
   // a second and a half instead of skipping it, and slow scrolling is fully in your hands. No scroll-jacking on desktop.
   const stage = pinEl && pinEl.querySelector(".stage"), intro = $("h-intro"), shot = stage && stage.querySelector(".shot");
   const plab = pinEl && pinEl.querySelector(".pick-label");
-  const ask = pinEl && pinEl.querySelector(".h-ask"), askWords = ask ? [...ask.querySelectorAll("span:not(.sk)")] : [];
+  const ask = pinEl && pinEl.querySelector(".h-ask:not(.h-choose)"), askWords = ask ? [...ask.querySelectorAll("span:not(.sk)")] : [];
+  const choose = pinEl && pinEl.querySelector(".h-choose"), chooseWords = choose ? [...choose.querySelectorAll("span")] : [];
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
@@ -359,7 +360,7 @@ if (pick) {
     if (q === lastQ) return;
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
-      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (ask) ask.style.visibility = "hidden";
+      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
       if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
       // 1) the broken heading lifts away
@@ -368,7 +369,7 @@ if (pick) {
       intro.style.transform = `translate3d(0, ${(-70 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
       // 2) "Will you save the Skylands?" rises in word by word, holds, then lifts away as the fault opens
       if (ask) {
-        const out = sm(clamp((q - 0.5) / 0.1)); // it holds from about 0.3 to 0.5: long enough to read it
+        const out = sm(clamp((q - 0.48) / 0.08)); // it holds from about 0.3 to 0.48: long enough to read it
         ask.style.visibility = q > 0.06 && out < 1 ? "visible" : "hidden";
         askWords.forEach((w, k) => {
           const a = sm(clamp((q - 0.1 - k * 0.03) / 0.1));
@@ -376,7 +377,17 @@ if (pick) {
           w.style.transform = `translate3d(0, ${(34 * (1 - a) - 30 * out).toFixed(1)}px, 0) scale(${(0.86 + 0.14 * a + 0.04 * out).toFixed(4)})`;
         });
       }
-      q = clamp((q - 0.56) / 0.44); // the rest plays out after the question
+      // 3) then "Choose your Hunter." rises in the same place, holds while the stage surfaces, and lifts as it cracks open
+      if (choose) {
+        const out = sm(clamp((q - 0.76) / 0.08));
+        choose.style.visibility = q > 0.54 && out < 1 ? "visible" : "hidden";
+        chooseWords.forEach((w, k) => {
+          const a = sm(clamp((q - 0.56 - k * 0.03) / 0.08));
+          w.style.opacity = (a * (1 - out)).toFixed(3);
+          w.style.transform = `translate3d(0, ${(34 * (1 - a) - 30 * out).toFixed(1)}px, 0) scale(${(0.86 + 0.14 * a + 0.04 * out).toFixed(4)})`;
+        });
+      }
+      q = clamp((q - 0.66) / 0.34); // the rest plays out under it
       const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under the fault
       stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
       const draw = sm(clamp((q - 0.02) / 0.3));
@@ -420,7 +431,7 @@ if (pick) {
     let d = y - ys;
     if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
     const inScene = ys > scn.s0 - vh * 0.31 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
-    const asking = ys < scn.s0 + vh * 0.1 + (scn.lead - vh * 0.1) * 0.6; // "Will you save the Skylands?" gets a slower pass too
+    const asking = ys < scn.s0 + vh * 0.1 + (scn.lead - vh * 0.1) * 0.8; // the question and "Choose your Hunter." get a slower pass too
     const cap = (inScene ? (breaking ? (touchy ? 0.28 : 0.55) : asking ? (touchy ? 0.42 : 0.6) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
@@ -440,7 +451,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 1.85 : 1.7)), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (on ? 2.3 : 2.15)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go
@@ -1081,7 +1092,7 @@ if (POSTHOG_KEY) {
   frame();
 })();
 
-/* ---------- "fallen down.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
+/* ---------- "broken into pieces.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
    each letter, the letter splits into two shards along it, and the shards drop and tumble apart shedding chips, the red
    rising in them as they fall. Scroll up and it all runs backwards: chips back, shards rejoin, the crack seals and cools. ---------- */
 (function () {
@@ -1288,7 +1299,14 @@ if (POSTHOG_KEY) {
   const track = (e) => { if (e.pointerType === "touch") return; px = e.clientX; py = e.clientY; lastMove = performance.now(); };
   addEventListener("pointermove", track, { passive: true }); addEventListener("pointerdown", track, { passive: true });
   // phones: follow the finger itself, even while it scrolls the page, and forget it the moment it lifts
-  const touch = (e) => { const p = e.touches[0]; if (!p) return; px = p.clientX; py = p.clientY; lastMove = performance.now(); finger = true; };
+  const touch = (e) => {
+    const p = e.touches[0]; if (!p) return;
+    if (e.type === "touchstart" && !btn.hidden) { // the mini-game: land right on the bubble and it pops before he can dodge
+      const b = btn.getBoundingClientRect(), r = Math.max(b.width, b.height) / 2 + 10, cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+      if (Math.hypot(p.clientX - cx, p.clientY - cy) < r) { finger = false; px = py = null; btn.click(); return; }
+    }
+    px = p.clientX; py = p.clientY; lastMove = performance.now(); finger = true;
+  };
   const lift = (e) => { if (!e.touches.length) { finger = false; px = py = null; } };
   addEventListener("touchstart", touch, { passive: true }); addEventListener("touchmove", touch, { passive: true });
   addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", lift, { passive: true });
