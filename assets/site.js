@@ -265,7 +265,7 @@ const pick = document.getElementById("h-pick");
 if (pick) {
   const art = document.getElementById("h-art");
   const $ = (id) => document.getElementById(id);
-  const ART_V = "2026-11-09e";
+  const ART_V = "2026-11-09f";
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp?v=${ART_V}`;
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
   let current = 0;
