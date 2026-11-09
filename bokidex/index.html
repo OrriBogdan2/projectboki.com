@@ -751,7 +751,7 @@ const pips=(n,m)=>`<span class="pips" role="img" aria-label="${n} of ${m}">${Arr
 const nodeName=x=>(x.forms||[x]).map(f=>f.name).join(" / ");
 const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(Boolean))].join(" / ");
 const SEXTXT={split:"Males and females look different."}; // owner 11-09: only show gender when it's unusual (ratio, single-sex, dimorphic)
-function panel(title,body,extra){return body?`<section class="panel"${extra||""}><span class="lbl">${title}</span>${body}</section>`:""}
+function panel(title,body,extra){return body?`<section class="panel"${extra||""}>${title?`<span class="lbl">${title}</span>`:""}${body}</section>`:""}
 function evoHTML(e){
   const v=fv(e,fi), aff=v.d?.aff||[];
   let body="";
@@ -762,11 +762,11 @@ function evoHTML(e){
     body+=`<ul class="evo2">${node(root,0,"")}</ul>`;
   }
   if(aff.length)body+=`<span class="lbl" style="display:block;margin:10px 0 6px">Raised forms</span><div class="affs">${aff.map(a=>`<div><b>${esc(a.label)}</b>${a.lvl?` <span class="mut">level ${a.lvl}</span>`:""}<p>${esc(a.text)}</p>${a.grant?`<p class="mut">${esc(a.grant)}</p>`:""}${a.extra?`<p><span class="tag alt">${a.extra.lvl?"Level "+a.extra.lvl+" ":""}sidegrade</span><b>${esc(a.extra.name)}</b></p><p class="mut">${esc(a.extra.text)}</p>`:""}</div>`).join("")}</div>`;
-  return panel("Evolution",body);
+  return panel("",body);
 }
 function abilitiesHTML(v){
   const A=v.d?.abilities||[]; if(!A.length)return"";
-  return panel("Abilities",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}</div>`).join("")}</div>`);
+  return panel("",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}</div>`).join("")}</div>`);
 }
 function statsHTML(v){
   const d=v.d||{}, C=META?.caps||{kin_hp:16,kin_damage:8,kin_speed:16,owner:8}, U=META?.units||{};
@@ -778,7 +778,7 @@ function statsHTML(v){
   if(d.owner?.length)g1+=`<span class="lbl" style="display:block;margin:10px 0 4px">Bonus for its hunter</span>`+d.owner.map(o=>row(o.label,o.pts,C.owner,o.txt)).join("");
   if(g1)h+=`<div>${g1}</div>`;
   if(d.pers)h+=`<div><span class="lbl" style="display:block;margin-bottom:4px">Personality</span>`+PERS.filter(([k])=>typeof d.pers[k]==="number").map(([k,l])=>row(l,d.pers[k],1,Math.round(d.pers[k]*100)+"%")).join("")+`</div>`;
-  return h?panel("Stats",`<div class="sgrid">${h}</div>`):"";
+  return h?panel("",`<div class="sgrid">${h}</div>`):"";
 }
 function mutHTML(v){
   const d=v.d||{}; let h="";
@@ -832,8 +832,8 @@ function factsHTML(v,e){
   out.push(kc("Role",esc(d.role||""),"",wide(d.role||"")));
   {const t=m?.habitat||v.habitat||"";out.push(kc("Habitat",esc(t),"",wide(t)));}
   out.push(kc("Group",esc(d.group||""),"",wide(d.group||"")));
-  {const W=[["stone","Stone"],["timber","Timber"],["haul","Haul"]].filter(([k])=>d.work&&d.work[k]>0);
-   if(W.length)out.push(kc("Work",W.map(([k,l])=>`<span class="pp">${l}${pips(d.work[k],3)}</span>`).join(""),"",W.length>1?"w2":""));}
+  {const W=Object.entries(d.work||{}).filter(([,n])=>typeof n==="number"&&n>0).sort((x,y)=>y[1]-x[1]).map(([k])=>[k,cap1(k)]);
+   if(W.length)out.push(kc("Work",W.map(([k,l])=>`<span class="pp">${l}${pips(d.work[k],3)}</span>`).join(""),"",W.length>2?"w3":W.length>1?"w2":""));}
   {const gt=d.sexNote||SEXTXT[d.sex];if(gt)out.push(kc("Gender",esc(gt),"",wide(gt)));}
   const chips=out.filter(Boolean);
   return chips.length?`<div class="kchips">${chips.join("")}</div>`:"";
