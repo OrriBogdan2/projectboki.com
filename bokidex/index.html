@@ -656,7 +656,7 @@ const cap1=t=>String(t||"").charAt(0).toUpperCase()+String(t||"").slice(1);
 const pips=(n,m)=>`<span class="pips" role="img" aria-label="${n} of ${m}">${Array.from({length:m},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
 const nodeName=x=>(x.forms||[x]).map(f=>f.name).join(" / ");
 const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(Boolean))].join(" / ");
-const SEXTXT={split:"Male and female look different from each other.",little:"Male and female look alike, with little or no difference.",same:"Male and female, same look."};
+const SEXTXT={split:"Males and females look different."}; // owner 11-09: only show gender when it's unusual (ratio, single-sex, dimorphic)
 function panel(title,body,extra){return body?`<section class="panel"${extra||""}><span class="lbl">${title}</span>${body}</section>`:""}
 function evoHTML(e){
   const v=fv(e,fi), aff=v.d?.aff||[], hasChain=e.chain&&e.chain.length>1;
@@ -741,7 +741,7 @@ function factsHTML(v,e){
   if(m?.habitat||v.habitat)cells.push(cell("Habitat",esc(m?.habitat||v.habitat),2));
   if(d.theme)cells.push(cell("Theme",esc(cap1(d.theme))));
   if(d.group)cells.push(cell("Group",esc(d.group)));
-  if(d.sex)cells.push(cell("Gender",esc(SEXTXT[d.sex]||""),1));
+  {const gt=d.sexNote||SEXTXT[d.sex];if(gt)cells.push(cell("Gender",esc(gt),1));}
   return`<dl class="facts">${cells.join("")}</dl>${(h||w||v.size)?'<p class="mut" style="margin:-4px 0 8px;font-size:.78rem">Each one rolls its own size inside these ranges, so no two are exactly alike.</p>':""}`;
 }
 const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["vari","Variants"],["more","More"]];
