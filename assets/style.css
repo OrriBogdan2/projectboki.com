@@ -280,7 +280,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
   .how { padding-inline: 8px; }
   .step-card { height: auto; border-radius: 20px; }
   .step-media { position: relative; aspect-ratio: 1; }
-  .step-media img { object-position: var(--mp, 50% 50%) !important; }
+  .step-media img { object-position: var(--px, var(--mp, 50% 50%)) !important; } /* --px: the scroll pan across the whole painting (site.js) */
   .step-media::after { background: none; }
   .step-text { position: relative; left: auto; right: auto; bottom: auto; padding: 16px 18px 22px; }
   .step h3 { font-size: clamp(44px, 13vw, 60px); }
@@ -901,3 +901,9 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 
 /* No stock-UI labels: slide counters, caps eyebrows, progress hairlines, list numbers */
 .h-count, .pick-label b, .h-bar, .step-n, .qa .qn { display: none !important; }
+
+/* Text selection: copyable reading text only. Display type, names, cards, questions, buttons and labels never highlight;
+   answers, descriptions, ability text, the email field and the press kit, privacy and devlog pages do. */
+body { -webkit-user-select: none; user-select: none; }
+.qa .a, .bm-desc, .bm-line, .hm-style, .hm-kit span, input, textarea, .pk, .consent p a { -webkit-user-select: text; user-select: text; }
+.pk .btn, .pk-grid a, .pk-key { -webkit-user-select: none; user-select: none; }

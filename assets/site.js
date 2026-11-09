@@ -1031,6 +1031,7 @@ if (POSTHOG_KEY) {
   const cards = [...document.querySelectorAll(".how .step-card")];
   if (!cards.length || calm) return;
   cards.forEach((c) => { const s = document.createElement("i"); s.className = "step-shade"; c.appendChild(s); });
+  const imgs = cards.map((c) => c.querySelector(".step-media img"));
   const clamp = (v) => Math.min(1, Math.max(0, v));
   let ticking = false, sticks = [];
   const measure = () => { sticks = cards.map((c) => parseFloat(getComputedStyle(c.parentElement).top) || 0); };
@@ -1045,9 +1046,14 @@ if (POSTHOG_KEY) {
       const stick = sticks[i];
       return clamp((vh - top) / Math.max(1, vh - stick)); // 0 = just below the screen, 1 = pinned
     });
+    const narrow = innerWidth <= 860;
     cards.forEach((c, i) => {
       const grow = 0.86 + 0.14 * prog[i];                 // arrives small, settles full size
       const under = i + 1 < cards.length ? prog[i + 1] : 0; // how far the next card has covered it
+      if (narrow && imgs[i]) { // phones: the square frame shows half the painting, so the camera pans across all of it
+        const k = i + 1 < cards.length ? (prog[i] + under) / 2 : prog[i];
+        imgs[i].style.setProperty("--px", `${(8 + 84 * k * k * (3 - 2 * k)).toFixed(2)}% 50%`);
+      } else if (imgs[i]) imgs[i].style.removeProperty("--px");
       const sink = 1 - 0.07 * under;
       c.style.transform = `scale(${(grow * sink).toFixed(4)})`;
       c.querySelector(".step-shade").style.opacity = (0.55 * under).toFixed(3);
