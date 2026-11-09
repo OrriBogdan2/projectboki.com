@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Bokidex share image</title>
+<!-- The Bokidex link preview (bokidex/og.jpg, 1200x630). Re-render: node tools/og/render.js bokidex/og.png bokidex.html (site served on :8765) -->
+<style>
+@font-face { font-family: "Lilita"; src: url("../../assets/fonts/LilitaOne.woff2") format("woff2"); }
+html,body{margin:0;background:#070b16}
+.og{position:relative;width:1200px;height:630px;overflow:hidden;font-family:"Lilita";
+  background:radial-gradient(ellipse 60% 70% at 72% 62%, #1d2346 0%, transparent 70%), radial-gradient(ellipse 50% 60% at 10% 10%, #1a1230 0%, transparent 70%), #070b16}
+.glow{position:absolute;inset:0;background:
+  radial-gradient(ellipse 30% 26% at 60% 70%, rgba(79,216,203,.20), transparent 70%),
+  radial-gradient(ellipse 32% 30% at 84% 52%, rgba(195,107,255,.24), transparent 70%)}
+.em i{position:absolute;border-radius:50%;width:var(--s);height:var(--s);background:rgb(var(--c));box-shadow:0 0 calc(var(--s)*2.4) calc(var(--s)*.5) rgba(var(--c),.6)}
+.ground{position:absolute;left:470px;top:520px;width:720px;height:120px;border-radius:50%;background:radial-gradient(ellipse at center, rgba(160,130,255,.30), rgba(79,216,203,.10) 45%, transparent 70%);filter:blur(6px)}
+.b{position:absolute;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6))}
+.left{position:absolute;left:64px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;z-index:5}
+.lock{width:210px;margin:0 0 6px -6px}
+h1{margin:0;font-weight:400;font-size:126px;line-height:.9;letter-spacing:.005em;
+  background:linear-gradient(180deg,#ffffff 15%,#d9c8ff 70%,#b79bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
+.sub{margin-top:16px;font-size:34px;color:#cfd3e6}
+.fade{position:absolute;left:0;top:0;bottom:0;width:560px;background:linear-gradient(90deg,#070b16 45%,rgba(7,11,22,.7) 70%,transparent);z-index:4}
+</style></head><body>
+<div class="og" id="og">
+  <div class="glow"></div>
+  <div class="em" id="em"></div>
+  <div class="ground"></div>
+  <!-- back row -->
+  <img class="b" src="../../assets/img/boki-front/eclipsowl-960.webp" style="left:600px;top:40px;width:300px;opacity:.95">
+  <img class="b" src="../../assets/img/boki-front/dragonkite-960.webp" style="left:940px;top:20px;width:300px">
+  <img class="b" src="../../assets/img/boki-front/zephyrak-960.webp" style="left:785px;top:-6px;width:300px">
+  <!-- middle -->
+  <img class="b" src="../../assets/img/boki-front/crofthorn-960.webp" style="left:510px;top:240px;width:290px">
+  <img class="b" src="../../assets/img/boki-front/lunowl-960.webp" style="left:990px;top:200px;width:240px">
+  <!-- front -->
+  <img class="b" src="../../assets/img/boki-front/glomwort-960.webp" style="left:700px;top:290px;width:300px">
+  <img class="b" src="../../assets/img/boki-front/bubblisk-960.webp" style="left:910px;top:340px;width:290px">
+  <img class="b" src="../../assets/img/boki-front/vespox-960.webp" style="left:540px;top:405px;width:225px">
+  <div class="fade"></div>
+  <div class="left">
+    <img class="lock" src="../../assets/img/lockup-640.webp">
+    <h1>Bokidex</h1>
+    <div class="sub">Meet the Boki.</div>
+  </div>
+</div>
+<script>
+let s=11;const r=()=>((s=s*16807%2147483647)/2147483647);const em=document.getElementById('em');
+const cs=['120,230,220','200,130,255','255,190,120'];
+for(let i=0;i<40;i++){const e=document.createElement('i');e.style.cssText=`left:${(30+r()*70).toFixed(1)}%;top:${(r()*100).toFixed(1)}%;--s:${(1.5+r()*3.5).toFixed(1)}px;--c:${cs[i%3]};opacity:${(.3+r()*.6).toFixed(2)}`;em.appendChild(e)}
+</script></body></html>
