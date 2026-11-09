@@ -216,7 +216,7 @@ body.v-dex header{position:static}
 .tag{display:inline-block;font:700 .62rem var(--mono);letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 8px;margin-right:6px;background:var(--accent-soft);color:var(--accent);vertical-align:2px}
 .tag.alt{background:var(--moss-soft);color:var(--moss)}
 .evo2,.evo2 ul{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px}
-.evo2{overflow-x:auto;padding:6px 2px 10px}
+.evo2{overflow-x:auto;padding:6px 2px 10px}.evo2>li{margin-inline:auto}
 .evo2 ul{flex-direction:column;align-items:flex-start}
 .evo2 ul.many{display:grid;grid-template-columns:repeat(2,auto);gap:4px 6px}
 .evo2 ul.many .ec2{width:60px}
@@ -266,6 +266,7 @@ details.dd ul{margin:6px 0 0;padding-left:18px;font-size:.84rem}
 .tz img{width:100%;height:100%;object-fit:contain;display:block}
 .tz.z2{place-items:start;cursor:grab}.tz.z2 img{width:220%;height:auto;max-width:none}
 .tz.z3{place-items:start;cursor:grab}.tz.z3 img{width:340%;height:auto;max-width:none}
+.vfoot:empty{display:none}
 .vfoot{padding:8px 12px;border-top:1px solid var(--line);color:var(--mute);font-size:.8rem;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 /* ---------- owner areas: Rating Room feed, History, Audit ---------- */
 .bar{font-family:var(--mono);font-size:.8rem;background:var(--moss-soft);color:var(--moss);border-radius:999px;padding:3px 10px;font-weight:700}
@@ -511,10 +512,12 @@ header{padding-block:16px 4px}header::after{display:none}
 .mline{width:64px;height:3px;margin:14px 0 0;border-radius:3px;background:linear-gradient(90deg,var(--ty),color-mix(in srgb,var(--ty) 30%,transparent))}
 .mkick{font-size:.76rem;letter-spacing:.13em}.mkick span{color:var(--mute)}.mkick span::before{content:"·";margin-right:10px;color:var(--line)}
 /* key facts: chips, label over value */
-.kchips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
-.kc{display:inline-flex;flex-direction:column;gap:1px;padding:8px 14px 9px;border-radius:14px;background:color-mix(in srgb,var(--ty) 7%,var(--soft));border:1px solid color-mix(in srgb,var(--ty) 18%,var(--line));min-width:0;max-width:100%}
-.kc small{font:700 .64rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
-.kc b{font:600 1.05rem var(--body);overflow-wrap:anywhere}
+.kchips{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 22px;margin:18px 0 0;padding:14px 0 0;border-top:1px solid var(--line)}
+.kc{display:flex;flex-direction:column;gap:3px;min-width:0}
+.kc.w2{grid-column:span 2}.kc.w3{grid-column:1/-1}
+.kc small{font:600 .62rem var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.kc b{font:600 1.02rem/1.25 var(--body);overflow-wrap:anywhere}
+.kc .pp{font:600 .9rem var(--body);display:inline-flex;align-items:center;gap:6px;margin-right:12px;white-space:nowrap}.kc .pp:last-child{margin-right:0}
 .blurb.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .readmore{background:none;border:0;padding:0;margin:0 0 6px;font:700 .86rem var(--body);color:var(--accent);cursor:pointer}
 .readmore:hover{text-decoration:underline}
@@ -563,7 +566,7 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
   .mart{padding:max(14px,env(safe-area-inset-top,0px)) 24px 12px;gap:10px}
   .mart .herobtn{max-width:min(76vw,38vh)}
   .minfo{padding:14px 20px calc(68px + env(safe-area-inset-bottom,0px))}
-  .blurb{font-size:1.04rem}.kchips{gap:7px}.kc{padding:7px 12px 8px}.kc b{font-size:.95rem}
+  .blurb{font-size:1.04rem}.kchips{gap:12px 16px;grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}.kc b{font-size:.96rem}
   .mhead .chip{font-size:.76rem}.mtabs button{font-size:.88rem;padding:9px 11px}
   .wm{font-size:5.4rem;right:auto;left:-.02em;top:-.08em;bottom:auto}
   .aura .a1{top:50%}.aura .ring{width:min(96%,320px);top:50%}
@@ -687,7 +690,8 @@ function heroOf(e){
   if(other)return{src:assetURL(other),cut:true};
   return null;
 }
-function turnOf(e){return e.turnaround?"dex/"+e.turnaround:(ovl[e.id]?.turn||null)}
+let isAdmin=false; /* admin-only extras (turnaround, later 3D): claude.ai sets it from canEdit, the public page from the owner sign-in */
+function turnOf(e){if(!isAdmin)return null;return e.turnaround?"dex/"+e.turnaround:(ovl[e.id]?.turn||null)}
 function probe(src){if(src in aspect)return;aspect[src]=0;const im=new Image();im.onload=()=>{aspect[src]=im.naturalWidth/im.naturalHeight;if(aspect[src]>1.5)requestAnimationFrame(()=>{gridKey="";route(true)})};blobOf(src).then(u=>{im.src=u}).catch(()=>{})}
 function heroHTML(e,label){
   const h=heroOf(e), nm=esc(label||e.name);
@@ -749,22 +753,20 @@ const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(Boolean))].joi
 const SEXTXT={split:"Males and females look different."}; // owner 11-09: only show gender when it's unusual (ratio, single-sex, dimorphic)
 function panel(title,body,extra){return body?`<section class="panel"${extra||""}><span class="lbl">${title}</span>${body}</section>`:""}
 function evoHTML(e){
-  const v=fv(e,fi), aff=v.d?.aff||[], hasChain=e.chain&&e.chain.length>1;
+  const v=fv(e,fi), aff=v.d?.aff||[];
   let body="";
-  if(hasChain){
+  {
     let root=e,n=0;while(root.prev?.length&&byId[root.prev[0]]&&n++<8)root=byId[root.prev[0]];
     const node=(x,d,via)=>{const kids=d>6?[]:(x.next||[]).map(i=>byId[i]).filter(Boolean);
-      return`<li>${d?`<span class="lk">${via?`<small>${esc(via)}</small>`:""}<b>›</b></span>`:""}<a class="ec2${x.id===e.id?" on":""}" href="${L_(x.id)}" data-go style="${pTy(x)}" aria-label="${esc(nodeName(x))}${x.forms?", final, "+x.forms.length+" forms":""}">${heroHTML(x,nodeName(x))}<small>#${pad(x.num)}</small><b>${esc(nodeName(x))}</b>${x.forms?`<em>${kids.length?"":"final · "}${x.forms.length} forms</em>`:""}</a>${kids.length?`<ul${kids.length>2?' class="many"':""}>${kids.map(k=>node(k,d+1,viaOf(k))).join("")}</ul>`:""}</li>`};
+      return`<li>${d?`<span class="lk">${via?`<small>${esc(via)}</small>`:""}<b>›</b></span>`:""}<a class="ec2${x.id===e.id?" on":""}" href="${L_(x.id)}" data-go style="${pTy(x)}" aria-label="${esc(nodeName(x))}${x.forms?", final, "+x.forms.length+" forms":""}">${heroHTML(x,nodeName(x))}<small>#${pad(x.num)}</small><b>${esc(nodeName(x))}</b>${x.forms?`<em>${x.forms.length} forms</em>`:""}</a>${kids.length?`<ul${kids.length>2?' class="many"':""}>${kids.map(k=>node(k,d+1,viaOf(k))).join("")}</ul>`:""}</li>`};
     body+=`<ul class="evo2">${node(root,0,"")}</ul>`;
-    if(e.chain.some(i=>byId[i]?.forms)&&META?.branchNote)body+=`<p class="mut">${esc(META.branchNote)}</p>`;
-  }else body+='<p class="mut">Does not evolve into another species.</p>';
-  if(aff.length)body+=`<span class="lbl" style="display:block;margin:10px 0 6px">Raised forms (by affinity)</span><div class="affs">${aff.map(a=>`<div><b>${esc(a.label)}</b>${a.lvl?` <span class="mut">level ${a.lvl}</span>`:""}<p>${esc(a.text)}</p>${a.grant?`<p class="mut">${esc(a.grant)}</p>`:""}${a.extra?`<p><span class="tag alt">${a.extra.lvl?"Level "+a.extra.lvl+" ":""}sidegrade</span><b>${esc(a.extra.name)}</b></p><p class="mut">${esc(a.extra.text)}</p>`:""}</div>`).join("")}</div>`;
+  }
+  if(aff.length)body+=`<span class="lbl" style="display:block;margin:10px 0 6px">Raised forms</span><div class="affs">${aff.map(a=>`<div><b>${esc(a.label)}</b>${a.lvl?` <span class="mut">level ${a.lvl}</span>`:""}<p>${esc(a.text)}</p>${a.grant?`<p class="mut">${esc(a.grant)}</p>`:""}${a.extra?`<p><span class="tag alt">${a.extra.lvl?"Level "+a.extra.lvl+" ":""}sidegrade</span><b>${esc(a.extra.name)}</b></p><p class="mut">${esc(a.extra.text)}</p>`:""}</div>`).join("")}</div>`;
   return panel("Evolution",body);
 }
 function abilitiesHTML(v){
   const A=v.d?.abilities||[]; if(!A.length)return"";
-  const SUB={Carry:"Passives while it rides with you",Merge:"Fuses with you for a short while"};
-  return panel("Abilities",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}${SUB[a.slot]&&!a.text&&a.list?.length?`<p class="mut">${SUB[a.slot]}</p>`:""}</div>`).join("")}</div>`);
+  return panel("Abilities",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}</div>`).join("")}</div>`);
 }
 function statsHTML(v){
   const d=v.d||{}, C=META?.caps||{kin_hp:16,kin_damage:8,kin_speed:16,owner:8}, U=META?.units||{};
@@ -819,17 +821,20 @@ function lineHTML(e){
   return e.chain.map(i=>byId[i]).filter(Boolean).map(x=>x.id===e.id?`<b>${esc(nodeName(x))}</b>`:`<a href="${L_(x.id)}" data-go>${esc(nodeName(x))}</a>`).join('<span class="sep">›</span>');
 }
 /* 11-09 rework: a few key facts as chips (label over value), not a wall of boxes. Imperial rides along in the title. */
-const kc=(l,t,sub)=>t?`<span class="kc"${sub?` title="${esc(sub)}"`:""}><small>${l}</small><b>${t}</b></span>`:"";
+const kc=(l,t,sub,cls)=>t?`<span class="kc${cls?" "+cls:""}"${sub?` title="${esc(sub)}"`:""}><small>${l}</small><b>${t}</b></span>`:"";
 function factsHTML(v,e){
   const d=v.d||{}, m=metaOf(v), out=[];
   const h=m&&rng(m.height,hFmt), w=m&&rng(m.weight,wFmt);
+  const wide=t=>t.length>34?"w3":t.length>15?"w2":"";
   out.push(h?kc("Height",esc(h[0]),h[1]):kc("Height",esc(v.size||"")));
   out.push(w?kc("Weight",esc(w[0]),w[1]):kc("Weight",esc(v.weight||"")));
   out.push(kc("Size",esc(m?.size||d.gameSize&&cap1(d.gameSize)||"")));
-  out.push(kc("Role",esc(d.role||"")));
-  out.push(kc("Habitat",esc(m?.habitat||v.habitat||"")));
-  out.push(kc("Group",esc(d.group||"")));
-  {const gt=d.sexNote||SEXTXT[d.sex];if(gt)out.push(kc("Gender",esc(gt)));}
+  out.push(kc("Role",esc(d.role||""),"",wide(d.role||"")));
+  {const t=m?.habitat||v.habitat||"";out.push(kc("Habitat",esc(t),"",wide(t)));}
+  out.push(kc("Group",esc(d.group||""),"",wide(d.group||"")));
+  {const W=[["stone","Stone"],["timber","Timber"],["haul","Haul"]].filter(([k])=>d.work&&d.work[k]>0);
+   if(W.length)out.push(kc("Work",W.map(([k,l])=>`<span class="pp">${l}${pips(d.work[k],3)}</span>`).join(""),"",W.length>1?"w2":""));}
+  {const gt=d.sexNote||SEXTXT[d.sex];if(gt)out.push(kc("Gender",esc(gt),"",wide(gt)));}
   const chips=out.filter(Boolean);
   return chips.length?`<div class="kchips">${chips.join("")}</div>`:"";
 }
@@ -840,8 +845,9 @@ function publicText(t,v){
   const parts=t.split(/(?<=[.!?])\s+/).filter(x=>!DEVNOTE.test(x));
   return parts.join(" ");
 }
-const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["vari","Variants"],["more","More"]];
-const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):true);
+/* 11-09: Variants ("vari") and More ("more") are parked: tabBody/mutHTML/extrasHTML stay below so they can come back by adding them here. */
+const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"]];
+const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1||v.d?.aff?.length):true);
 function tabBody(v,e,d){
   if(mtab==="abil")return abilitiesHTML(v);
   if(mtab==="stats")return statsHTML(v);
@@ -939,9 +945,9 @@ function renderViewer(){
   $("#vtitle").textContent=`#${pad(e.num)} ${e.name}`;
   $("#vtabs").innerHTML=v.map(x=>`<button type="button" role="tab" data-vt="${x.k}" aria-selected="${x.k===vTab}">${x.label}</button>`).join("");
   const b=$("#vbody");
-  if(vTab==="turn"){const src=turnOf(e);b.innerHTML=`<div class="tz" id="tz"><img src="${esc(P(src))}" alt="${esc(e.name)} turnaround"></div>`;$("#vfoot").innerHTML=`<span>Click the image to zoom. Drag to pan.</span>${v.length>1?"<span>← → switch view</span>":""}`;pan($("#tz"));return}
+  if(vTab==="turn"){const src=turnOf(e);b.innerHTML=`<div class="tz" id="tz"><img src="${esc(P(src))}" alt="${esc(e.name)} turnaround"></div>`;$("#vfoot").innerHTML="";pan($("#tz"));return}
   b.innerHTML='<div class="vmsg">Loading the 3D model…</div>';
-  $("#vfoot").innerHTML=`<span>Drag to rotate, scroll or pinch to zoom.</span>${v.length>1?"<span>← → switch view</span>":""}`;
+  $("#vfoot").innerHTML="";
   const mine=sel+"/"+fi;
   Promise.all([loadMV(),glbURL(e.glb)]).then(([,u])=>{
     if(vTab!=="3d"||sel+"/"+fi!==mine||!viewerOpen())return;
@@ -1062,10 +1068,10 @@ async function ownerUnlock(k){
 (async()=>{
   try{const r=await fetch("d/data.json",{cache:"no-cache"});if(!r.ok)throw new Error(r.status);DATA=await r.json()}
   catch(x){document.body.insertAdjacentHTML("afterbegin",'<p style="padding:24px">The Bokidex did not load. Reload the page.</p>');return}
-  DATA.pending=[];gens=DATA.gens;window.BKX={data:()=>DATA,blob:blobOf,ownerUnlock};$("#app").hidden=false;loadDex();
+  DATA.pending=[];gens=DATA.gens;window.BKX={data:()=>DATA,blob:blobOf,ownerUnlock,setAdmin(on){isAdmin=!!on;gridKey="";route(true)}};$("#app").hidden=false;loadDex();
   document.dispatchEvent(new Event("bokidex-unlocked"));
 })();
 </script>
-<script src="owner.js?v=bcf8e2648b"></script>
+<script src="owner.js?v=e97737d5e1"></script>
 </body>
 </html>

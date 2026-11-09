@@ -1,6 +1,6 @@
 /* Bokidex owner panel (self-contained; injected by bokidex-site-export). Reads only window.BKX (set by the export's gate:
    BKX.data() = decrypted bundle, BKX.blob(path) = decrypted image URL) and talks to the rating API. Without the owner
-   code nothing appears except the small "Owner" button. */
+   code nothing appears except the small "Admin sign in" button. */
 (function () {
   "use strict";
   var API = "https://87-99-130-182.sslip.io";           // rating API (Caddy -> bokidex-api on the Hetzner box)
@@ -54,8 +54,8 @@
 
   function ask(msg) {
     return new Promise(function (res) {
-      var inp = h("input", { type: "password", autocomplete: "off", placeholder: "Owner code" }), err = h("div", { class: "bxo-st er", text: msg || "" });
-      var m = h("div", { class: "bxo-modal" }, [h("form", {}, [h("b", { text: "Owner code" }), inp, err, h("button", { type: "submit", text: "Unlock" }),
+      var inp = h("input", { type: "password", autocomplete: "off", placeholder: "Admin code" }), err = h("div", { class: "bxo-st er", text: msg || "" });
+      var m = h("div", { class: "bxo-modal" }, [h("form", {}, [h("b", { text: "Admin sign in" }), inp, err, h("button", { type: "submit", text: "Sign in" }),
         h("a", { text: "Cancel", style: "text-align:center;cursor:pointer;color:#888" })])]);
       var f = m.firstChild; f.lastChild.onclick = function () { m.remove(); res(null); };
       f.onsubmit = function (e) { e.preventDefault(); m.remove(); res(inp.value); };
@@ -261,7 +261,7 @@
       order.forEach(function (k) { body.appendChild(h("div", { class: "bxo-sp", text: k + (by[k].length > 1 ? " (" + by[k].length + ")" : "") })); by[k].forEach(function (g) { body.appendChild(card(g)); }); });
     } else list.forEach(function (g) { body.appendChild(card(g)); });
     if (more) { var mb = h("button", { class: "bxo-more", type: "button", text: "Show more (" + more + " left)" }); mb.onclick = function () { shown += 40; render(); }; body.appendChild(mb); }
-    panel.querySelector("h2").textContent = "Owner audit (" + total + ")"; panel.scrollTop = top;
+    panel.querySelector("h2").textContent = "Admin audit (" + total + ")"; panel.scrollTop = top;
   }
   function moveCard(d) {
     var cs = [].slice.call(panel.querySelectorAll(".bxo-card")); if (!cs.length) return;
@@ -283,9 +283,9 @@
   }
   function open() {
     style(); panel = h("div", { class: "bxo-ov" }); shown = 40;
-    var out = h("a", { text: "Sign out" }); out.onclick = function () { store(null); code = ""; ratings = {}; drafts = {}; unlocked = {}; close(); };
+    var out = h("a", { text: "Sign out" }); out.onclick = function () { store(null); code = ""; ratings = {}; drafts = {}; unlocked = {}; close(); adminState(false); };
     var x = h("button", { text: "Close", type: "button" }); x.onclick = close;
-    panel.appendChild(h("div", { class: "bxo-top" }, [h("h2", { text: "Owner audit" }), out, x]));
+    panel.appendChild(h("div", { class: "bxo-top" }, [h("h2", { text: "Admin audit" }), out, x]));
     var tabs = [["todo", "To rate"], ["redo", "Redo queued"], ["ok", "Approved"], ["all", "All"]].map(function (t) {
       var b = h("button", { type: "button", text: t[1] }); b.k = t[0]; b.onclick = function () { filter = t[0]; shown = 40; render(); }; return b;
     });
@@ -302,16 +302,27 @@
     api("/ratings").then(function (j) { if (j.ok) ratings = j.ratings || {}; render(); }, function () { render(); });
   }
   function close() { zoomClose(); if (keyfn) { document.removeEventListener("keydown", keyfn); keyfn = null; } if (panel) panel.remove(); panel = null; bar = null; document.body.style.overflow = ""; }
+  /* flips the page into (or out of) admin mode: unlocks turnaround and any other admin-only views, relabels the button */
+  function adminState(on) {
+    var b = document.getElementById("bxo-btn"); if (b) { b.textContent = on ? "Admin" : "Admin sign in"; b.title = on ? "Admin tools" : "Admin sign in"; }
+    if (window.BKX && window.BKX.setAdmin) window.BKX.setAdmin(!!on);
+  }
   function init() {
     if (document.getElementById("bxo-btn")) return; style();
-    var b = h("button", { id: "bxo-btn", class: "bxo-btn", text: "Owner", type: "button", title: "Owner audit" }); b.onclick = function () {
+    var b = h("button", { id: "bxo-btn", class: "bxo-btn", text: "Admin sign in", type: "button", title: "Admin sign in" });
+    function unlock() { return api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; }).catch(function () {}); }
+    b.onclick = function () {
       if (!(window.BKX && window.BKX.data())) { alert("Open the Bokidex first."); return; }
       signin(true).then(function (ok) {
         if (!ok) return;
-        api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; })
-          .catch(function () {}).then(open);   // pending art stays hidden if the key or bundle fails; ratings still work
+        unlock().then(function () { adminState(true); open(); });   // pending art stays hidden if the key or bundle fails; ratings still work
       });
     };
+    /* a returning admin (code already stored) is signed in quietly when the page loads */
+    document.addEventListener("bokidex-unlocked", function () {
+      code = load(); if (!code) return;
+      api("/whoami").then(function (j) { if (j.ok) return unlock().then(function () { adminState(true); }); code = ""; }, function () { code = ""; });
+    });
     document.body.appendChild(b);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
