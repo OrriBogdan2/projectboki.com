@@ -231,41 +231,101 @@ if (pick) {
   // The Hunters scene: the stage holds in place (sticky) for a stretch. "broken apart." arrives over it, breaks while
   // you scroll, then fades out as the stage fades in, so the heading turns into the Hunters instead of scrolling away.
   // On desktop the stage then keeps holding while the scroll steps through every Hunter.
-  // Once the break has played and you scroll on, the heading fades out and the stage fades in (timed, in CSS).
-  let scn = null, sceneOn = false;
-  const sceneFrame = () => {
-    if (!scn) return;
-    const y = scrollY, done = !window.bokiCrumble || window.bokiCrumble.done();
-    const want = sceneOn ? y > scn.s0 + scn.crumble * 0.6 : (y >= scn.s0 + scn.crumble && done) || y > scn.s0 + scn.crumble + scn.fade;
-    if (want !== sceneOn) { sceneOn = want; sec.classList.toggle("scene-on", want); }
+  // Every bit of scroll here moves something: the heading breaks, then a glowing crack tears the Hunter's art open
+  // across the stage, then the name and the picker rise in, then (desktop) each Hunter drifts while you step through.
+  // The scene follows a smoothed copy of the scroll with a speed limit, so a hard flick still plays it through in about
+  // a second and a half instead of skipping it, and slow scrolling is fully in your hands. No scroll-jacking on desktop.
+  const stage = pinEl && pinEl.querySelector(".stage"), intro = $("h-intro"), shot = stage && stage.querySelector(".shot");
+  const plab = pinEl && pinEl.querySelector(".pick-label");
+  const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
+  let cw = null;
+  if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
+  const bar = plab && (() => { const s = document.createElement("span"); s.className = "h-bar"; s.setAttribute("aria-hidden", "true"); s.innerHTML = "<i></i>"; plab.insertBefore(s, plab.querySelector(".swipe")); return s.firstChild; })();
+  const clamp = (v) => Math.min(1, Math.max(0, v)), sm = (v) => v * v * (3 - 2 * v);
+  let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  const jag = []; { let x = 0; for (let i = 0; i <= 12; i++) { jag.push(x); x = Math.max(-7, Math.min(7, x + (rnd() - 0.5) * 9)); } } // the crack's path, the same every visit
+  const crack = (r) => {
+    const n = jag.length - 1, w = r * 66, bend = 1 - r * 0.5, L = [], R = [];
+    jag.forEach((j, i) => { const y = (-2 + i * (104 / n)).toFixed(1), c = 50 + j * bend; L.push(`${(c - w).toFixed(2)}% ${y}%`); R.unshift(`${(c + w).toFixed(2)}% ${y}%`); });
+    return `polygon(${L.join(", ")}, ${R.join(", ")})`;
   };
-  window.bokiSceneTick = sceneFrame;
+  const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
+  let scn = null, sceneOn = false, lastQ = -1;
+  const paintScene = (q) => {
+    if (q === lastQ) return;
+    lastQ = q;
+    if (q >= 1) { // fully in: hand everything back to the stylesheet
+      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden";
+      if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = "";
+    } else {
+      const io = 1 - sm(clamp((q - 0.02) / 0.42)); // the broken heading lifts away
+      intro.style.opacity = io.toFixed(3); intro.style.visibility = io < 0.005 ? "hidden" : "";
+      intro.style.transform = `translate3d(0, ${(-56 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
+      const f = sm(clamp(q / 0.16)); // the stage's frame surfaces
+      stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.97 + 0.03 * f).toFixed(4)})`;
+      const r = sm(clamp((q - 0.06) / 0.58)); // the crack opens, glowing ember, cooling as it widens
+      if (cw) cw.style.clipPath = cw.style.webkitClipPath = r > 0 ? crack(r) : "polygon(50% 0, 50% 0, 50% 0)";
+      shot.style.filter = r > 0 && r < 1 ? `drop-shadow(0 0 ${(4 + 14 * r).toFixed(1)}px rgba(255, 96, 48, ${(0.95 * (1 - r)).toFixed(3)}))` : "";
+      shot.style.setProperty("--zr", (0.12 * (1 - r)).toFixed(4)); // and the art settles from close up
+      const o = sm(clamp((q - 0.5) / 0.34)); // then the name, the count and the arrows
+      late.forEach((el) => { el.style.transition = "none"; el.style.opacity = o.toFixed(3); el.style.translate = `0 ${(16 * (1 - o)).toFixed(1)}px`; });
+      [[plab, 0.62], [pick, 0.7]].forEach(([el, s]) => { if (!el) return; const p = sm(clamp((q - s) / 0.3)); // then the picker
+        el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
+    }
+    const on = q > 0.6;
+    if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); }
+  };
+  const render = (y) => {
+    if (!scn) return;
+    const vh = innerHeight;
+    if (window.bokiCrumble) window.bokiCrumble.set(clamp((y - (scn.s0 - vh * 0.3)) / (vh * 0.45)));
+    paintScene(clamp((y - (scn.s0 + vh * 0.1)) / (scn.lead - vh * 0.1)));
+    if (pin) {
+      const k = (y - pin.start) / pin.step, i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor(k))), fr = clamp(k - i);
+      if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
+      // each Hunter breathes and drifts a touch while you're on it
+      shot.style.setProperty("--zs", (0.025 + 0.02 * Math.sin(Math.PI * fr)).toFixed(4));
+      shot.style.setProperty("--px", `${((0.5 - fr) * 1.6).toFixed(2)}%`);
+      if (bar) bar.style.transform = `scaleX(${clamp((k + 0.5) / HUNTERS.length).toFixed(4)})`;
+    }
+  };
+  // the smoothed scroll: eases after the real one, never faster than the scene's speed limit
+  let ys = null, raf = 0, lt = 0;
+  const tick = (now) => {
+    raf = 0;
+    const y = scrollY, vh = innerHeight, dt = lt ? Math.min(0.05, (now - lt) / 1000) : 1 / 60; lt = now;
+    if (ys === null || !scn) ys = y;
+    let d = y - ys;
+    if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
+    const inScene = ys > scn.s0 - vh * 0.45 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
+    const cap = (inScene ? (breaking ? 0.55 : 0.8) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt;
+    ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
+    if (Math.abs(y - ys) < 0.5) ys = y;
+    render(ys);
+    if (ys !== y) raf = requestAnimationFrame(tick); else lt = 0;
+  };
+  const kick = () => { if (!raf && scn) raf = requestAnimationFrame(tick); };
+  window.bokiSceneTick = () => { if (scn && ys !== null) { lastQ = -1; render(ys); } };
   const layoutPin = () => {
     if (!track) return;
     const on = wide.matches && !calm;
     sec.classList.toggle("pinned", on); sec.classList.toggle("scene", !calm);
-    track.style.height = ""; pinEl.style.top = ""; pin = null; scn = null; window.bokiScene = null;
+    track.style.height = ""; pinEl.style.top = ""; pin = null; scn = null;
     if (calm) return;
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const crumble = Math.round(vh * (on ? 0.46 : 0.38)), fade = Math.round(vh * 0.22), lead = crumble + fade;
-    const step = Math.max(220, Math.round(vh * 0.3));
+    const lead = Math.round(vh * (on ? 0.62 : 0.56)), step = Math.max(220, Math.round(vh * 0.3));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
-    track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.08)) + "px"; // the last Hunter gets its beat too, then it lets go
+    track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go
     const s0 = docTop(track) - top;
-    scn = { s0, crumble, fade, top, h }; window.bokiScene = scn;
+    scn = { s0, lead };
     if (on) pin = { start: s0 + lead, step };
-    sceneFrame();
+    if (ys === null) ys = scrollY;
+    lastQ = -1; render(ys); kick();
   };
-  const pinScroll = () => {
-    if (!pin) return;
-    const i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor((scrollY - pin.start) / pin.step)));
-    if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
-  };
-  let pinTick = false;
-  addEventListener("scroll", () => { if (scn && !pinTick) { pinTick = true; requestAnimationFrame(() => { pinTick = false; sceneFrame(); pinScroll(); }); } }, { passive: true });
+  addEventListener("scroll", kick, { passive: true });
   let lw = innerWidth, lh = innerHeight;
   addEventListener("resize", () => { // phones resize as the toolbar hides on scroll: only re-measure on a real change
     if (innerWidth === lw && Math.abs(innerHeight - lh) < 160 && matchMedia("(pointer: coarse)").matches) return;
@@ -275,12 +335,42 @@ if (pick) {
   wide.addEventListener && wide.addEventListener("change", layoutPin);
   layoutPin();
 
+  // Phones only: momentum can fling a thumb straight past the scene, so the first time down it holds the page,
+  // carries it into the Hunters while the scene plays, and lets go the moment the picker is in.
+  if (!calm) {
+    const coarse = matchMedia("(pointer: coarse)"), root = document.documentElement;
+    let played = false, held = false, jump = 0, prevY = scrollY;
+    document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
+    addEventListener("hashchange", () => { jump = performance.now(); });
+    const block = (e) => { if (held) e.preventDefault(); };
+    const keys = (e) => { if (held && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
+    const hold = () => {
+      held = true;
+      root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
+      addEventListener("touchmove", block, { passive: false }); addEventListener("wheel", block, { passive: false }); addEventListener("keydown", keys);
+      scrollTo({ top: Math.round(scn.s0 + scn.lead), behavior: "instant" }); // the stage is held in place, so nothing jumps
+      kick();
+      const t0 = performance.now();
+      const wait = () => {
+        if (ys !== scrollY && performance.now() - t0 < 3000) { setTimeout(wait, 60); return; }
+        held = false; root.style.overflow = ""; document.body.style.overflow = "";
+        removeEventListener("touchmove", block); removeEventListener("wheel", block); removeEventListener("keydown", keys);
+      };
+      setTimeout(wait, 200);
+    };
+    addEventListener("scroll", () => {
+      const y = scrollY;
+      if (!played && !held && scn && !pin && coarse.matches && y > prevY && y >= scn.s0 - innerHeight * 0.2 && y < scn.s0 + scn.lead * 0.6 && performance.now() - jump > 1500) { played = true; hold(); }
+      prevY = y;
+    }, { passive: true });
+  }
+
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (i === current) return;
     current = i;
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
-      scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); // the page follows the pick
+      { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
     const [id, name, title, model, role] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
@@ -699,33 +789,6 @@ if (POSTHOG_KEY) {
   frame();
 })();
 
-/* ---------- Guided, not controlled: when you stop scrolling close to a resting point (a section's heading, then its
-   stage), the page eases the last bit into place. Far from one, it leaves you exactly where you stopped; any new
-   scroll, touch or key cancels it. (CSS scroll-snap was tried: browsers pull far too hard.) ---------- */
-(function () {
-  if (calm) return;
-  const phone = matchMedia("(max-width: 720px)");
-  const els = () => []; // only the Hunters scene below: anywhere else the page stays exactly where you leave it
-  const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; }; // layout position, ignoring scroll-linked transforms
-  let idle = 0, touching = false, settling = false;
-  const settle = () => {
-    if (touching) return;
-    const vh = innerHeight, y = scrollY;
-    let best = null;
-    const pts = els().map((el) => docTop(el) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0));
-    const sc = window.bokiScene; if (sc) pts.push(sc.s0, sc.s0 + sc.crumble + sc.fade); // the Hunters scene: the heading, then the stage
-    pts.forEach((to) => { if (best === null || Math.abs(to - y) < Math.abs(best - y)) best = to; });
-    if (best === null || Math.abs(best - y) < 3 || Math.abs(best - y) > vh * 0.2) return; // close: ease in; far: leave it
-    settling = true;
-    scrollTo({ top: best, behavior: "smooth" });
-  };
-  addEventListener("scroll", () => { clearTimeout(idle); idle = setTimeout(() => { if (settling) { settling = false; return; } settle(); }, 180); }, { passive: true });
-  addEventListener("touchstart", () => { touching = true; settling = false; }, { passive: true });
-  addEventListener("touchend", () => { touching = false; }, { passive: true });
-  ["wheel", "keydown", "mousedown"].forEach((ev) => addEventListener(ev, () => { settling = false; }, { passive: true }));
-  addEventListener("hashchange", () => { settling = true; });
-})();
-
 /* ---------- "broken apart.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
    each letter, the letter splits into two shards along it, and the shards drop and tumble apart shedding chips, the red
    rising in them as they fall. Scroll up and it all runs backwards: chips back, shards rejoin, the crack seals and cools. ---------- */
@@ -783,77 +846,12 @@ if (POSTHOG_KEY) {
     });
   });
   if (calm) { paint(0, true); return; } // reduced motion: cracked and glowing, nothing moves
-  // Timed, not scrubbed, so it looks the same however you scroll: reach the heading and it breaks over 1.4s;
-  // scroll well back above it and it mends. The first pass on each visit also pauses the page until the break is done.
-  const FWD = 1.4, BACK = 0.7;
+  // Driven by the Hunters scene above (a smoothed, speed-limited copy of the scroll): scroll on and it breaks, scroll back and it mends.
   const inout = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
-  let t = 0, dir = 0, raf = 0, last = 0;
-  const frame = (now) => {
-    raf = 0;
-    const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
-    t = clamp(t + dir * dt / (dir > 0 ? FWD : BACK));
-    paint(inout(t));
-    if ((dir > 0 && t < 1) || (dir < 0 && t > 0)) raf = requestAnimationFrame(frame);
-    else { last = 0; if (window.bokiSceneTick) window.bokiSceneTick(); }
-  };
-  const go = (d) => { if (d === dir) return; dir = d; last = 0; if (!raf) raf = requestAnimationFrame(frame); };
-  window.bokiCrumble = { done: () => t >= 1 };
+  let lastC = -1;
+  window.bokiCrumble = { set: (c) => { if (c !== lastC) { lastC = c; paint(inout(c)); } } };
   paint(0);
-
-  // The pause, built to feel like a landing rather than a wall: the page glides the last bit onto the heading,
-  // holds while it breaks, and only lets go once your wheel or trackpad has come to rest, so leftover momentum
-  // can't fling you past the Hunters the instant it's done.
-  let played = false, locked = false, jump = 0, prevY = scrollY, lastWheel = 0;
-  document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
-  addEventListener("hashchange", () => { jump = performance.now(); });
-  const block = (e) => { if (locked) { e.preventDefault(); lastWheel = performance.now(); } };
-  const keys = (e) => { if (locked && /^(ArrowDown|ArrowUp|PageDown|PageUp|Space| |End|Home)$/.test(e.key)) e.preventDefault(); };
-  const root = document.documentElement;
-  const release = () => {
-    locked = false; root.style.overflow = ""; document.body.style.overflow = "";
-    removeEventListener("wheel", block); removeEventListener("touchmove", block); removeEventListener("keydown", keys);
-  };
-  const waitRest = (t0) => { // hold until the wheel has been still for a moment (at most 0.7s more)
-    if (performance.now() - lastWheel > 180 || performance.now() - t0 > 700) release();
-    else setTimeout(() => waitRest(t0), 60);
-  };
-  const lock = (to) => {
-    locked = true; lastWheel = performance.now();
-    // The browser stops scrolling on its own, with no fighting. The body is set to visible so it doesn't become its
-    // own scroll box (it has overflow-x: hidden), which would break the sticky stage while held.
-    root.style.overflow = "hidden"; document.body.style.overflow = "visible";
-    addEventListener("wheel", block, { passive: false }); addEventListener("touchmove", block, { passive: false }); addEventListener("keydown", keys);
-    const from = scrollY, d = to - from, t0 = performance.now(), dur = Math.min(420, 180 + Math.abs(d) * 0.6);
-    const glide = (now) => {
-      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-      scrollTo({ top: Math.round(from + d * e), behavior: "instant" });
-      if (k < 1) requestAnimationFrame(glide);
-    };
-    if (Math.abs(d) > 1) requestAnimationFrame(glide);
-    const wait = () => {
-      if (t < 1) { setTimeout(wait, 50); return; }
-      const sc = window.bokiScene, sec = document.getElementById("hunters");
-      if (sc && sec && !sec.classList.contains("pinned")) {
-        // Phones: carry straight on into the Hunters while still holding (the stage is pinned, so nothing jumps),
-        // and let go once the stage and the picker are fully in, so the next swipe starts from them.
-        scrollTo({ top: Math.round(sc.s0 + sc.crumble + sc.fade), behavior: "instant" });
-        setTimeout(() => waitRest(performance.now()), 950);
-      } else setTimeout(() => waitRest(performance.now()), 120);
-    };
-    wait();
-  };
-  addEventListener("scroll", () => {
-    if (locked) return;
-    const sc = window.bokiScene; if (!sc) return;
-    const y = scrollY, vh = innerHeight;
-    if (y >= sc.s0 - vh * 0.15) go(1);
-    else if (y < sc.s0 - vh * 0.4) go(-1);
-    if (!played && y > prevY && y >= sc.s0 - vh * 0.12 && performance.now() - jump > 1500) {
-      played = true;
-      if (y < sc.s0 + sc.crumble + sc.fade && t < 1) lock(Math.round(sc.s0)); // already well past it (a reload lower down): no pause
-    }
-    prevY = y;
-  }, { passive: true });
+  if (window.bokiSceneTick) window.bokiSceneTick();
 })();
 
 /* ---------- Press kit: Boki art comes from the /2d upload room (assets/boki2d.json); until then, "Coming soon." ---------- */
