@@ -592,7 +592,7 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .js #hunters.scene .h-pin > .stage[data-r], .js #hunters.scene .h-pin > .pick-label[data-r], .js #hunters.scene .h-pin > .pick[data-r] { transform: none; pointer-events: none; }
 .js #hunters.scene.scene-on .h-pin > .stage[data-r], .js #hunters.scene.scene-on .h-pin > .pick-label[data-r], .js #hunters.scene.scene-on .h-pin > .pick[data-r] { opacity: 1; pointer-events: auto; }
 .shot-c { position: relative; }
-.shot img { scale: calc(1 + var(--zr, 0) + var(--zs, 0)); translate: var(--px, 0) 0; }
+.shot img { scale: calc(1 + var(--zr, 0) + var(--zs, 0)); }
 .h-bar { display: none; flex: 0 1 240px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; }
 .h-bar i { display: block; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,.55), #fff); transform: scaleX(0); transform-origin: left; }
 #hunters.pinned .h-bar { display: block; }

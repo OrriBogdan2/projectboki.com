@@ -283,14 +283,13 @@ if (pick) {
     if (pin) {
       const k = (y - pin.start) / pin.step, i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor(k))), fr = clamp(k - i);
       if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
-      // each Hunter breathes and drifts a touch while you're on it
-      shot.style.setProperty("--zs", (0.025 + 0.02 * Math.sin(Math.PI * fr)).toFixed(4));
-      shot.style.setProperty("--px", `${((0.5 - fr) * 1.6).toFixed(2)}%`);
+      // each Hunter slowly pushes in while you're on it
+      zsGoal = 0.018 * Math.sin(Math.PI * fr); // eased in tick(), so racing through Hunters doesn't make it throb
       if (bar) bar.style.transform = `scaleX(${clamp((k + 0.5) / HUNTERS.length).toFixed(4)})`;
     }
   };
   // the smoothed scroll: eases after the real one, never faster than the scene's speed limit
-  let ys = null, raf = 0, lt = 0;
+  let ys = null, raf = 0, lt = 0, zs = 0, zsGoal = 0;
   const tick = (now) => {
     raf = 0;
     const y = scrollY, vh = innerHeight, dt = lt ? Math.min(0.05, (now - lt) / 1000) : 1 / 60; lt = now;
@@ -302,7 +301,9 @@ if (pick) {
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
     render(ys);
-    if (ys !== y) raf = requestAnimationFrame(tick); else lt = 0;
+    zs += (zsGoal - zs) * (1 - Math.exp(-dt * 3)); if (Math.abs(zsGoal - zs) < 0.0002) zs = zsGoal;
+    if (shot) shot.style.setProperty("--zs", zs.toFixed(4));
+    if (ys !== y || zs !== zsGoal) raf = requestAnimationFrame(tick); else lt = 0;
   };
   const kick = () => { if (!raf && scn) raf = requestAnimationFrame(tick); };
   window.bokiSceneTick = () => { if (scn && ys !== null) { lastQ = -1; render(ys); } };
