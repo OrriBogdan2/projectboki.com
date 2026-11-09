@@ -814,3 +814,22 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 .faq-side { z-index: 3; }
 .bub-wrap.gl { pointer-events: none; will-change: transform; transform-origin: 50% 55%; }
 .bub-wrap.gl .bub { pointer-events: auto; }
+/* Join: one clear primary (Discord), the email row quieter, even spacing all the way down */
+.join { padding: calc(72px + clamp(40px, 6vh, 72px)) 0 clamp(56px, 8vh, 96px); }
+.join-q { margin-bottom: 4px; }
+.join h2 { margin: 0 0 clamp(32px, 4vw, 48px); }
+.join .cta .btn { height: 58px; font-size: 21px; }
+.su-or { margin: 26px 0 14px; font-size: 15px; color: rgba(255,255,255,.55); }
+#signup .su-row { height: 58px; box-sizing: border-box; align-items: center; }
+#signup .su-row .btn { height: 44px; background: rgba(255,255,255,.1); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.22); }
+#signup .su-row .btn:hover { background: rgba(255,255,255,.18); }
+#signup .su-done { margin-top: 14px; }
+@media (max-width: 720px) {
+  .join { padding: calc(64px + 44px) 0 56px; min-height: 0; }
+  .join .wrap { padding-inline: 24px; }
+  .join-q { font-size: 19px; }
+  .join h2 { font-size: clamp(44px, 12vw, 56px); margin-bottom: 28px; }
+  .join .cta .btn, #signup .su-row { height: 56px; }
+  .su-or { margin: 22px 0 12px; font-size: 14px; }
+  .foot { padding-top: 44px; }
+}
