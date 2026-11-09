@@ -497,13 +497,9 @@ h1, h2, h3, .band p { text-wrap: balance; }
 html.lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
 .head h2.h-crumble { background: none; color: #fff; }
-/* Boki heading: the name glows in the logo's teal-to-purple; each way a Boki differs gets its own color */
-.head h2.hb .hb-boki { background: linear-gradient(100deg, #6ff0e0 0%, #9ec3ff 45%, #d77bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 18px rgba(120,220,255,.35)) drop-shadow(0 0 30px rgba(200,110,255,.3)); }
-#boki .head .sub b { font-weight: inherit; }
-#boki .head .sub .k-t { color: #74e8da; }
-#boki .head .sub .k-m { color: #e58bff; }
-#boki .head .sub .k-p { color: #ffc977; }
+/* Boki heading: a warm sunset sweep, the Skylands sky */
+.head h2.hb { background: linear-gradient(100deg, #ffd29a 0%, #ff9fb4 40%, #c9a2ff 75%, #9fc4ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 26px rgba(255,150,180,.18)); }
 .head h2.h-crumble .h-w, .crumble i { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .head h2 .crumble, .head h2 .nw { white-space: nowrap; }
 /* "crumbling." comes apart: the last letters loosen and slip as the heading comes into view */
