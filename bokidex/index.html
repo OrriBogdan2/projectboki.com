@@ -854,9 +854,12 @@ function tabBody(v,e,d){
   if(mtab==="evolve")return evoHTML(e);
   if(mtab==="vari")return mutHTML(v)||'<p class="mut">No variants written for this one yet.</p>';
   if(mtab==="more")return extrasHTML(v);
-  const lore=publicText(d.lore||v.entry,v), long=lore.length>170;
-  const more=[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
-  return`${factsHTML(v,e)}${lore?`<p class="blurb${long?" clamp":""}">${esc(lore)}</p>${long?'<button type="button" class="readmore" data-more>Read all</button>':""}`:""}${more?`<details class="qk"${matchMedia("(min-width:760px)").matches?" open":""}><summary>Quirk &amp; personality</summary>${more}</details>`:""}`;
+  /* About = one short in-world dex entry (v.lore, written per Boki/form; owner 11-09: no listed quirks). Older or new
+     entries without one fall back to d.lore / entry. The quirk/voice/temper notes stay in the data; admins can still
+     open them below, collapsed. */
+  const lore=publicText(v.lore||d.lore||v.entry,v);
+  const more=!isAdmin?"":[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
+  return`${factsHTML(v,e)}${lore?`<p class="blurb">${esc(lore)}</p>`:""}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
 }
 const CHEV=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
 let dsig="", wasOpen=false, dkey="";
