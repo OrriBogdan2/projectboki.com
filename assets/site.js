@@ -488,38 +488,38 @@ if (pick) {
     }, { passive: true });
   }
 
-  // Phones only: momentum can fling a thumb straight past the scene, so the first time down it holds the page,
-  // carries it into the Hunters while the scene plays, and lets go the moment the picker is in.
+  // Phones only: momentum can fling a thumb straight past the scene. Nothing is moved for you on the way in: the heading
+  // follows your finger. If a fast flick carries the page past the first Hunter, it stops there (the stage is pinned, so
+  // nothing on screen jumps) and stays put while the heading finishes breaking, then lets go.
   if (!calm) {
     const coarse = matchMedia("(pointer: coarse)"), root = document.documentElement;
-    let played = false, held = false, jump = 0, prevY = scrollY, target = 0;
+    let held = false, jump = 0, prevY = scrollY, prevT = 0, target = 0;
     document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"]')) jump = performance.now(); }, true);
     addEventListener("hashchange", () => { jump = performance.now(); });
     const block = (e) => { if (held) e.preventDefault(); };
     const keys = (e) => { if (held && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
-    const hold = () => {
-      held = true;
+    const hold = (at) => {
+      held = true; target = at;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
       addEventListener("touchmove", block, { passive: false }); addEventListener("wheel", block, { passive: false }); addEventListener("keydown", keys);
-      target = Math.round(scn.s0 + scn.lead);
-      if (ys !== null && ys < scn.s0 - innerHeight * 0.31) ys = Math.round(scn.s0 - innerHeight * 0.31); // start the break right away, no dead wait
-      scrollTo({ top: target, behavior: "instant" }); // the stage is held in place, so nothing jumps
+      if (Math.abs(scrollY - at) > 2) scrollTo({ top: at, behavior: "instant" }); // inside the pinned stage: invisible
       kick();
       const t0 = performance.now();
       const wait = () => {
-        if (ys !== scrollY && performance.now() - t0 < 6000) { setTimeout(wait, 60); return; }
+        if (ys !== scrollY && performance.now() - t0 < 2500) { setTimeout(wait, 60); return; }
         held = false; root.style.overflow = ""; document.body.style.overflow = "";
         removeEventListener("touchmove", block); removeEventListener("wheel", block); removeEventListener("keydown", keys);
       };
-      setTimeout(wait, 200);
+      setTimeout(wait, 150);
     };
     addEventListener("scroll", () => {
-      const y = scrollY;
-      if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; return; } // leftover momentum can't move it
-      if (scn && y < scn.s0 - innerHeight * 0.5) played = false; // well back above the heading: the next pass down is held again
-      // any pass down into the heading, even a flick that jumps clean past it in one frame
-      if (!played && scn && coarse.matches && y > prevY && prevY < scn.s0 + scn.lead && y >= scn.s0 - innerHeight * 0.2 && performance.now() - jump > 1500) { played = true; hold(); }
-      prevY = y;
+      const y = scrollY, now = performance.now();
+      if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; prevT = now; return; } // leftover momentum can't move it
+      if (scn && coarse.matches && now - jump > 1500) {
+        const c = Math.round(scn.s0 + scn.lead) + 2, v = (y - prevY) / Math.max(8, now - prevT); // px per ms
+        if (prevY < c && y >= c && v > 1.2) hold(c); // a fast pass down over the first Hunter: stop on it
+      }
+      prevY = y; prevT = now;
     }, { passive: true });
 
     // Phones: one swipe, one Hunter. Inside the Hunters a vertical swipe glides to the next (or previous) Hunter
