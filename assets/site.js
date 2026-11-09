@@ -521,7 +521,7 @@ if (pick) {
       if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; prevT = now; return; } // leftover momentum can't move it
       if (scn && coarse.matches && now - jump > 1500) {
         const c = Math.round(scn.s0 + scn.lead) + 2, v = (y - prevY) / Math.max(8, now - prevT); // px per ms
-        if (prevY < c && y >= c && v > 1.2) hold(c); // a fast pass down over the first Hunter: stop on it
+        if (prevY < c && y >= c && v > 1.2 && y - prevY < innerHeight * 1.5) hold(c); // a fast pass down over the first Hunter: stop on it (not a jump)
       }
       prevY = y; prevT = now;
     }, { passive: true });
@@ -1266,9 +1266,14 @@ if (POSTHOG_KEY) {
   }).catch(() => { gl = null; });
   const size = () => { const w = wrap.offsetWidth, dpr = Math.min(2, devicePixelRatio || 1); cv.width = cv.height = Math.round(w * dpr); };
   addEventListener("resize", size);
-  let px = null, py = null, lastMove = -1e9;
-  const track = (e) => { px = e.clientX; py = e.clientY; lastMove = performance.now(); };
+  let px = null, py = null, lastMove = -1e9, finger = false, lastFlee = 0;
+  const track = (e) => { if (e.pointerType === "touch") return; px = e.clientX; py = e.clientY; lastMove = performance.now(); };
   addEventListener("pointermove", track, { passive: true }); addEventListener("pointerdown", track, { passive: true });
+  // phones: follow the finger itself, even while it scrolls the page, and forget it the moment it lifts
+  const touch = (e) => { const p = e.touches[0]; if (!p) return; px = p.clientX; py = p.clientY; lastMove = performance.now(); finger = true; };
+  const lift = (e) => { if (!e.touches.length) { finger = false; px = py = null; } };
+  addEventListener("touchstart", touch, { passive: true }); addEventListener("touchmove", touch, { passive: true });
+  addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", lift, { passive: true });
   // his little brain: where to look, when to blink, when to hop
   let ox = 0, oy = 0, lean = 0, turn = 0, lx = 0, ly = 0, ex = 0, vis = false, t = 0, last = 0;
   let blinkAt = 1.5, blinkK = -1, double = false, hopK = -1, nextHop = 0, wide = 0, glance = { x: 0, y: 0, until: 0 };
@@ -1297,7 +1302,21 @@ if (POSTHOG_KEY) {
     const hr = home.getBoundingClientRect(), AX = Math.min(80, hr.width * 0.3), AY = Math.min(46, hr.height * 0.17);
     wT += dt;
     let gx = (Math.sin(wT * 0.21) * 0.8 + Math.sin(wT * 0.47 + 1.7) * 0.2) * AX, gy = (Math.cos(wT * 0.29) * 0.75 + Math.sin(wT * 0.61) * 0.25) * AY;
-    if (px !== null && now - lastMove < 2000 && now > calmUntil && !flee) {
+    if (finger && px !== null) { // phones: a wider sense of the finger, a bigger escape, and he keeps clear while it stays
+      const vw = innerWidth, R = Math.max(95, hr.width * 0.85);
+      const bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
+      const hx0 = hr.left + hr.width / 2, hy0 = hr.top + hr.height / 2;
+      if (Math.hypot(bx - px, by - py) < R && now - lastFlee > 300) {
+        // the open spot farthest from the finger that keeps him on screen
+        const minX = Math.max(-Math.min(150, hr.left - 120), 10 - hr.left), maxX = vw - 10 - hr.right, minY = -46, maxY = 46;
+        let best = null, bd = -1;
+        for (const cx of [minX, (minX + maxX) / 2, maxX, minX * 0.5]) for (const cy of [minY, 0, maxY]) {
+          const d = Math.hypot(hx0 + cx - px, hy0 + cy - py); if (d > bd) { bd = d; best = { x: cx, y: cy }; }
+        }
+        flee = { x: best.x, y: best.y, until: now + 1300 }; lastFlee = now;
+        flT = best.x > sx ? -1 : 1; // face where he's going (his art faces left)
+      } else if (flee && Math.hypot(hx0 + flee.x - px, hy0 + flee.y - py) > R) flee.until = Math.max(flee.until, now + 250); // finger still around: stay away
+    } else if (px !== null && now - lastMove < 2000 && now > calmUntil && !flee) {
       const bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
       const ddx = bx - px, ddy = by - py, dd = Math.hypot(ddx, ddy) || 1;
       if (dd < hr.width * 0.55) { // too close: dart to the far side of his area, away from the cursor
