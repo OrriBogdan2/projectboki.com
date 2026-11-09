@@ -636,12 +636,14 @@ async function unlock(pw,remember){
   KEY=await deriveKey(pw);
   DATA=JSON.parse(new TextDecoder().decode(await decFetch("data.bin")));
   try{if(remember)localStorage.setItem("bmr",pw)}catch(e){}
-  gens=DATA.gens; $("#lock").hidden=true; $("#app").hidden=false; loadDex();
+  gens=DATA.gens; window.BKX={data:()=>DATA,blob:blobOf}; $("#lock").hidden=true; $("#app").hidden=false; loadDex();
+  document.dispatchEvent(new Event("bokidex-unlocked"));
 }
 $("#lf").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lerr");err.textContent="Checking…";
   try{await unlock($("#pw").value,$("#rem").checked);err.textContent=""}
   catch(x){KEY=null;err.textContent=/wrong password/.test(x?.message)?"Wrong password.":"Could not open the Bokidex ("+(x?.message||x)+")."}});
 (async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){}if(p){try{await unlock(p,false)}catch(e){try{localStorage.removeItem("bmr")}catch(_){}}}})();
 </script>
+<script src="owner.js?v=9787413c41"></script>
 </body>
 </html>
