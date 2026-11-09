@@ -1068,3 +1068,25 @@ if (POSTHOG_KEY) {
     grid.hidden = false; document.getElementById("pk-soon").hidden = true;
   }).catch(() => {});
 })();
+
+/* ---------- Bubblisk in the FAQ: tap his bubble and it pops into droplets, then he blows a new one ---------- */
+(function () {
+  const wrap = document.getElementById("bub"); if (!wrap) return;
+  const btn = wrap.querySelector(".bub"), burst = wrap.querySelector(".bub-burst");
+  let busy = false;
+  btn.addEventListener("click", () => {
+    if (busy) return; busy = true;
+    wrap.classList.remove("grow"); wrap.classList.add("pop");
+    const r = wrap.offsetWidth * 0.129; // the bubble's radius on screen
+    let html = '<span class="ring" style="width:' + (r * 1.6).toFixed(0) + 'px;height:' + (r * 1.6).toFixed(0) + 'px;margin:' + (-r * .8).toFixed(0) + 'px 0 0 ' + (-r * .8).toFixed(0) + 'px"></span>';
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2 + Math.random() * 0.4, d = r * (1.1 + Math.random() * 0.9), s = Math.max(4, r * (0.12 + Math.random() * 0.14));
+      html += `<i style="--s:${s.toFixed(1)}px;--dx:${(Math.cos(a) * d).toFixed(1)}px;--dy:${(Math.sin(a) * d + r * 0.4).toFixed(1)}px;animation-delay:${(Math.random() * 60).toFixed(0)}ms"></i>`;
+    }
+    burst.innerHTML = html;
+    setTimeout(() => { burst.innerHTML = ""; }, 900);
+    setTimeout(() => { wrap.classList.remove("pop"); wrap.classList.add("grow"); }, 1500);       // a beat, then a new bubble
+    setTimeout(() => { wrap.classList.remove("grow"); busy = false; }, 2600);
+  });
+})();
+

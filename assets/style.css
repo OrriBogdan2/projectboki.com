@@ -301,10 +301,26 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .faq-in { position: relative; max-width: 1120px; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
 .faq-side { position: sticky; top: 110px; display: flex; flex-direction: column; align-items: flex-start; }
 .faq .head { text-align: left; margin: 0; }
-.faq .head h2 { font-size: clamp(64px, 8vw, 120px); line-height: .9; background: linear-gradient(100deg, #ffd29a 0%, #ff9fb4 40%, #c9a2ff 75%, #9fc4ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.faq .head h2 { font-size: clamp(64px, 8vw, 120px); line-height: .9; background: linear-gradient(180deg, #ffffff 15%, #d9c8ff 70%, #b79bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .faq-art { position: relative; width: min(100%, 300px); margin: 6px 0 4px -14px; }
 .faq-art::before { content: ""; position: absolute; inset: 12% 8% 4%; border-radius: 50%; background: radial-gradient(circle, rgba(190,140,255,.35), transparent 70%); filter: blur(18px); }
-.faq-art img { position: relative; width: 100%; height: auto; animation: faq-bob 5s ease-in-out infinite; filter: drop-shadow(0 18px 28px rgba(0,0,0,.5)); }
+.faq-art img { position: relative; width: 100%; height: auto; }
+/* Bubblisk: tap his bubble and it pops, then he blows a new one */
+.bub-wrap { position: relative; animation: faq-bob 5s ease-in-out infinite; filter: drop-shadow(0 18px 28px rgba(0,0,0,.5)); }
+.bub { all: unset; position: absolute; inset: 0; cursor: pointer; clip-path: circle(12.9% at 17.6% 56.6%); -webkit-clip-path: circle(12.9% at 17.6% 56.6%); transform-origin: 17.6% 56.6%; }
+.bub img { display: block; width: 100%; height: auto; }
+.bub:hover { filter: brightness(1.08); }
+.bub-wrap.pop .bub { animation: bub-pop .26s ease-in forwards; }
+.bub-wrap.grow .bub { transform-origin: 27% 52%; animation: bub-grow 1s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes bub-pop { 0% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+@keyframes bub-grow { 0% { transform: scale(.05); opacity: .6; } 100% { transform: scale(1); opacity: 1; } }
+.bub-burst { position: absolute; left: 17.6%; top: 56.6%; width: 0; height: 0; pointer-events: none; }
+.bub-burst i { position: absolute; left: 0; top: 0; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #e8d8ff 40%, #b9a2ff 75%, rgba(185,162,255,0)); opacity: 0; animation: bub-drop .7s cubic-bezier(.15,.7,.3,1) forwards; }
+.bub-burst b { position: absolute; left: 0; top: 0; width: 220%; aspect-ratio: 1; border-radius: 50%; translate: -50% -50%; }
+.bub-burst .ring { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; border: 3px solid rgba(255,255,255,.85); box-shadow: 0 0 18px rgba(200,170,255,.8); animation: bub-ring .45s ease-out forwards; }
+@keyframes bub-drop { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4); } }
+@keyframes bub-ring { 0% { opacity: .9; transform: scale(.6); } 100% { opacity: 0; transform: scale(2.6); } }
 @keyframes faq-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
 .faq-ask { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px; border-radius: 999px; font-family: "Lilita"; font-size: 18px; letter-spacing: .02em; color: #fff;
   background: linear-gradient(#141a2b, #141a2b) padding-box, linear-gradient(100deg, #5fe3d5, #c96bff) border-box; border: 2px solid transparent; transition: transform .2s ease, box-shadow .2s ease; }
@@ -672,7 +688,7 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .h-skip svg { width: 16px; height: 16px; transition: transform .25s ease; }
 .h-skip:hover { transform: translateY(-1px); background: #f1ecff; } .h-skip:hover svg { transform: translateY(2px); }
 @keyframes skip-pulse { 0% { box-shadow: 0 0 0 0 rgba(170,130,255,.55), 0 8px 24px -10px rgba(0,0,0,.7); } 70%, 100% { box-shadow: 0 0 0 12px rgba(170,130,255,0), 0 8px 24px -10px rgba(0,0,0,.7); } }
-@media (prefers-reduced-motion: reduce) { .h-skip { animation: none; } .faq-art img { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .h-skip { animation: none; } .bub-wrap { animation: none; } }
 .h-skip:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 #hunters.pinned .h-skip { display: inline-flex; }
 #hunters.pinned .pick-label .h-bar { margin-left: auto; }
