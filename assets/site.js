@@ -712,7 +712,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   // The rest of the roster: silhouettes where we have a shape, eggs where we don't yet
   const dark = document.getElementById("bk-dark");
   if (dark) {
-    dark.querySelector(".bk-dark-n").textContent = `${data.total} Boki to find.`;
+    dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
     dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
     data.hidden.forEach((h) => {
