@@ -1,27 +1,15 @@
-# Homepage Boki
+# Homepage Boki wall
 
-`build.py` makes the homepage Boki section's data (`assets/boki.json`) and card art (`assets/img/boki-front/`):
+`build.py` builds `assets/boki.json` and the wall's art from the public Bokidex export (`bokidex/d/data.json`),
+so names, types, descriptions and evolution lines always match the dex.
 
-    python3 -I tools/boki/build.py --game ../project-boki   # --ref auto: whichever of main / ext/roster-109 has the most species
+    python3 -I tools/boki/build.py            # 50 revealed (default)
+    python3 -I tools/boki/build.py --reveal 60
 
-- Roster: every `content/kin_v2/*.json` at that ref of the game repo (names, types, evolution line, description).
-- Revealed: species with a clean 2D turnaround in `assets/boki2d.json` (uploaded through /2d). `front.py` crops the
-  front view out of the sheet and removes the backdrop. Descriptions show only for live species (data-only ones carry design notes).
-- Hidden: everyone else, as a silhouette of their 3D render when there is one, otherwise an egg.
-- Pose-grid sheets (tall sheets on a light backdrop) are detected and stay hidden until they have a turnaround.
+- **Revealed:** every Boki with an approved front-page portrait shot in the Bokidex, then the rest picked for variety
+  (final evolutions first, round robin across types). Shots are cut out with rembg (`pip install "rembg[cpu]"`).
+- **Hidden:** everyone else, as silhouettes baked black (`assets/img/boki-sil/`) or eggs. Card art for hidden Boki
+  is deleted, so they can't be found by guessing a file name. The page shows three rows of the mystery.
+- Run it again whenever new art lands in the Bokidex, then commit the changes.
 
-Rerun it after new art lands in /2d or the roster changes, then commit the output.
-
-## The Bokidex is the art source now
-
-`/bokidex` holds the approved art as public files (`bokidex/d/data.json` plus images). The build reads them directly:
-
-    pip install --break-system-packages "rembg[cpu]"
-    python3 -I tools/boki/build.py --game ../project-boki
-
-Per species, the card art is (best first): its newest approved **portrait** shot (the 3/4 shots made for the
-front page), else its newest approved **2D sheet** (first figure), else the old `/2d` upload. Both Bokidex kinds
-are cut out with rembg (`isnet-general-use`). Female forms are skipped. The wall shows the portrait shots first, 12 cards on desktop.
-
-
-Boki still hidden get a silhouette from the dex's own picture when it has one, otherwise an egg; the page alternates them.
+`front.py` is the old /2d front-view crop, kept for reference.

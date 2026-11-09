@@ -657,9 +657,9 @@ if (pick) {
 // [id, name, mix, size, found, glow, body, flavor, [bravery, loyalty, temper, curiosity]]
 /* ---------- Boki: the revealed ones as a wall of cards in staggered columns that drift as you scroll past, then
    the rest of the roster as silhouettes. Built from assets/boki.json (tools/boki/build.py). Tap a card for a closer look. ---------- */
-const TYPE = { ember: "#ff8a4c", storm: "#ffd84a", frost: "#9fe3ff", shadow: "#a78bff", prism: "#ff9df0", venom: "#a6ff3a", tide: "#4fc3ff",
-  bloom: "#7dde6b", echo: "#ffb36b", spore: "#9ef0c0", stone: "#d2bf9f", lunar: "#d8d0ff", swarm: "#ffcf5a", titan: "#e0a870",
-  wyrm: "#8fe8c8", tempest: "#a8d4ff", gravity: "#b796ff", wild: "#f4e2c4" };
+const TYPE = { fire: "#ff8a4c", electric: "#ffd84a", ice: "#9fe3ff", dark: "#a78bff", fairy: "#ff9df0", poison: "#a6ff3a", water: "#4fc3ff",
+  grass: "#7dde6b", sound: "#ffb36b", spore: "#9ef0c0", rock: "#d2bf9f", psychic: "#e39bff", bug: "#ffcf5a", steel: "#c8d2e0",
+  dragon: "#8fe8c8", flying: "#a8d4ff", crystal: "#b8f0ff", normal: "#f4e2c4" }; // the Bokidex's types (tools/boki/build.py)
 const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
@@ -715,13 +715,13 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
     dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
-    // "over 200": past the roster we know, more eggs fill out three full rows
-    const types = Object.keys(TYPE), list = data.hidden.slice();
+    // three full rows of the mystery: silhouettes from the dex, eggs, and more eggs if the dex is short
+    const types = Object.keys(TYPE), list = data.hidden.slice(0, 39);
     for (let i = 0; list.length < 39; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
     list.forEach((h) => {
       const t = document.createElement("span");
       t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
-      t.innerHTML = h.sil ? `<img src="assets/img/boki/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
+      t.innerHTML = h.sil ? `<img src="assets/img/boki-sil/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
       grid.appendChild(t);
     });
     dark.hidden = false;
@@ -1124,19 +1124,18 @@ if (POSTHOG_KEY) {
   if (window.bokiSceneTick) window.bokiSceneTick();
 })();
 
-/* ---------- Press kit: Boki art comes from the /2d upload room (assets/boki2d.json); until then, "Coming soon." ---------- */
+/* ---------- Press kit: the Boki already revealed on the homepage (assets/boki.json); the rest stay a mystery ---------- */
 (function () {
   const grid = document.getElementById("pk-boki");
   if (!grid) return;
-  Promise.all([fetch("assets/boki2d.json", { cache: "no-store" }).then((r) => r.json()), fetch("assets/boki.json").then((r) => r.json()).catch(() => ({}))]).then(([man, roster]) => {
-    const HIDE = roster.grids || []; // working pose grids, not press art: hidden until they have turnarounds (tools/boki/build.py)
-    const ids = Object.keys(man).filter((id) => !HIDE.includes(id));
-    if (!ids.length) return;
-    ids.sort((a, b) => (man[a].name || a).localeCompare(man[b].name || b)).forEach((id) => {
-      const v = encodeURIComponent(man[id].v || ""), a = document.createElement("a");
-      a.className = "pk-boki"; a.href = `assets/img/boki2d/${id}-2400.webp?v=${v}`; a.target = "_blank";
-      a.innerHTML = `<img src="assets/img/boki2d/${id}-480.webp?v=${v}" srcset="assets/img/boki2d/${id}-480.webp?v=${v} 480w, assets/img/boki2d/${id}-1200.webp?v=${v} 1200w" sizes="(max-width: 600px) 50vw, 300px" alt="" loading="lazy"><span class="pk-cap"></span>`;
-      a.querySelector("img").alt = (man[id].name || id) + " art"; a.querySelector(".pk-cap").textContent = man[id].name || id;
+  fetch("assets/boki.json").then((r) => r.json()).then((data) => {
+    const list = (data.revealed || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+    if (!list.length) return;
+    list.forEach((b) => {
+      const a = document.createElement("a"), src = (w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
+      a.className = "pk-boki"; a.href = src(960); a.target = "_blank";
+      a.innerHTML = `<img src="${src(480)}" alt="" loading="lazy"><span class="pk-cap"></span>`;
+      a.querySelector("img").alt = b.name + " art"; a.querySelector(".pk-cap").textContent = b.name;
       grid.append(a);
     });
     grid.hidden = false; document.getElementById("pk-soon").hidden = true;
