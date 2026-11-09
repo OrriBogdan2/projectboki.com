@@ -1083,6 +1083,32 @@ async function ownerUnlock(k){
   document.dispatchEvent(new Event("bokidex-unlocked"));
 })();
 </script>
+<script>
+/* Swipe left / right on an open entry to go to the next / previous Boki (and between pictures when one is zoomed).
+   Added from the projectboki.com site repo: keep this block in exports. Horizontal scrollers, the 3D viewer and form
+   fields keep their own swipes. */
+(function(){
+  let x0=0,y0=0,t0=0,ok=false;
+  const scroller=el=>{for(let n=el;n&&n!==document.body;n=n.parentElement){if(n.scrollWidth>n.clientWidth+4){const o=getComputedStyle(n).overflowX;if(o==="auto"||o==="scroll")return true}}return false};
+  addEventListener("touchstart",e=>{
+    if(e.touches.length!==1){ok=false;return}
+    const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();
+    const zoom=!$("#zoom").hidden, el=e.target;
+    ok=zoom||(view==="dex"&&!!sel&&!viewerOpen()&&!!el.closest("#detail")&&!scroller(el)&&!el.closest("input,textarea,select,canvas,model-viewer,[data-noswipe]"));
+  },{passive:true});
+  addEventListener("touchend",e=>{
+    if(!ok)return; ok=false;
+    const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    if(Date.now()-t0>800||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.6)return;
+    const d=dx<0?1:-1;
+    if(!$("#zoom").hidden){if(zoomList.length>1){zoomI=(zoomI+d+zoomList.length)%zoomList.length;$("#zoom-img").src=zoomList[zoomI]}return}
+    const det=$("#detail"), was=sel;
+    moveSel(d);
+    if(sel===was||!det||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    det.animate([{transform:`translateX(${d*42}px)`,opacity:.35},{transform:"none",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"});
+  },{passive:true});
+})();
+</script>
 <script src="owner.js?v=e97737d5e1"></script>
 </body>
 </html>
