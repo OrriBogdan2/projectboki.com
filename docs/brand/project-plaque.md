@@ -1,6 +1,6 @@
 # The "PROJECT" plaque on the hero logo
 
-Live: **B1**, a plaque cracked in two with ember glowing in the gap (the broken kingdom). Built in HTML and CSS in
+Live: **B1**, a plaque cracked in two with an ember glow along the left piece's broken edge (the broken kingdom). Built in HTML and CSS in
 `index.html` (`.pj` inside `h1.lockup`) and `assets/style.css` (`.pj*`). BOKI itself is `assets/img/wordmark-boki-*.webp`;
 the original `wordmark-*.webp` (with PROJECT baked in) is still used by the press kit.
 
@@ -24,7 +24,7 @@ To switch to B4, change two things:
 2. In `assets/style.css`, the glow on `.pj-gap`:
 
 ```css
-filter: drop-shadow(0 0 6px #5fe3d5) drop-shadow(0 0 16px rgba(200,100,255,.9));
+filter: drop-shadow(0 0 3px #5fe3d5) drop-shadow(0 0 9px rgba(200,100,255,.8));
 ```
 
 Optionally tint the chips to match: `.pj-chip { filter: drop-shadow(0 0 4px rgba(120,220,255,.7)); }`.
