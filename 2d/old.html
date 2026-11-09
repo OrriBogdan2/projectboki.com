@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Boki 2D Art · Project Boki</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="stylesheet" href="/assets/style.css?v=110">
+<style>
+/* Upload room for 2D Boki art. Same password as /3d. Uploads commit straight to the website repo through the
+   GitHub API, so they go live on the next Pages build (about a minute). */
+body { font-size: 16px; }
+.r2 { width: min(1180px, 100% - 32px); margin: 0 auto; padding: 40px 0 80px; }
+.r2 h1 { font-family: "Lilita"; font-size: clamp(34px, 5vw, 52px); line-height: 1; }
+.r2 .lede { margin-top: 8px; color: var(--ink-2); max-width: 62ch; }
+.card { margin-top: 24px; padding: 20px; border-radius: 18px; border: 1px solid var(--line); background: var(--bg-2); }
+.card h2 { font-family: "Lilita"; font-size: 22px; margin-bottom: 6px; }
+.card p { color: var(--ink-2); font-size: 15px; }
+.card a { text-decoration: underline; text-underline-offset: 3px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.row input[type=password], .row input[type=text] { flex: 1 1 260px; min-width: 0; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.2); background: rgba(8,13,24,.6); color: #fff; font: inherit; }
+.row label { font-size: 14px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; }
+.err { margin-top: 10px; color: #ff8c8c; font-weight: 700; font-size: 14px; }
+.ok { color: #9dffb0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-top: 24px; }
+.slot { position: relative; display: grid; grid-template-rows: auto auto auto; gap: 8px; padding: 10px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg-2); transition: border-color .2s, background .2s; }
+.slot.drag { border-color: #9a7dff; background: #151a33; }
+.slot .pic { aspect-ratio: 1; border-radius: 12px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 45%, rgba(154,125,255,.18), transparent 65%), #0a101c; }
+.slot .pic img { width: 100%; height: 100%; object-fit: contain; }
+.slot .pic .none { font-size: 13px; font-weight: 700; color: var(--ink-3); text-align: center; padding: 10px; }
+.slot .ref { position: absolute; right: 14px; top: 14px; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: #0a101c; object-fit: contain; }
+.slot b { font-family: "Lilita"; font-weight: 400; font-size: 18px; line-height: 1.1; }
+.slot .st { font-size: 13px; color: var(--ink-3); min-height: 1.4em; }
+.slot .btn { justify-content: center; }
+.newb { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.newb input { height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.2); background: rgba(8,13,24,.6); color: #fff; font: inherit; font-size: 14px; }
+</style>
+</head>
+<body>
+<main class="r2">
+  <h1>Boki 2D Art</h1>
+  <p class="lede">Drop an image on a Boki to upload it. Each upload is resized and saved to the website, and shows up in the press kit about a minute later.</p>
+
+  <section class="card" id="lock">
+    <h2>Password</h2>
+    <form class="row" id="lf">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Same as the 3D room" required>
+      <button class="btn btn-solid btn-sm" type="submit">Unlock</button>
+      <label><input id="rem" type="checkbox"> Remember on this device</label>
+    </form>
+    <p class="err" id="lerr" hidden></p>
+  </section>
+
+  <div id="room" hidden>
+    <section class="card" id="tok">
+      <h2>GitHub access</h2>
+      <p>Uploads are saved to the site's GitHub repo, so this browser needs a GitHub token once. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token</a> with access to only <b>OrriBogdan2/projectboki.com</b> and the permission <b>Contents: Read and write</b>. Paste it here; it stays in this browser.</p>
+      <form class="row" id="tf">
+        <input id="tk" type="password" autocomplete="off" placeholder="github_pat_…" required>
+        <button class="btn btn-solid btn-sm" type="submit">Save token</button>
+      </form>
+      <p class="err" id="terr" hidden></p>
+    </section>
+    <p class="row" id="tokset" hidden><span class="ok">GitHub token saved.</span> <button class="btn btn-glass btn-sm" type="button" id="tkclear">Forget token</button></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<script>
+(() => {
+const REPO = "OrriBogdan2/projectboki.com", BRANCH = "main", API = "https://api.github.com/repos/" + REPO;
+const DIR = "assets/img/boki2d", MANIFEST = "assets/boki2d.json", SIZES = [480, 1200, 2400];
+const $ = (id) => document.getElementById(id);
+const store = { get: (k) => { try { return localStorage.getItem(k) || sessionStorage.getItem(k); } catch (e) { return null; } },
+  set: (k, v, keep) => { try { (keep ? localStorage : sessionStorage).setItem(k, v); } catch (e) {} },
+  del: (k) => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) {} } };
+
+/* ---- password: the same key file as /3d, so changing that password changes this one too ---- */
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const hex = (buf) => [...new Uint8Array(buf)].map((x) => x.toString(16).padStart(2, "0")).join("");
+async function check(pw) {
+  const k = await (await fetch("/3d/d/key.json", { cache: "no-store" })).json();
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+  const d = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", salt: b64(k.salt), iterations: k.iter, hash: "SHA-256" }, base, 512));
+  return hex(await crypto.subtle.digest("SHA-256", d.slice(32))) === k.check;
+}
+$("lf").addEventListener("submit", async (e) => {
+  e.preventDefault(); $("lerr").hidden = true;
+  try { if (!(await check($("pw").value))) throw 0; store.set("b2d-ok", "1", $("rem").checked); open(); }
+  catch (x) { $("lerr").textContent = "Wrong password."; $("lerr").hidden = false; }
+});
+
+/* ---- GitHub token ---- */
+const token = () => store.get("b2d-token");
+const gh = async (path, opt = {}) => {
+  const r = await fetch(path.startsWith("http") ? path : API + path, { ...opt, headers: { Authorization: "Bearer " + token(), Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(opt.body ? { "Content-Type": "application/json" } : {}) } });
+  if (!r.ok) { const t = await r.text(); const e = new Error(r.status + " " + (JSON.parse(t || "{}").message || t)); e.status = r.status; throw e; }
+  return r.status === 204 ? null : r.json();
+};
+const showTok = () => { $("tok").hidden = !!token(); $("tokset").hidden = !token(); };
+$("tf").addEventListener("submit", async (e) => {
+  e.preventDefault(); $("terr").hidden = true;
+  store.set("b2d-token", $("tk").value.trim(), true);
+  try { const repo = await gh(""); if (!repo.permissions || !repo.permissions.push) throw new Error("This token can't write to the repo. Give it Contents: Read and write."); $("tk").value = ""; showTok(); }
+  catch (x) { store.del("b2d-token"); $("terr").textContent = "That token didn't work: " + x.message; $("terr").hidden = false; }
+});
+$("tkclear").addEventListener("click", () => { store.del("b2d-token"); showTok(); });
+
+/* ---- the Boki list comes from the live site, so new Boki show up here on their own ---- */
+let manifest = {};
+async function list() { // every species on the roster, from the site's Boki file
+  const data = await (await fetch("/assets/boki.json", { cache: "no-store" })).json();
+  return data.all.map((name) => ({ id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), name }));
+}
+const art = (id, w) => `/${DIR}/${id}-${w}.webp?v=${encodeURIComponent((manifest[id] || {}).v || "")}`;
+function slot(b) {
+  const el = document.createElement("div"); el.className = "slot";
+  const has = manifest[b.id];
+  el.innerHTML = `<div class="pic">${has ? `<img alt="" src="${art(b.id, 480)}">` : `<span class="none">No 2D art yet</span>`}</div>
+    ${b.isNew ? "" : `<img class="ref" alt="" title="Current 3D render" src="/assets/img/boki/${b.id}-240.webp" onerror="this.remove()">`}
+    <b></b><span class="st"></span>
+    <label class="btn btn-glass btn-sm">${has ? "Replace" : "Upload"}<input type="file" accept="image/*" hidden></label>`;
+  el.querySelector("b").textContent = b.name;
+  const st = el.querySelector(".st"), input = el.querySelector("input");
+  const go = async (file) => {
+    if (!file || !file.type.startsWith("image/")) { st.textContent = "That isn't an image."; return; }
+    if (!token()) { st.textContent = "Save a GitHub token first."; $("tok").scrollIntoView({ behavior: "smooth" }); return; }
+    try {
+      st.textContent = "Resizing…"; const files = await resize(file, b.id);
+      st.textContent = "Uploading…"; await commit(b, files);
+      const img = el.querySelector(".pic"); img.innerHTML = ""; const i = new Image(); i.src = URL.createObjectURL(files[0].blob); img.append(i);
+      el.querySelector(".btn").firstChild.textContent = "Replace";
+      st.innerHTML = '<span class="ok">Saved. Live in about a minute.</span>';
+    } catch (x) { st.textContent = "Didn't upload: " + x.message; }
+  };
+  input.addEventListener("change", () => { go(input.files[0]); input.value = ""; });
+  el.addEventListener("dragover", (e) => { e.preventDefault(); el.classList.add("drag"); });
+  el.addEventListener("dragleave", () => el.classList.remove("drag"));
+  el.addEventListener("drop", (e) => { e.preventDefault(); el.classList.remove("drag"); go(e.dataTransfer.files[0]); });
+  return el;
+}
+function newSlot() { // a Boki that isn't on the site yet
+  const el = document.createElement("div"); el.className = "slot";
+  el.innerHTML = `<div class="pic"><span class="none">A Boki that isn't on the site yet</span></div><div class="newb"><input placeholder="Name, e.g. Vespyx" maxlength="40"><button class="btn btn-glass btn-sm" type="button">Add</button></div>`;
+  el.querySelector("button").addEventListener("click", () => {
+    const name = el.querySelector("input").value.trim(); if (!name) return;
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    el.before(slot({ id, name, isNew: true })); el.querySelector("input").value = "";
+  });
+  return el;
+}
+
+/* ---- resize in the browser: three WebP sizes, never upscaled ---- */
+const blobOf = (c, q) => new Promise((res) => c.toBlob(res, "image/webp", q));
+async function resize(file, id) {
+  const bmp = await createImageBitmap(file);
+  const out = [];
+  for (const w of SIZES) {
+    const s = Math.min(1, w / bmp.width), c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+    const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await blobOf(c, w === 2400 ? 0.84 : 0.86);
+    if (!blob || blob.type !== "image/webp") throw new Error("this browser can't save WebP. Use Chrome, Edge or Firefox.");
+    out.push({ path: `${DIR}/${id}-${w}.webp`, blob });
+  }
+  return out;
+}
+
+/* ---- one commit per upload: the three images plus the manifest ---- */
+const toB64 = (blob) => new Promise((res) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.readAsDataURL(blob); });
+async function commit(b, files, tries = 2) {
+  const ref = await gh(`/git/ref/heads/${BRANCH}`), head = await gh(`/git/commits/${ref.object.sha}`);
+  let man = {};
+  try { const f = await gh(`/contents/${MANIFEST}?ref=${ref.object.sha}`); man = JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g, ""))))); } catch (x) { if (x.status !== 404) throw x; }
+  man[b.id] = { name: b.name, v: new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "") };
+  const tree = [];
+  for (const f of files) {
+    const blob = await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: await toB64(f.blob), encoding: "base64" }) });
+    tree.push({ path: f.path, mode: "100644", type: "blob", sha: blob.sha });
+  }
+  const order = Object.keys(man).sort().reduce((o, k) => (o[k] = man[k], o), {});
+  tree.push({ path: MANIFEST, mode: "100644", type: "blob", content: JSON.stringify(order, null, 1) + "\n" });
+  const t = await gh("/git/trees", { method: "POST", body: JSON.stringify({ base_tree: head.tree.sha, tree }) });
+  const c = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message: `2D art: ${b.name}`, tree: t.sha, parents: [ref.object.sha] }) });
+  try { await gh(`/git/refs/heads/${BRANCH}`, { method: "PATCH", body: JSON.stringify({ sha: c.sha }) }); }
+  catch (x) { if (tries > 1 && x.status === 422) return commit(b, files, tries - 1); throw x; } // someone pushed meanwhile: redo on top
+  manifest = man;
+}
+
+async function open() {
+  $("lock").hidden = true; $("room").hidden = false; showTok();
+  try { manifest = await (await fetch("/" + MANIFEST, { cache: "no-store" })).json(); } catch (e) { manifest = {}; }
+  const known = await list(), grid = $("grid");
+  known.forEach((b) => grid.append(slot(b)));
+  Object.keys(manifest).filter((id) => !known.some((b) => b.id === id)).forEach((id) => grid.append(slot({ id, name: manifest[id].name || id, isNew: true })));
+  grid.append(newSlot());
+}
+if (store.get("b2d-ok")) open();
+})();
+</script>
+</body>
+</html>
