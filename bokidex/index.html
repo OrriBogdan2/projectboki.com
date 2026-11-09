@@ -445,7 +445,7 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 /* owner 11-09: decision boxes */
 .decide{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .dec{min-height:64px;font-size:18px;font-weight:800;letter-spacing:.02em;border-radius:14px;border:2px solid var(--dc);background:color-mix(in srgb,var(--dc) 14%,transparent);color:var(--dc);cursor:pointer}
-.dec-approve{--dc:#22c55e}.dec-revise{--dc:#eab308}.dec-reject{--dc:#ef4444}
+.decide.d4{grid-template-columns:repeat(4,1fr)}.dec-to2d{--dc:#3b82f6}.dec-approve{--dc:#22c55e}.dec-revise{--dc:#eab308}.dec-reject{--dc:#ef4444}
 .dec.on{background:var(--dc);color:#0b0d12;box-shadow:0 10px 30px -10px var(--dc)}
 .card.locked .dec:not(.on){opacity:.35}
 .card.locked .auto,.card.locked .mid{opacity:.35;filter:grayscale(1);pointer-events:none;user-select:none}
@@ -580,7 +580,8 @@ const curTheme=()=>{const t=document.documentElement.getAttribute("data-theme");
 /* heroDark / heroLight are transparent cutouts made per theme; when the entry has them the one matching the theme wins, then plain hero, then the other variant. */
 function heroOf(e){
   const o=ovl[e.id];
-  if(o?.hero&&o.hero.fresh){if(o.hero.sheet)probe(o.hero.src);return o.hero}
+  if(o?.hero&&o.hero.fresh&&e.heroGen!==o.gen.id){ // baked cutout (bake_approved) of this same gen wins: glow + right backdrop
+   if(o.hero.sheet)probe(o.hero.src);return o.hero}
   const dark=curTheme()==="dark", want=dark?e.heroDark:e.heroLight, other=dark?e.heroLight:e.heroDark;
   if(want)return{src:assetURL(want),cut:true};
   if(e.hero)return{src:assetURL(e.hero),cut:true}; // all dex heroes are transparent cutouts now (hero_site/hero_cut), so the type glow shows
