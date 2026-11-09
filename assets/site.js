@@ -245,6 +245,7 @@ function spinner(box, el) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const MODEL_V = "2026-11-09";
+const ART_V = "2026-11-09f"; // bump when a Hunter splash changes
 const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
@@ -265,7 +266,6 @@ const pick = document.getElementById("h-pick");
 if (pick) {
   const art = document.getElementById("h-art");
   const $ = (id) => document.getElementById(id);
-  const ART_V = "2026-11-09f";
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp?v=${ART_V}`;
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
   let current = 0;
@@ -941,9 +941,7 @@ if (POSTHOG_KEY) {
     if (last) last.focus({ preventScroll: true });
   }
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb && !lb.hidden) close(); });
-  const targets = ".step-media, .pk-grid a, .pk-key"; // the Hunter splash opens only from its expand button
-  const ex = document.getElementById("h-expand");
-  if (ex) ex.addEventListener("click", (e) => { e.stopPropagation(); const img = document.getElementById("h-art"); const src = img && full(img); if (src) open(src, img.alt); });
+  const targets = ".step-media, .pk-grid a, .pk-key, .hm-art"; // the Hunter splash opens from its expand button (the details view), then its art
   document.addEventListener("click", (e) => {
     const t = e.target.closest(targets);
     if (!t || e.target.closest("button, .fig")) return;
@@ -953,6 +951,79 @@ if (POSTHOG_KEY) {
     const img = t.matches("img") ? t : t.querySelector("img");
     open(src, img && img.alt);
   });
+})();
+
+/* ---------- Hunter details: the expand button opens the splash with the Hunter's kit beside it (from the game's
+   archetype files, assets/hunters.json, tools/hunters/build.py). Arrows and keys browse; tap the art for full size. ---------- */
+(function () {
+  const ex = document.getElementById("h-expand"), stage = ex && ex.closest(".stage");
+  if (!ex) return;
+  let box, at = 0, back = null, KIT = null;
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=1").then((r) => r.json()).catch(() => ({})));
+  const keyOf = (k) => k.key || "P";
+  const build = () => {
+    box = document.createElement("div");
+    box.className = "hm"; box.hidden = true;
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Hunter details");
+    box.innerHTML = `<div class="hm-card"><div class="hm-art" title="View full art"><img alt="">
+      <button class="bk-arrow prev" type="button" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="bk-arrow next" type="button" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="hm-txt"><div class="hm-role"></div><h3></h3><div class="hm-title"></div><p class="hm-style"></p><ul class="hm-kit"></ul></div>
+      <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
+    document.body.appendChild(box);
+    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+    box.querySelector(".lb-x").addEventListener("click", close);
+    box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
+    box.querySelector(".next").addEventListener("click", () => fill(at + 1));
+    document.addEventListener("keydown", (e) => {
+      if (box.hidden || document.querySelector(".lb:not([hidden])")) return; // the full-size art closes first
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight") fill(at + 1);
+      else if (e.key === "ArrowLeft") fill(at - 1);
+    });
+  };
+  const fill = (i) => {
+    at = (i + HUNTERS.length) % HUNTERS.length;
+    const [id, name, title, , role] = HUNTERS[at], img = box.querySelector(".hm-art img");
+    img.classList.remove("on");
+    img.onload = () => img.classList.add("on");
+    img.srcset = `assets/img/hunters/${id}-960.webp?v=${ART_V} 960w, assets/img/hunters/${id}-1600.webp?v=${ART_V} 1600w`;
+    img.sizes = "(max-width: 1000px) 100vw, 760px";
+    img.src = `assets/img/hunters/${id}-1600.webp?v=${ART_V}`; img.alt = `${name}, ${title}`;
+    if (img.complete) img.classList.add("on");
+    box.querySelector("h3").textContent = name;
+    box.querySelector(".hm-title").textContent = title;
+    box.querySelector(".hm-role").textContent = role;
+    box.querySelector(".hm-style").textContent = "";
+    box.querySelector(".hm-kit").innerHTML = "";
+    box.querySelector(".hm-card").scrollTop = 0;
+    load().then((all) => {
+      const h = all[id]; if (!h || HUNTERS[at][0] !== id) return;
+      box.style.setProperty("--g", h.color || "#9a7dff");
+      box.querySelector(".hm-style").textContent = h.style;
+      box.querySelector(".hm-kit").innerHTML = h.kit.map((k) =>
+        `<li class="k-${k.kind.toLowerCase()}"><kbd>${esc(keyOf(k))}</kbd><div><b>${esc(k.name)}<small>${esc(k.kind)}</small></b><span>${esc(k.line)}</span></div></li>`).join("");
+    });
+  };
+  const open = () => {
+    if (!box) build();
+    back = document.activeElement;
+    const cur = (stage && stage.dataset.h) || HUNTERS[0][0];
+    fill(Math.max(0, HUNTERS.findIndex((h) => h[0] === cur)));
+    box.hidden = false; document.documentElement.classList.add("hm-open");
+    requestAnimationFrame(() => box.classList.add("show"));
+    box.querySelector(".lb-x").focus({ preventScroll: true });
+    if (window.posthog && posthog.capture) posthog.capture("hunter_details", { hunter: HUNTERS[at][0] });
+  };
+  function close() {
+    box.classList.remove("show"); document.documentElement.classList.remove("hm-open");
+    setTimeout(() => { box.hidden = true; }, 220);
+    if (back) back.focus({ preventScroll: true });
+  }
+  ex.setAttribute("aria-label", "Hunter details and full art");
+  ex.addEventListener("click", (e) => { e.stopPropagation(); open(); });
+  ex.addEventListener("pointerenter", load, { once: true });
 })();
 
 /* ---------- How it works: cards grow in and stack as you scroll ---------- */

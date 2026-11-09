@@ -1,0 +1,78 @@
+{
+ "_": "Short kit lines for Hunters whose game file has no clip.lines yet. Used only where the game has none. Written from each card's text.",
+ "lisette": {
+  "lmb": "Draw and loose. Let go on the flash for a faster draw.",
+  "dash": "Roll, then walk through rocks and walls.",
+  "rmb": "A heavy arrow that pins foes to walls.",
+  "e": "Rain a wall of arrows that slows and burns.",
+  "x": "Three big piercing arrows, no draw needed."
+ },
+ "breaker": {
+  "lmb": "Throw your hammer and call it back, or spin and slam.",
+  "passive": "Knock a foe into a wall or another foe to stun it.",
+  "dash": "A short dash that ends in a spinning smash.",
+  "rmb": "Raise your aegis and block shots from the front.",
+  "e": "Call down a healing zone that ends in a burst.",
+  "x": "Slam the ground and throw every foe in a lane up."
+ },
+ "tarek": {
+  "lmb": "Throw a boulder, or punch every rock in a lane.",
+  "passive": "Punch your own rocks for a shield.",
+  "dash": "Hop from rock to rock, up to three times.",
+  "rmb": "Slam the ground ahead. The centre stuns.",
+  "e": "Raise three rocks to climb, hide behind or punch.",
+  "x": "Raise a long ridge of rocks, even over the abyss."
+ },
+ "grimble": {
+  "lmb": "Seven slugs in a tight fan. Hits from behind hurt more.",
+  "passive": "Knocks and assists stack extra health.",
+  "dash": "A low lunge, or a pounce in the air.",
+  "rmb": "Reach through rock, grab a foe and reel them in, stunned.",
+  "e": "Slam your fist down for a long stun.",
+  "x": "Two waves of brass slugs that block healing."
+ },
+ "kael": {
+  "passive": "Fill Rage to Enrage: more damage, faster cooldowns."
+ },
+ "ryzz": {
+  "lmb": "Finger bolts to full range. Each adds Static.",
+  "passive": "A fourth Static calls down a sky bolt.",
+  "dash": "Zap, or charge a long lane and streak through.",
+  "rmb": "Throw a copper rod that knocks back and stuns on walls.",
+  "e": "Drop a circle. Lightning drags everyone inside.",
+  "x": "Launch up, then strike down anywhere in a wide ring."
+ },
+ "motley": {
+  "lmb": "Orbs through walls. Wait longer for a bigger one.",
+  "passive": "Fill Swell and everything you do grows.",
+  "dash": "Lob a lantern and swap places with everyone it lands on.",
+  "rmb": "Shards that stun, longer the further they flew.",
+  "e": "A bomb that grows until you pop it.",
+  "x": "Open a well that stuns and draws everything in."
+ },
+ "claire": {
+  "lmb": "A barrage of darts that curve onto your target.",
+  "passive": "Chill a foe enough and they Shatter.",
+  "dash": "Skate where you move. Your darts fly straight.",
+  "rmb": "An ice spear that slows, then bursts.",
+  "e": "Slide an ice wall forward, then freeze it.",
+  "x": "Seal yourself in ice, then crack out and stun everyone near."
+ },
+ "pip": {
+  "passive": "Run into downed teammates to carry them."
+ },
+ "sable": {
+  "lmb": "Bolts from alternating hands that land at the cursor.",
+  "passive": "Every hit on the same foe adds a Mark: +10% damage.",
+  "dash": "Cartwheel. Your next shot hits big.",
+  "rmb": "A bola that slows, and stuns two foes it ties.",
+  "e": "Throw a dagger, then blink to it.",
+  "x": "Blades fly at every foe in a ring around you."
+ },
+ "cinder": {
+  "passive": "Your fire sets foes Ablaze, then Flashes them over."
+ },
+ "vex": {
+  "style": "Daze a foe with your Burr Charge, then shred them while it lasts."
+ }
+}

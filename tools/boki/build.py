@@ -55,6 +55,29 @@ else:
 def dex_of(kind, d):
     n = d["name"].lower(); return DEX[kind].get(n) or DEX[kind].get(d["id"])
 _rembg = None
+def seam_split(a):
+    """Two figures side by side that touch (tails overlapping): find the cheapest top-to-bottom path through
+    the middle of the cutout. If it crosses almost nothing and leaves real mass on both sides, keep the left one."""
+    import numpy as np
+    m = a[..., 3] > 40; ys, xs = np.nonzero(m)
+    if not len(xs): return a
+    x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    lo, hi = x0 + int((x1 - x0) * 0.3), x0 + int((x1 - x0) * 0.7)
+    if hi - lo < 3: return a
+    cost = m[y0:y1, lo:hi].astype(np.float32); H, W = cost.shape
+    acc = cost.copy(); back = np.zeros((H, W), np.int8)
+    for y in range(1, H):
+        prev = acc[y - 1]; l = np.r_[np.inf, prev[:-1]]; r = np.r_[prev[1:], np.inf]
+        st = np.stack([l, prev, r]); k = st.argmin(0); acc[y] += st[k, np.arange(W)]; back[y] = k - 1
+    x = int(acc[-1].argmin()); crossed = acc[-1, x]
+    path = np.empty(H, int)
+    for y in range(H - 1, -1, -1): path[y] = x; x = min(W - 1, max(0, x + int(back[y, x])))
+    left = np.zeros_like(m)
+    for y in range(H): left[y0 + y, :lo + path[y]] = True
+    lm, rm = (m & left).sum(), (m & ~left).sum()
+    if crossed > H * 0.1 or min(lm, rm) < m.sum() * 0.3: return a   # one figure (a wingspan, a long tail): leave it
+    a = a.copy(); a[..., 3] = np.where(left, a[..., 3], 0); return a
+
 def cut_portrait(blob, first=False):
     """Cut the Boki off its backdrop. first=True (a turnaround or pose sheet): keep only the first figure, top left."""
     global _rembg
@@ -81,6 +104,7 @@ def cut_portrait(blob, first=False):
                 cut = lo + int(np.argmin(cs[lo:hi])) if hi > lo else None
                 if cut is not None and cs[cut] < cs[x0:x1].max() * 0.08: a[:, cut:, 3] = 0  # only a real gap, not a wide wingspan
             o = Image.fromarray(a, "RGBA")
+        o = Image.fromarray(seam_split(np.asarray(o)), "RGBA")  # two figures still touching (Chandelotl's tails)
     bb = o.getchannel("A").point(lambda v: 255 if v > 40 else 0).getbbox()
     pad = int(max(bb[2] - bb[0], bb[3] - bb[1]) * 0.06)
     c = o.crop((max(0, bb[0] - pad), max(0, bb[1] - pad), min(w, bb[2] + pad), min(h, bb[3] + pad)))

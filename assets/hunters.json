@@ -1,0 +1,506 @@
+{
+ "lisette": {
+  "color": "#e8483e",
+  "style": "Time each bow draw, pin foes to walls with Heavy Shots, and watch hurt rivals through cover.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Longbow",
+    "line": "Draw and loose. Let go on the flash for a faster draw."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Hawk Sense",
+    "line": "Rivals under half health show through cover."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Spirit Walk",
+    "line": "Roll, then walk through rocks and walls."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Heavy Shot",
+    "line": "A heavy arrow that pins foes to walls."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Hail Wall",
+    "line": "Rain a wall of arrows that slows and burns."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Starpiercer",
+    "line": "Three big piercing arrows, no draw needed."
+   }
+  ]
+ },
+ "cinder": {
+  "color": "#ff9a3a",
+  "style": "Soak foes in fire until they blaze, then finish them in the flames.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Torch Lance",
+    "line": "Pour fire from your hand 7m ahead."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Flashover",
+    "line": "Your fire sets foes Ablaze, then Flashes them over."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Soot Ram",
+    "line": "Ram head first into the first foe."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Cinder Shot",
+    "line": "A cinder that slows and spreads the burn."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Furnace Cloak",
+    "line": "A heat blast drags foes in and shields you."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Flue Flight",
+    "line": "Fly, laying a burning lava carpet."
+   }
+  ]
+ },
+ "breaker": {
+  "color": "#8fd0ff",
+  "style": "Block with your aegis, then knock foes into walls with your hammer to stun them.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "War Hammer & Aegis",
+    "line": "Throw your hammer and call it back, or spin and slam."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Guard",
+    "line": "Knock a foe into a wall or another foe to stun it."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "360 Smash",
+    "line": "A short dash that ends in a spinning smash."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Aegis",
+    "line": "Raise your aegis and block shots from the front."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Mending Ground",
+    "line": "Call down a healing zone that ends in a burst."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Faultline",
+    "line": "Slam the ground and throw every foe in a lane up."
+   }
+  ]
+ },
+ "tarek": {
+  "color": "#d9a35b",
+  "style": "Raises rocks to climb and hide behind, then punches them into the enemy.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Rubble Fists",
+    "line": "Throw a boulder, or punch every rock in a lane."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Molten Guard",
+    "line": "Punch your own rocks for a shield."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Rock Hop",
+    "line": "Hop from rock to rock, up to three times."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Quakefall",
+    "line": "Slam the ground ahead. The centre stuns."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Stone Row",
+    "line": "Raise three rocks to climb, hide behind or punch."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Basalt Spine",
+    "line": "Raise a long ridge of rocks, even over the abyss."
+   }
+  ]
+ },
+ "grimble": {
+  "color": "#e0b040",
+  "style": "Hook a foe to your feet, smash them, finish them up close.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Shotgun",
+    "line": "Seven slugs in a tight fan. Hits from behind hurt more."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Salvage",
+    "line": "Knocks and assists stack extra health."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Barge",
+    "line": "A low lunge, or a pounce in the air."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Abyssal Hand",
+    "line": "Reach through rock, grab a foe and reel them in, stunned."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Anchor Drop",
+    "line": "Slam your fist down for a long stun."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Brass Broadside",
+    "line": "Two waves of brass slugs that block healing."
+   }
+  ]
+ },
+ "vex": {
+  "color": "#ff9a5c",
+  "style": "Daze a foe with your Burr Charge, then shred them while it lasts.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Quill Rifle",
+    "line": "Full-auto rifle. Dazed foes take 90% more."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Hot Streak",
+    "line": "Knock a Hunter down and Slipstep comes back."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Slipstep",
+    "line": "Skid or slide, and keep shooting."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Burr Charge",
+    "line": "Fire the charge from your cannon; its blast Dazes."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Longneedle",
+    "line": "Stand still, then fire a beam through walls."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Cinderfall",
+    "line": "Call a burning shell down on the cursor."
+   }
+  ]
+ },
+ "kael": {
+  "color": "#ff8a6a",
+  "style": "Get in, chain them close, and finish the wounded.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Greatsword",
+    "line": "Wide greatsword slashes."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Rage",
+    "line": "Fill Rage to Enrage: more damage, faster cooldowns."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Rampage",
+    "line": "Charge through foes; the tip hits hardest."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Smash",
+    "line": "A heavy slam. Hold to charge it."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Warchain",
+    "line": "Chain a foe or a wall, then haul yourself in."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Gilded Riposte",
+    "line": "Guard, then lunge into a healing cleave."
+   }
+  ]
+ },
+ "ryzz": {
+  "color": "#5fe3c8",
+  "style": "Charge one foe to 4 Static, then Wirerun through them.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Coilcaster",
+    "line": "Finger bolts to full range. Each adds Static."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Static",
+    "line": "A fourth Static calls down a sky bolt."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Wirerun",
+    "line": "Zap, or charge a long lane and streak through."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Storm Rod",
+    "line": "Throw a copper rod that knocks back and stuns on walls."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Skycall",
+    "line": "Drop a circle. Lightning drags everyone inside."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Kitefall",
+    "line": "Launch up, then strike down anywhere in a wide ring."
+   }
+  ]
+ },
+ "motley": {
+  "color": "#7fe0d0",
+  "style": "Stuns from range, drops a growing bomb on the stunned, and trades places to set it up.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Tether Lantern",
+    "line": "Orbs through walls. Wait longer for a bigger one."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Swell",
+    "line": "Fill Swell and everything you do grows."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Lantern Trade",
+    "line": "Lob a lantern and swap places with everyone it lands on."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Shard Snap",
+    "line": "Shards that stun, longer the further they flew."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Brimseed",
+    "line": "A bomb that grows until you pop it."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Nightwell",
+    "line": "Open a well that stuns and draws everything in."
+   }
+  ]
+ },
+ "claire": {
+  "color": "#5fd6c4",
+  "style": "Homing darts, a freezing spear and a sliding ice wall.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Hoar Fan",
+    "line": "A barrage of darts that curve onto your target."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Hoarfrost",
+    "line": "Chill a foe enough and they Shatter."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Skate",
+    "line": "Skate where you move. Your darts fly straight."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Ice Spear",
+    "line": "An ice spear that slows, then bursts."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Rink Wall",
+    "line": "Slide an ice wall forward, then freeze it."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Rimelock",
+    "line": "Seal yourself in ice, then crack out and stun everyone near."
+   }
+  ]
+ },
+ "pip": {
+  "color": "#ffc46a",
+  "style": "Heals and carries the downed, roots whoever chases them.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Ember Cast",
+    "line": "Embers from both hands mark foes."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Carrier",
+    "line": "Run into downed teammates to carry them."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Relay Step",
+    "line": "A quick hop, a long glide in the air."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Burrseed",
+    "line": "A seed that roots its target."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Hearthlight",
+    "line": "A healing ring for you and your team."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Hearth Call",
+    "line": "Tether a teammate and heal them as you go."
+   }
+  ]
+ },
+ "sable": {
+  "color": "#c9a0ff",
+  "style": "Stay on one foe, cartwheel, and land the big shot.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Arc Shots",
+    "line": "Bolts from alternating hands that land at the cursor."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Marks",
+    "line": "Every hit on the same foe adds a Mark: +10% damage."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Vault",
+    "line": "Cartwheel. Your next shot hits big."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Bola",
+    "line": "A bola that slows, and stuns two foes it ties."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Shadow Knife",
+    "line": "Throw a dagger, then blink to it."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Encore",
+    "line": "Blades fly at every foe in a ring around you."
+   }
+  ]
+ }
+}
