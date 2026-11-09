@@ -22,6 +22,9 @@
     ".bxo-st{font-size:.85rem;font-weight:700;min-height:1.2em}.bxo-st.ok{color:#2e9e5b}.bxo-st.er{color:#cf4444}.bxo-empty{padding:40px 0;text-align:center;color:var(--mute,#666)}" +
     ".bxo-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}" +
     ".bxo-modal form{background:var(--panel,#fff);color:var(--ink,#111);border-radius:16px;padding:20px;width:min(340px,100%);display:grid;gap:10px;font:15px system-ui,sans-serif}" +
+    ".bxo-ctx{display:grid;gap:6px;border-top:1px solid var(--line,#ddd);padding-top:8px}.bxo-cmp{display:flex;gap:8px;overflow-x:auto}" +
+    ".bxo-fig{margin:0;flex:0 0 auto;width:96px;text-align:center;font-size:12px;color:var(--muted,#777)}.bxo-fig img{width:96px;height:96px;object-fit:contain;border-radius:10px;border:3px solid transparent;background:var(--bg,#f3f3f3)}" +
+    ".bxo-fig img.z{position:fixed;inset:5vh 5vw;width:90vw;height:90vh;z-index:95;background:#000c}.s-cur img{border-color:#2e6fdb}.s-ap img{border-color:#2e9d4f}.s-redo img{border-color:#d89a1c}.s-rej img{border-color:#c33}" +
     ".bxo-modal input{height:44px;border-radius:10px;border:1px solid var(--line,#ccc);padding:0 12px;font:inherit;background:var(--bg,#fff);color:inherit}.bxo-modal button{height:42px;border-radius:10px;border:0;background:#2e6fdb;color:#fff;font:700 1rem system-ui}";
   function h(tag, props, kids) {
     var e = document.createElement(tag), k;
@@ -68,6 +71,38 @@
     return pend.concat(appr);
   }
   function label(r) { return (r.decision === "approve" ? "Approved" : r.decision === "reject" ? "Rejected" : r.decision === "redo" ? "Redo" : "Rated") + " " + (+r.score).toFixed(1); }
+  /* owner 11-09: same context as the claude.ai Edit Room: current dex art, other versions of this name, evo line */
+  function slugOf(n) { return String(n || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+  function dexEntry(name) {
+    var D = window.BKX && window.BKX.data(), j = D && D.dex; if (!j) return null;
+    var es = Array.isArray(j) ? j : (j.entries || []), al = j.aliases || {}, k = String(name || "").toLowerCase().trim();
+    var id = al[k] || al[slugOf(k)] || al[slugOf(k).replace(/-/g, "")]; if (!id) return null;
+    var by = {}; es.forEach(function (e) { by[e.id] = e; }); return { e: by[id], by: by };
+  }
+  function fig(src, cls, cap) {
+    var im = h("img", { alt: cap, loading: "lazy" }), f = h("figure", { class: "bxo-fig " + (cls || "") }, [im, h("figcaption", { text: cap })]);
+    if (src) window.BKX.blob(src).then(function (u) { im.src = u; }).catch(function () {}); im.onclick = function () { im.classList.toggle("z"); };
+    return f;
+  }
+  function ctx(g) {
+    var box = h("div", { class: "bxo-ctx" }), x = dexEntry(g.name), e = x && x.e;
+    if (e && e.hero) { box.appendChild(h("div", { class: "bxo-meta", text: "In the Bokidex now" })); box.appendChild(h("div", { class: "bxo-cmp" }, [fig(e.hero, "", e.name || e.id)])); }
+    var sib = gensAll().filter(function (o) { return o.id !== g.id && (o.name || "") === (g.name || "") && (o.kind || "") === (g.kind || ""); });
+    if (sib.some(function (o) { return o.status === "approved" || (ratings[o.id] && ratings[o.id].decision === "approve"); }))
+      box.appendChild(h("div", { class: "bxo-st er", text: "Another version of this is already approved." }));
+    if (sib.length) {
+      box.appendChild(h("div", { class: "bxo-meta", text: "Other versions" }));
+      box.appendChild(h("div", { class: "bxo-cmp" }, sib.slice(0, 8).map(function (o) {
+        var r = ratings[o.id], st = r ? r.decision : o.status, cls = st === "approve" || st === "approved" ? "s-ap" : st === "redo" ? "s-redo" : st === "reject" || st === "rejected" ? "s-rej" : "";
+        return fig((o.images || [])[0], cls, (o.attempt ? "#" + o.attempt + " " : "") + (st || "pending"));
+      })));
+    }
+    if (e && e.chain && e.chain.length > 1) {
+      box.appendChild(h("div", { class: "bxo-meta", text: "Evolution line" }));
+      box.appendChild(h("div", { class: "bxo-cmp" }, e.chain.map(function (i) { var c = x.by[i]; return c ? fig(c.hero, c.id === e.id ? "s-cur" : "", (c.name || c.id) + (c.id === e.id ? " (this)" : "")) : null; })));
+    }
+    return box.childNodes.length ? box : null;
+  }
   function card(g) {
     var r = ratings[g.id], imgs = h("div", { class: "bxo-imgs" }), sc = h("span", { class: "bxo-sc" }), st = h("div", { class: "bxo-st" });
     (g.images || []).concat(g.sheet ? [g.sheet] : []).forEach(function (p) {
@@ -93,7 +128,7 @@
           }, function () { all.forEach(function (x) { x.disabled = false; }); st.className = "bxo-st er"; st.textContent = "Not saved: no connection."; });
       }; return bt;
     });
-    var kids = [h("div", { class: "bxo-meta", text: meta }), imgs];
+    var kids = [h("div", { class: "bxo-meta", text: meta }), imgs, ctx(g)];
     if (g.cpu_reason) kids.push(h("div", { class: "bxo-meta", text: String(g.cpu_reason).slice(0, 400) }));
     kids.push(h("div", { class: "bxo-row" }, [rg, sc]), note, h("div", { class: "bxo-act" }, btns), st);
     return h("div", { class: "bxo-card" }, kids);
