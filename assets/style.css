@@ -786,7 +786,8 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 #hunters.scene .h-ask { position: absolute; inset: 0; z-index: 5; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 0 .26em; margin: 0; padding: 0 6%;
   pointer-events: none; visibility: hidden; font-family: "Lilita"; font-size: clamp(40px, 6.4vw, 108px); line-height: 1.02; text-align: center; color: #fff; text-shadow: 0 6px 40px rgba(0,0,0,.6); }
 #hunters.scene .h-ask span { display: inline-block; opacity: 0; will-change: transform, opacity; }
-#hunters.scene .h-ask .sk { opacity: 1; display: inline-flex; gap: 0 .26em; }
-#hunters.scene .h-ask .sk span { background: linear-gradient(100deg, #ffd29a 0%, #ff9fb4 45%, #c9a2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+#hunters.scene .h-ask .sk { opacity: 1; display: inline-flex; gap: 0 .22em; }
+#hunters.scene .h-ask .sk span:first-child { background-image: linear-gradient(100deg, #ffd29a 0%, #ffb4a8 100%); } /* one sweep across both words */
+#hunters.scene .h-ask .sk span { background: linear-gradient(100deg, #ff9fb4 0%, #c9a2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
   filter: drop-shadow(0 0 24px rgba(255,150,180,.35)); }
 @media (max-width: 720px) { #hunters.scene .h-ask { font-size: clamp(38px, 11vw, 54px); } }
