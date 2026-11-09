@@ -120,11 +120,11 @@ html.modal-open body{overflow:hidden}
 #detail.open{display:flex;align-items:center;justify-content:center;padding:max(18px,env(safe-area-inset-top,0px)) 0 max(18px,env(safe-area-inset-bottom,0px))}
 .mback{position:absolute;inset:0;background:var(--scrim);backdrop-filter:blur(16px) saturate(1.1);-webkit-backdrop-filter:blur(16px) saturate(1.1)}
 .mwrap{position:relative;width:min(1120px,100%);padding:0 30px;max-height:100%}
-.msheet{position:relative;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);background:var(--panel);border:1px solid var(--line);border-radius:30px;overflow:hidden;height:min(88vh,820px);box-shadow:0 40px 110px -30px rgba(0,0,0,.55)}
+.msheet{position:relative;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);background:var(--panel);border:1px solid var(--line);border-radius:30px;overflow:hidden;height:min(90vh,880px);box-shadow:0 40px 110px -30px rgba(0,0,0,.55)}
 .mart{position:relative;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:30px;min-width:0;background:var(--soft)}
-.mart .herobtn{max-width:520px;width:100%;margin:0 auto}
+.mart .herobtn{max-width:min(100%,calc(90vh - 140px),760px);width:100%;margin:0 auto}
 .mart .hero.sil svg{fill:color-mix(in srgb,var(--ty) 26%,var(--sil))}
-.minfo{overflow:auto;padding:28px 34px 24px;min-width:0;overscroll-behavior:contain}
+.minfo{overflow:auto;padding:40px 42px 28px;min-width:0;overscroll-behavior:contain}
 .mfit{transform-origin:0 0}
 .mclose{position:absolute;top:16px;right:16px;z-index:3;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;display:grid;place-items:center;padding:0}
 .mclose svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;fill:none}
@@ -141,11 +141,11 @@ html.modal-open body{overflow:hidden}
 .dtabs{display:flex;gap:6px;margin:16px 0 4px}
 .dtabs a{font:600 .8rem var(--body);text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px 14px}
 .dtabs a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.mtabs{display:flex;gap:2px;margin:14px 0 4px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
-.mtabs button{font:600 .84rem var(--body);background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);padding:8px 11px;cursor:pointer;margin-bottom:-1px;white-space:nowrap}
+.mtabs{display:flex;gap:2px;margin:18px 0 4px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.mtabs button{font:600 .92rem var(--body);background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);padding:10px 13px;cursor:pointer;margin-bottom:-1px;white-space:nowrap}
 .mtabs button:hover{color:var(--ink)}
 .mtabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ty)}
-.blurb{font-size:.97rem;line-height:1.55;margin:12px 0 6px}
+.blurb{font-size:1.2rem;line-height:1.55;margin:20px 0 4px}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row dense;gap:8px;margin:12px 0}
 .facts>div{background:var(--soft);border-radius:14px;padding:8px 12px;min-width:0}
 .facts .wide{grid-column:1/-1}
@@ -205,13 +205,13 @@ body.v-dex header{position:static}
 .ftog span{overflow-wrap:anywhere}
 .panel{background:var(--bg);border-radius:16px;padding:12px 14px;margin:10px 0}
 .panel>.lbl:first-child{display:block;margin-bottom:8px}
-.panel p{margin:6px 0;font-size:.9rem}
+.panel p{margin:6px 0;font-size:.95rem;line-height:1.5}
 .mut{color:var(--mute);font-size:.8rem}
 .quote{border-left:3px solid var(--ty);padding:1px 0 1px 10px;margin:6px 0;font-size:.88rem;color:var(--mute)}
 .ab2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ab2>div{background:var(--panel);border-radius:12px;padding:9px 11px;min-width:0}
 .ab2 b{font:800 1rem var(--display)}
-.ab2 p{margin:3px 0 0;font-size:.84rem;line-height:1.45}
+.ab2 p{margin:3px 0 0;font-size:.9rem;line-height:1.45}
 .ab2 .one{grid-column:1/-1}
 .tag{display:inline-block;font:700 .62rem var(--mono);letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 8px;margin-right:6px;background:var(--accent-soft);color:var(--accent);vertical-align:2px}
 .tag.alt{background:var(--moss-soft);color:var(--moss)}
@@ -504,10 +504,26 @@ header{padding-block:16px 4px}header::after{display:none}
 .mkick{font:600 .7rem var(--mono);letter-spacing:.16em;color:var(--mute);display:flex;align-items:center;gap:10px;flex-wrap:wrap;line-height:1.4}
 .mkick::before{content:"";width:16px;height:2px;border-radius:2px;background:var(--ty);flex:none}
 .mkick .mnum{color:var(--ty);font-weight:700}
-.mhead{margin-top:8px;gap:8px 14px}
-.mh{font-size:clamp(2.2rem,3.9vw,3.1rem);letter-spacing:-.01em;text-wrap:balance;background:linear-gradient(180deg,var(--ink) 45%,color-mix(in srgb,var(--ink) 68%,var(--ty)));-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.06em;margin-bottom:-.06em}
+.mhead{margin-top:10px;gap:10px 16px}
+.mhead .chip{font-size:.82rem;padding:6px 15px 6px 11px}
+.mh{font-size:clamp(2.8rem,4.8vw,4rem);letter-spacing:-.01em;text-wrap:balance;background:linear-gradient(180deg,var(--ink) 45%,color-mix(in srgb,var(--ink) 68%,var(--ty)));-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.06em;margin-bottom:-.06em}
 .mhead .chip{box-shadow:0 8px 20px -12px color-mix(in srgb,var(--ty) 90%,transparent)}
-.mline{width:64px;height:3px;margin:12px 0 0;border-radius:3px;background:linear-gradient(90deg,var(--ty),color-mix(in srgb,var(--ty) 30%,transparent))}
+.mline{width:64px;height:3px;margin:14px 0 0;border-radius:3px;background:linear-gradient(90deg,var(--ty),color-mix(in srgb,var(--ty) 30%,transparent))}
+.mkick{font-size:.76rem;letter-spacing:.13em}.mkick span{color:var(--mute)}.mkick span::before{content:"·";margin-right:10px;color:var(--line)}
+/* key facts: chips, label over value */
+.kchips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.kc{display:inline-flex;flex-direction:column;gap:1px;padding:8px 14px 9px;border-radius:14px;background:color-mix(in srgb,var(--ty) 7%,var(--soft));border:1px solid color-mix(in srgb,var(--ty) 18%,var(--line));min-width:0;max-width:100%}
+.kc small{font:700 .64rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.kc b{font:600 1.05rem var(--body);overflow-wrap:anywhere}
+.blurb.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.readmore{background:none;border:0;padding:0;margin:0 0 6px;font:700 .86rem var(--body);color:var(--accent);cursor:pointer}
+.readmore:hover{text-decoration:underline}
+details.qk{margin:12px 0 0;border-top:1px solid var(--line);padding-top:10px}
+details.qk summary{cursor:pointer;font:700 .9rem var(--body);color:var(--accent);list-style:none;display:flex;align-items:center;gap:8px}
+details.qk summary::-webkit-details-marker{display:none}
+details.qk summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;rotate:-45deg;translate:0 -1px;transition:rotate .2s}
+details.qk[open] summary::before{rotate:45deg;translate:0 -2px}
+details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 /* motion */
 @keyframes hfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes spin{to{transform:rotate(1turn)}}
@@ -544,11 +560,14 @@ header{padding-block:16px 4px}header::after{display:none}
 }
 @media (prefers-reduced-motion:reduce){.mart .herobtn,.aura i,.wm,.mart .herobtn .hero img{transition:none}}
 @media (max-width:759px){
-  .mart{padding:max(18px,env(safe-area-inset-top,0px)) 56px 14px;gap:10px}
-  .mart .herobtn{max-width:min(60vw,23vh)}
+  .mart{padding:max(14px,env(safe-area-inset-top,0px)) 24px 12px;gap:10px}
+  .mart .herobtn{max-width:min(76vw,38vh)}
+  .minfo{padding:14px 20px calc(68px + env(safe-area-inset-bottom,0px))}
+  .blurb{font-size:1.04rem}.kchips{gap:7px}.kc{padding:7px 12px 8px}.kc b{font-size:.95rem}
+  .mhead .chip{font-size:.76rem}.mtabs button{font-size:.88rem;padding:9px 11px}
   .wm{font-size:5.4rem;right:auto;left:-.02em;top:-.08em;bottom:auto}
   .aura .a1{top:50%}.aura .ring{width:min(96%,320px);top:50%}
-  .mkick{font-size:.64rem}.mh{font-size:2rem}.mline{margin-top:10px}
+  .mkick{font-size:.7rem;gap:8px}.mkick::before{display:none}.mkick span::before{margin-right:8px}.mh{font-size:2.4rem}.mline{margin-top:10px}
 }
 </style>
 
@@ -786,8 +805,7 @@ function extrasHTML(v){
   if(items.length>1)h+=`<span class="lbl" style="display:block;margin:10px 0 6px">Gallery</span><div class="gal">${items.map(([u,l])=>`<figure><img src="${esc(P(u))}" alt="${esc(v.name)} ${esc(l)}" loading="lazy" data-zoom><figcaption>${esc(l)}</figcaption></figure>`).join("")}</div>`;
   const ap=gens.filter(g=>g.status==="approved"&&formIdForName(g.name)===v.id).sort((a,b)=>(b.created||0)-(a.created||0))[0], pend=gens.some(g=>formIdForName(g.name)===v.id&&g.status!=="approved"&&g.status!=="redo");
   const art=ap?"Art approved "+dayEST(ap.created):heroOf(v)?"Art on file":"Art not drawn yet", mod=v.glb?"3D model ready":v.has3d?"3D model in progress":"No 3D model yet";
-  h+=`<p style="margin-top:10px"><span class="lbl">Status</span><br>${art} · ${mod}${pend?" · a new version is in review":""}</p>`;
-  return panel("More",h);
+  return h?panel("More",h):'<p class="mut">Nothing more here yet.</p>';
 }
 /* ---- facts: ranges from dex/meta.json (optional), metric first with imperial in small text ---- */
 const nr=(a,b,f)=>{const x=f(a),y=f(b);return x===y?String(x):x+"–"+y};
@@ -796,25 +814,31 @@ function hFmt(r){const[a,b]=r,ft=x=>{const i=Math.round(x/.0254);return Math.flo
   return[b<1?nr(a*100,b*100,f0)+" cm":nr(a,b,x=>+x.toFixed(2))+" m", b<.9?nr(a/.0254,b/.0254,f0)+" in":ft(a)+"–"+ft(b)]}
 function wFmt(r){const[a,b]=r;return[nr(a,b,f1)+" kg",nr(a*2.20462,b*2.20462,f1)+" lb"]}
 const rng=(r,fmt)=>Array.isArray(r)&&r.length===2&&r.every(Number.isFinite)?fmt(r):null;
-const cellR=(l,p)=>p?`<div><dt>${l}</dt><dd>${esc(p[0])}<small>${esc(p[1])}</small></dd></div>`:"";
-const cell=(l,t,w)=>t?`<div${w?` style="grid-column:span ${w===1?3:w}"`:""}><dt>${l}</dt><dd>${t}</dd></div>`:"";
 function lineHTML(e){
   if(!(e.chain&&e.chain.length>1))return"";
   return e.chain.map(i=>byId[i]).filter(Boolean).map(x=>x.id===e.id?`<b>${esc(nodeName(x))}</b>`:`<a href="${L_(x.id)}" data-go>${esc(nodeName(x))}</a>`).join('<span class="sep">›</span>');
 }
+/* 11-09 rework: a few key facts as chips (label over value), not a wall of boxes. Imperial rides along in the title. */
+const kc=(l,t,sub)=>t?`<span class="kc"${sub?` title="${esc(sub)}"`:""}><small>${l}</small><b>${t}</b></span>`:"";
 function factsHTML(v,e){
-  const d=v.d||{}, m=metaOf(v), cells=[];
+  const d=v.d||{}, m=metaOf(v), out=[];
   const h=m&&rng(m.height,hFmt), w=m&&rng(m.weight,wFmt);
-  if(h)cells.push(cellR("Height",h)); else if(v.size)cells.push(cell("Height",esc(v.size)));
-  if(w)cells.push(cellR("Weight",w)); else if(v.weight)cells.push(cell("Weight",esc(v.weight)));
-  if(m?.size)cells.push(cell("Size class",esc(m.size)));
-  if(d.role)cells.push(cell("Role",esc(d.role)));
-  if(m?.habitat||v.habitat)cells.push(cell("Habitat",esc(m?.habitat||v.habitat),2));
-  if(d.theme)cells.push(cell("Theme",esc(cap1(d.theme))));
-  if(d.group)cells.push(cell("Group",esc(d.group)));
-  {const gt=d.sexNote||SEXTXT[d.sex];if(gt)cells.push(cell("Gender",esc(gt),1));}
-  if(d.quirk)cells.push(cell("Quirk",esc(d.quirk),2));
-  return`<dl class="facts">${cells.join("")}</dl>${(h||w||v.size)?'<p class="mut" style="margin:-4px 0 8px;font-size:.78rem">Each one rolls its own size inside these ranges, so no two are exactly alike.</p>':""}`;
+  out.push(h?kc("Height",esc(h[0]),h[1]):kc("Height",esc(v.size||"")));
+  out.push(w?kc("Weight",esc(w[0]),w[1]):kc("Weight",esc(v.weight||"")));
+  out.push(kc("Size",esc(m?.size||d.gameSize&&cap1(d.gameSize)||"")));
+  out.push(kc("Role",esc(d.role||"")));
+  out.push(kc("Habitat",esc(m?.habitat||v.habitat||"")));
+  out.push(kc("Group",esc(d.group||"")));
+  {const gt=d.sexNote||SEXTXT[d.sex];if(gt)out.push(kc("Gender",esc(gt)));}
+  const chips=out.filter(Boolean);
+  return chips.length?`<div class="kchips">${chips.join("")}</div>`:"";
+}
+/* Public text never carries production notes. Design notes (entrySource "design") lose any sentence that reads like one; the owner sees the raw text. */
+const DEVNOTE=/\b(locked|redo|approved|pending|wip|todo|placeholder|in review|re-?do)\b/i;
+function publicText(t,v){
+  t=String(t||"").trim(); if(!t)return t;
+  const parts=t.split(/(?<=[.!?])\s+/).filter(x=>!DEVNOTE.test(x));
+  return parts.join(" ");
 }
 const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["vari","Variants"],["more","More"]];
 const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):true);
@@ -824,14 +848,16 @@ function tabBody(v,e,d){
   if(mtab==="evolve")return evoHTML(e);
   if(mtab==="vari")return mutHTML(v)||'<p class="mut">No variants written for this one yet.</p>';
   if(mtab==="more")return extrasHTML(v);
-  return`<p class="blurb">${esc(d.lore||v.entry||"")}</p>${d.voice?`<p class="quote">Its voice: ${esc(d.voice)}.</p>`:""}${d.temper?`<p class="quote">Egg temper: ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""}${factsHTML(v,e)}`;
+  const lore=publicText(d.lore||v.entry,v), long=lore.length>170;
+  const more=[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
+  return`${factsHTML(v,e)}${lore?`<p class="blurb${long?" clamp":""}">${esc(lore)}</p>${long?'<button type="button" class="readmore" data-more>Read all</button>':""}`:""}${more?`<details class="qk"${matchMedia("(min-width:760px)").matches?" open":""}><summary>Quirk &amp; personality</summary>${more}</details>`:""}`;
 }
 const CHEV=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
-let dsig="", wasOpen=false;
+let dsig="", wasOpen=false, dkey="";
 function renderDetail(){
   const el=$("#detail"), e=sel?byId[sel]:null, open=!!e;
   el.classList.toggle("open",open); document.documentElement.classList.toggle("modal-open",open);
-  if(!e){el.innerHTML="";dsig="";if(wasOpen){wasOpen=false;const c=lastSel&&$(`.dcard[data-id="${CSS.escape(lastSel)}"]`);c?.focus?.({preventScroll:true})}return}
+  if(!e){el.innerHTML="";dsig="";dkey="";if(wasOpen){wasOpen=false;const c=lastSel&&$(`.dcard[data-id="${CSS.escape(lastSel)}"]`);c?.focus?.({preventScroll:true})}return}
   if(fi>=(e.forms?e.forms.length:1))fi=0;
   const v=fv(e,fi), d=v.d||{}, un=e.unknown, m=metaOf(v), TB=tabsFor(v);
   if(!TB.some(t=>t[0]===mtab))mtab="about";
@@ -841,19 +867,26 @@ function renderDetail(){
   const o=ovl[v.id], vt=viewerTabs(v);
   const tog=e.forms?`<div class="ftog" role="group" aria-label="Alternate forms">${e.forms.map((f,k)=>`<a href="${L_(f.id)}${sfx}" data-go aria-current="${k===fi}" style="${pTy(f)}">${heroHTML(fv(e,k),f.name)}<span>${esc(f.name)}</span></a>`).join("")}</div>`:"";
   const cat=un?"":(m?.category||v.category||"");
-  const kick=`#${pad(e.num)}${cat?" · "+esc(cat):""}${e.stages?` · Stage ${e.stage} of ${e.stages}`:""}${e.forms?` · one of ${e.forms.length} forms`:""}`;
+  const kick=`<b class="mnum">#${pad(e.num)}</b>${cat?`<span>${esc(cat)}</span>`:""}${e.stages?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}${e.forms?`<span>${e.forms.length} forms</span>`:""}`;
+  const ty2=typesOf(v), g2=`--g2:var(--g-${slugOf(ty2[1]||ty2[0]||"wild")})`;
+  const stage=`<div class="aura" aria-hidden="true" style="${g2}"><i class="a1"></i><i class="a2"></i><i class="ring"></i></div><div class="wm" aria-hidden="true">${pad(e.num)}</div>`;
   const tabs=un?"":`<div class="mtabs" role="tablist" aria-label="Entry sections">${TB.map(([k,l])=>`<button type="button" role="tab" data-mtab="${k}" aria-selected="${k===mtab}">${l}</button>`).join("")}</div>`;
-  const body=un?`<p class="blurb">${esc(e.entry||"")}</p>`:tabBody(v,e,d);
+  const body=un?`<p class="blurb">${esc(publicText(e.entry,e))}</p>`:tabBody(v,e,d);
   const sig=sel+"/"+fi+"/"+tab+"/"+mtab, prev=el.querySelector(".minfo"), keep=dsig===sig&&prev?prev.scrollTop:0;
   el.classList.toggle("enter",!wasOpen);
+  {const key=sel+"/"+fi, swap=wasOpen&&dkey!==key, oldId=dkey.split("/")[0];
+   el.classList.toggle("swap",swap);
+   if(swap)el.dataset.dir=oldId===sel?"flip":(L.findIndex(x=>x.id===oldId)>i?"prev":"next"); else el.removeAttribute("data-dir");
+   dkey=key;}
   el.innerHTML=`<div class="mback" data-close></div><div class="mwrap">
    <div class="msheet">
-    <div class="mart"><button class="herobtn" type="button" id="herobtn" ${vt.length?"":"disabled"} aria-label="${vt.length?"Inspect "+esc(v.name)+" in 3D or turnaround":esc(v.name)+" hero"}">${heroHTML(v,v.name)}${vt.length?`<span class="go">${vt.map(x=>x.label).join(" · ")}</span>`:""}</button>${tog}</div>
+    <div class="mart">${stage}<button class="herobtn" type="button" id="herobtn" ${vt.length?"":"disabled"} aria-label="${vt.length?"Inspect "+esc(v.name)+" in 3D or turnaround":esc(v.name)+" hero"}">${heroHTML(v,v.name)}${vt.length?`<span class="go">${vt.map(x=>x.label).join(" · ")}</span>`:""}</button>${tog}</div>
     <div class="minfo" tabindex="0">
      <div class="mfit">
      <div class="mkick">${kick}</div>
      <div class="mhead"><h2 class="mh">${un?"???":esc(v.name)}</h2><div class="chips mtypes">${chips(v)}</div></div>
-     ${o?`<span class="appr">approved ${esc(o.date)}</span>`:""}
+     <div class="mline" aria-hidden="true"></div>
+     
      ${tabs}${body}
      </div>
     </div>
@@ -870,11 +903,18 @@ function renderDetail(){
 function fitDetail(){
   const mi=document.querySelector("#detail .minfo"), f=mi?.querySelector(".mfit"); if(!f)return;
   f.style.zoom=""; let z=1;
-  while(mi.scrollHeight-mi.clientHeight>1&&z>0.73){z=Math.round((z-0.04)*100)/100;f.style.zoom=z}
+  while(mi.scrollHeight-mi.clientHeight>1&&z>0.86){z=Math.round((z-0.04)*100)/100;f.style.zoom=z}
 }
 addEventListener("resize",()=>{clearTimeout(fitDetail.t);fitDetail.t=setTimeout(fitDetail,80)});
 document.addEventListener("toggle",e=>{if(e.target.closest?.("#detail"))fitDetail()},true);
 document.fonts?.ready?.then(()=>fitDetail());
+/* 11-09: the stage leans toward a fine pointer (desktop only, never under reduced motion). --px/--py run -1..1 on .mart. */
+(()=>{const fine=matchMedia("(hover:hover) and (pointer:fine)"), ok=matchMedia("(prefers-reduced-motion:no-preference)"); let raf=0,px=0,py=0;
+  document.addEventListener("pointermove",ev=>{if(!fine.matches||!ok.matches)return;const sh=document.querySelector("#detail.open .msheet");if(!sh)return;
+    const r=sh.getBoundingClientRect();px=Math.max(-1,Math.min(1,((ev.clientX-r.left)/r.width-.5)*2));py=Math.max(-1,Math.min(1,((ev.clientY-r.top)/r.height-.5)*2));
+    if(!raf)raf=requestAnimationFrame(()=>{raf=0;const m=sh.querySelector(".mart");if(m){m.style.setProperty("--px",px.toFixed(3));m.style.setProperty("--py",py.toFixed(3))}})},{passive:true});
+})();
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-more]");if(!b)return;const p=b.previousElementSibling;if(p?.classList.contains("clamp")){p.classList.remove("clamp");b.remove();fitDetail()}});
 /* ---------- viewer ---------- */
 const _glbCache={};function glbURL(g){return _glbCache[g]||(_glbCache[g]=blobOf("dex/"+g).catch(x=>{delete _glbCache[g];throw x}))}
 function viewerTabs(e){const t=[];if(turnOf(e))t.push({k:"turn",label:"Turnaround"});if(e.glb)t.push({k:"3d",label:"3D"});return t}
