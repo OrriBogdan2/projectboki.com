@@ -376,7 +376,7 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 }
 /* owner 11-09: dex console header. Redesigned 11-09: instrument look, hairlines + ticks + mono readout, one slow sweep. */
 header{border-bottom:0;padding-block:12px 0;gap:10px 18px}
-header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb,var(--ink) 26%,transparent);
+header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb,var(--ink) 20%,transparent);
   background:repeating-linear-gradient(90deg,var(--tk) 0 1px,transparent 1px 48px) left top/100% 8px no-repeat,repeating-linear-gradient(90deg,var(--tk) 0 1px,transparent 1px 8px) left top/100% 4px no-repeat,linear-gradient(var(--line),var(--line)) left top/100% 1px no-repeat}
 .brand{display:flex;align-items:center;gap:14px;min-width:0}
 .brand h1{font-size:1.75rem;letter-spacing:.015em}
@@ -476,8 +476,8 @@ header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb
 <circle cx="32" cy="32" r="26.5" stroke-width="2.4" stroke-opacity=".55" stroke-linecap="butt" stroke-dasharray=".7 2.0745" transform="rotate(-90 32 32)"/>
 <path d="M32 2.5v6M32 55.5v6M2.5 32h6M55.5 32h6" stroke-width="1.2" stroke-opacity=".8"/>
 <circle cx="32" cy="32" r="14" stroke-width="1" stroke-opacity=".45"/>
-<path d="M32 23v4M32 37v4M23 32h4M37 32h4" stroke-width="1" stroke-opacity=".7"/>
-<g class="sw"><path d="M32 32L15.3 12.1A26 26 0 0 1 32 6Z" fill="url(#lsweep)" stroke="none"/><path d="M32 32V6.5" stroke-width="1.2" stroke-opacity=".95"/></g>
+<path d="M32 25v3M32 36v3M25 32h3M36 32h3" stroke-width="1" stroke-opacity=".7"/>
+<g class="sw"><path d="M15.3 12.1A26 26 0 0 1 32 6V18A14 14 0 0 0 23 21.3Z" fill="url(#lsweep)" stroke="none"/><path d="M32 18.5V6.5" stroke-width="1.1" stroke-opacity=".95"/></g>
 <circle cx="32" cy="32" r="1.6" fill="currentColor" stroke="none"/>
 </svg></span><div><h1>Bokidex</h1><div class="rd"><span class="rdk">Field index</span><i></i><span>Specimens <b id="rdn">···</b></span></div><div class="sub">Project Boki creature dex</div></div></div>
   <div class="hr">
@@ -607,7 +607,7 @@ function renderTChips(){
 }
 async function loadDex(){
   try{const j=DATA.dex;
-    D=Array.isArray(j)?j:j.entries; aliases=j.aliases||{}; built=j.built||0; META=j.meta||null; byId={};formOf={};D.forEach(e=>{byId[e.id]=e;(e.forms||[]).forEach((f,i)=>formOf[f.id]={e,i})});
+    D=Array.isArray(j)?j:j.entries; {const rn=$("#rdn");if(rn)rn.textContent=String(D.length);} aliases=j.aliases||{}; built=j.built||0; META=j.meta||null; byId={};formOf={};D.forEach(e=>{byId[e.id]=e;(e.forms||[]).forEach((f,i)=>formOf[f.id]={e,i})});
     D.forEach(e=>(e.forms||[e]).forEach(f=>console.assert((f.types||[]).length<=2,"Bokidex data: "+f.id+" has more than 2 types")));
     await loadMeta(); renderTChips();
   }catch(err){dexErr="The Bokidex data did not load ("+(err?.message||err)+"). Reload the page."}
