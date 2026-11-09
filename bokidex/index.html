@@ -644,6 +644,6 @@ $("#lf").addEventListener("submit",async e=>{e.preventDefault();const err=$("#le
   catch(x){KEY=null;err.textContent=/wrong password/.test(x?.message)?"Wrong password.":"Could not open the Bokidex ("+(x?.message||x)+")."}});
 (async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){}if(p){try{await unlock(p,false)}catch(e){try{localStorage.removeItem("bmr")}catch(_){}}}})();
 </script>
-<script src="owner.js?v=9787413c41"></script>
+<script src="owner.js?v=057b6fa1fa"></script>
 </body>
 </html>

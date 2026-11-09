@@ -5,8 +5,8 @@
   "use strict";
   var API = "https://87-99-130-182.sslip.io";           // rating API (Caddy -> bokidex-api on the Hetzner box)
   var LSK = "bokidex-owner", code = "", ratings = {}, filter = "pending", panel = null;
-  var css = ".bxo-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:60;font:600 12px system-ui,sans-serif;" +
-    "padding:7px 12px;border-radius:999px;border:1px solid var(--line,#ccc);background:var(--panel,#fff);color:var(--mute,#666);opacity:.75;cursor:pointer}" +
+  var css = ".bxo-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1000;font:700 14px system-ui,sans-serif;" +
+    "padding:10px 18px;border-radius:999px;border:0;background:#e8562a;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.35);opacity:1;cursor:pointer}" +
     ".bxo-btn:hover{opacity:1}.bxo-ov{position:fixed;inset:0;z-index:80;background:var(--bg,#fafafa);color:var(--ink,#111);overflow:auto;-webkit-overflow-scrolling:touch;font:15px/1.4 system-ui,sans-serif}" +
     ".bxo-top{position:sticky;top:0;z-index:2;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:var(--panel,#fff);border-bottom:1px solid var(--line,#ddd)}" +
     ".bxo-top h2{margin:0;font-size:1.05rem;flex:1;min-width:120px}.bxo-top select,.bxo-top button{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line,#ccc);background:var(--bg,#fff);color:inherit}" +
