@@ -42,6 +42,17 @@ if (media && "IntersectionObserver" in window) {
   new IntersectionObserver(([e]) => media.classList.toggle("paused", !e.isIntersecting)).observe(document.querySelector(".hero-wrap") || media);
 }
 
+// Hovering a portrait lights it up (CSS); the wash over the wall clears in a spotlight that follows the pointer.
+if (media && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  const hero = document.getElementById("hero");
+  media.addEventListener("pointermove", (e) => {
+    const r = hero.getBoundingClientRect();
+    hero.style.setProperty("--hx", `${(e.clientX - r.left).toFixed(0)}px`); hero.style.setProperty("--hy", `${(e.clientY - r.top).toFixed(0)}px`);
+    hero.classList.toggle("lit", !!e.target.closest("li"));
+  });
+  media.addEventListener("pointerleave", () => hero.classList.remove("lit"));
+}
+
 // Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
 const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
 const hunIn = document.querySelector("#hunters > .wrap"); // trails the sheet a little as it slides up, then settles
@@ -367,8 +378,9 @@ if (pick) {
   // A new swipe, a click or a key starts fresh, and slow scrolling is never caught.
   if (!calm) {
     let lastW = 0, peak = 0, dec = 0, dir = 0, start = 0, caught = null, since = 0, spent = false;
-    // heading back up on purpose (two flicks up in a row both caught): stop catching upward until they scroll down again
-    let upRun = 0, lastUp = 0, freeUp = false;
+    // clearly heading somewhere (two flicks the same way, both caught): stop catching that way until they turn
+    // around or pause, so getting to the top, or on to the Boki, is quick
+    const run = { 1: 0, "-1": 0 }, lastRun = { 1: 0, "-1": 0 }, free = { 1: false, "-1": false };
     const spots = () => [Math.round(scn.s0 + scn.lead)].concat(pin ? HUNTERS.slice(1).map((_, i) => Math.round(pin.start + (i + 1.5) * pin.step)) : []);
     const stopFor = () => { // where this flick should come to rest
       const list = spots(), end = list[list.length - 1];
@@ -378,7 +390,7 @@ if (pick) {
     const crosses = (from, to, s) => s !== undefined && (dir > 0 ? from < s && to >= s : from > s && to <= s);
     const land = (s, now) => {
       caught = s; since = now; scrollTo({ top: s, behavior: "instant" });
-      if (dir < 0) { upRun = now - lastUp < 4000 ? upRun + 1 : 1; lastUp = now; if (upRun >= 2) freeUp = true; }
+      run[dir] = now - lastRun[dir] < 4000 ? run[dir] + 1 : 1; lastRun[dir] = now; if (run[dir] >= 2) free[dir] = true;
     }; // the stage is held in place, so nothing jumps
     ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { caught = null; spent = true; }, { passive: true }));
     addEventListener("wheel", (e) => {
@@ -387,11 +399,12 @@ if (pick) {
       // a new gesture, not the tail of the last one: a pause, a reversal, or (once a caught flick has had time to fade)
       // the wheel picking up hard again. A swipe ramps up as it starts, so that alone doesn't count.
       const fresh = now - lastW > 220 || d !== dir || (caught !== null && now - since > 300 && a > dec * 2 + 24);
-      if (now - lastW > 5000 || (fresh && d > 0)) { freeUp = false; upRun = 0; } // a pause or a scroll down: back to normal
+      if (now - lastW > 5000) { free[1] = free[-1] = false; run[1] = run[-1] = 0; } // a pause: back to normal
+      else if (fresh && d !== dir) { free[-d] = false; run[-d] = 0; }                  // turning around: that way is caught again
       lastW = now;
       if (fresh) { peak = dec = a; dir = d; start = scrollY; caught = null; spent = false; } else { peak = Math.max(peak, a); dec = Math.max(a, dec * 0.8); }
       if (caught !== null) { if (now - since < 1600) { e.preventDefault(); return; } caught = null; spent = true; } // the rest of this flick is held back
-      if (spent || peak < 60 || (dir < 0 && freeUp)) return; // slow, steady scrolling, or clearly heading back up
+      if (spent || peak < 60 || free[dir]) return; // slow, steady scrolling, or clearly heading somewhere
       const s = stopFor(), y = scrollY;
       if (crosses(y, y + dy, s) && Math.abs(s - y) < innerHeight * 1.6) { e.preventDefault(); land(s, now); }
     }, { passive: false });
@@ -399,7 +412,7 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = Math.abs(y - prevY) / Math.max(8, now - prevT) > 1.5;
       if (caught !== null) { if (now - since < 1600 && (dir > 0 ? y > caught : y < caught)) scrollTo({ top: caught, behavior: "instant" }); }
-      else if (scn && live && !spent && !(dir < 0 && freeUp) && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
+      else if (scn && live && !spent && !free[dir] && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
         const s = stopFor();
         if (crosses(prevY, y, s)) land(s, now);
       }

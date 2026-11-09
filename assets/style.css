@@ -71,6 +71,17 @@ section { position: relative; }
 .cast .row:nth-child(even) { animation-name: drift-r; margin-left: calc(-1 * clamp(90px, 8vw, 150px)); }
 .cast li { flex: none; width: clamp(150px, 15vw, 260px); aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: #0b1120; box-shadow: 0 20px 40px -20px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.08); }
 .cast img { width: 100%; height: 100%; object-fit: cover; }
+/* Hover a portrait on the hero wall and it lights up: the tile brightens and lifts, and the dark wash over the wall
+   clears in a soft spotlight around it. Mouse only. */
+@media (hover: hover) and (pointer: fine) {
+  .hero::before { pointer-events: none; }
+  .hero-in { pointer-events: none; } .hero-in > * { pointer-events: auto; }
+  .cast li { position: relative; transition: filter .35s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease; }
+  .cast li:hover { z-index: 1; filter: brightness(1.28) saturate(1.18); transform: scale(1.07);
+    box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 0 36px rgba(140,200,255,.45), 0 0 80px rgba(190,110,255,.35), 0 24px 50px -18px rgba(0,0,0,.9); }
+  .hero.lit::before { -webkit-mask-image: radial-gradient(circle 300px at var(--hx, 50%) var(--hy, 50%), rgba(0,0,0,.12) 0%, rgba(0,0,0,.35) 45%, #000 100%);
+    mask-image: radial-gradient(circle 300px at var(--hx, 50%) var(--hy, 50%), rgba(0,0,0,.12) 0%, rgba(0,0,0,.35) 45%, #000 100%); }
+}
 @keyframes drift-l { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes drift-r { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
@@ -99,6 +110,7 @@ section { position: relative; }
 .pj-pl { inset: 0; z-index: -1; background: linear-gradient(90deg, #4fd8cb, #c36bff); }
 .pj-pl::after { content: ""; inset: 3px 4px; background: #120d1d; }
 .pj-gap { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: -2; overflow: visible; transform: translate(-.3em, -.12em) rotate(-5deg); filter: drop-shadow(0 0 3px #ff5a30) drop-shadow(0 0 9px rgba(255,60,30,.75)); } /* moves with the left piece: the glow is its broken edge */
+.pj-gap.pj-gr { transform: translate(.3em, .22em) rotate(4deg); } /* and the right piece's */
 .pj-chip { position: absolute; width: .42em; height: .32em; background: linear-gradient(135deg, #8f7bff, #120d1d 45%); clip-path: polygon(0 20%, 60% 0, 100% 55%, 40% 100%); transform: rotate(var(--r, 0deg)); filter: drop-shadow(0 0 4px rgba(255,90,50,.7)); }
 .hero .mark { width: clamp(56px, 6.4vw, 96px); height: auto; aspect-ratio: 200 / 232; filter: drop-shadow(0 10px 24px rgba(0,0,0,.55)); }
 .hero h1 { font-size: clamp(60px, 9.4vw, 148px); line-height: .9; letter-spacing: -.005em; text-shadow: 0 8px 40px rgba(0,0,0,.55); padding-top: .06em; }
