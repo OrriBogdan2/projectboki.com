@@ -454,6 +454,9 @@ header::after{content:"";flex:1 1 100%;order:9;height:8px;--tk:color-mix(in srgb
 .tbtn[aria-pressed="true"]{background:color-mix(in srgb,var(--ty) 14%,var(--panel));border-color:var(--ty);box-shadow:inset 0 0 0 1px var(--ty)}
 .tbtn[aria-pressed="true"]::before{background:var(--ty);box-shadow:0 0 0 2px color-mix(in srgb,var(--ty) 35%,transparent)}
 .tbtn[aria-pressed="true"] small{opacity:.9}
+/* type filter grid: no lift or glow on hover, it rode into the row above (owner 11-09) */
+.tf .tbtn:hover{transform:none!important;box-shadow:none}
+.tf .tbtn[aria-pressed="true"]:hover{box-shadow:inset 0 0 0 1px var(--ty)}
 @media (prefers-reduced-motion:reduce){.lens *{animation:none!important}#surprise:hover .qm{animation:none}}
 @media (max-width:1099px){.tf{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media (max-width:759px){
