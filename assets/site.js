@@ -565,6 +565,7 @@ if (pick) {
       art.srcset = set(id);
       art.src = src(id, 1600);
       art.alt = `${name}, ${title}`;
+      art.closest(".stage").dataset.h = id; // per-Hunter tweaks in CSS (Neve's snowy art gets a lighter shade on desktop)
       $("h-name").textContent = name;
       $("h-title").textContent = title;
       $("h-role").textContent = role;

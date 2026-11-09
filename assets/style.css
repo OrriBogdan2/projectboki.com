@@ -779,3 +779,6 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
   #boki .head .sub { font-size: 18px; max-width: 26ch; margin-top: 12px; }
   #boki .head { margin-bottom: 28px; }
 }
+/* Neve's snowy splash greys under the desktop shade: lift her art a touch and lighten the shade for her */
+@media (min-width: 721px) { #hunters .stage[data-h="claire"] #h-art { filter: brightness(1.08) saturate(1.04); } #hunters .stage[data-h="claire"]::after { opacity: .7; } }
+#hunters .stage::after { transition: opacity .3s ease; }
