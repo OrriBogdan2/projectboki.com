@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Boki Admin</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#23262b;--muted:#6a707a;--line:#e3e1da;--accent:#2f6f5e;--accent-ink:#fff;--danger:#b3402f;--chip:#eceae3;--ok:#2f6f5e;--warn:#9a6a14}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181b;--surface:#1f2226;--ink:#e6e7e9;--muted:#9298a2;--line:#31353b;--accent:#5fb59d;--accent-ink:#0f1a16;--danger:#e0735f;--chip:#2a2e33;--ok:#5fb59d;--warn:#d9a441}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.4rem;margin:0}
+h2{font-size:1.05rem;margin:0 0 12px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.muted{color:var(--muted);font-size:.9rem}
+label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 4px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:140px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;min-height:40px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.danger{color:var(--danger);border-color:var(--danger)}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.item{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.idx{min-width:2.2em;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem;padding-top:2px}
+.body{flex:1;min-width:0}
+.title{font-weight:600;overflow-wrap:anywhere}
+.preview{color:var(--muted);font-size:.88rem;overflow-wrap:anywhere}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:1px 9px;font-size:.75rem;margin:4px 4px 0 0;color:var(--muted)}
+.acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.acts button{padding:4px 9px;min-height:34px}
+@media (max-width:560px){.item{flex-wrap:wrap}.acts{width:100%;justify-content:flex-start;padding-left:calc(2.2em + 10px)}}
+.err{color:var(--danger);font-size:.9rem;min-height:1.3em;margin-top:8px}
+.ok{color:var(--ok)}
+.st-done{color:var(--ok)}.st-partial,.st-limit{color:var(--warn)}.st-blocked,.st-error,.st-none{color:var(--danger)}
+.big{font-size:2rem;font-weight:650}
+.note{text-align:center;color:var(--muted);font-size:.85rem;margin-top:24px}
+#gbtn{margin-top:14px;min-height:44px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Boki Admin</h1>
+  <div class="row hidden" id="who"><span class="muted" id="whoName"></span><button id="out">Sign out</button></div>
+</header>
+
+<section id="signin" class="card hidden">
+  <h2>Sign in</h2>
+  <div id="gwrap" class="hidden">
+    <div id="gbtn"></div>
+    <p class="muted" style="margin:14px 0 0">or use the owner code</p>
+  </div>
+  <form id="ownerForm" autocomplete="off">
+    <label for="code">Owner code</label>
+    <input id="code" type="password" maxlength="200" autocomplete="current-password" required>
+    <div class="row" style="margin-top:12px"><button class="primary" type="submit">Sign in</button></div>
+    <div class="err" id="signinErr" role="alert"></div>
+  </form>
+</section>
+
+<section id="app" class="hidden">
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-backlog" aria-selected="true" data-tab="backlog">Backlog</button>
+    <button role="tab" id="t-jobs" aria-selected="false" data-tab="jobs">Jobs</button>
+    <button role="tab" id="t-signups" aria-selected="false" data-tab="signups">Signups</button>
+  </div>
+
+  <div id="p-backlog">
+    <div class="card">
+      <h2>Add a task</h2>
+      <form id="addForm">
+        <label for="aLabel">Label</label><input id="aLabel" maxlength="200" required>
+        <label for="aRole">Role</label>
+        <select id="aRole"><option>scout</option><option>mechanical</option><option>build-spec</option><option selected>build</option><option>deep</option><option>feel</option><option>verify</option><option>synth</option><option>finder</option></select>
+        <label for="aTask">Task</label><textarea id="aTask" maxlength="20000" required></textarea>
+        <div class="row" style="margin-top:12px"><button class="primary" type="submit">Add to the end</button><span class="muted" id="addInfo"></span></div>
+        <div class="err" id="addErr" role="alert"></div>
+      </form>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2 style="margin:0">Backlog <span class="muted" id="blCount"></span></h2><button id="blReload">Refresh</button></div>
+      <p class="muted">Top of the list runs first. Moves are checked against the item's label, so a stale view cannot move the wrong one.</p>
+      <div id="blList"></div>
+      <div class="err" id="blErr" role="alert"></div>
+    </div>
+  </div>
+
+  <div id="p-jobs" class="hidden">
+    <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Running</h2><button id="jReload">Refresh</button></div><div id="jRun"></div></div>
+    <div class="card"><h2>Recent (last 20)</h2><div id="jRec"></div></div>
+    <div class="err" id="jErr" role="alert"></div>
+  </div>
+
+  <div id="p-signups" class="hidden">
+    <div class="card"><h2>Signups</h2><div class="big" id="suCount">-</div><div class="muted" id="suState"></div></div>
+    <div class="card"><h2>Latest 20</h2><div id="suList"></div><div class="err" id="suErr" role="alert"></div></div>
+  </div>
+</section>
+
+<p class="note">Player sign-in coming soon.</p>
+</main>
+
+<script>
+(function(){
+"use strict";
+var API="https://87-99-130-182.sslip.io/api";
+var TK="boki_admin_token";
+var $=function(id){return document.getElementById(id)};
+var token="";
+try{token=localStorage.getItem(TK)||""}catch(e){}
+function saveToken(t){token=t||"";try{if(t)localStorage.setItem(TK,t);else localStorage.removeItem(TK)}catch(e){}}
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+function api(path,opts){
+  opts=opts||{};var h={};
+  if(token)h["Authorization"]="Bearer "+token;
+  var init={method:opts.body?"POST":"GET",headers:h};
+  if(opts.body){h["Content-Type"]="application/json";init.body=JSON.stringify(opts.body)}
+  return fetch(API+path,init).then(function(r){
+    return r.json().catch(function(){return{ok:false,error:"bad response"}}).then(function(j){
+      if(r.status===401&&opts.auth!==false&&token){saveToken("");show("signin")}
+      if(!r.ok||j.ok===false){var e=new Error(j.error||("error "+r.status));e.status=r.status;throw e}
+      return j;
+    });
+  },function(){throw new Error("cannot reach the server")});
+}
+
+function show(which){
+  $("signin").classList.toggle("hidden",which!=="signin");
+  $("app").classList.toggle("hidden",which!=="app");
+  $("who").classList.toggle("hidden",which!=="app");
+}
+
+/* ---- sign-in ---- */
+function afterSignin(j){
+  if(!j.user||(j.user.role!=="owner"&&j.user.role!=="admin")){
+    saveToken("");$("signinErr").textContent="Signed in as a player. This area is for admins only.";show("signin");return}
+  saveToken(j.token);enter(j.user);
+}
+$("ownerForm").addEventListener("submit",function(ev){
+  ev.preventDefault();$("signinErr").textContent="";
+  var code=$("code").value;
+  api("/signin/owner",{body:{code:code},auth:false}).then(function(j){$("code").value="";afterSignin(j)})
+    .catch(function(e){$("signinErr").textContent=e.status===401?"That code is not right.":e.message});
+});
+$("out").addEventListener("click",function(){
+  api("/signout",{body:{},auth:false}).catch(function(){}).then(function(){saveToken("");show("signin")});
+});
+
+function loadGoogle(cid){
+  var s=document.createElement("script");s.src="https://accounts.google.com/gsi/client";s.async=true;
+  s.onload=function(){
+    try{
+      google.accounts.id.initialize({client_id:cid,callback:function(r){
+        $("signinErr").textContent="";
+        api("/signin/google",{body:{credential:r.credential},auth:false}).then(afterSignin)
+          .catch(function(e){$("signinErr").textContent=e.status===401?"Google sign-in was not accepted.":e.message});
+      }});
+      var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+      google.accounts.id.renderButton($("gbtn"),{theme:dark?"filled_black":"outline",size:"large",text:"signin_with",width:Math.min(300,Math.max(200,$("signin").clientWidth-34))});
+      $("gwrap").classList.remove("hidden");
+    }catch(e){}
+  };
+  document.head.appendChild(s);
+}
+
+/* ---- tabs ---- */
+var loaded={};
+function tab(name){
+  ["backlog","jobs","signups"].forEach(function(n){
+    $("p-"+n).classList.toggle("hidden",n!==name);
+    $("t-"+n).setAttribute("aria-selected",n===name?"true":"false");
+  });
+  if(name==="backlog")loadBacklog();if(name==="jobs")loadJobs();if(name==="signups")loadSignups();
+}
+Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(b){b.addEventListener("click",function(){tab(b.dataset.tab)})});
+
+/* ---- backlog ---- */
+function loadBacklog(){
+  $("blErr").textContent="";
+  return api("/admin/backlog").then(function(j){
+    $("blCount").textContent="("+j.count+")";
+    var box=$("blList");box.textContent="";
+    if(!j.items.length)box.appendChild(el("p","muted","The backlog is empty."));
+    j.items.forEach(function(it){
+      var row=el("div","item");row.appendChild(el("div","idx","#"+it.index));
+      var b=el("div","body");b.appendChild(el("div","title",it.label));
+      if(it.preview)b.appendChild(el("div","preview",it.preview));
+      var c=el("div");c.appendChild(el("span","chip",it.role||"no role"));
+      it.areas.forEach(function(a){c.appendChild(el("span","chip",a))});
+      if(it.escalated)c.appendChild(el("span","chip","escalated"));
+      b.appendChild(c);row.appendChild(b);
+      var a=el("div","acts");
+      function mv(txt,to,dis){var x=el("button",null,txt);x.disabled=dis;x.addEventListener("click",function(){move(it,to)});a.appendChild(x)}
+      mv("Top","top",it.index===0);mv("Up",it.index-1,it.index===0);mv("Down",it.index+1,it.index===j.count-1);
+      var d=el("button","danger","Remove");d.addEventListener("click",function(){remove(it)});a.appendChild(d);
+      row.appendChild(a);box.appendChild(row);
+    });
+  }).catch(function(e){$("blErr").textContent=e.message});
+}
+function move(it,to){
+  api("/admin/backlog/move",{body:{index:it.index,to:to,label:it.label}}).then(loadBacklog)
+    .catch(function(e){$("blErr").textContent=e.message;if(e.status===409)loadBacklog().then(function(){$("blErr").textContent=e.message})});
+}
+function remove(it){
+  if(!window.confirm("Remove this task from the backlog?\n\n"+it.label))return;
+  api("/admin/backlog/remove",{body:{index:it.index,label:it.label}}).then(loadBacklog)
+    .catch(function(e){$("blErr").textContent=e.message;if(e.status===409)loadBacklog().then(function(){$("blErr").textContent=e.message})});
+}
+$("blReload").addEventListener("click",loadBacklog);
+$("addForm").addEventListener("submit",function(ev){
+  ev.preventDefault();$("addErr").textContent="";$("addInfo").textContent="";
+  api("/admin/backlog/add",{body:{label:$("aLabel").value,task:$("aTask").value,role:$("aRole").value}}).then(function(j){
+    $("aLabel").value="";$("aTask").value="";$("addInfo").textContent="Added as #"+j.index;loadBacklog();
+  }).catch(function(e){$("addErr").textContent=e.message});
+});
+
+/* ---- jobs ---- */
+function age(s){if(s==null)return"";if(s<90)return s+"s";if(s<5400)return Math.round(s/60)+" min";if(s<172800)return Math.round(s/3600)+" h";return Math.round(s/86400)+" d"}
+function jobRows(box,list,fin){
+  box.textContent="";
+  if(!list.length)box.appendChild(el("p","muted",fin?"Nothing finished yet.":"Nothing running."));
+  list.forEach(function(j){
+    var r=el("div","item");var b=el("div","body");b.appendChild(el("div","title",j.label||j.id));
+    var m=el("div","preview",[j.account,j.role,j.model].filter(Boolean).join(" / ")+"  -  "+age(j.age_s)+(fin?" ago":" running"));
+    b.appendChild(m);r.appendChild(b);
+    if(fin){var s=el("div","st-"+(j.status||"none"),j.status||"?");r.appendChild(s)}
+    box.appendChild(r);
+  });
+}
+function loadJobs(){
+  $("jErr").textContent="";
+  return api("/admin/jobs").then(function(j){jobRows($("jRun"),j.running,false);jobRows($("jRec"),j.recent,true)})
+    .catch(function(e){$("jErr").textContent=e.message});
+}
+$("jReload").addEventListener("click",loadJobs);
+
+/* ---- signups ---- */
+function loadSignups(){
+  $("suErr").textContent="";
+  return api("/admin/signups").then(function(j){
+    $("suCount").textContent=j.count;$("suState").textContent=j.enabled?"Collecting signups.":"Signup form is switched off on the server.";
+    var box=$("suList");box.textContent="";
+    if(!j.last.length)box.appendChild(el("p","muted","No signups yet."));
+    j.last.forEach(function(s){
+      var r=el("div","item");var b=el("div","body");b.appendChild(el("div","title",s.email));
+      b.appendChild(el("div","preview",(s.source||"")+"  -  "+new Date(s.created*1000).toLocaleString()));r.appendChild(b);box.appendChild(r);
+    });
+  }).catch(function(e){$("suErr").textContent=e.message});
+}
+
+/* ---- start ---- */
+function enter(user){
+  $("whoName").textContent=user.display+(user.email?" ("+user.email+")":"");
+  show("app");tab("backlog");
+}
+function start(){
+  api("/config",{auth:false}).then(function(c){if(c.google_client_id)loadGoogle(c.google_client_id)}).catch(function(){});
+  if(!token){show("signin");return}
+  api("/me").then(function(j){
+    if(j.user.role==="owner"||j.user.role==="admin")enter(j.user);else{saveToken("");show("signin")}
+  }).catch(function(e){if(e.status!==401){$("signinErr").textContent=e.message}show("signin")});
+}
+start();
+})();
+</script>
+</body>
+</html>
