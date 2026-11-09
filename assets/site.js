@@ -1103,41 +1103,76 @@ if (POSTHOG_KEY) {
   });
   if (calm) return;
 
-  // ---- the living version
+  // ---- the living version: every pixel is pulled through a warp (WebGL), so the painting itself moves
   const cv = document.createElement("canvas"); cv.className = "bub-gl";
-  gl = cv.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: true });
+  gl = cv.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   if (!gl) return;
   const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
   const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null; };
-  const WARP = `
-    uniform vec2 uOff; uniform float uT, uBreath, uLean;
-    vec2 warp(vec2 p) {
+  const E1 = [0.4365, 0.372, 0.0615, 0.0635], E2 = [0.228, 0.393, 0.021, 0.057]; // the big eye and the side eye (center, radii)
+  // where each part of him moves to: head after the pointer (and turning), body breathing and hopping, tail swaying
+  const MOVE = `
+    uniform vec2 uOff; uniform float uT, uBreath, uLean, uTurn, uHop, uSquash;
+    vec2 move(vec2 p) {
       vec2 h = p - vec2(${HEAD[0]}, ${HEAD[1]});
-      float wh = exp(-dot(h, h) / (2.0 * 0.17 * 0.17));                       // the head follows the pointer
+      float wh = exp(-dot(h, h) / (2.0 * 0.19 * 0.19));
       vec2 d = uOff * wh;
-      vec2 b = p - vec2(0.55, 0.48); float wb = exp(-dot(b, b) / (2.0 * 0.24 * 0.24));
-      d.y += (p.y - 0.70) * uBreath * wb; d.x += (p.x - 0.55) * uBreath * 0.5 * wb; // breathing
-      float wt = smoothstep(0.6, 0.86, p.y) * smoothstep(0.5, 0.78, p.x);    // the tail curl sways
-      d.x += sin(uT * 1.7 + p.y * 6.0) * 0.012 * wt; d.y += cos(uT * 1.3 + p.x * 5.0) * 0.006 * wt;
-      d.x += uLean * (0.72 - p.y) * 0.35;                                       // the whole body leans a touch
-      return p + d;
+      d.x += -uTurn * h.x * 0.45 * wh;                                         // the head narrows as it turns
+      vec2 b = p - vec2(0.55, 0.48); float wb = exp(-dot(b, b) / (2.0 * 0.26 * 0.26));
+      d.y += (p.y - 0.70) * uBreath * wb; d.x += (p.x - 0.55) * uBreath * 0.5 * wb;
+      float wt = smoothstep(0.6, 0.86, p.y) * smoothstep(0.5, 0.78, p.x);
+      d.x += sin(uT * 1.7 + p.y * 6.0) * 0.016 * wt; d.y += cos(uT * 1.3 + p.x * 5.0) * 0.008 * wt;
+      d.x += uLean * (0.72 - p.y) * 0.4;
+      d.y += (p.y - 0.70) * uSquash; d.x -= (p.x - 0.55) * uSquash * 0.6;     // squash and stretch
+      d.y -= uHop;                                                               // and hop
+      return d;
     }`;
-  const meshP = prog(`attribute vec2 a; varying vec2 v; ${WARP}
-    void main() { v = a; vec2 q = warp(a); gl_Position = vec4(q.x * 2.0 - 1.0, 1.0 - q.y * 2.0, 0.0, 1.0); }`,
-    `precision mediump float; varying vec2 v; uniform sampler2D tex; void main() { gl_FragColor = texture2D(tex, v); }`);
-  const bubP = prog(`attribute vec2 a; varying vec2 v; uniform mediump vec2 uC; uniform mediump float uR; uniform vec2 uO; uniform float uS; ${WARP}
-    void main() { vec2 c = uO + (uC - uO) * uS; vec2 m = warp(vec2(${MOUTH[0]}, ${MOUTH[1]})) - vec2(${MOUTH[0]}, ${MOUTH[1]});
+  const quadV = `attribute vec2 a; varying vec2 v; void main() { v = a; gl_Position = vec4(a.x * 2.0 - 1.0, 1.0 - a.y * 2.0, 0.0, 1.0); }`;
+  const baseP = prog(quadV, `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    varying vec2 v; uniform sampler2D tex; uniform vec2 uLook; uniform float uBlink, uWide;
+    ${MOVE}
+    vec2 eye(vec2 uv, vec4 e, float s) {                    // the iris slides toward the look, and widens when startled
+      vec2 q = (uv - e.xy) / e.zw; float w = exp(-dot(q, q) / (2.0 * 0.5 * 0.5));
+      uv -= uLook * e.zw * 0.42 * s * w;
+      uv = e.xy + (uv - e.xy) * (1.0 - 0.2 * uWide * w);
+      return uv;
+    }
+    vec4 lid(vec2 uv, vec4 e, vec2 skinAt, vec4 c) {         // the lids close: the upper one down, the lower one up a little
+      vec2 q = (uv - e.xy) / e.zw; float r = dot(q, q);
+      if (r > 0.98 || uBlink <= 0.0) return c;
+      float shut = 0.32 + 0.22 * (1.0 - q.x * q.x);                 // where they meet: a curve just below the middle
+      float up = mix(-1.05, shut, uBlink), lo = mix(1.05, shut, uBlink);
+      float inUp = step(q.y, up), inLo = step(lo, q.y);
+      if (inUp + inLo < 0.5) return c;
+      vec4 skin = texture2D(tex, skinAt);
+      float shade = inUp > 0.5 ? 1.02 - 0.16 * smoothstep(-1.0, up, q.y) : 0.9;   // rounded: lighter at the top, darker at the lash
+      vec4 l = vec4(skin.rgb * shade, skin.a);
+      float lash = inUp > 0.5 ? smoothstep(0.16, 0.0, up - q.y) : smoothstep(0.1, 0.0, q.y - lo) * 0.5;
+      l = mix(l, vec4(0.27, 0.14, 0.35, 1.0) * skin.a, lash * 0.9);
+      return mix(c, l, smoothstep(0.98, 0.84, r));
+    }
+    void main() {
+      vec2 body = v - move(v);                                // where this pixel is on his body
+      vec2 uv = eye(body, vec4(${E1.join(", ")}), 1.0);       // then the irises look around inside the eyes
+      uv = eye(uv, vec4(${E2.join(", ")}), 0.6);
+      vec4 c = texture2D(tex, uv);
+      if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) c = vec4(0.0);
+      c = lid(body, vec4(${E1.join(", ")}), vec2(${E1[0]}, ${(E1[1] - E1[3] * 1.35).toFixed(4)}), c);
+      c = lid(body, vec4(${E2.join(", ")}), vec2(${(E2[0] + 0.03).toFixed(4)}, ${(E2[1] - E2[3] * 1.2).toFixed(4)}), c);
+      gl_FragColor = c;
+    }`);
+  const bubP = prog(`attribute vec2 a; varying vec2 v; uniform mediump vec2 uC; uniform mediump float uR; uniform vec2 uO; uniform float uS; ${MOVE}
+    void main() { vec2 c = uO + (uC - uO) * uS; vec2 m = move(vec2(${MOUTH[0]}, ${MOUTH[1]}));
       vec2 q = c + m + (a * 2.0 - 1.0) * uR * uS; v = uC + (a * 2.0 - 1.0) * uR;
       gl_Position = vec4(q.x * 2.0 - 1.0, 1.0 - q.y * 2.0, 0.0, 1.0); }`,
     `precision mediump float; varying vec2 v; uniform sampler2D tex; uniform mediump vec2 uC; uniform mediump float uR; uniform float uA;
      void main() { float d = length(v - uC) / uR; vec4 c = texture2D(tex, v); gl_FragColor = c * uA * (1.0 - smoothstep(0.96, 1.0, d)); }`);
-  if (!meshP || !bubP) { gl = null; return; }
-  // the mesh
-  const N = 48, pts = [], idx = [];
-  for (let y = 0; y <= N; y++) for (let x = 0; x <= N; x++) pts.push(x / N, y / N);
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = y * (N + 1) + x; idx.push(i, i + 1, i + N + 1, i + 1, i + N + 2, i + N + 1); }
-  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pts), gl.STATIC_DRAW);
-  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+  if (!baseP || !bubP) { gl = null; return; }
   const qb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, qb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
   const texOf = (img) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -1151,44 +1186,70 @@ if (POSTHOG_KEY) {
   }).catch(() => { gl = null; });
   const size = () => { const w = wrap.offsetWidth, dpr = Math.min(2, devicePixelRatio || 1); cv.width = cv.height = Math.round(w * dpr); };
   addEventListener("resize", size);
-  // the pointer, in texture space
   let px = null, py = null, lastMove = -1e9;
   const track = (e) => { px = e.clientX; py = e.clientY; lastMove = performance.now(); };
   addEventListener("pointermove", track, { passive: true }); addEventListener("pointerdown", track, { passive: true });
-  let ox = 0, oy = 0, lean = 0, ex = 0, vis = false, t = 0, last = 0;
+  // his little brain: where to look, when to blink, when to hop
+  let ox = 0, oy = 0, lean = 0, turn = 0, lx = 0, ly = 0, ex = 0, vis = false, t = 0, last = 0;
+  let blinkAt = 1.5, blinkK = -1, double = false, hopK = -1, nextHop = 0, wide = 0, glance = { x: 0, y: 0, until: 0 };
+  btn.addEventListener("click", () => { wide = 1; hopK = 0; blinkK = -1; });
   new IntersectionObserver(([en]) => { vis = en.isIntersecting; if (vis && ready) loop(); }, { rootMargin: "100px" }).observe(wrap);
-  const loc = (u, n) => gl.getUniformLocation(u, n);
+  const U = {}; const loc = (p, n) => (U[n + p.__id] ||= gl.getUniformLocation(p, n)); baseP.__id = "b"; bubP.__id = "u";
   let raf = 0;
   function loop() { if (!raf) raf = requestAnimationFrame(frame); }
   function frame(now) {
     raf = 0; if (!vis || !ready) return;
     const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now; t += dt;
     const r = wrap.getBoundingClientRect(), hx = r.left + r.width * HEAD[0], hy = r.top + r.height * HEAD[1];
-    let tx = 0, ty = 0, tl = 0, near = 0;
-    if (px !== null && now - lastMove < 6000) {
-      const dx = px - hx, dy = py - hy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 420);
-      tx = (dx / d) * k * 0.058; ty = (dy / d) * k * 0.044; tl = (dx / d) * k * 0.065; near = Math.max(0, 1 - d / 320);
-    } else { tx = Math.sin(t * 0.5) * 0.02; ty = Math.sin(t * 0.37) * 0.012; } // idle: looks around
-    const f = 1 - Math.exp(-dt * 6);
-    ox += (tx - ox) * f; oy += (ty - oy) * f; lean += (tl - lean) * f; ex += (near - ex) * (1 - Math.exp(-dt * 3));
+    let tx, ty, near = 0, dirx, diry;
+    if (px !== null && now - lastMove < 5000) {
+      const dx = px - hx, dy = py - hy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 380);
+      dirx = dx / d * k; diry = dy / d * k; near = Math.max(0, 1 - d / 300);
+    } else { // idle: glances around now and then
+      if (t > glance.until) glance = { x: Math.random() * 2 - 1, y: Math.random() * 1.4 - 0.7, until: t + 1.2 + Math.random() * 2 };
+      dirx = glance.x * 0.7; diry = glance.y * 0.6;
+    }
+    tx = dirx * 0.06; ty = diry * 0.045;
+    const f = 1 - Math.exp(-dt * 7), fe = 1 - Math.exp(-dt * 16);
+    ox += (tx - ox) * f; oy += (ty - oy) * f; lean += (dirx * 0.07 - lean) * f; turn += (dirx * 0.5 - turn) * f;
+    lx += (dirx - lx) * fe; ly += (diry - ly) * fe;                 // the eyes get there first
+    ex += (near - ex) * (1 - Math.exp(-dt * 3));
+    // blink every few seconds, sometimes twice
+    if (blinkK < 0 && t > blinkAt) { blinkK = 0; double = Math.random() < 0.25; }
+    let blink = 0;
+    if (blinkK >= 0) { blinkK += dt / 0.17; blink = Math.sin(Math.min(1, blinkK) * Math.PI);
+      if (blinkK >= 1) { if (double) { double = false; blinkK = -0.6; } else { blinkK = -1; blinkAt = t + 2 + Math.random() * 3.5; } } }
+    else if (blinkK > -1 && blinkK < 0) { blinkK += dt / 0.17; if (blinkK >= 0) blinkK = 0; }
+    // excited hops when you're close
+    if (hopK < 0 && ex > 0.55 && t > nextHop) { hopK = 0; }
+    let hop = 0, squash = 0;
+    if (hopK >= 0) { hopK += dt / 0.5; const k = hopK;
+      if (k < 0.18) squash = 0.05 * Math.sin(k / 0.18 * Math.PI);                 // crouch
+      else if (k < 0.82) { const a = (k - 0.18) / 0.64; hop = 0.05 * Math.sin(a * Math.PI); squash = -0.03 * Math.sin(a * Math.PI); } // up, stretched
+      else if (k < 1) squash = 0.04 * Math.sin((k - 0.82) / 0.18 * Math.PI);        // land
+      if (hopK >= 1) { hopK = -1; nextHop = t + 0.35 + Math.random() * 0.9; } }
+    wide *= Math.exp(-dt * 2.2);
     const breath = Math.sin(t * (2.2 + ex * 3.5)) * (0.010 + ex * 0.008);
     if (anim) { const k = Math.min(1, (now - anim.t0) / anim.dur), e = anim.ease(k);
       bub.s = anim.from.s + (anim.to.s - anim.from.s) * e; bub.a = anim.from.a + (anim.to.a - anim.from.a) * Math.min(1, k); if (k >= 1) anim = null; }
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    const set = (p) => { gl.uniform2f(loc(p, "uOff"), ox, oy); gl.uniform1f(loc(p, "uT"), t); gl.uniform1f(loc(p, "uBreath"), breath); gl.uniform1f(loc(p, "uLean"), lean); };
-    gl.useProgram(meshP); set(meshP);
-    gl.bindBuffer(gl.ARRAY_BUFFER, vb); const am = gl.getAttribLocation(meshP, "a"); gl.enableVertexAttribArray(am); gl.vertexAttribPointer(am, 2, gl.FLOAT, false, 0, 0);
-    gl.bindTexture(gl.TEXTURE_2D, tBase); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0);
+    const set = (p) => { gl.uniform2f(loc(p, "uOff"), ox, oy); gl.uniform1f(loc(p, "uT"), t); gl.uniform1f(loc(p, "uBreath"), breath); gl.uniform1f(loc(p, "uLean"), lean);
+      gl.uniform1f(loc(p, "uTurn"), turn * 0.12); gl.uniform1f(loc(p, "uHop"), hop); gl.uniform1f(loc(p, "uSquash"), squash); };
+    gl.bindBuffer(gl.ARRAY_BUFFER, qb);
+    gl.useProgram(baseP); set(baseP);
+    gl.uniform2f(loc(baseP, "uLook"), lx, ly); gl.uniform1f(loc(baseP, "uBlink"), blink); gl.uniform1f(loc(baseP, "uWide"), wide);
+    let al = gl.getAttribLocation(baseP, "a"); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, tBase); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (bub.a > 0.01) {
       gl.useProgram(bubP); set(bubP);
       gl.uniform2f(loc(bubP, "uC"), BC[0], BC[1]); gl.uniform2f(loc(bubP, "uO"), bub.o[0], bub.o[1]); gl.uniform1f(loc(bubP, "uS"), bub.s); gl.uniform1f(loc(bubP, "uR"), BR); gl.uniform1f(loc(bubP, "uA"), bub.a);
-      gl.bindBuffer(gl.ARRAY_BUFFER, qb); const ab = gl.getAttribLocation(bubP, "a"); gl.enableVertexAttribArray(ab); gl.vertexAttribPointer(ab, 2, gl.FLOAT, false, 0, 0);
+      al = gl.getAttribLocation(bubP, "a"); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
       gl.bindTexture(gl.TEXTURE_2D, tFull); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
-    // the tap target and the burst ride along with the bubble
-    const mx = ox * Math.exp(-((MOUTH[0] - HEAD[0]) ** 2 + (MOUTH[1] - HEAD[1]) ** 2) / (2 * 0.17 * 0.17)) + lean * (0.72 - MOUTH[1]) * 0.35;
-    const my = oy * Math.exp(-((MOUTH[0] - HEAD[0]) ** 2 + (MOUTH[1] - HEAD[1]) ** 2) / (2 * 0.17 * 0.17));
+    // the tap target and the burst ride along with his mouth
+    const h = [MOUTH[0] - HEAD[0], MOUTH[1] - HEAD[1]], wh = Math.exp(-(h[0] ** 2 + h[1] ** 2) / (2 * 0.19 * 0.19));
+    const mx = ox * wh - turn * 0.12 * h[0] * 0.45 * wh + lean * (0.72 - MOUTH[1]) * 0.4, my = oy * wh - hop;
     btn.style.translate = `${(mx * 100).toFixed(2)}% ${(my * 100).toFixed(2)}%`; burst.style.translate = `${(mx * r.width).toFixed(1)}px ${(my * r.height).toFixed(1)}px`;
     raf = requestAnimationFrame(frame);
   }
