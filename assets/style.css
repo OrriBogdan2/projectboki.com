@@ -275,12 +275,11 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 @media (max-width: 860px) {
   .how-stack { gap: 14svh; }
   .step { top: calc(76px + var(--i) * 10px); }
-  /* Phones: art on top in a wider frame so the whole squad stays in view, text below */
-  /* Phones: nearly edge to edge, tall square frame showing the full height of the art, text underneath */
+    /* Phones: nearly edge to edge, a 4:3 frame showing most of each painting, text underneath */
   .how { padding-inline: 8px; }
   .step-card { height: auto; border-radius: 20px; }
-  .step-media { position: relative; aspect-ratio: 1; }
-  .step-media img { object-position: var(--px, var(--mp, 50% 50%)) !important; } /* --px: the scroll pan across the whole painting (site.js) */
+  .step-media { position: relative; aspect-ratio: 4 / 3; } /* wide enough to show most of each painting, still and steady */
+  .step-media img { object-position: var(--mp, 50% 50%) !important; }
   .step-media::after { background: none; }
   .step-text { position: relative; left: auto; right: auto; bottom: auto; padding: 16px 18px 22px; }
   .step h3 { font-size: clamp(44px, 13vw, 60px); }
