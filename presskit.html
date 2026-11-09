@@ -14,6 +14,21 @@
 <link rel="stylesheet" href="assets/style.css?v=181">
 <link rel="canonical" href="https://projectboki.com/presskit.html">
 <link rel="manifest" href="/site.webmanifest">
+<script>
+  // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
+  // Links that arrive with a #section (from the press kit, say) still jump to it.
+  (function () {
+    try {
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+      if (nav && nav.type === "reload") {
+        if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+        var top = function () { window.scrollTo(0, 0); };
+        top(); addEventListener("DOMContentLoaded", top); addEventListener("load", top);
+      }
+    } catch (e) {}
+  })();
+</script>
 <meta property="og:site_name" content="Project Boki">
 </head>
 <body>
