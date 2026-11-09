@@ -9,35 +9,38 @@ html,body{margin:0;background:#070b16}
   radial-gradient(ellipse 30% 26% at 60% 70%, rgba(79,216,203,.20), transparent 70%),
   radial-gradient(ellipse 32% 30% at 84% 52%, rgba(195,107,255,.24), transparent 70%)}
 .em i{position:absolute;border-radius:50%;width:var(--s);height:var(--s);background:rgb(var(--c));box-shadow:0 0 calc(var(--s)*2.4) calc(var(--s)*.5) rgba(var(--c),.6)}
-.ground{position:absolute;left:470px;top:520px;width:720px;height:120px;border-radius:50%;background:radial-gradient(ellipse at center, rgba(160,130,255,.30), rgba(79,216,203,.10) 45%, transparent 70%);filter:blur(6px)}
-.b{position:absolute;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6))}
+.ground{position:absolute;left:620px;width:610px;height:80px;border-radius:50%;background:radial-gradient(ellipse at center, rgba(160,130,255,.30), rgba(79,216,203,.10) 45%, transparent 70%);filter:blur(6px)}
+.cell{position:absolute;width:184px;height:270px;display:flex;align-items:flex-end;justify-content:center}
+.cell img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.6))}
 .left{position:absolute;left:64px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;z-index:5}
-.lock{width:210px;margin:0 0 6px -6px}
-h1{margin:0;font-weight:400;font-size:126px;line-height:.9;letter-spacing:.005em;
-  background:linear-gradient(180deg,#ffffff 15%,#d9c8ff 70%,#b79bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
-.sub{margin-top:16px;font-size:34px;color:#cfd3e6}
-.fade{position:absolute;left:0;top:0;bottom:0;width:560px;background:linear-gradient(90deg,#070b16 45%,rgba(7,11,22,.7) 70%,transparent);z-index:4}
+.lock{position:absolute;left:56px;top:40px;width:120px;z-index:6}
+h1.word{margin:0 0 0 -8px;display:flex;align-items:center;filter:drop-shadow(0 12px 28px rgba(0,0,0,.55))}
+.word .wm{height:134px;width:auto;display:block}
+.word .dex{height:122px;width:auto;margin-left:-16px;margin-top:4px;overflow:visible}
+.sub{margin-top:14px;font-size:32px;color:#cfd3e6}
+.fade{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#070b16 45%,rgba(7,11,22,.7) 70%,transparent);z-index:4}
 </style></head><body>
 <div class="og" id="og">
   <div class="glow"></div>
   <div class="em" id="em"></div>
-  <div class="ground"></div>
-  <!-- back row -->
-  <img class="b" src="../../assets/img/boki-front/eclipsowl-960.webp" style="left:600px;top:40px;width:300px;opacity:.95">
-  <img class="b" src="../../assets/img/boki-front/dragonkite-960.webp" style="left:940px;top:20px;width:300px">
-  <img class="b" src="../../assets/img/boki-front/zephyrak-960.webp" style="left:785px;top:-6px;width:300px">
-  <!-- middle -->
-  <img class="b" src="../../assets/img/boki-front/crofthorn-960.webp" style="left:510px;top:240px;width:290px">
-  <img class="b" src="../../assets/img/boki-front/lunowl-960.webp" style="left:990px;top:200px;width:240px">
-  <!-- front -->
-  <img class="b" src="../../assets/img/boki-front/glomwort-960.webp" style="left:700px;top:290px;width:300px">
-  <img class="b" src="../../assets/img/boki-front/bubblisk-960.webp" style="left:910px;top:340px;width:290px">
-  <img class="b" src="../../assets/img/boki-front/vespox-960.webp" style="left:540px;top:405px;width:225px">
+  <div class="ground" style="top:258px"></div>
+  <div class="ground" style="top:522px"></div>
+  <div class="cell" style="left:640px;top:28px"><img src="../../assets/img/boki-front/zephyrak-960.webp"></div>
+  <div class="cell" style="left:825px;top:28px"><img src="../../assets/img/boki-front/eclipsowl-960.webp"></div>
+  <div class="cell" style="left:1010px;top:28px"><img src="../../assets/img/boki-front/dragonkite-960.webp"></div>
+  <div class="cell" style="left:640px;top:292px"><img src="../../assets/img/boki-front/glomwort-960.webp"></div>
+  <div class="cell" style="left:825px;top:292px"><img src="../../assets/img/boki-front/bubblisk-960.webp"></div>
+  <div class="cell" style="left:1010px;top:292px"><img src="../../assets/img/boki-front/lunowl-960.webp"></div>
   <div class="fade"></div>
   <div class="left">
-    <img class="lock" src="../../assets/img/lockup-640.webp">
-    <h1>Bokidex</h1>
+    <h1 class="word" aria-label="Bokidex"><img class="wm" src="../../assets/img/wordmark-boki-2000.webp"><svg class="dex" viewBox="0 0 300 160" aria-hidden="true">
+      <defs><linearGradient id="dg" x1="0" x2="1"><stop offset="0" stop-color="#b56bff"/><stop offset="1" stop-color="#e070ff"/></linearGradient>
+      <filter id="db" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+      <g font-family="Lilita" font-size="150" stroke-linejoin="round">
+        <g transform="translate(2 138)"><text x="0" y="0" fill="none" stroke="url(#dg)" stroke-width="30" filter="url(#db)" opacity=".85" letter-spacing="2">DEX</text>
+        <text x="0" y="0" fill="none" stroke="url(#dg)" stroke-width="22" letter-spacing="2">DEX</text>
+        <text x="0" y="0" fill="#eee3d2" stroke="#0b0812" stroke-width="13" paint-order="stroke" letter-spacing="2">DEX</text></g>
+      </g></svg></h1>
     <div class="sub">Meet the Boki.</div>
   </div>
 </div>
