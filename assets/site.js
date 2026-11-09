@@ -336,6 +336,41 @@ if (pick) {
   wide.addEventListener && wide.addEventListener("change", layoutPin);
   layoutPin();
 
+  // Mouse and trackpad: a hard flick lands on the first Hunter (and, from there, on the last one) instead of flying
+  // past. Only that flick's leftover momentum is absorbed (it fades, so each event is smaller than the last);
+  // a fresh swipe goes straight through.
+  if (!calm) {
+    let catching = -1, lastW = 0, since = 0, peak = 0, rel = 0, pace = 0;
+    const armed = [true, true];
+    const hold = () => { clearTimeout(rel); rel = setTimeout(() => { catching = -1; }, 170); }; // the wheel went quiet: done
+    ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { catching = -1; }, { passive: true }));
+    const spots = () => [Math.round(scn.s0 + scn.lead), pin ? Math.round(pin.start + (HUNTERS.length - 0.5) * pin.step) : null];
+    addEventListener("wheel", (e) => {
+      if (!scn) return;
+      const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1);
+      if (catching >= 0) {
+        const fresh = dy < 0 || now - lastW > 160 || Math.abs(dy) > peak * 2 + 24 || now - since > 2000;
+        lastW = now; peak = Math.max(Math.abs(dy), peak * 0.8);
+        if (fresh) { catching = -1; return; }
+        e.preventDefault(); hold(); return;
+      }
+      pace = now - lastW > 160 ? Math.abs(dy) : Math.max(Math.abs(dy), pace * 0.85); lastW = now; // how hard you're scrolling
+      if (dy <= 0 || pace < 45) return; // slow, steady scrolling is never caught
+      spots().forEach((at, k) => {
+        if (catching < 0 && at !== null && armed[k] && scrollY > at - innerHeight * 1.6 && scrollY < at && scrollY + dy > at) {
+          armed[k] = false; catching = k; since = now; peak = Math.abs(dy);
+          e.preventDefault(); scrollTo({ top: at, behavior: "instant" }); hold(); // the stage is held in place, so nothing jumps
+        }
+      });
+    }, { passive: false });
+    addEventListener("scroll", () => {
+      if (!scn) return;
+      const s = spots();
+      if (catching >= 0 && scrollY > s[catching]) scrollTo({ top: s[catching], behavior: "instant" });
+      s.forEach((at, k) => { if (at !== null && scrollY < at - innerHeight * 0.4) armed[k] = true; }); // back above it: catches again
+    }, { passive: true });
+  }
+
   // Phones only: momentum can fling a thumb straight past the scene, so the first time down it holds the page,
   // carries it into the Hunters while the scene plays, and lets go the moment the picker is in.
   if (!calm) {
