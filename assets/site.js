@@ -36,6 +36,9 @@ if ("IntersectionObserver" in window && !calm) {
   revealed.forEach((el) => el.classList.add("in"));
 }
 
+// No dragging images out of the page (Firefox ignores -webkit-user-drag)
+document.addEventListener("dragstart", (e) => { if (e.target && e.target.closest && e.target.closest("img, svg, picture, video, canvas")) e.preventDefault(); });
+
 const media = document.getElementById("hero-media");
 // The portrait wall only drifts while it can be seen.
 if (media && "IntersectionObserver" in window) {

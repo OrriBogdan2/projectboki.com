@@ -726,3 +726,7 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .bk-sil.egg i { width: 46%; height: 60%; display: grid; place-items: center; border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%; background: #05080f;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--g) 45%, transparent), 0 0 14px color-mix(in srgb, var(--g) 25%, transparent); font-style: normal; font-family: "Lilita"; font-size: 20px; color: color-mix(in srgb, var(--g) 60%, #fff 0%); }
 @media (max-width: 639px) { .bk-sils { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; max-height: calc(3 * 62px + 2 * 7px); } .bk-sil { height: 62px; border-radius: 12px; } .bk-sil.egg i { font-size: 15px; } }
+
+/* Art is never selectable or draggable, so a stray click-drag can't paint it blue or pull out a ghost copy */
+img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, .pj, .fig, .tiles, .pk-grid a, button, .btn, .nav a, .brand, .bk-arrow, .h-skip { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+::selection { background: rgba(160, 120, 255, .45); color: #fff; }
