@@ -1,3 +1,35 @@
+// Weak computers: watch the frame rate for the first ~90s. If the page keeps stalling, switch to a lighter look (no
+// frosted-glass blurs, a still portrait wall, a still Bubblisk, fewer glows) and remember it for this visit.
+// ?lite forces it on, ?full forces it off.
+const LITE = (function () {
+  const root = document.documentElement, q = location.search;
+  let lite = false;
+  try { lite = /[?&]lite\b/.test(q) || (!/[?&]full\b/.test(q) && sessionStorage.getItem("boki-lite") === "1"); } catch (e) {}
+  const on = () => {
+    if (root.classList.contains("lite")) return;
+    root.classList.add("lite"); try { sessionStorage.setItem("boki-lite", "1"); } catch (e) {}
+    document.dispatchEvent(new Event("boki-lite"));
+  };
+  if (lite) { root.classList.add("lite"); return { on: () => true }; }
+  if (/[?&]full\b/.test(q) || matchMedia("(prefers-reduced-motion: reduce)").matches) return { on: () => false };
+  // Every ~2s, measure how much of that time went to stalled frames (over 34ms). A third or more, twice running, is a struggling machine.
+  let last = 0, w0 = 0, jank = 0, bad = 0; const t0 = performance.now();
+  const step = (t) => {
+    if (document.hidden) { last = 0; w0 = 0; jank = 0; } else {
+      if (last) { const d = t - last; if (d > 34) jank += Math.min(d, 2000) - 17; }
+      last = t;
+      if (!w0) w0 = t;
+      else if (t - w0 >= 2000) {
+        const share = jank / (t - w0); w0 = t; jank = 0;
+        if (t - t0 > 2500) { bad = share > 0.33 ? bad + 1 : 0; if (bad >= 2) { on(); return; } }
+      }
+    }
+    if (t - t0 < 90000) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+  return { on: () => root.classList.contains("lite") };
+})();
+
 // Discord invite. Every .js-discord link shows up once this is set.
 const DISCORD_URL = "https://discord.gg/nbeBaU7xt";
 
@@ -182,9 +214,10 @@ function spinner(box, el) {
     draw();
   };
   const stop = () => { clearInterval(timer); timer = null; };
+  document.addEventListener("boki-lite", () => { if (!timer) return; stop(); seg = -1; f = 0; draw(); });
   const play = () => {
     if (timer || !ready[0] || !seen || drag || back) return;
-    if (calm) { seg = -1; f = 0; draw(); return; }
+    if (calm || LITE.on()) { seg = -1; f = 0; draw(); return; } // lite: hold the pose (still turns by drag)
     timer = setInterval(tick, 80);
   };
   // the other emotes load one at a time, only once the first has played and only while this Hunter is up
@@ -361,7 +394,7 @@ if (pick) {
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
       tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
-      if (cw) cw.style.clipPath = cw.style.webkitClipPath = ""; shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
+      if (cw) { cw.style.clipPath = cw.style.webkitClipPath = ""; cw.style.opacity = ""; } shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
       // 1) the broken heading lifts away
       const io = 1 - sm(clamp((q - 0.02) / 0.11));
@@ -397,8 +430,9 @@ if (pick) {
         rift.svg.style.opacity = (Math.min(1, draw * 1.6) * (1 - sm(clamp(r / 0.55)))).toFixed(3);
         const e = (50 - 52 * draw).toFixed(2); rift.svg.style.clipPath = `inset(${e}% -20% ${e}% -20%)`; // runs out from the middle
       }
-      if (cw) cw.style.clipPath = cw.style.webkitClipPath = r > 0 ? crack(r) : "polygon(50% 0, 50% 0, 50% 0)";
-      shot.style.filter = r > 0 && r < 1 ? `drop-shadow(0 0 ${(4 + 14 * r).toFixed(1)}px rgba(255, 96, 48, ${(0.95 * (1 - r)).toFixed(3)}))` : "";
+      if (cw && LITE.on()) { cw.style.clipPath = cw.style.webkitClipPath = ""; cw.style.opacity = r.toFixed(3); } // lite: a plain fade, the jagged mask is costly
+      else if (cw) { cw.style.opacity = ""; cw.style.clipPath = cw.style.webkitClipPath = r > 0 ? crack(r) : "polygon(50% 0, 50% 0, 50% 0)"; }
+      shot.style.filter = r > 0 && r < 1 && !LITE.on() ? `drop-shadow(0 0 ${(4 + 14 * r).toFixed(1)}px rgba(255, 96, 48, ${(0.95 * (1 - r)).toFixed(3)}))` : "";
       shot.style.setProperty("--zr", (0.12 * (1 - r)).toFixed(4)); // and the art settles from close up
       const o = sm(clamp((q - 0.62) / 0.26)); // 3) then the name, the count and the arrows
       late.forEach((el) => { el.style.transition = "none"; el.style.opacity = o.toFixed(3); el.style.translate = `0 ${(16 * (1 - o)).toFixed(1)}px`; });
@@ -417,7 +451,7 @@ if (pick) {
       const k = (y - pin.start) / pin.step, i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor(k))), fr = clamp(k - i);
       if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
       // each Hunter slowly pushes in while you're on it
-      zsGoal = 0.018 * Math.sin(Math.PI * fr); // eased in tick(), so racing through Hunters doesn't make it throb
+      zsGoal = LITE.on() ? 0 : 0.018 * Math.sin(Math.PI * fr); // eased in tick(), so racing through Hunters doesn't make it throb (off in lite)
       if (bar) bar.style.transform = `scaleX(${clamp((k + 0.5) / HUNTERS.length).toFixed(4)})`;
     }
   };
@@ -1207,10 +1241,14 @@ if (POSTHOG_KEY) {
       setTimeout(() => { wrap.classList.remove("grow"); busy = false; }, 2600);
     }
   });
-  if (calm) return;
+  if (calm || LITE.on()) return; // reduced motion, or a computer that can't keep up: the still picture (the pop still works)
 
   // ---- the living version: every pixel is pulled through a warp (WebGL), so the painting itself moves
   const cv = document.createElement("canvas"); cv.className = "bub-gl";
+  document.addEventListener("boki-lite", () => { // lite switched on mid-visit: back to the still picture
+    ready = false; gl = null; cv.remove(); wrap.classList.remove("gl"); wrap.style.transform = "";
+    btn.style.translate = ""; burst.style.translate = "";
+  });
   gl = cv.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   if (!gl) return;
   const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };

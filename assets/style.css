@@ -932,3 +932,14 @@ a, button, summary, label, .bw-card, .bk-sil { -webkit-tap-highlight-color: tran
 
 /* "Choose your Hunter.": the scene's second line, after the question */
 #hunters.scene .h-choose .hu { background: linear-gradient(100deg, #7ff5e6 0%, #c9a2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 0 24px rgba(140,200,255,.35)); }
+
+/* Lite mode (site.js switches it on when a computer can't keep up): same look, much less work per frame */
+html.lite *, html.lite *::before, html.lite *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.lite .tb-bar, html.lite .nav.scrolled { background: rgba(8,13,24,.95) !important; }
+html.lite .btn-glass, html.lite .su-row, html.lite .bk-arrow, html.lite .h-expand { background-color: rgba(12,17,32,.86); }
+html.lite .cast .row { animation-play-state: paused !important; }
+html.lite .cast li, html.lite .step-card, html.lite .bw-card, html.lite .qa details, html.lite .hm-card, html.lite .bm-card { box-shadow: none !important; }
+html.lite .join-bg::before { animation: none !important; }
+html.lite .fig-img, html.lite #hunters.scene .h-ask .sk span, html.lite #hunters.scene .h-choose .hu, html.lite .bm-art img, html.lite .bw-art img { filter: none !important; }
+html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
+#hunters.scene .stage { will-change: transform, opacity; } /* its own layer: the scroll-in fade then composites instead of redrawing the big figure sheet each frame */
