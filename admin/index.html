@@ -73,6 +73,7 @@ button:disabled{opacity:.5;cursor:default}
   <div class="tabs" role="tablist">
     <button role="tab" id="t-backlog" aria-selected="true" data-tab="backlog">Backlog</button>
     <button role="tab" id="t-jobs" aria-selected="false" data-tab="jobs">Jobs</button>
+    <button role="tab" id="t-usage" aria-selected="false" data-tab="usage">Usage</button>
     <button role="tab" id="t-signups" aria-selected="false" data-tab="signups">Signups</button>
   </div>
 
@@ -102,6 +103,11 @@ button:disabled{opacity:.5;cursor:default}
     <div class="err" id="jErr" role="alert"></div>
   </div>
 
+  <div id="p-usage" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="muted" id="usMeta">Loading…</span><button type="button" id="usReload">Refresh</button></div>
+    <div class="err" id="usErr" role="alert"></div>
+    <iframe id="usFrame" title="Usage dashboard" sandbox="allow-scripts" style="width:100%;height:80vh;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>
+  </div>
   <div id="p-signups" class="hidden">
     <div class="card"><h2>Signups</h2><div class="big" id="suCount">-</div><div class="muted" id="suState"></div></div>
     <div class="card"><h2>Latest 20</h2><div id="suList"></div><div class="err" id="suErr" role="alert"></div></div>
@@ -178,12 +184,20 @@ function loadGoogle(cid){
 /* ---- tabs ---- */
 var loaded={};
 function tab(name){
-  ["backlog","jobs","signups"].forEach(function(n){
+  ["backlog","jobs","usage","signups"].forEach(function(n){
     $("p-"+n).classList.toggle("hidden",n!==name);
     $("t-"+n).setAttribute("aria-selected",n===name?"true":"false");
   });
-  if(name==="backlog")loadBacklog();if(name==="jobs")loadJobs();if(name==="signups")loadSignups();
+  if(name==="backlog")loadBacklog();if(name==="jobs")loadJobs();if(name==="signups")loadSignups();if(name==="usage")loadUsage();
+  try{history.replaceState(null,"","#"+name)}catch(e){}
 }
+function loadUsage(){
+  $("usErr").textContent="";$("usMeta").textContent="Loading…";
+  api("/admin/usage").then(function(j){
+    $("usFrame").srcdoc=j.html;$("usMeta").textContent="Built "+new Date(j.updated*1000).toLocaleString()+" · refreshes hourly";
+  }).catch(function(e){$("usErr").textContent=e.message;$("usMeta").textContent=""});
+}
+$("usReload").addEventListener("click",loadUsage);
 Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(b){b.addEventListener("click",function(){tab(b.dataset.tab)})});
 
 /* ---- backlog ---- */
@@ -263,7 +277,8 @@ function loadSignups(){
 /* ---- start ---- */
 function enter(user){
   $("whoName").textContent=user.display+(user.email?" ("+user.email+")":"");
-  show("app");tab("backlog");
+  var h=(location.hash||"").slice(1);
+  show("app");tab(["backlog","jobs","usage","signups"].indexOf(h)>=0?h:"backlog");
 }
 function start(){
   api("/config",{auth:false}).then(function(c){if(c.google_client_id)loadGoogle(c.google_client_id)}).catch(function(){});
