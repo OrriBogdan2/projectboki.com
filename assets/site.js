@@ -305,7 +305,7 @@ if (pick) {
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
   const skip = plab && (() => { // jump past the twelve steps to the next section
     const b = document.createElement("button"); b.type = "button"; b.className = "h-skip";
-    b.innerHTML = 'Skip to next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    b.innerHTML = 'Skip Hunters<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     b.addEventListener("click", () => { // the section after the Hunters
       let to = sec.nextElementSibling; while (to && to.tagName !== "SECTION") to = to.nextElementSibling;
       if (to) to.scrollIntoView({ behavior: "instant", block: "start" });
@@ -528,7 +528,7 @@ if (pick) {
 
     // Phones: one swipe, one Hunter. Inside the Hunters a vertical swipe glides to the next (or previous) Hunter
     // instead of flinging past them all; at the first or last Hunter it scrolls on normally, and sideways swipes
-    // still browse the strip. "Skip to next" jumps straight past.
+    // still browse the strip. "Skip Hunters" jumps straight past.
     if (touchy) {
       let sy = 0, sx = 0, mode = -1, glide = 0;
       const last = () => HUNTERS.length - 1;
