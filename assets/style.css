@@ -811,3 +811,6 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 .bub-wrap.gl .bub:hover { filter: none; }
 .bub-wrap.gl { animation: none; }
 .bub-burst { translate: 0 0; }
+.faq-side { z-index: 3; }
+.bub-wrap.gl { pointer-events: none; will-change: transform; transform-origin: 50% 55%; }
+.bub-wrap.gl .bub { pointer-events: auto; }

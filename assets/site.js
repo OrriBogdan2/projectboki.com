@@ -1112,7 +1112,7 @@ if (POSTHOG_KEY) {
   const E1 = [0.4365, 0.372, 0.0615, 0.0635], E2 = [0.228, 0.393, 0.021, 0.057]; // the big eye and the side eye (center, radii)
   // where each part of him moves to: head after the pointer (and turning), body breathing and hopping, tail swaying
   const MOVE = `
-    uniform vec2 uOff; uniform float uT, uBreath, uLean, uTurn, uHop, uSquash;
+    uniform vec2 uOff; uniform float uT, uBreath, uLean, uTurn, uHop, uSquash, uSwim, uPh;
     vec2 move(vec2 p) {
       vec2 h = p - vec2(${HEAD[0]}, ${HEAD[1]});
       float wh = exp(-dot(h, h) / (2.0 * 0.19 * 0.19));
@@ -1121,7 +1121,9 @@ if (POSTHOG_KEY) {
       vec2 b = p - vec2(0.55, 0.48); float wb = exp(-dot(b, b) / (2.0 * 0.26 * 0.26));
       d.y += (p.y - 0.70) * uBreath * wb; d.x += (p.x - 0.55) * uBreath * 0.5 * wb;
       float wt = smoothstep(0.6, 0.86, p.y) * smoothstep(0.5, 0.78, p.x);
-      d.x += sin(uT * 1.7 + p.y * 6.0) * 0.016 * wt; d.y += cos(uT * 1.3 + p.x * 5.0) * 0.008 * wt;
+      d.x += sin(uPh + p.y * 6.0) * (0.016 + 0.03 * uSwim) * wt; d.y += cos(uPh * 0.8 + p.x * 5.0) * (0.008 + 0.016 * uSwim) * wt;
+      float wsb = smoothstep(0.22, 0.4, p.x) * smoothstep(0.1, 0.35, p.y) * smoothstep(0.95, 0.8, p.y);   // swimming: a wave runs down his body
+      d.y += sin(uPh * 1.4 - p.x * 9.0) * 0.016 * uSwim * wsb;
       d.x += uLean * (0.72 - p.y) * 0.4;
       d.y += (p.y - 0.70) * uSquash; d.x -= (p.x - 0.55) * uSquash * 0.6;     // squash and stretch
       d.y -= uHop;                                                               // and hop
@@ -1192,6 +1194,9 @@ if (POSTHOG_KEY) {
   // his little brain: where to look, when to blink, when to hop
   let ox = 0, oy = 0, lean = 0, turn = 0, lx = 0, ly = 0, ex = 0, vis = false, t = 0, last = 0;
   let blinkAt = 1.5, blinkK = -1, double = false, hopK = -1, nextHop = 0, wide = 0, glance = { x: 0, y: 0, until: 0 };
+  // swimming: in the FAQ he leaves his spot and loops around the pointer, then swims home
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches, faqSec = document.getElementById("faq"), home = wrap.parentNode;
+  let sx = 0, sy = 0, vx = 0, vy = 0, orbit = Math.random() * 6.28, swim = 0, ph = 0, tilt = 0;
   btn.addEventListener("click", () => { wide = 1; hopK = 0; blinkK = -1; });
   new IntersectionObserver(([en]) => { vis = en.isIntersecting; if (vis && ready) loop(); }, { rootMargin: "100px" }).observe(wrap);
   const U = {}; const loc = (p, n) => (U[n + p.__id] ||= gl.getUniformLocation(p, n)); baseP.__id = "b"; bubP.__id = "u";
@@ -1209,6 +1214,35 @@ if (POSTHOG_KEY) {
       if (t > glance.until) glance = { x: Math.random() * 2 - 1, y: Math.random() * 1.4 - 0.7, until: t + 1.2 + Math.random() * 2 };
       dirx = glance.x * 0.7; diry = glance.y * 0.6;
     }
+    // where to swim: around the pointer while it's in the FAQ, otherwise home
+    let gx = 0, gy = 0, scale = 1;
+    if (fine && px !== null && now - lastMove < 4000) {
+      const fr = faqSec.getBoundingClientRect();
+      if (px > fr.left && px < fr.right && py > fr.top && py < fr.bottom) {
+        const hr = home.getBoundingClientRect(), R = Math.min(190, hr.width * 0.75);
+        orbit += dt * (0.7 + Math.min(1, Math.hypot(vx, vy) / 600) * 0.6);
+        const cxp = px + Math.cos(orbit) * R, cyp = py + Math.sin(orbit) * R * 0.55;
+        gx = cxp - (hr.left + hr.width / 2); gy = cyp - (hr.top + hr.height / 2);
+        gx = Math.max(fr.left + hr.width * 0.35 - (hr.left + hr.width / 2), Math.min(fr.right - hr.width * 0.35 - (hr.left + hr.width / 2), gx));
+        gy = Math.max(fr.top + hr.height * 0.35 - (hr.top + hr.height / 2), Math.min(fr.bottom - hr.height * 0.35 - (hr.top + hr.height / 2), gy));
+        scale = 0.72;
+      }
+    }
+    const k = 9, c = 5.2;                                   // a springy, floaty follow
+    vx += ((gx - sx) * k - vx * c) * dt; vy += ((gy - sy) * k - vy * c) * dt;
+    if (scale < 1) { // dodge: come at him and he darts out of the way, then keeps circling
+      const hr = home.getBoundingClientRect(), bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
+      const ddx = bx - px, ddy = by - py, dd = Math.hypot(ddx, ddy) || 1, reach = hr.width * 0.5;
+      if (dd < reach) { const push = (1 - dd / reach) * 5200; vx += ddx / dd * push * dt; vy += ddy / dd * push * dt; orbit = Math.atan2(ddy / 0.55, ddx); }
+    }
+    const sp = Math.hypot(vx, vy), cap = 900; if (sp > cap) { vx *= cap / sp; vy *= cap / sp; }
+    sx += vx * dt; sy += vy * dt;
+    const away = Math.min(1, Math.hypot(sx, sy) / 60);
+    swim += (Math.min(1, sp / 420 + away * 0.35) - swim) * (1 - Math.exp(-dt * 4));
+    ph += dt * (1.7 + swim * 6);
+    tilt += ((Math.max(-1, Math.min(1, vy / 600)) * 14 - Math.max(-1, Math.min(1, vx / 900)) * 6) - tilt) * (1 - Math.exp(-dt * 5));
+    const sc = 1 + (scale - 1) * away;
+    wrap.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
     tx = dirx * 0.06; ty = diry * 0.045;
     const f = 1 - Math.exp(-dt * 7), fe = 1 - Math.exp(-dt * 16);
     ox += (tx - ox) * f; oy += (ty - oy) * f; lean += (dirx * 0.07 - lean) * f; turn += (dirx * 0.5 - turn) * f;
@@ -1221,7 +1255,7 @@ if (POSTHOG_KEY) {
       if (blinkK >= 1) { if (double) { double = false; blinkK = -0.6; } else { blinkK = -1; blinkAt = t + 2 + Math.random() * 3.5; } } }
     else if (blinkK > -1 && blinkK < 0) { blinkK += dt / 0.17; if (blinkK >= 0) blinkK = 0; }
     // excited hops when you're close
-    if (hopK < 0 && ex > 0.55 && t > nextHop) { hopK = 0; }
+    if (hopK < 0 && ex > 0.55 && t > nextHop && swim < 0.25) { hopK = 0; }
     let hop = 0, squash = 0;
     if (hopK >= 0) { hopK += dt / 0.5; const k = hopK;
       if (k < 0.18) squash = 0.05 * Math.sin(k / 0.18 * Math.PI);                 // crouch
@@ -1235,7 +1269,8 @@ if (POSTHOG_KEY) {
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     const set = (p) => { gl.uniform2f(loc(p, "uOff"), ox, oy); gl.uniform1f(loc(p, "uT"), t); gl.uniform1f(loc(p, "uBreath"), breath); gl.uniform1f(loc(p, "uLean"), lean);
-      gl.uniform1f(loc(p, "uTurn"), turn * 0.12); gl.uniform1f(loc(p, "uHop"), hop); gl.uniform1f(loc(p, "uSquash"), squash); };
+      gl.uniform1f(loc(p, "uTurn"), turn * 0.12); gl.uniform1f(loc(p, "uHop"), hop); gl.uniform1f(loc(p, "uSquash"), squash);
+      gl.uniform1f(loc(p, "uSwim"), swim); gl.uniform1f(loc(p, "uPh"), ph); };
     gl.bindBuffer(gl.ARRAY_BUFFER, qb);
     gl.useProgram(baseP); set(baseP);
     gl.uniform2f(loc(baseP, "uLook"), lx, ly); gl.uniform1f(loc(baseP, "uBlink"), blink); gl.uniform1f(loc(baseP, "uWide"), wide);
