@@ -178,7 +178,9 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .shot img { width: 100%; aspect-ratio: 2000 / 1116; object-fit: cover; transition: opacity .22s ease, transform .5s ease; }
 .shot img.out { opacity: 0; transform: scale(1.015); }
 .info { position: absolute; left: 0; bottom: 0; z-index: 1; width: min(560px, 100%); padding: 0 40px 36px; }
-.stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,13,24,.8) 0%, rgba(8,13,24,.35) 32%, rgba(8,13,24,0) 55%, rgba(8,13,24,0) 66%, rgba(8,13,24,.55) 100%), linear-gradient(0deg, rgba(8,13,24,.85) 0%, rgba(8,13,24,0) 45%); }
+/* No dark film over the art: just a soft shadow behind the name (bottom left) and a light vignette at the edges */
+.stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 48% 60% at 0% 100%, rgba(8,13,24,.72), rgba(8,13,24,.25) 55%, transparent 75%), radial-gradient(ellipse 75% 85% at 50% 45%, transparent 60%, rgba(8,13,24,.4) 100%); }
+#hunters .info h3, #hunters .info .title { text-shadow: 0 2px 18px rgba(0,0,0,.65); }
 .title { font-family: "Lilita"; font-size: 20px; color: var(--ink-2); letter-spacing: .08em; text-transform: uppercase; }
 .info h3 { font-size: clamp(52px, 6vw, 84px); line-height: 1; }
 .info .title { margin-top: 8px; }
@@ -779,6 +781,3 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
   #boki .head .sub { font-size: 18px; max-width: 26ch; margin-top: 12px; }
   #boki .head { margin-bottom: 28px; }
 }
-/* Neve's snowy splash greys under the desktop shade: lift her art a touch and lighten the shade for her */
-@media (min-width: 721px) { #hunters .stage[data-h="claire"] #h-art { filter: brightness(1.08) saturate(1.04); } #hunters .stage[data-h="claire"]::after { opacity: .7; } }
-#hunters .stage::after { transition: opacity .3s ease; }
