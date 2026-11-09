@@ -679,7 +679,7 @@ const curTheme=()=>{const t=document.documentElement.getAttribute("data-theme");
 /* heroDark / heroLight are transparent cutouts made per theme; when the entry has them the one matching the theme wins, then plain hero, then the other variant. */
 function heroOf(e){
   const o=ovl[e.id];
-  if(o?.hero&&o.hero.fresh&&e.heroGen!==o.gen.id){ // baked cutout (bake_approved) of this same gen wins: glow + right backdrop
+  if(o?.hero&&o.hero.fresh&&e.heroGen!==o.gen.id&&!(e.heroKind==="art"&&(o.gen.created||0)<=(e.heroAt||0))){ // 11-09: art-lane live art beats older approved gens // baked cutout (bake_approved) of this same gen wins: glow + right backdrop
    if(o.hero.sheet)probe(o.hero.src);return o.hero}
   const dark=curTheme()==="dark", want=dark?e.heroDark:e.heroLight, other=dark?e.heroLight:e.heroDark;
   if(want)return{src:assetURL(want),cut:true};
