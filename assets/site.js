@@ -290,7 +290,7 @@ if (pick) {
   const wide = matchMedia("(min-width: 1024px) and (min-height: 640px) and (hover: hover) and (pointer: fine)");
   let pin = null, fromScroll = false;
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
-  // The Hunters scene: the stage holds in place (sticky) for a stretch. "broken apart." arrives over it, breaks while
+  // The Hunters scene: the stage holds in place (sticky) for a stretch. "fallen down." arrives over it, breaks while
   // you scroll, then fades out as the stage fades in, so the heading turns into the Hunters instead of scrolling away.
   // On desktop the stage then keeps holding while the scroll steps through every Hunter.
   // Every bit of scroll here moves something: the heading breaks, then a glowing crack tears the Hunter's art open
@@ -985,7 +985,7 @@ if (POSTHOG_KEY) {
   frame();
 })();
 
-/* ---------- "broken apart.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
+/* ---------- "fallen down.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
    each letter, the letter splits into two shards along it, and the shards drop and tumble apart shedding chips, the red
    rising in them as they fall. Scroll up and it all runs backwards: chips back, shards rejoin, the crack seals and cools. ---------- */
 (function () {
