@@ -597,6 +597,9 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 }
 </style>
 
+<!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->
+<script>document.documentElement.classList.add("tb-dex")</script>
+<style>html.tb-dex{--tbh:52px;--tbo:var(--tbh)}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>
 </head>
 <body>
 <div class="wrap" id="app" hidden>
@@ -1134,6 +1137,7 @@ async function ownerUnlock(k){
   },{passive:true});
 })();
 </script>
-<script src="owner.js?v=e97737d5e1"></script>
+<script src="/assets/topbar.js?v=1" defer></script>
+<script src="owner.js?v=64eac809bc"></script>
 </body>
 </html>

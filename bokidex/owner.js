@@ -306,9 +306,36 @@
   function adminState(on) {
     var b = document.getElementById("bxo-btn"); if (b) { b.textContent = on ? "Admin" : "Admin sign in"; b.title = on ? "Admin tools" : "Admin sign in"; }
     if (window.BKX && window.BKX.setAdmin) window.BKX.setAdmin(!!on);
+    isOn = !!on; try { document.dispatchEvent(new CustomEvent("bkx-admin", { detail: { on: isOn } })); } catch (e) {}
   }
+  var isOn = false;
+  function unlockKey() { return api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; }).catch(function () {}); }
+  /* API for the shared top bar (assets/topbar.js): sign in with a code the bar already collected, open the audit panel, sign out */
+  window.BKXOwner = {
+    isAdmin: function () { return isOn; },
+    hasCode: function () { return !!load(); },
+    signInCode: function (c) {
+      if (!c) return Promise.resolve(false); code = c;
+      return api("/whoami").then(function (j) {
+        if (!j.ok) { code = ""; return false; }
+        store(code); return unlockKey().then(function () { adminState(true); return true; });
+      }, function () { code = ""; return false; });
+    },
+    open: function () {
+      if (!(window.BKX && window.BKX.data())) return;
+      signin(true).then(function (ok) { if (ok) unlockKey().then(function () { adminState(true); open(); }); });
+    },
+    signOut: function () { store(null); code = ""; ratings = {}; drafts = {}; unlocked = {}; close(); adminState(false); }
+  };
   function init() {
     if (document.getElementById("bxo-btn")) return; style();
+    if (document.querySelector('script[src*="topbar.js"]')) {   /* the shared top bar owns sign-in: no floating button, same quiet re-unlock */
+      document.addEventListener("bokidex-unlocked", function () {
+        code = load(); if (!code) return;
+        api("/whoami").then(function (j) { if (j.ok) return unlockKey().then(function () { adminState(true); }); code = ""; }, function () { code = ""; });
+      });
+      return;
+    }
     var b = h("button", { id: "bxo-btn", class: "bxo-btn", text: "Admin sign in", type: "button", title: "Admin sign in" });
     function unlock() { return api("/key").then(function (j) { return j.ok && j.key ? window.BKX.ownerUnlock(j.key) : null; }).catch(function () {}); }
     b.onclick = function () {
