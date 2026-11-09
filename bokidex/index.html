@@ -248,6 +248,10 @@ details.dd ul{margin:6px 0 0;padding-left:18px;font-size:.84rem}
 .gal figure{margin:0}
 .gal img{width:100%;aspect-ratio:1;object-fit:contain;background:var(--panel);border-radius:10px;cursor:zoom-in;display:block}
 .gal figcaption{font:700 .62rem var(--mono);color:var(--mute);text-align:center;margin-top:2px}
+.alts.gal{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.alts.gal figure{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 6px 8px}
+.alts.gal img{border-radius:8px;background:var(--soft)}
+.alts.gal figcaption{font:600 .8rem var(--body);color:var(--ink);margin-top:6px}
 .pips{display:inline-flex;gap:3px;vertical-align:middle}
 .pips i{width:9px;height:9px;border-radius:50%;background:var(--line)}
 .pips i.on{background:var(--ty)}
@@ -846,12 +850,16 @@ function publicText(t,v){
   return parts.join(" ");
 }
 /* 11-09: Variants ("vari") and More ("more") are parked: tabBody/mutHTML/extrasHTML stay below so they can come back by adding them here. */
-const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"]];
-const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1||v.d?.aff?.length):true);
+const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["alts","Alts"]];
+/* 11-09: Alts = extra angles/poses of the same Boki (dex entry v.alts [{label,src}], written by dex_art_sync from the manifest's extra_angles). Never replaces the hero. */
+function altsHTML(v){const A=(v.alts||[]).filter(a=>a&&a.src);
+  return A.length?panel("Alts",`<div class="gal alts">${A.map(a=>`<figure><img src="${esc(P("dex/"+a.src))}" alt="${esc(v.name)} ${esc(a.label||"alt")}" loading="lazy" data-zoom><figcaption>${esc(a.label||"Alt")}</figcaption></figure>`).join("")}</div>`):"";}
+const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1||v.d?.aff?.length):k==="alts"?!!(v.alts||[]).some(a=>a&&a.src):true);
 function tabBody(v,e,d){
   if(mtab==="abil")return abilitiesHTML(v);
   if(mtab==="stats")return statsHTML(v);
   if(mtab==="evolve")return evoHTML(e);
+  if(mtab==="alts")return altsHTML(v)||factsHTML(v,e);
   if(mtab==="vari")return mutHTML(v)||'<p class="mut">No variants written for this one yet.</p>';
   if(mtab==="more")return extrasHTML(v);
   /* About = one short in-world dex entry (v.lore, written per Boki/form; owner 11-09: no listed quirks). Older or new
