@@ -446,7 +446,7 @@ if (pick) {
   // on the first or last Hunter; inside, it moves at most two Hunters, and the rest of that flick is held back.
   // A new swipe, a click or a key starts fresh, and slow scrolling is never caught.
   if (!calm) {
-    let lastW = 0, peak = 0, dec = 0, dir = 0, start = 0, caught = null, since = 0, spent = false;
+    let lastW = 0, peak = 0, dec = 0, dir = 0, start = 0, caught = null, since = 0, spent = false, prevA = 0, steady = 0;
     // clearly heading somewhere (two flicks the same way, both caught): stop catching that way until they turn
     // around or pause, so getting to the top, or on to the Boki, is quick
     const run = { 1: 0, "-1": 0 }, lastRun = { 1: 0, "-1": 0 }, free = { 1: false, "-1": false };
@@ -471,9 +471,12 @@ if (pick) {
       if (now - lastW > 5000) { free[1] = free[-1] = false; run[1] = run[-1] = 0; } // a pause: back to normal
       else if (fresh && d !== dir) { free[-d] = false; run[-d] = 0; }                  // turning around: that way is caught again
       lastW = now;
+      // a flick's coasting tail only ever fades; fingers still on the trackpad hold steady or speed up
+      steady = !fresh && a >= prevA * 0.97 && a > 3 ? steady + 1 : 0; prevA = a;
       if (fresh) { peak = dec = a; dir = d; start = scrollY; caught = null; spent = false; } else { peak = Math.max(peak, a); dec = Math.max(a, dec * 0.8); }
+      if (caught !== null && steady >= 3) { caught = null; spent = true; } // still scrolling on purpose: let go at once, no stall
       if (caught !== null) { if (now - since < 1600) { e.preventDefault(); return; } caught = null; spent = true; } // the rest of this flick is held back
-      if (spent || peak < 60 || free[dir]) return; // slow, steady scrolling, or clearly heading somewhere
+      if (spent || peak < 60 || free[dir] || steady >= 3) return; // slow or steady scrolling, or clearly heading somewhere
       const s = stopFor(), y = scrollY;
       if (crosses(y, y + dy, s) && Math.abs(s - y) < innerHeight * 1.6) { e.preventDefault(); land(s, now); }
     }, { passive: false });
@@ -481,7 +484,7 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = Math.abs(y - prevY) / Math.max(8, now - prevT) > 1.5;
       if (caught !== null) { if (now - since < 1600 && (dir > 0 ? y > caught : y < caught)) scrollTo({ top: caught, behavior: "instant" }); }
-      else if (scn && live && !spent && !free[dir] && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
+      else if (scn && live && !spent && !free[dir] && steady < 3 && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
         const s = stopFor();
         if (crosses(prevY, y, s)) land(s, now);
       }
