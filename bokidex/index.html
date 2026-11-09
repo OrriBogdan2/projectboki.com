@@ -177,10 +177,6 @@ html.modal-open body{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.dcard,.mnav,.btn,.tbtn{transition:none}.dcard:hover,.mnav:hover{transform:none}}
 @media (max-width:899px){#dgrid{grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}.minfo{padding:30px 26px 26px}.mart{padding:22px}}
 @media (max-width:759px){
-  .trow{flex-direction:column;gap:6px}
-  .search{order:1;flex:1 1 calc(100% - 54px)}.dbar .themebtn{order:2}.dbar #sort{order:3;flex:1 1 0}.dbar #surprise{order:4}
-  .tf{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;width:calc(100% + 32px);flex:none}
-  .tmeta{align-self:flex-end;margin-top:-2px}
   #dgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .dcard{border-radius:20px;padding:8px 8px 14px}
   .dnm{font-size:1.12rem}
@@ -383,6 +379,61 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
   .dcard,.dcard .hero img,.dcard .hero .himg,.btn,.tbtn,.mnav,.mclose,.dtabs a,.nav a,.mtabs button,.dbar select{transition-property:color,background,border-color,box-shadow!important}
   .dcard:hover,.mnav:hover,.btn:hover,.tbtn:hover{transform:none}
 }
+/* owner 11-09: dex console header */
+.brand{display:flex;align-items:center;gap:14px}
+.brand h1{font-size:2rem;letter-spacing:.02em}
+.lens{--s:44px;width:var(--s);height:var(--s);flex:none;border-radius:50%;position:relative;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,var(--panel)) 0 34%,var(--panel) 35% 100%);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,var(--line)),0 0 0 4px var(--soft),0 0 0 5px var(--line),0 0 22px -4px var(--accent);overflow:hidden}
+.lens::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 290deg,color-mix(in srgb,var(--accent) 70%,transparent) 360deg);animation:sweep 3.2s linear infinite}
+.lens::after{content:"";position:absolute;inset:38%;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+@keyframes sweep{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.lens::before{animation:none}}
+.dbar{border:1px solid var(--line);border-radius:24px;padding:12px;margin-top:4px;background:color-mix(in srgb,var(--panel) 88%,transparent);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 6%,transparent) inset,0 22px 50px -32px var(--shadow)}
+.dbar .drow{flex-wrap:nowrap;gap:8px}
+.dbar .search{flex:1 1 auto}
+.dbar input{height:46px;border-radius:15px;background:var(--soft);border-color:transparent;font-size:1rem;padding-right:96px}
+.dbar input:focus{border-color:var(--accent);background:var(--panel)}
+.dcount{position:absolute;right:14px;top:50%;translate:0 -50%;font:700 .74rem var(--mono);letter-spacing:.06em;color:var(--mute);pointer-events:none}
+.seg{display:flex;gap:2px;padding:4px;height:46px;border-radius:15px;background:var(--soft);flex:none}
+.seg button{font:700 .82rem var(--body);border:0;background:none;color:var(--mute);border-radius:11px;padding:0 14px;cursor:pointer;transition:background .15s,color .15s,box-shadow .2s}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 8%,transparent),0 4px 12px -6px var(--shadow),inset 0 -2px 0 var(--accent)}
+.seg .sdir{padding:0 10px;display:grid;place-items:center}
+.seg .sdir svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+.seg .sdir.rev svg{transform:scaleY(-1)}
+.seg .sdir:disabled{opacity:.3;cursor:default}
+.ibtn{width:46px;height:46px;flex:none;border-radius:15px;border:1px solid transparent;background:var(--soft);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .2s,background .15s,border-color .2s,box-shadow .25s}
+.ibtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ibtn .pip{fill:currentColor;stroke:none}
+.ibtn:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 8px 20px -10px var(--accent)}
+.ibtn:active{transform:scale(.94)}
+.ibtn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.ibtn:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#surprise:hover svg{animation:roll .5s ease}
+@keyframes roll{50%{transform:rotate(18deg) scale(1.1)}}
+.dbar .themebtn{border-radius:15px;width:46px;height:46px;background:var(--soft);color:var(--ink);border:1px solid transparent}
+.dbar .hint{margin:10px 4px 0}
+.dbar .hint[hidden]{display:none}
+.tmeta{display:flex;justify-content:space-between;align-items:center;height:auto;margin:12px 4px 7px}
+.tlbl{font:700 .66rem var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.tacts{display:flex;gap:12px}
+.tf{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+.tbtn{height:36px;border-radius:11px;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:0 10px;gap:8px;justify-content:flex-start;font:650 .8rem var(--body);min-width:0;position:relative}
+.tbtn::before{width:9px;height:9px;flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--ty) 22%,transparent)}
+.tbtn small{margin-left:auto;font:600 .66rem var(--mono);opacity:.55}
+.tbtn[aria-pressed="true"]{background:linear-gradient(140deg,color-mix(in srgb,var(--ty) 42%,var(--panel)),color-mix(in srgb,var(--ty) 16%,var(--panel)));border-color:var(--ty);box-shadow:0 0 0 1px var(--ty) inset,0 8px 22px -10px var(--ty)}
+.tbtn[aria-pressed="true"]::before{background:#fff;box-shadow:0 0 0 3px var(--ty),0 0 12px var(--ty)}
+.tbtn[aria-pressed="true"] small{opacity:.85}
+@media (max-width:1099px){.tf{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:759px){
+  .brand h1{font-size:1.6rem}.lens{--s:36px}
+  .dbar{border-radius:20px;padding:10px;margin-inline:-6px}
+  .dbar .drow{flex-wrap:wrap}
+  .dbar .search{flex:1 1 100%;order:0}
+  .seg{flex:1 1 auto;order:1}.seg button{flex:1 1 0;padding:0 6px}.seg .sdir{flex:0 0 40px}
+  #surprise{order:2}.dbar .themebtn{order:3}.keysbtn{display:none}
+  .tf{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .tbtn{height:34px;padding:0 9px}
+}
 /* owner 11-09: decision boxes */
 .decide{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .dec{min-height:64px;font-size:18px;font-weight:800;letter-spacing:.02em;border-radius:14px;border:2px solid var(--dc);background:color-mix(in srgb,var(--dc) 14%,transparent);color:var(--dc);cursor:pointer}
@@ -402,7 +453,7 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 <button class="btn pri" type="submit">Open the Bokidex</button><div id="lerr" role="alert"></div></form></div>
 <div class="wrap" id="app" hidden>
 <header>
-  <div><h1>Bokidex</h1><div class="sub">Project Boki creature dex</div></div>
+  <div class="brand"><span class="lens" aria-hidden="true"></span><div><h1>Bokidex</h1><div class="sub">Project Boki creature dex</div></div></div>
   <div class="hr">
   <button class="btn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch between light and dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
   </div>
@@ -411,21 +462,21 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 <section id="v-dex">
   <div class="dbar" role="search">
     <div class="drow">
-      <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><input id="q" type="search" placeholder="Search name or number" aria-label="Search by name or number" autocomplete="off"></label>
-      <select id="sort" aria-label="Sort">
+      <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><input id="q" type="search" placeholder="Search name or number" aria-label="Search by name or number" autocomplete="off"><span class="dcount" id="dcount" aria-live="polite"></span></label>
+      <select id="sort" aria-label="Sort" hidden>
         <option value="n+">Number, low to high</option><option value="n-">Number, high to low</option>
         <option value="a+">Name A to Z</option><option value="a-">Name Z to A</option>
         <option value="t+">Type</option>
       </select>
-      <button class="btn pri" id="surprise" type="button">Surprise me <kbd style="font:600 .68rem var(--mono);opacity:.7">R</kbd></button>
-      <button class="btn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch between light and dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
+      <div class="seg" role="group" aria-label="Sort by"><button type="button" data-sk="n" aria-pressed="true">No.</button><button type="button" data-sk="a" aria-pressed="false">Name</button><button type="button" data-sk="t" aria-pressed="false">Type</button><button type="button" class="sdir" data-sdir aria-label="Reverse order" title="Reverse order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"/></svg></button></div>
+      <button class="ibtn" id="surprise" type="button" aria-label="Random Boki (R)" title="Random Boki (R)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.3" class="pip"/><circle cx="15.5" cy="15.5" r="1.3" class="pip"/><circle cx="12" cy="12" r="1.3" class="pip"/><circle cx="15.5" cy="8.5" r="1.3" class="pip"/><circle cx="8.5" cy="15.5" r="1.3" class="pip"/></svg></button>
+      <button class="ibtn keysbtn" id="keysbtn" type="button" aria-label="Keyboard shortcuts" aria-pressed="false" title="Keyboard shortcuts"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h1M10.5 10h1M14.5 10h1M8 14h8"/></svg></button>
+      <button class="ibtn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Light or dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
     </div>
-    <div class="drow trow">
-      <div class="tf" id="tchips" role="group" aria-label="Filter by type"></div>
-      <div class="tmeta"><button class="tlink" id="tmode" type="button" hidden></button><button class="tlink" id="tclear" type="button" hidden>Clear</button><span class="dcount" id="dcount"></span></div>
-    </div>
+    <p class="hint" id="hint" hidden><kbd>←</kbd> <kbd>→</kbd> previous or next · <kbd>↑</kbd> <kbd>↓</kbd> browse · <kbd>Enter</kbd> open · <kbd>F</kbd> other form · <kbd>R</kbd> random · <kbd>Esc</kbd> close · <kbd>/</kbd> search</p>
+    <div class="tmeta"><span class="tlbl">Types</span><span class="tacts"><button class="tlink" id="tmode" type="button" hidden></button><button class="tlink" id="tclear" type="button" hidden>Clear</button></span></div>
+    <div class="tf" id="tchips" role="group" aria-label="Filter by type"></div>
   </div>
-  <p class="hint"><kbd>←</kbd> <kbd>→</kbd> previous or next · <kbd>↑</kbd> <kbd>↓</kbd> browse the grid · <kbd>Enter</kbd> inspect · <kbd>F</kbd> other form · <kbd>Esc</kbd> close · <kbd>/</kbd> search</p>
   <div id="dgrid" role="list"><div class="empty" style="grid-column:1/-1">Loading the Bokidex…</div></div>
   <div id="detail" role="dialog" aria-modal="true" aria-label="Entry"></div>
 </section>
@@ -773,6 +824,9 @@ function route(soft){
 function selectEntry(id){go("#boki-"+id,true);const c=$(`.dcard[data-id="${CSS.escape(id)}"]`);if(c){c.focus({preventScroll:true});c.scrollIntoView({block:"nearest"})}}
 function moveSel(d){const L=navList();if(!L.length)return;let i=L.findIndex(x=>x.id===sel);i=i<0?(d>0?0:L.length-1):Math.max(0,Math.min(L.length-1,i+d));selectEntry(L[i].id)}
 function cols(){const g=$("#dgrid");return Math.max(1,getComputedStyle(g).gridTemplateColumns.split(" ").length)}
+function syncSort(){const v=$("#sort").value;document.querySelectorAll(".seg [data-sk]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sk===v[0])));
+  const d=$(".seg .sdir");if(d){d.disabled=v[0]==="t";d.classList.toggle("rev",v[1]==="-")}}
+setTimeout(()=>{syncSort();let on=false;try{on=!!localStorage.getItem("bokidex-keys")}catch{}if(on){$("#hint").hidden=false;$("#keysbtn").setAttribute("aria-pressed","true")}},0);
 function surprise(){const L=D.filter(e=>!e.unknown);if(L.length)go("#boki-"+L[Math.floor(Math.random()*L.length)].id)}
 function moveRow(sel_,d){const rows=[...document.querySelectorAll(sel_)];if(!rows.length)return;let i=rows.indexOf(document.activeElement?.closest?.(sel_));if(i<0){i=rows.findIndex(r=>r.getBoundingClientRect().top>=70);if(i<0)i=0;if(d<0)i=Math.max(0,i-1)}else i=Math.max(0,Math.min(rows.length-1,i+d));rows[i].focus({preventScroll:true});rows[i].scrollIntoView({block:"start"})}
 /* ---------- events ---------- */
@@ -788,7 +842,12 @@ document.addEventListener("click",e=>{
   if(t.closest?.("#herobtn")&&!t.closest("#herobtn").disabled){openViewer();return}
   if(t.closest?.("#vclose")||t.id==="viewer"){closeViewer();return}
   const vt=t.closest?.("[data-vt]");if(vt){vTab=vt.dataset.vt;renderViewer();return}
-  if(t.id==="surprise"){surprise();return}
+  if(t.closest?.("#surprise")){surprise();return}
+  const sk=t.closest?.("[data-sk]"), sd=t.closest?.("[data-sdir]");
+  if(sk||sd){const cur=$("#sort").value, k=sk?sk.dataset.sk:cur[0];
+    const nv=sk?(k==="t"?"t+":cur[0]===k?k+(cur[1]==="+"?"-":"+"):k+"+"):(cur[0]==="t"?cur:cur[0]+(cur[1]==="+"?"-":"+"));
+    if(nv!==cur){$("#sort").value=nv;syncSort();gridKey="";renderGrid();markSel()}return}
+  if(t.closest?.("#keysbtn")){const h=$("#hint"),on=h.hidden;h.hidden=!on;t.closest("#keysbtn").setAttribute("aria-pressed",String(on));try{localStorage.setItem("bokidex-keys",on?"1":"")}catch{}return}
   if(t.hasAttribute?.("data-zoom")){const set=t.closest(".zset,.gal")||t.closest(".pics")?.querySelector(".thumbs");zoomList=set?[...set.querySelectorAll("img")].map(i=>i.src):[t.src];zoomI=Math.max(0,zoomList.indexOf(t.src))}
 });
 ["input","change"].forEach(ev=>document.addEventListener(ev,e=>{const id=e.target.id;
