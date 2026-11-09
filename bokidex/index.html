@@ -97,7 +97,6 @@ body.v-dex header .themebtn{display:none}
 @media (hover:hover) and (pointer:fine){.hint{display:block}}
 #dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;margin-top:18px}
 .dcard{--ty:var(--ty-wild);position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;text-decoration:none;color:var(--ink);background:var(--panel);border-radius:24px;padding:10px 10px 18px;border:1px solid var(--line);box-shadow:var(--cardsh);scroll-margin-top:150px;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.dcard:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--ty) 45%,var(--line));box-shadow:0 22px 40px -22px color-mix(in srgb,var(--ty) 70%,transparent)}
 .dcard.on{border-color:var(--ty);box-shadow:0 0 0 2px var(--ty)}
 .dcard.dim{--ty:var(--mute)}
 .dcard .hero{width:100%}
@@ -327,6 +326,50 @@ textarea{width:100%;min-height:56px;font:inherit;font-size:.9rem;padding:8px;bor
 #zoom{position:fixed;inset:0;z-index:60;background:rgba(10,14,11,.88);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
 #zoom img{max-width:100%;max-height:100%;object-fit:contain}
 @media (prefers-reduced-motion:no-preference){.card{animation:in .35s ease-out both}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+/* ---------- Interactive feel: lift, type-colour glow, press feedback (borrowed from the projectboki.com Boki wall) ---------- */
+.dcard,.btn,.tbtn,.mnav,.mclose,.dtabs a,.nav a,.mtabs button,.tlink,.dbar select{--ease:cubic-bezier(.2,.8,.2,1)}
+.dcard{transition:transform .5s var(--ease),box-shadow .5s ease,border-color .3s ease}
+.dcard .hero img,.dcard .hero .himg,.dcard .hero.sil svg{transition:transform .6s var(--ease)}
+.btn{transition:transform .25s var(--ease),box-shadow .3s ease,background .15s,border-color .2s}
+.tbtn{transition:transform .25s var(--ease),box-shadow .3s ease,background .15s,border-color .2s,color .15s}
+.mnav{transition:transform .25s var(--ease),box-shadow .3s ease,background .15s}
+.mclose,.dtabs a,.nav a,.dbar select{transition:transform .25s var(--ease),box-shadow .3s ease,border-color .2s,background .15s}
+.mtabs button{transition:color .15s,border-color .2s,background .15s,transform .25s var(--ease)}
+.dbar select{cursor:pointer}
+@media (hover:hover){
+  .dcard:hover{border-color:color-mix(in srgb,var(--g,var(--ty)) 55%,transparent);box-shadow:0 26px 60px -24px color-mix(in srgb,var(--g,var(--ty)) 55%,transparent)}
+  .chip{transition:box-shadow .3s ease,border-color .2s}
+  .chip:hover{box-shadow:0 8px 20px -8px color-mix(in srgb,var(--ty) 75%,transparent);border-color:var(--ty)}
+  .tbtn:hover{box-shadow:0 8px 22px -8px color-mix(in srgb,var(--ty) 80%,transparent)}
+  .btn:hover,.dbar select:hover,.mclose:hover,.dtabs a:hover,.nav a:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 8px 22px -10px color-mix(in srgb,var(--accent) 65%,transparent)}
+  .btn.pri:hover{box-shadow:0 10px 26px -8px color-mix(in srgb,var(--accent) 80%,transparent)}
+  .mnav:hover{box-shadow:0 12px 30px -8px color-mix(in srgb,var(--ty) 70%,transparent)}
+  .mtabs button:hover{background:color-mix(in srgb,var(--ty) 10%,transparent);border-bottom-color:color-mix(in srgb,var(--ty) 45%,transparent)}
+  .mtabs button[aria-selected="true"]:hover{border-bottom-color:var(--ty)}
+}
+/* focus: same family as hover, always visible for keyboard */
+.dcard:focus-visible{outline:3px solid var(--g,var(--ty));outline-offset:3px;box-shadow:0 26px 60px -24px color-mix(in srgb,var(--g,var(--ty)) 55%,transparent)}
+.tbtn:focus-visible,.chip:focus-visible{outline:2px solid var(--ty);outline-offset:2px;box-shadow:0 0 0 4px color-mix(in srgb,var(--ty) 25%,transparent)}
+.btn:focus-visible,.mnav:focus-visible,.mclose:focus-visible,.dtabs a:focus-visible,.nav a:focus-visible,.dbar select:focus-visible,.mtabs button:focus-visible,.dbar input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 22%,transparent)}
+.mtabs button:focus-visible{outline-offset:-2px}
+/* motion only when the user allows it */
+@media (prefers-reduced-motion:no-preference){
+  @media (hover:hover){
+    .dcard:hover{transform:translateY(-6px)}
+    .dcard:hover .hero img,.dcard:hover .hero .himg,.dcard:hover .hero.sil svg{transform:scale(1.06) rotate(-2deg)}
+    .btn:hover,.tbtn:hover,.dtabs a:hover,.nav a:hover,.dbar select:hover{transform:translateY(-2px)}
+    .mclose:hover{transform:scale(1.08)}
+    .mnav:hover{transform:scale(1.1)}
+  }
+  .dcard:active{transform:translateY(-2px) scale(.98);transition-duration:.12s}
+  .btn:active,.tbtn:active,.dtabs a:active,.nav a:active,.dbar select:active,.mclose:active,.mtabs button:active{transform:scale(.97);transition-duration:.08s}
+  .mnav:active{transform:scale(.97)}
+  .chip:active{transform:scale(.97)}
+}
+@media (prefers-reduced-motion:reduce){
+  .dcard,.dcard .hero img,.dcard .hero .himg,.btn,.tbtn,.mnav,.mclose,.dtabs a,.nav a,.mtabs button,.dbar select{transition-property:color,background,border-color,box-shadow!important}
+  .dcard:hover,.mnav:hover,.btn:hover,.tbtn:hover{transform:none}
+}
 </style>
 
 </head>
