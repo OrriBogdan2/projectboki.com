@@ -702,7 +702,7 @@ function buildOverlay(){
     ovl[e.id]={gen:g,date:dayEST(g.created),hero:hsrc?{src:hsrc,gen:true,fresh:is3?(!h2d&&(!e.hero||(g.created||0)>built||!!g.sheet)):(!e.hero||(g.created||0)>built),sheet:is3?!!g.sheet:true}:null,turn:tsrc||null};
   }
 }
-const assetURL=f=>/^(https?:)?\/\/|^dex\/|^data:/.test(f)?f:"dex/"+f;
+const assetURL=f=>/^(https?:)?\/\/|^\/[_]blob\/|^dex\/|^data:/.test(f)?f:"dex/"+f;
 const curTheme=()=>{const t=document.documentElement.getAttribute("data-theme");return t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")};
 /* heroDark / heroLight are transparent cutouts made per theme; when the entry has them the one matching the theme wins, then plain hero, then the other variant. */
 function heroOf(e){
@@ -716,7 +716,7 @@ function heroOf(e){
   return null;
 }
 let isAdmin=false; /* admin-only extras (turnaround, later 3D): claude.ai sets it from canEdit, the public page from the owner sign-in */
-function turnOf(e){if(!isAdmin)return null;if(e._sexf)return e.turnaround?"dex/"+e.turnaround:null;return e.turnaround?"dex/"+e.turnaround:(ovl[e.id]?.turn||null)}
+function turnOf(e){if(!isAdmin)return null;if(e._sexf)return e.turnaround?assetURL(e.turnaround):null;return e.turnaround?assetURL(e.turnaround):(ovl[e.id]?.turn||null)}
 function probe(src){if(src in aspect)return;aspect[src]=0;const im=new Image();im.onload=()=>{aspect[src]=im.naturalWidth/im.naturalHeight;if(aspect[src]>1.5)requestAnimationFrame(()=>{gridKey="";route(true)})};blobOf(src).then(u=>{im.src=u}).catch(()=>{})}
 function heroHTML(e,label){
   const h=heroOf(e), nm=esc(label||e.name);
