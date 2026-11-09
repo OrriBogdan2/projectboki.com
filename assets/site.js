@@ -1199,7 +1199,7 @@ if (POSTHOG_KEY) {
   let blinkAt = 1.5, blinkK = -1, double = false, hopK = -1, nextHop = 0, wide = 0, glance = { x: 0, y: 0, until: 0 };
   // swimming: in the FAQ he leaves his spot and loops around the pointer, then swims home
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches, faqSec = document.getElementById("faq"), home = wrap.parentNode;
-  let sx = 0, sy = 0, vx = 0, vy = 0, swim = 0, ph = 0, tilt = 0, fl = 1, flT = 1, flee = null, wT = Math.random() * 50, prevHx = 0;
+  let sx = 0, sy = 0, vx = 0, vy = 0, swim = 0, ph = 0, tilt = 0, fl = 1, flT = 1, flee = null, wT = Math.random() * 50, calmUntil = 0, dirHold = 0, lastDir = 0;
   btn.addEventListener("click", () => { wide = 1; hopK = 0; blinkK = -1; });
   new IntersectionObserver(([en]) => { vis = en.isIntersecting; if (vis && ready) loop(); }, { rootMargin: "100px" }).observe(wrap);
   const U = {}; const loc = (p, n) => (U[n + p.__id] ||= gl.getUniformLocation(p, n)); baseP.__id = "b"; bubP.__id = "u";
@@ -1217,43 +1217,38 @@ if (POSTHOG_KEY) {
       if (t > glance.until) glance = { x: Math.random() * 2 - 1, y: Math.random() * 1.4 - 0.7, until: t + 1.2 + Math.random() * 2 };
       dirx = glance.x * 0.7; diry = glance.y * 0.6;
     }
-    // He floats around his corner of the FAQ on his own, facing the way he swims. Come close and he darts off,
-    // flipping round to face away, then calms down and drifts again.
-    const fr = faqSec.getBoundingClientRect(), hr = home.getBoundingClientRect();
-    const hcx = hr.left + hr.width / 2, hcy = hr.top + hr.height / 2, half = hr.width * 0.42;
-    const minX = Math.max(fr.left + half, 8 + half) - hcx, maxX = Math.min(fr.right - half, innerWidth - 8 - half, hcx + Math.max(260, hr.width * 1.6)) - hcx;
-    const fh = faqSec.querySelector(".head"), topY = fh ? fh.getBoundingClientRect().bottom - hr.height * 0.12 : fr.top; // stays under the FAQ title
-    const minY = Math.max(fr.top + half, 70 + half, topY + half) - hcy, maxY = Math.min(fr.bottom - half, innerHeight - half) - hcy;
-    wT += dt * (flee ? 0 : 1);
-    let gx = Math.sin(wT * 0.23) * 0.75 + Math.sin(wT * 0.53 + 1.7) * 0.25, gy = Math.cos(wT * 0.31) * 0.7 + Math.sin(wT * 0.67) * 0.3;
-    gx = gx * Math.min(maxX, -minX, 170); gy = gy * Math.min(maxY, -minY, 110);
-    const bx = hcx + sx, by = hcy + sy;
-    if (px !== null && now - lastMove < 2500) {
-      const ddx = bx - px, ddy = by - py, dd = Math.hypot(ddx, ddy) || 1, reach = hr.width * 0.62;
-      if (dd < reach && (!flee || now > flee.until - 500)) { // too close: dart away
-        let fx = sx + ddx / dd * hr.width * 0.95, fy = sy + ddy / dd * hr.width * 0.6;
-        if (fx < minX || fx > maxX) fx = sx - ddx / dd * hr.width * 0.95 * 0.2 + (fx < minX ? 1 : -1) * hr.width * 0.4; // cornered: slip past
-        flee = { x: fx, y: fy, until: now + 1100 };
-        vx += ddx / dd * 520; vy += ddy / dd * 360;
+    // He floats gently in a small area around his spot. Bring the cursor close and he turns and darts to the far
+    // side of that area, then settles and floats again. Kept small and slow so he never twitches.
+    const hr = home.getBoundingClientRect(), AX = Math.min(80, hr.width * 0.3), AY = Math.min(46, hr.height * 0.17);
+    wT += dt;
+    let gx = (Math.sin(wT * 0.21) * 0.8 + Math.sin(wT * 0.47 + 1.7) * 0.2) * AX, gy = (Math.cos(wT * 0.29) * 0.75 + Math.sin(wT * 0.61) * 0.25) * AY;
+    if (px !== null && now - lastMove < 2000 && now > calmUntil && !flee) {
+      const bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
+      const ddx = bx - px, ddy = by - py, dd = Math.hypot(ddx, ddy) || 1;
+      if (dd < hr.width * 0.55) { // too close: dart to the far side of his area, away from the cursor
+        const side = px < bx ? 1 : -1;
+        flee = { x: side * AX * 1.35, y: Math.max(-AY, Math.min(AY, sy + (ddy > 0 ? 1 : -1) * AY * 0.8)), until: now + 1300 };
+        flT = side > 0 ? -1 : 1; // turn to face where he's going (his art faces left)
       }
     }
-    if (flee) { if (now > flee.until) flee = null; else { gx = flee.x; gy = flee.y; } }
-    gx = Math.max(minX, Math.min(maxX, gx)); gy = Math.max(minY, Math.min(maxY, gy));
-    const k = flee ? 16 : 2.4, c = flee ? 7 : 2.6;
+    if (flee) { if (now > flee.until) { flee = null; calmUntil = now + 900; } else { gx = flee.x; gy = flee.y; } }
+    const k = flee ? 22 : 3, c = flee ? 9 : 3.4;
     vx += ((gx - sx) * k - vx * c) * dt; vy += ((gy - sy) * k - vy * c) * dt;
-    const sp = Math.hypot(vx, vy), cap = 1100; if (sp > cap) { vx *= cap / sp; vy *= cap / sp; }
     sx += vx * dt; sy += vy * dt;
-    sx = Math.max(minX - 20, Math.min(maxX + 20, sx)); sy = Math.max(minY - 20, Math.min(maxY + 20, sy));
-    swim += (Math.min(1, 0.25 + sp / 380) - swim) * (1 - Math.exp(-dt * 5));
-    ph += dt * (1.7 + swim * 7);
-    // face the way he's going (his art faces left): flip through edge-on, like turning his body around
-    if (vx > 45) flT = -1; else if (vx < -45) flT = 1;
-    fl += (flT - fl) * (1 - Math.exp(-dt * (flee ? 16 : 7)));
-    tilt += ((Math.max(-1, Math.min(1, vy / 500)) * 16 * -fl - Math.max(-1, Math.min(1, vx / 800)) * 5) - tilt) * (1 - Math.exp(-dt * 5));
+    const sp = Math.hypot(vx, vy);
+    swim += (Math.min(1, 0.2 + sp / 300) - swim) * (1 - Math.exp(-dt * 4));
+    ph += dt * (1.6 + swim * 5);
+    if (!flee) { // while floating, only turn once he's clearly been heading one way for a moment
+      const d = vx > 6 ? -1 : vx < -6 ? 1 : 0;
+      if (d && d === lastDir) dirHold += dt; else dirHold = 0;
+      lastDir = d; if (d && dirHold > 0.7) flT = d;
+    }
+    fl += (flT - fl) * (1 - Math.exp(-dt * (flee ? 12 : 5)));
+    tilt += ((Math.max(-1, Math.min(1, vy / 300)) * 10 * -fl) - tilt) * (1 - Math.exp(-dt * 4));
     const edge = 1 - Math.abs(fl);
     wrap.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${(fl * (1 - 0.06 * edge) || 0.001).toFixed(3)}, ${(1 + 0.08 * edge).toFixed(3)})`;
     if (fl < 0) dirx = -dirx; // look the right way while mirrored
-    tx = dirx * 0.06; ty = diry * 0.045;
+    tx = dirx * 0.045; ty = diry * 0.035;
     const f = 1 - Math.exp(-dt * 7), fe = 1 - Math.exp(-dt * 16);
     ox += (tx - ox) * f; oy += (ty - oy) * f; lean += (dirx * 0.07 - lean) * f; turn += (dirx * 0.5 - turn) * f;
     lx += (dirx - lx) * fe; ly += (diry - ly) * fe;                 // the eyes get there first
@@ -1265,7 +1260,7 @@ if (POSTHOG_KEY) {
       if (blinkK >= 1) { if (double) { double = false; blinkK = -0.6; } else { blinkK = -1; blinkAt = t + 2 + Math.random() * 3.5; } } }
     else if (blinkK > -1 && blinkK < 0) { blinkK += dt / 0.17; if (blinkK >= 0) blinkK = 0; }
     // excited hops when you're close
-    if (hopK < 0 && ex > 0.55 && t > nextHop && swim < 0.3 && !flee) { hopK = 0; }
+
     let hop = 0, squash = 0;
     if (hopK >= 0) { hopK += dt / 0.5; const k = hopK;
       if (k < 0.18) squash = 0.05 * Math.sin(k / 0.18 * Math.PI);                 // crouch
@@ -1273,7 +1268,7 @@ if (POSTHOG_KEY) {
       else if (k < 1) squash = 0.04 * Math.sin((k - 0.82) / 0.18 * Math.PI);        // land
       if (hopK >= 1) { hopK = -1; nextHop = t + 0.35 + Math.random() * 0.9; } }
     wide *= Math.exp(-dt * 2.2);
-    const breath = Math.sin(t * (2.2 + ex * 3.5)) * (0.010 + ex * 0.008);
+    const breath = Math.sin(t * (2.2 + ex * 1.5)) * (0.010 + ex * 0.004);
     if (anim) { const k = Math.min(1, (now - anim.t0) / anim.dur), e = anim.ease(k);
       bub.s = anim.from.s + (anim.to.s - anim.from.s) * e; bub.a = anim.from.a + (anim.to.a - anim.from.a) * Math.min(1, k); if (k >= 1) anim = null; }
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
