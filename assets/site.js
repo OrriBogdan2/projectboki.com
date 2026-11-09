@@ -369,50 +369,31 @@ if (pick) {
 
 /* ---------- Boki browser ---------- */
 // [id, name, mix, size, found, glow, body, flavor, [bravery, loyalty, temper, curiosity]]
-const BOKI = [
-  ["vespyx", "Vespyx", "Fox + Scorpion", "Small", "Starter egg", "#a6ff3a", "#4a2f5c", "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.", [0.75, 0.5, 0.7, 0.5]],
-  ["mycroll", "Mycroll", "Hedgehog + Toadstool", "Small", "Starter egg", "#3fe0c0", "#6b4a3c", "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.", [0.55, 0.6, 0.4, 0.8]],
-  ["prismander", "Prismander", "Axolotl + Crystal", "Small", "Starter egg", "#7ff3ff", "#f0a6d6", "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.", [0.45, 0.85, 0.2, 0.6]],
-  ["gloamshell", "Gloamshell", "Garden snail + Smoked obsidian", "Small", "Wild in Gloomheart", "#8a6aff", "#3a3448", "A snail whose shell is smoked obsidian glass. It drinks the light around it and leaves a trail of dusk behind.", [0.3, 0.6, 0.35, 0.55]],
-  ["rimeshrew", "Rimeshrew", "Shrew + Hoarfrost", "Small", "Wild in Frostreach", "#bff4ff", "#9fb6c8", "A tiny shrew with a frost-feathered coat that never melts. It has to eat every hour, so it never stops moving.", [0.9, 0.5, 0.65, 0.75]],
-  ["selenfin", "Selenfin", "Hatchetfish + Moonstone", "Small", "Wild in Gloomheart", "#fff0a0", "#c8d0e0", "A silver hatchetfish that swims through the air, a moonstone glowing in its keel. Where it floats, wounds close.", [0.4, 0.8, 0.15, 0.5]],
-  ["glintmole", "Glintmole", "Star-nosed mole + Quartz geode", "Small", "Wild in Greenreach", "#c9a8ff", "#5b4a5e", "A star-nosed mole whose back is a split geode full of quartz. It feels the ground shake long before you do.", [0.35, 0.75, 0.3, 0.7]],
-  ["glomwort", "Glomwort", "Slime mold + Puffball", "Small", "Wild in Bloomwild", "#3fe0c0", "#e0c03a", "A yellow slime mold that creeps like a net and fruits little puffballs. Step on one and the spores hold you fast.", [0.5, 0.6, 0.25, 0.95]],
-  ["mossgrade", "Mossgrade", "Tardigrade + Cushion moss", "Small", "Wild in Bloomwild", "#b8ff7a", "#7a9a5a", "A plump water bear wearing a cushion of moss. Dry it out and it curls into a pebble; one drop of water and it's back.", [0.5, 0.85, 0.1, 0.4]],
-  ["kindlewren", "Kindlewren", "Wren + Ember coal", "Small", "Wild in Emberfall", "#ff8a2a", "#7a4a32", "A cocky little wren that carries a live coal in its cocked-up tail. It darts in, scorches, and is gone.", [0.85, 0.5, 0.7, 0.6]],
-  ["kestrike", "Kestrike", "Kestrel + Copper lightning rod", "Small", "Wild in Stormcrest", "#ffe86a", "#b5653a", "A kestrel with a copper crest that draws lightning. It hangs still in the wind, then strikes like the bolt it caught.", [0.8, 0.6, 0.5, 0.45]],
-  ["lodestick", "Lodestick", "Stick insect + Lodestone", "Small", "Wild in Gloomheart", "#b48cff", "#3c3a50", "A stick insect made of dark lodestone twigs. Things drift toward it, and it drifts toward nothing.", [0.45, 0.55, 0.2, 0.6]],
-  ["marchleaf", "Marchleaf", "Leafcutter ant + Leaf", "Small", "Wild in Bloomwild", "#9aff6a", "#8a3a2a", "A leafcutter ant hauling a leaf ten times its size, with a column of tiny workers marching behind. It never stops working.", [0.75, 0.7, 0.5, 0.35]],
-  ["nettlynx", "Nettlynx", "Lynx kitten + Stinging nettle", "Small", "Wild in Bloomwild", "#d0ff4a", "#8a9a4a", "A lynx kitten whose ear tufts and tail are stinging nettle. Pet it the wrong way and you'll know.", [0.8, 0.5, 0.75, 0.5]],
-  ["thrumbird", "Thrumbird", "Hummingbird + Tuning fork", "Small", "Wild in Greenreach", "#7fe8ff", "#3aa88a", "A hummingbird whose forked tail rings like a tuning fork. Its hum steadies your aim and rattles your foes.", [0.55, 0.8, 0.3, 0.85]],
-  ["echolop", "Echolop", "Hare + Bat", "Small", "Wild nests", "#7fe8ff", "#4a5aa8", "A long-eared hare with bat wings. It hears everything coming and fires ringing pulses of sound.", [0.65, 0.4, 0.6, 0.9]],
-  ["lunowl", "Lunowl", "Owl + Luna moth", "Small", "Wild nests", "#fff0a0", "#9fe6b4", "A moonlit owl with soft moth wings. It flits on moondust and dazzles foes with silver light.", [0.35, 0.55, 0.5, 0.7]],
-  ["gravadillo", "Gravadillo", "Armadillo + Rhino beetle", "Large", "Wild nests", "#b48cff", "#3c4058", "An armadillo with a rhino beetle's horn. It rolls up in heavy plates and bends gravity to slam foes down.", [0.9, 0.7, 0.3, 0.2]],
-  ["hivara", "Hivara", "Honeybee + Praying mantis", "Small", "The Brood Mother's egg", "#ffe680", "#d9a42a", "A honeybee with a praying mantis's folded blades, wearing a crown of wax. A swarm of tiny bees follows it everywhere.", [0.7, 0.75, 0.55, 0.6]],
-  ["zephyrak", "Zephyrak", "Moray eel + Swift", "Small", "Stormcoil's egg", "#9ff4ff", "#2f6f9a", "A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static.", [0.8, 0.45, 0.65, 0.85]],
-  ["cairnback", "Cairnback", "Tortoise + Ibex", "Large", "The Stone Colossus's egg", "#ffd36a", "#6a6f7a", "A tortoise with an ibex's sweeping horns, carrying a little rune-carved cairn on its shell.", [0.85, 0.8, 0.25, 0.35]],
-];
-/* ---------- Boki: a wall of cards in staggered columns that drift at different speeds as you scroll past.
-   Nothing to step through: tap any Boki for a closer look, or keep scrolling. A dozen show; the rest are one tap away. ---------- */
+/* ---------- Boki: the revealed ones as a wall of cards in staggered columns that drift as you scroll past, then
+   the rest of the roster as silhouettes. Built from assets/boki.json (tools/boki/build.py). Tap a card for a closer look. ---------- */
+const TYPE = { ember: "#ff8a4c", storm: "#ffd84a", frost: "#9fe3ff", shadow: "#a78bff", prism: "#ff9df0", venom: "#a6ff3a", tide: "#4fc3ff",
+  bloom: "#7dde6b", echo: "#ffb36b", spore: "#9ef0c0", stone: "#d2bf9f", lunar: "#d8d0ff", swarm: "#ffcf5a", titan: "#e0a870",
+  wyrm: "#8fe8c8", tempest: "#a8d4ff", gravity: "#b796ff", wild: "#f4e2c4" };
+const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
-if (bw) {
-  const FEATURED = innerWidth < 640 ? 8 : 12; // a short wall on phones
-  const pic = (id, w) => `assets/img/boki/${id}-${w}.webp`;
-  const cards = BOKI.map(([id, name, mix, , , glow, body], i) => {
+if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
+  const LIST = data.revealed;
+  const FEATURED = innerWidth < 640 ? 18 : LIST.length; // phones show a shorter wall; the rest are one tap away
+  const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
+  const cards = LIST.map((b, i) => {
     const c = document.createElement("button");
     c.type = "button"; c.className = "bw-card"; c.setAttribute("role", "listitem");
-    c.style.setProperty("--g", glow); c.style.setProperty("--b", body);
-    c.innerHTML = `<span class="bw-art"><img src="${pic(id, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
-    c.querySelector("b").textContent = name; c.querySelector("i").textContent = mix;
-    c.setAttribute("aria-label", `${name}, ${mix}`);
+    c.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
+    c.innerHTML = `<span class="bw-art"><img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
+    c.querySelector("b").textContent = b.name; c.querySelector("i").textContent = b.types.map(cap).join(" · ");
+    c.setAttribute("aria-label", `${b.name}, ${b.types.join(" and ")} type`);
     if (i >= FEATURED) c.hidden = true;
     c.addEventListener("click", () => openCard(i));
     return c;
   });
-  // columns: 4 on desktop, 3 on tablets, 2 on phones; cards dealt left to right so the order still reads row by row
   let cols = [];
   const deal = () => {
-    const n = innerWidth >= 1000 ? 4 : innerWidth >= 640 ? 3 : 2;
+    const n = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 4 : 3;
     if (cols.length === n) return;
     bw.innerHTML = ""; cols = [];
     for (let k = 0; k < n; k++) { const col = document.createElement("div"); col.className = "bw-col"; bw.appendChild(col); cols.push(col); }
@@ -420,37 +401,50 @@ if (bw) {
     drift();
   };
   const more = document.getElementById("bw-more");
-  if (BOKI.length > FEATURED) {
-    more.hidden = false; more.textContent = `See all ${BOKI.length} Boki`;
+  if (LIST.length > FEATURED) {
+    more.hidden = false; more.textContent = `See all ${LIST.length}`;
     more.addEventListener("click", () => {
-      cards.forEach((c, i) => { if (c.hidden) { c.hidden = false; c.style.setProperty("--d", ((i - FEATURED) % 8) * 50 + "ms"); c.classList.add("pop"); } });
+      cards.forEach((c, i) => { if (c.hidden) { c.hidden = false; c.style.setProperty("--d", ((i - FEATURED) % 6) * 50 + "ms"); } });
       more.parentElement.hidden = true; drift();
     });
-  }
-  // the drift: alternate columns rise and sink a little against the scroll, so the wall feels alive without moving you
+  } else more.parentElement.hidden = true;
   let tick = false;
   const drift = () => {
     if (calm || !cols.length) return;
     const r = bw.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -200 || r.top > vh + 200) return;
-    const p = (vh - r.top) / (vh + r.height) - 0.5; // -0.5 entering … 0.5 leaving
-    const amp = innerWidth >= 640 ? 70 : 34;
+    const p = (vh - r.top) / (vh + r.height) - 0.5;
+    const amp = innerWidth >= 640 ? 60 : 26;
     cols.forEach((col, k) => { col.style.transform = `translate3d(0, ${(-(k % 2 ? 1 : -0.4) * amp * p * 2).toFixed(1)}px, 0)`; });
   };
   addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; drift(); }); } }, { passive: true });
   addEventListener("resize", deal);
   deal();
-  // cards fade up as they come into view
-  const seen = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
-  cards.forEach((c, i) => { c.style.setProperty("--d", (i % 4) * 70 + "ms"); seen.observe(c); });
+  const seen = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px" });
+  cards.forEach((c, i) => { c.style.setProperty("--d", (i % 6) * 60 + "ms"); seen.observe(c); });
 
-  // A closer look: big art, what it's made of, and its one line. Arrows, swipes and keys browse; Esc closes.
+  // The rest of the roster: silhouettes where we have a shape, eggs where we don't yet
+  const dark = document.getElementById("bk-dark");
+  if (dark) {
+    dark.querySelector(".bk-dark-n").textContent = `${data.total} Boki to find.`;
+    dark.querySelector(".bk-dark-s").textContent = `${LIST.length} revealed so far. The other ${data.hidden.length} are still in the dark.`;
+    const grid = dark.querySelector(".bk-sils");
+    data.hidden.forEach((h) => {
+      const t = document.createElement("span");
+      t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
+      t.innerHTML = h.sil ? `<img src="assets/img/boki/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
+      grid.appendChild(t);
+    });
+    dark.hidden = false;
+  }
+
+  // A closer look: big art, types, its line, and its description. Arrows, swipes and keys browse; Esc closes.
   let box, at = 0, back = null;
   const build = () => {
     box = document.createElement("div");
     box.className = "bm"; box.hidden = true;
     box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Boki");
-    box.innerHTML = `<div class="bm-card"><div class="bm-art"><img alt=""></div><div class="bm-txt"><div class="bm-mix"></div><h3></h3><p></p><div class="bk-meta"><span class="bm-size"></span><span class="bm-found"></span></div></div>
+    box.innerHTML = `<div class="bm-card"><div class="bm-art"><img alt=""></div><div class="bm-txt"><div class="bm-mix"></div><h3></h3><p class="bm-desc"></p><p class="bm-line"></p></div>
       <button class="bk-arrow prev" type="button" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="bk-arrow next" type="button" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
@@ -467,20 +461,27 @@ if (bw) {
       else if (e.key === "ArrowLeft") fill(at - 1);
     });
   };
+  const list = (names) => {
+    const known = names.filter(Boolean), unknown = names.length - known.length;
+    const parts = [...known, ...(unknown ? [unknown === 1 ? "one we haven't shown yet" : `${unknown} we haven't shown yet`] : [])];
+    return parts.length < 2 ? parts.join("") : parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1];
+  };
   const fill = (i) => {
-    at = (i + BOKI.length) % BOKI.length;
-    const [id, name, mix, size, found, glow, body, flavor] = BOKI[at];
+    at = (i + LIST.length) % LIST.length;
+    const b = LIST[at];
     const card = box.querySelector(".bm-card");
-    card.style.setProperty("--g", glow); card.style.setProperty("--b", body);
+    card.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
     const img = box.querySelector(".bm-art img");
-    img.classList.remove("on"); img.src = pic(id, 900); img.alt = `${name}, ${mix.toLowerCase().replace(" + ", " and ")}`;
+    img.classList.remove("on"); img.src = pic(b, 960); img.alt = b.name;
     const on = () => img.classList.add("on");
     if (img.decode) img.decode().then(on, on); else on();
-    box.querySelector(".bm-mix").textContent = mix;
-    box.querySelector("h3").textContent = name;
-    box.querySelector("p").textContent = flavor;
-    box.querySelector(".bm-size").textContent = size;
-    box.querySelector(".bm-found").textContent = found;
+    box.querySelector(".bm-mix").textContent = b.types.map(cap).join(" · ");
+    box.querySelector("h3").textContent = b.name;
+    const desc = box.querySelector(".bm-desc"); desc.textContent = b.desc || ""; desc.hidden = !b.desc;
+    const line = [];
+    if (b.from) line.push(`Evolves from ${b.from}.`); else if (b.fromHidden) line.push("Evolves from a Boki we haven't shown yet.");
+    if (b.into.length) line.push(`Evolves into ${list(b.into)}.`);
+    const l = box.querySelector(".bm-line"); l.textContent = line.join(" "); l.hidden = !line.length;
   };
   function openCard(i) {
     if (!box) build();
@@ -494,7 +495,7 @@ if (bw) {
     setTimeout(() => { box.hidden = true; }, 220);
     if (back) back.focus({ preventScroll: true });
   }
-}
+}).catch(() => {});
 
 /* ---------- shared: swipe to switch, and a one-time nudge so the strip reads as scrollable ---------- */
 function swipe(el, go) {

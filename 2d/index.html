@@ -109,10 +109,9 @@ $("tkclear").addEventListener("click", () => { store.del("b2d-token"); showTok()
 
 /* ---- the Boki list comes from the live site, so new Boki show up here on their own ---- */
 let manifest = {};
-async function list() {
-  const js = await (await fetch("/assets/site.js", { cache: "no-store" })).text();
-  const block = js.slice(js.indexOf("const BOKI = ["), js.indexOf("];", js.indexOf("const BOKI = [")));
-  return [...block.matchAll(/\["([a-z0-9-]+)", "([^"]+)"/g)].map((m) => ({ id: m[1], name: m[2] }));
+async function list() { // every species on the roster, from the site's Boki file
+  const data = await (await fetch("/assets/boki.json", { cache: "no-store" })).json();
+  return data.all.map((name) => ({ id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), name }));
 }
 const art = (id, w) => `/${DIR}/${id}-${w}.webp?v=${encodeURIComponent((manifest[id] || {}).v || "")}`;
 function slot(b) {
