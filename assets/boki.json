@@ -13,7 +13,7 @@
    "into": [
     "Glaivyx"
    ],
-   "desc": "Leaner fox, bigger pincers, longer sting tail. Male locked, female redo out.",
+   "desc": "A fox with a scorpion's pincers and sting tail.",
    "v": "s1794187725",
    "shot": true
   },
@@ -479,7 +479,7 @@
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Evolution of Effigoon.",
+   "desc": null,
    "v": "h1794219146",
    "shot": false
   },
@@ -538,7 +538,7 @@
    "from": "Murmurling",
    "fromHidden": false,
    "into": [],
-   "desc": "Murmuron, art-lane design.",
+   "desc": null,
    "v": "h1794222029",
    "shot": false
   },
@@ -687,7 +687,7 @@
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Evolution of Gravadillo.",
+   "desc": null,
    "v": "h1794219140",
    "shot": false
   },
@@ -747,7 +747,7 @@
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Bastionpet, art-lane design.",
+   "desc": null,
    "v": "h1794219131",
    "shot": false
   },

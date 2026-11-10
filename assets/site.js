@@ -419,14 +419,14 @@ if (pick) {
     let lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : 0.12)); const step = Math.max(240, Math.round(vh * 0.36));
     // Where the heading, the stage and the strip all fit on one screen (most phones, tall windows): land with the
     // heading still showing and the group centred, instead of a clipped heading and a gap under the strip.
-    const head = sec.querySelector(".head");
+    const head = sec.querySelector(".head"); let fits = false;
     if (head && !hFall) {
       const hh = head.offsetHeight + (parseFloat(getComputedStyle(head).marginBottom) || 0), l2 = Math.round(vh * 0.05), free = vh - hh - l2 - h;
-      if (free >= 24) { lead = l2; top = Math.round(hh + lead + free / 2); }
+      if (free >= 24) { lead = l2; top = Math.round(hh + lead + free / 2); fits = true; }
     }
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
-    track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
+    track.style.height = Math.round(h + lead + (on && !fits ? vh * 0.45 : vh * 0.12)) + "px"; // (a short hold where the heading shows too: holding longer would leave its space empty) // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
     const s0 = docTop(track) - top;
     // Where the page takes over on the way down: once the stage's place has come about two fifths of the way up the
     // screen, so the heading above it has been read on the way and is still in view. The reveal starts at that same
@@ -1552,7 +1552,7 @@ if (POSTHOG_KEY) {
     sx += vx * dt; sy += vy * dt;
     if (!drag) { // bounce off the edges of the FAQ (it clips anything outside) and the screen
       const fr = faqSec.getBoundingClientRect(), cx0 = hr.left + hr.width / 2, cy0 = hr.top + hr.height / 2, mx = hr.width * 0.42, my = hr.height * 0.42;
-      const L = Math.max(fr.left, 0) + mx - cx0, R = Math.min(fr.right, innerWidth) - mx - cx0, T = Math.max(fr.top, 0) + my - cy0, B = Math.min(fr.bottom, innerHeight) - my - cy0;
+      const L = Math.max(fr.left, 0) + mx - cx0, R = Math.min(fr.right, innerWidth) - mx - cx0, T = fr.top + my - cy0, B = fr.bottom - my - cy0; // top and bottom are the FAQ only, so he scrolls away with it instead of riding the screen edge over the questions
       if (L < R) { if (sx < L) { sx = L; vx = Math.abs(vx) * 0.55; spinV -= vy * 0.1; } else if (sx > R) { sx = R; vx = -Math.abs(vx) * 0.55; spinV += vy * 0.1; } }
       if (T < B) { if (sy < T) { sy = T; vy = Math.abs(vy) * 0.55; } else if (sy > B) { sy = B; vy = -Math.abs(vy) * 0.55; } }
     }

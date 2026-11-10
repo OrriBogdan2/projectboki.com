@@ -12,7 +12,15 @@ the dex: names, types, descriptions and evolution lines.
     hidden Boki can't be found by guessing a file name.
   - hidden: everyone else, as black silhouettes (baked black, assets/img/boki-sil/{id}-240.webp) or eggs.
 """
-import argparse, io, json, os, glob
+import argparse, io, json, os, glob, re
+# Some dex entries are still working notes ("Male locked, female redo out.", "art-lane design.", "Evolution of X.",
+# which can also name a Boki that is not revealed yet). Those never reach the homepage; a few get a plain line instead.
+NOTE = re.compile(r"art-lane|\blocked\b|\bredo\b|^Evolution of\b", re.I)
+DESC = {"vespox": "A fox with a scorpion's pincers and sting tail."}
+def public_desc(e):
+    if e["id"] in DESC: return DESC[e["id"]]
+    d = (e.get("entry") or "").strip()
+    return None if not d or NOTE.search(d) else d
 from PIL import Image
 
 SITE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -74,7 +82,7 @@ for e in picked:
         "id": e["id"], "name": e["name"], "types": [t.lower() for t in e["types"]], "stage": e.get("stage", 1),
         "from": name_of(prev[0]) if prev else None, "fromHidden": bool(prev) and name_of(prev[0]) is None,
         "into": [name_of(n) for n in nxt],  # None = still hidden
-        "desc": e.get("entry"), "v": f"s{s['created']}" if s else f"h{e.get('heroAt') or 0}", "shot": bool(s),
+        "desc": public_desc(e), "v": f"s{s['created']}" if s else f"h{e.get('heroAt') or 0}", "shot": bool(s),
     })
 
 # hidden: black silhouettes from the dex picture, or eggs
