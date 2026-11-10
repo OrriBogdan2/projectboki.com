@@ -1019,7 +1019,10 @@ function pan(el){
 }
 /* ---------- routing ---------- */
 let cur=location.hash||"#dex", t0=Date.now();
-function go(h,replace){cur=h;try{history[replace?"replaceState":"pushState"](null,"",h)}catch{try{location.hash=h}catch{}}route()}
+try{history.scrollRestoration="manual"}catch{}
+if(location.hash==="#dex"){try{history.replaceState(null,"",location.pathname+location.search)}catch{}}
+addEventListener("load",()=>{if(!/^#boki-/.test(location.hash))scrollTo(0,0)});
+function go(h,replace){cur=h;const u=h==="#dex"?location.pathname+location.search:h;try{history[replace?"replaceState":"pushState"](null,"",u)}catch{try{location.hash=h==="#dex"?"":h}catch{}}route()}
 addEventListener("hashchange",()=>{cur=location.hash||"#dex";route()});
 function route(soft){
   const raw=cur.replace(/^#/,""), p=/^boki-/.test(raw)?["dex",...raw.slice(5).split("/")]:raw.split("/");
