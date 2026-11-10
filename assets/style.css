@@ -962,3 +962,4 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 /* The broken heading is always two lines: "Solmere Kingdom has" / "broken into pieces." On phones it scales with the screen so line two never wraps. */
 .head h2.h-crumble .nw, .head h2.h-crumble .h-w { white-space: nowrap; }
 @media (max-width: 720px) { .head h2.h-crumble { font-size: min(8.8vw, 42px); } }
+.js #hunters.scene .h-crumble .nw { display: inline-block; transform-origin: 50% 50%; will-change: transform; } /* so the falling words can drop as one into the art */

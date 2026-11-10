@@ -361,6 +361,8 @@ if (pick) {
   const plab = pinEl && pinEl.querySelector(".pick-label");
   const ask = pinEl && pinEl.querySelector(".h-ask:not(.h-choose)"), askWords = ask ? [...ask.querySelectorAll("span:not(.sk)")] : [];
   const hsub = pinEl && pinEl.querySelector(".h-intro .h-sub");
+  const hTop = intro && intro.querySelector(".h-w"), hFall = intro && intro.querySelector(".h-crumble .nw"); // "Solmere Kingdom has" / the falling "broken into pieces."
+  let fallD = null; // how far the pieces fall to reach the middle of the art (measured once per layout)
   const choose = pinEl && pinEl.querySelector(".h-choose"), chooseWords = choose ? [...choose.querySelectorAll("span")] : [];
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
@@ -403,13 +405,21 @@ if (pick) {
     if (q === lastQ) return;
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
-      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
+      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; } if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
       if (cw) { cw.style.clipPath = cw.style.webkitClipPath = ""; cw.style.opacity = ""; } shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
-      // 1) the broken heading lifts away
-      const io = 1 - sm(clamp((q - 0.02) / 0.11));
-      intro.style.opacity = io.toFixed(3); intro.style.visibility = io < 0.005 ? "hidden" : "";
-      intro.style.transform = `translate3d(0, ${(-70 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
+      // 1) the pieces keep falling: "Solmere Kingdom has" fades where it is, and the broken words drop, shrinking as
+      //    they go, into the middle of the art. Where they land the fault ignites and the Hunter splits through.
+      const kf = clamp(q / 0.22), g = kf * kf; // gravity: faster and faster
+      if (fallD === null && hFall && shot) { const a = hFall.getBoundingClientRect(), b = shot.getBoundingClientRect(); fallD = (b.top + b.height / 2) - (a.top + a.height / 2) + (parseFloat(hFall.dataset.ty) || 0); }
+      const gone = kf >= 1;
+      intro.style.opacity = gone ? "0" : ""; intro.style.visibility = gone ? "hidden" : ""; intro.style.transform = "";
+      if (hTop) hTop.style.opacity = (1 - sm(clamp(q / 0.12))).toFixed(3);
+      if (hFall) {
+        const ty = (fallD || 0) * g; hFall.dataset.ty = ty.toFixed(1);
+        hFall.style.transform = `translate3d(0, ${ty.toFixed(1)}px, 0) scale(${(1 - 0.96 * g).toFixed(4)}, ${(1 - 0.45 * g).toFixed(4)})`; // squeezed into a sliver: the seed of the crack
+        hFall.style.opacity = (1 - sm(clamp((kf - 0.8) / 0.2))).toFixed(3);
+      }
       // 2) (no longer in the page) a question line between the heading and "Choose your Hunter."
       if (ask) {
         const out = sm(clamp((q - 0.48) / 0.08)); // it holds from about 0.3 to 0.48: long enough to read it
@@ -433,7 +443,7 @@ if (pick) {
       q = clamp((q - 0.06) / 0.94); // the art cracks open right under the breaking heading
       const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under the fault
       stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
-      const draw = sm(clamp((q - 0.02) / 0.3));
+      const draw = sm(clamp((q - 0.16) / 0.2)); // the fault runs out from where the pieces land
       // 2) then it splits open along that line, glowing ember, cooling as it widens
       const r = sm(clamp((q - 0.3) / 0.46));
       if (rift) {
@@ -503,7 +513,7 @@ if (pick) {
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
     const s0 = docTop(track) - top;
-    scn = { s0, lead };
+    scn = { s0, lead }; fallD = null; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; }
     void step; // Hunters are browsed sideways now (arrows, the strip, a sideways swipe), so scrolling down leaves the section
     if (ys === null) ys = scrollY;
     lastQ = -1; render(ys); kick();
