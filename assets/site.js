@@ -506,10 +506,11 @@ if (pick) {
     }, { passive: true });
   }
 
-  // Every time you scroll down into the Hunters, the page takes over at the gate (layoutPin) and plays the arrival itself:
-  // it glides to the stage while the first Hunter's art cracks open, always at the same speed however hard you scroll,
-  // then holds still for a moment before the page is yours again (leftover wheel or trackpad momentum is soaked up).
-  // Jumps (a link, End, a reload part-way down) skip it. Reduced motion: off.
+  // The first time you scroll down into the Hunters, the page takes over at the gate (layoutPin) and plays the arrival
+  // itself: a short glide to the stage while the first Hunter's art cracks open, then a brief pause before the page is
+  // yours again, under a second in all. After that first time the page never takes over again: the scene just follows
+  // your scroll. Jumps (a link, End, a reload part-way down) skip it. Reduced motion: off.
+  let arrived = false;
   if (!calm) {
     const root = document.documentElement;
     let prev = scrollY, quietSince = 0;
@@ -517,13 +518,13 @@ if (pick) {
     const keys = (e) => { if (auto && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
     addEventListener("wheel", stop, { passive: false }); addEventListener("touchmove", stop, { passive: false }); addEventListener("keydown", keys);
     const play = (from) => {
-      auto = true;
+      auto = true; arrived = true;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
       const vh = innerHeight, end = scn.s0 + scn.lead + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
       const keysT = hFall ? [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]] // ease in to the heading, drift while it breaks, then the crack
-        : [[0, from, 0], [1.15, end, 1]]; // no heading: one eased glide onto the stage while the crack opens
+        : [[0, from, 0], [0.6, end, 1]]; // no heading: one eased glide onto the stage while the crack opens
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -535,9 +536,9 @@ if (pick) {
         scrollTo({ top: Math.round(y), behavior: "instant" }); ys = scrollY; render(ys);
         if (t < keysT[keysT.length - 1][0]) { requestAnimationFrame(f); return; }
         const fin = performance.now();
-        const letGo = () => { // landed: hold for half a second at least, and until the wheel goes quiet (1.2s at most)
+        const letGo = () => { // landed: a beat, a little longer if the wheel is still spinning (0.35s at most)
           const n = performance.now();
-          if (n - fin < 500 || (n - quietSince < 220 && n - fin < 1200)) { setTimeout(letGo, 60); return; }
+          if (n - fin < 120 || (n - quietSince < 160 && n - fin < 350)) { setTimeout(letGo, 40); return; }
           auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; prev = ys; kick(); if (idleArm) idleArm();
         };
         letGo();
@@ -546,7 +547,7 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY;
-      if (!auto && scn && prev < scn.gate && y >= scn.gate && y - prev < innerHeight * 1.5 && y < scn.s0 + scn.lead) play(y); // a scroll down across the gate, not a jump
+      if (!auto && !arrived && scn && prev < scn.gate && y >= scn.gate && y - prev < innerHeight * 1.5 && y < scn.s0 + scn.lead) play(y); // a scroll down across the gate, not a jump
       prev = y;
     }, { passive: true });
   }
@@ -562,14 +563,14 @@ if (pick) {
     const block = (e) => { if (held) e.preventDefault(); };
     const keys = (e) => { if (held && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
     const hold = (at) => {
-      held = true; target = at;
+      held = true; target = at; arrived = true;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
       addEventListener("touchmove", block, { passive: false }); addEventListener("wheel", block, { passive: false }); addEventListener("keydown", keys);
       if (Math.abs(scrollY - at) > 2) scrollTo({ top: at, behavior: "instant" }); // inside the pinned stage: invisible
       kick();
       const t0 = performance.now();
       const wait = () => {
-        if (ys !== scrollY && performance.now() - t0 < 2500) { setTimeout(wait, 60); return; }
+        if (ys !== scrollY && performance.now() - t0 < 800) { setTimeout(wait, 60); return; }
         held = false; root.style.overflow = ""; document.body.style.overflow = "";
         removeEventListener("touchmove", block); removeEventListener("wheel", block); removeEventListener("keydown", keys);
       };
@@ -581,7 +582,7 @@ if (pick) {
       if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; prevT = now; return; } // leftover momentum can't move it
       if (scn && coarse.matches && now - jump > 1500) {
         const c = Math.round(scn.s0 + scn.lead) + 2, v = (y - prevY) / Math.max(8, now - prevT); // px per ms
-        if (prevY < c && y >= c && v > 1.2 && y - prevY < innerHeight * 1.5) hold(c); // a fast pass down over the first Hunter: stop on it (not a jump)
+        if (!arrived && prevY < c && y >= c && v > 1.2 && y - prevY < innerHeight * 1.5) hold(c); // the first fast pass down over the first Hunter: stop on it (not a jump)
       }
       prevY = y; prevT = now;
     }, { passive: true });
