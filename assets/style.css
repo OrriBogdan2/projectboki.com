@@ -1077,3 +1077,5 @@ html.lite #hunters.hint .h-peek.next img { animation: none; }
   #hunters .stage .h-arrow { color: #2b1d12; }
   #hunters .stage .h-arrow::before { width: 36px; height: 36px; margin: -18px 0 0 -18px; background: #f2e8d2; border-color: #f2e8d2; }
 }
+/* Phones: the label says it in words too */
+@media (max-width: 720px) { #hunters.pinned .pick-label .swipe { display: inline-flex; } }

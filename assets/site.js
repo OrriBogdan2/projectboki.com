@@ -279,7 +279,7 @@ if (pick) {
   // row to move along, which one picture with two small arrows did not. On phones they are slivers at the screen edges.
   const peeks = stage && pinEl ? [-1, 1].map((d) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "h-peek " + (d < 0 ? "prev" : "next");
-    b.innerHTML = `<img alt="" decoding="async"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
+    b.innerHTML = `<img alt="" decoding="async" loading="lazy"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
     b.addEventListener("click", () => show(current + d));
     pinEl.appendChild(b); late.push(b);
     return { el: b, img: b.firstChild, d };
@@ -412,7 +412,14 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : 0.12)), step = Math.max(240, Math.round(vh * 0.36));
+    let lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : 0.12)); const step = Math.max(240, Math.round(vh * 0.36));
+    // Where the heading, the stage and the strip all fit on one screen (most phones, tall windows): land with the
+    // heading still showing and the group centred, instead of a clipped heading and a gap under the strip.
+    const head = sec.querySelector(".head");
+    if (head && !hFall) {
+      const hh = head.offsetHeight + (parseFloat(getComputedStyle(head).marginBottom) || 0), l2 = Math.round(vh * 0.05), free = vh - hh - l2 - h;
+      if (free >= 24) { lead = l2; top = Math.round(hh + lead + free / 2); }
+    }
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
