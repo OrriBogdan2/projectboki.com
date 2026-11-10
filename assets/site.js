@@ -1532,7 +1532,7 @@ if (POSTHOG_KEY) {
   addEventListener("touchstart", touch, { passive: true }); addEventListener("touchmove", touch, { passive: true });
   addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", lift, { passive: true });
   // his little brain: where to look, when to blink, when to hop
-  let ox = 0, oy = 0, lean = 0, turn = 0, lx = 0, ly = 0, ex = 0, vis = false, t = 0, last = 0;
+  let ox = 0, oy = 0, lean = 0, turn = 0, lx = 0, ly = 0, ex = 0, vis = false, t = 0, last = 0, bph = 0;
   let blinkAt = 1.5, blinkK = -1, double = false, hopK = -1, nextHop = 0, wide = 0, glance = { x: 0, y: 0, until: 0 };
   // swimming: in the FAQ he leaves his spot and loops around the pointer, then swims home
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches, faqSec = document.getElementById("faq"), home = wrap.parentNode;
@@ -1605,12 +1605,15 @@ if (POSTHOG_KEY) {
         flee = { x: best.x, y: best.y, until: now + 1300 }; lastFlee = now;
         flT = best.x > sx ? -1 : 1; // face where he's going (his art faces left)
       } else if (flee && Math.hypot(hx0 + flee.x - px, hy0 + flee.y - py) > R) flee.until = Math.max(flee.until, now + 250); // finger still around: stay away
-    } else if (px !== null && now - lastMove < 2000 && now > calmUntil && !flee) {
-      const bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
+    } else if (px !== null && now > calmUntil) {
+      const hx0 = hr.left + hr.width / 2, hy0 = hr.top + hr.height / 2, bx = hx0 + sx, by = hy0 + sy;
       const ddx = bx - px, ddy = by - py, dd = Math.hypot(ddx, ddy) || 1;
-      if (dd < hr.width * 0.55) { // too close: dart to the far side of his area, away from the cursor
+      if (flee) { // already stepped aside: he stays there while the cursor is still around, so he never darts back and forth under it
+        if (now - lastMove < 6000 && Math.hypot(hx0 - px, hy0 - py) < hr.width * 0.85) flee.until = Math.max(flee.until, now + 300);
+      } else if (now - lastMove < 2000 && now - lastFlee > 3000 && dd < hr.width * 0.5 && dd > hr.width * 0.22) {
+        // the cursor is coming close (not already on him): one step to the far side of his area, away from it
         const side = px < bx ? 1 : -1;
-        flee = { x: side * AX * 1.35, y: Math.max(-AY, Math.min(AY, sy + (ddy > 0 ? 1 : -1) * AY * 0.8)), until: now + 1300 };
+        flee = { x: side * AX * 1.35, y: Math.max(-AY, Math.min(AY, sy + (ddy > 0 ? 1 : -1) * AY * 0.8)), until: now + 1300 }; lastFlee = now;
         flT = side > 0 ? -1 : 1; // turn to face where he's going (his art faces left)
       }
     }
@@ -1619,7 +1622,7 @@ if (POSTHOG_KEY) {
       const txx = drag.sx0 + drag.x - drag.x0, tyy = drag.sy0 + drag.y - drag.y0;
       vx += ((txx - sx) * 70 - vx * 12) * dt; vy += ((tyy - sy) * 70 - vy * 12) * dt;
     } else {
-      const thrown = now < flungUntil, k = flee ? 22 : thrown ? 1.6 : 3, c = flee ? 9 : thrown ? 1.1 : 3.4; // thrown: he carries the throw, then drifts home
+      const thrown = now < flungUntil, k = flee ? (finger ? 22 : 14) : thrown ? 1.6 : 3, c = flee ? (finger ? 9 : 7.6) : thrown ? 1.1 : 3.4; // thrown: he carries the throw, then drifts home
       vx += ((gx - sx) * k - vx * c) * dt; vy += ((gy - sy) * k - vy * c) * dt;
     }
     sx += vx * dt; sy += vy * dt;
@@ -1666,7 +1669,8 @@ if (POSTHOG_KEY) {
       else if (k < 1) squash = 0.04 * Math.sin((k - 0.82) / 0.18 * Math.PI);        // land
       if (hopK >= 1) { hopK = -1; nextHop = t + 0.35 + Math.random() * 0.9; } }
     wide *= Math.exp(-dt * 2.2);
-    const breath = Math.sin(t * (2.2 + ex * 1.5)) * (0.010 + ex * 0.004);
+    bph += dt * (2.2 + ex * 1.5); // his breathing speeds up when you're close. The phase is added up frame by frame: multiplying the
+    const breath = Math.sin(bph) * (0.010 + ex * 0.004); // clock by a changing speed made him shudder whenever the cursor moved near him
     if (anim) { const k = Math.min(1, (now - anim.t0) / anim.dur), e = anim.ease(k);
       bub.s = anim.from.s + (anim.to.s - anim.from.s) * e; bub.a = anim.from.a + (anim.to.a - anim.from.a) * Math.min(1, k); if (k >= 1) anim = null; }
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
