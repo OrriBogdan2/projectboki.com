@@ -272,6 +272,37 @@ if (pick) {
   const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
   let scn = null, sceneOn = false, lastQ = -1, waved = false, idleArm = null, byIdle = false;
   const stageUp = () => calm || sceneOn || lastQ > 0.6; // the art is open enough to browse (swipes and drags wait for this)
+  // Until a visitor has browsed once, each arrival plays a hint: the next Hunter leans in from the side and its arrow beats.
+  let browsed = false, hintT = 0;
+  const hintNow = () => { clearTimeout(hintT); sec.classList.remove("hint"); void sec.offsetWidth; sec.classList.add("hint"); hintT = setTimeout(() => sec.classList.remove("hint"), 3800); };
+  // Neighbours: the previous and next Hunter show at the sides of the stage, dimmed, each with a big arrow. It reads as a
+  // row to move along, which one picture with two small arrows did not. On phones they are slivers at the screen edges.
+  const peeks = stage && pinEl ? [-1, 1].map((d) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "h-peek " + (d < 0 ? "prev" : "next");
+    b.innerHTML = `<img alt="" decoding="async"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
+    b.addEventListener("click", () => show(current + d));
+    pinEl.appendChild(b); late.push(b);
+    return { el: b, img: b.firstChild, d };
+  }) : [];
+  const setPeeks = () => peeks.forEach((p) => {
+    const h = HUNTERS[(current + p.d + HUNTERS.length) % HUNTERS.length], u = src(h[0], 960);
+    p.el.setAttribute("aria-label", `${p.d < 0 ? "Previous" : "Next"} Hunter: ${h[1]}`);
+    if (p.img.getAttribute("src") !== u) { p.img.style.opacity = "0"; p.img.onload = () => { p.img.style.opacity = ""; }; p.img.src = u; }
+  });
+  const layPeeks = () => {
+    if (!peeks.length) return;
+    const left = pinEl.getBoundingClientRect().left, vw = document.documentElement.clientWidth, gap = vw <= 720 ? 8 : 16, cap = 230;
+    const L = left + stage.offsetLeft, R = L + stage.offsetWidth;
+    peeks.forEach((p) => {
+      const room = (p.d < 0 ? L : vw - R) - gap, w = Math.max(0, Math.min(cap, room)), s = p.el.style;
+      p.el.hidden = room < 18;
+      s.top = stage.offsetTop + "px"; s.height = stage.offsetHeight + "px"; s.width = w + "px";
+      s.left = (p.d < 0 ? stage.offsetLeft - gap - w : stage.offsetLeft + stage.offsetWidth + gap) + "px";
+      p.el.classList.toggle("edge", room <= cap); p.el.classList.toggle("slim", w < 96);
+    });
+    sec.classList.toggle("peeks", peeks.every((p) => !p.el.hidden && !p.el.classList.contains("slim"))); // room for their own arrows: the small ones on the art step aside
+  };
+  setPeeks();
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -332,6 +363,7 @@ if (pick) {
     }
     const on = q > 0.8;
     if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); if (idleArm) idleArm();
+      if (on && !browsed) hintNow();
       if (on && !waved && pick) { waved = true; pick.classList.add("wave"); setTimeout(() => pick.classList.remove("wave"), 1600); } } // the first time: a shine runs across the portraits, so the eye goes to the choice
   };
   const render = (y) => {
@@ -374,6 +406,7 @@ if (pick) {
     if (!track) return;
     const on = (wide.matches || touchy) && !calm; // phones step through the Hunters too, one swipe per Hunter (below)
     sec.classList.toggle("pinned", on); sec.classList.toggle("scene", !calm);
+    layPeeks();
     track.style.height = ""; pinEl.style.top = ""; pin = null; scn = null;
     if (calm) return;
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
@@ -583,8 +616,9 @@ if (pick) {
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
+    if (!byIdle && !fromScroll) { browsed = true; sec.classList.remove("hint"); }
     if (i === current) return;
-    current = i;
+    current = i; setPeeks();
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
