@@ -246,8 +246,10 @@ function spinner(box, el) {
     im.onload = () => { if (id === want) spin = u; };
     im.src = u;
   };
-  box.addEventListener("pointerenter", fetchSpin);
+  let wantFull = null; // loads the animated sheet for a Hunter that is showing its still
+  box.addEventListener("pointerenter", () => { if (wantFull) wantFull(); fetchSpin(); });
   box.addEventListener("pointerdown", (e) => {
+    if (wantFull) wantFull();
     fetchSpin();
     if (!ready[0]) return;
     stop(); clearInterval(back); clearTimeout(back); back = null;
@@ -276,8 +278,10 @@ function spinner(box, el) {
   box.addEventListener("pointerup", end);
   box.addEventListener("pointercancel", end);
   return {
-    load(next, name) {
-      if (next === id) return;
+    full() { if (wantFull) wantFull(); }, // the visitor is engaged: swap the still for the animation
+    load(next, name, light) {
+      if (next === id) { if (!light && wantFull) wantFull(); return; }
+      wantFull = null;
       id = next; stop(); clearInterval(back); clearTimeout(back); back = null; drag = null;
       spin = null; mode = ""; seg = 0; f = 0; played = 0;
       box.hidden = !next;
@@ -292,9 +296,14 @@ function spinner(box, el) {
         if (id !== next) return;
         el.style.backgroundImage = `url(${still})`; el.style.backgroundSize = "100% 100%"; el.style.backgroundPosition = "0 0";
         box.classList.remove("swap");
-        const ps = new Image();
-        ps.onload = () => { if (id !== next) return; ready[0] = true; draw(); play(); };
-        ps.src = urls[0];
+        const full = () => {
+          wantFull = null;
+          const ps = new Image();
+          ps.onload = () => { if (id !== next) return; ready[0] = true; draw(); play(); };
+          ps.src = urls[0];
+        };
+        if (light || LITE.on() || (navigator.connection && navigator.connection.saveData)) wantFull = full; // the still only, until asked
+        else full();
       };
       whenNear(() => setTimeout(() => { im.src = still; }, 180));
     },
@@ -704,13 +713,13 @@ if (pick) {
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
-    if (i === current) return;
+    if (i === current) { if (!byIdle) fig.full(); return; }
     current = i;
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
     if (bar) bar.style.transform = `scaleX(${((i + 1) / HUNTERS.length).toFixed(4)})`;
-    const [id, name, title, model, role] = HUNTERS[i];
+    const [id, name, title, model, role] = HUNTERS[i], light = byIdle;
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     { // keep the picked portrait in view by scrolling the strip only, never the page
       const btn = pick.children[i];
@@ -730,7 +739,7 @@ if (pick) {
       $("h-title").textContent = title;
       $("h-role").textContent = role;
       alignTitle();
-      fig.load(model ? id : "", name);
+      fig.load(model ? id : "", name, light);
       art.classList.remove("out");
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
@@ -846,7 +855,7 @@ if (pick) {
     };
     new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (!vis) on = true; idleArm(); }, { threshold: 0.6 }).observe(stageEl);
     // any movement in the section means you're not idle: the count waits for a moment of stillness, then starts over
-    const busy = () => { if (!on) return; clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle"); still = setTimeout(() => idleArm(), 700); };
+    const busy = () => { fig.full(); if (!on) return; clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle"); still = setTimeout(() => idleArm(), 700); };
     ["pointermove", "pointerdown", "touchstart", "touchmove", "keydown"].forEach((t) => sec.addEventListener(t, busy, { passive: true }));
     document.addEventListener("visibilitychange", () => idleArm());
     new MutationObserver(() => idleArm()).observe(root, { attributes: true, attributeFilter: ["class"] }); // Abilities / full-size art opened or closed
@@ -1061,7 +1070,16 @@ if (POSTHOG_KEY) {
   if (bar) {
     bar.querySelector("[data-yes]").addEventListener("click", () => choose("yes"));
     bar.querySelector("[data-no]").addEventListener("click", () => choose("no"));
-    if (!consent) setTimeout(open, 1200);
+    if (!consent) {
+      // Phones: the bar would sit on top of the hero's email box and Discord button, so it waits until the visitor has
+      // scrolled past the hero (or 15s). Nothing is stored before they answer either way.
+      if (innerWidth <= 600) {
+        let shown = false;
+        const go = () => { if (shown) return; shown = true; removeEventListener("scroll", chk); open(); };
+        const chk = () => { if (scrollY > innerHeight * 0.6) go(); };
+        addEventListener("scroll", chk, { passive: true }); setTimeout(go, 15000);
+      } else setTimeout(open, 1200);
+    }
     document.querySelectorAll(".js-cookies").forEach((a) => { a.hidden = false; a.addEventListener("click", (e) => { e.preventDefault(); open(); }); });
   }
   document.addEventListener("click", (e) => {
@@ -1668,7 +1686,7 @@ if (POSTHOG_KEY) {
   new IntersectionObserver((es, o) => {
     if (!es[0].isIntersecting) return;
     o.disconnect(); near = true;
-    v.src = innerWidth > 1000 ? "assets/video/drop.mp4" : "assets/video/drop-720.mp4"; sync();
+    v.src = innerWidth * (devicePixelRatio || 1) > 1500 ? "assets/video/drop.mp4" : "assets/video/drop-720.mp4"; sync(); // 1080p (3.9 MB) only where the screen has the pixels for it
   }, { rootMargin: "100% 0px" }).observe(sec);
   new IntersectionObserver((es) => { vis = es[0].isIntersecting; sync(); }, { threshold: 0.05 }).observe(sec);
   v.addEventListener("playing", () => sec.classList.add("live"), { once: true });

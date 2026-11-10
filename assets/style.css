@@ -1002,3 +1002,5 @@ html.lite .tr-media img { transform: none !important; }
 /* PC: the Hunters stage drags sideways (site.js) */
 @media (hover: hover) and (pointer: fine) { #hunters .stage .shot, #hunters .stage .info { cursor: grab; } }
 html.h-drag, html.h-drag * { cursor: grabbing !important; -webkit-user-select: none; user-select: none; }
+/* Phones: a tighter cookie bar, so it covers less of whatever is at the bottom of the screen */
+@media (max-width: 600px) { .consent { gap: 8px; padding: 10px 12px 12px; border-radius: 18px; } .consent p { font-size: 13px; line-height: 1.35; } .consent-b .btn { padding: 8px 14px; height: auto; min-height: 38px; } }
