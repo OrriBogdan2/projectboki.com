@@ -709,6 +709,7 @@ if (pick) {
     const n = $("h-name"), t = $("h-title");
     t.style.paddingLeft = Math.max(0, ink(n, n.textContent[0], true) - ink(t, t.textContent[0].toUpperCase()) + parseFloat(getComputedStyle(n).fontSize) * 0.07).toFixed(1) + "px"; // tucked in a touch so it never reads left of the name
     $("h-role").style.marginLeft = t.style.paddingLeft;
+    if ($("h-more")) $("h-more").style.marginLeft = t.style.paddingLeft;
   }
   alignTitle();
   document.fonts && document.fonts.ready.then(alignTitle);
@@ -1117,6 +1118,8 @@ if (POSTHOG_KEY) {
   }
   ex.setAttribute("aria-label", "Hunter details and full art");
   ex.addEventListener("click", (e) => { e.stopPropagation(); open(); });
+  const more = document.getElementById("h-more"); // the scroll under the name: the way in
+  if (more) { more.addEventListener("click", (e) => { e.stopPropagation(); open(); }); more.addEventListener("pointerenter", load, { once: true }); }
   ex.addEventListener("pointerenter", load, { once: true });
 })();
 
