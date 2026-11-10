@@ -16,7 +16,7 @@
     if (qa && /^https?:\/\/(127\.0\.0\.1|localhost)[:/]/.test(location.href) && /\/api$/.test(qa)) API = qa;
   } catch (e) {}
 
-  var LINKS = [["Hunters", "/#hunters"], ["Boki", "/#boki"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
+  var LINKS = [["Boki", "/#boki"], ["Hunters", "/#hunters"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
   var DEX_LINKS = [["Home", "/"], ["Hunters", "/#hunters"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
 
   var isDex = /\/bokidex(\/|$)/.test(location.pathname) && !!document.getElementById("app");
