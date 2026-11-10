@@ -958,3 +958,4 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 .h-more:active { transform: translateY(1px); box-shadow: 0 1px 0 #c9b48f, 0 6px 14px -6px rgba(0,0,0,.7); }
 .h-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 1000px) { .h-more { margin-top: 12px; padding: 7px 13px 7px 11px; font-size: 15px; gap: 7px; border-radius: 10px; } .h-more svg { width: 16px; height: 16px; } }
+.pick.wave button::after { animation: pick-shine .7s ease-out both; animation-delay: calc(var(--i, 0) * 55ms); } /* the first time the Hunters land */

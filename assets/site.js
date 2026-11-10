@@ -338,7 +338,7 @@ if (pick) {
     b.type = "button";
     b.setAttribute("aria-label", `${name}, ${title}`);
     b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-    b.innerHTML = `<img src="${src(id, "face-192")}" alt="" loading="lazy"><span>${name}</span>`;
+    b.innerHTML = `<img src="${src(id, "face-192")}" alt="" loading="lazy"><span>${name}</span>`; b.style.setProperty("--i", i);
     b.addEventListener("click", () => show(i));
     b.addEventListener("pointerenter", () => { const im = new Image(); im.srcset = set(id); im.sizes = art.sizes; }, { once: true });
     pick.appendChild(b);
@@ -397,7 +397,7 @@ if (pick) {
     return { svg, paths };
   })();
   const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
-  let scn = null, sceneOn = false, lastQ = -1;
+  let scn = null, sceneOn = false, lastQ = -1, waved = false;
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -409,7 +409,7 @@ if (pick) {
       const io = 1 - sm(clamp((q - 0.02) / 0.11));
       intro.style.opacity = io.toFixed(3); intro.style.visibility = io < 0.005 ? "hidden" : "";
       intro.style.transform = `translate3d(0, ${(-70 * (1 - io)).toFixed(1)}px, 0) scale(${(1 - 0.06 * (1 - io)).toFixed(4)})`;
-      // 2) "Will you save the Skylands?" rises in word by word, holds, then lifts away as the fault opens
+      // 2) (no longer in the page) a question line between the heading and "Choose your Hunter."
       if (ask) {
         const out = sm(clamp((q - 0.48) / 0.08)); // it holds from about 0.3 to 0.48: long enough to read it
         ask.style.visibility = q > 0.06 && out < 1 ? "visible" : "hidden";
@@ -421,15 +421,15 @@ if (pick) {
       }
       // 3) then "Choose your Hunter." rises in the same place, holds while the stage surfaces, and lifts as it cracks open
       if (choose) {
-        const out = sm(clamp((q - 0.76) / 0.08));
-        choose.style.visibility = q > 0.54 && out < 1 ? "visible" : "hidden";
+        const out = sm(clamp((q - 0.5) / 0.1)); // the only line after the heading: in, a moment to read, then it lifts as the art cracks open
+        choose.style.visibility = q > 0.06 && out < 1 ? "visible" : "hidden";
         chooseWords.forEach((w, k) => {
-          const a = sm(clamp((q - 0.56 - k * 0.03) / 0.08));
+          const a = sm(clamp((q - 0.1 - k * 0.04) / 0.12));
           w.style.opacity = (a * (1 - out)).toFixed(3);
           w.style.transform = `translate3d(0, ${(34 * (1 - a) - 30 * out).toFixed(1)}px, 0) scale(${(0.86 + 0.14 * a + 0.04 * out).toFixed(4)})`;
         });
       }
-      q = clamp((q - 0.66) / 0.34); // the rest plays out under it
+      q = clamp((q - 0.06) / 0.94); // the art cracks open right under the breaking heading
       const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under the fault
       stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
       const draw = sm(clamp((q - 0.02) / 0.3));
@@ -449,7 +449,8 @@ if (pick) {
         el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
     }
     const on = q > 0.8;
-    if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); }
+    if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on);
+      if (on && !waved && pick) { waved = true; pick.classList.add("wave"); setTimeout(() => pick.classList.remove("wave"), 1600); } } // the first time: a shine runs across the portraits, so the eye goes to the choice
   };
   const render = (y) => {
     if (!scn) return;
@@ -474,7 +475,7 @@ if (pick) {
     let d = y - ys;
     if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
     const inScene = ys > scn.s0 - vh * 0.31 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
-    const asking = ys < scn.s0 + vh * 0.1 + (scn.lead - vh * 0.1) * 0.8; // the question and "Choose your Hunter." get a slower pass too
+    const asking = ys < scn.s0 + vh * 0.1 + (scn.lead - vh * 0.1) * 0.8; // "Choose your Hunter." gets a slower pass too
     const cap = (inScene ? (breaking ? (touchy ? 0.28 : 0.55) : asking ? (touchy ? 0.42 : 0.6) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
@@ -494,7 +495,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 2.3 : 2.15)), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (on ? 1.15 : 1.05)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
@@ -564,9 +565,8 @@ if (pick) {
     }, { passive: true });
   }
 
-  // The first time you scroll down into the Hunters, the intro plays itself (about two and a half seconds) while the
-  // page holds still: the heading breaks, the question and "Choose your Hunter." each get a moment to read, the first
-  // Hunter's art cracks open, then the page is yours again. Leftover trackpad momentum is soaked up so it doesn't fling
+  // The first time you scroll down into the Hunters, the intro plays itself (about a second and a half) while the page holds
+  // still: the heading breaks and the first Hunter's art cracks open under it, then the page is yours again. Leftover trackpad momentum is soaked up so it doesn't fling
   // you past. Once per visit; scrolling back up and down after that is normal.
   if (!calm) {
     const root = document.documentElement;
@@ -580,7 +580,7 @@ if (pick) {
       const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
-      const keysT = [[0, from, 0], [0.6, at(0.3), 1], [1.0, at(0.4), 0], [1.5, at(0.7), 1], [1.85, at(0.76), 0], [2.5, end, 1]];
+      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -592,8 +592,8 @@ if (pick) {
         scrollTo({ top: Math.round(y), behavior: "instant" }); ys = scrollY; render(ys);
         if (t < keysT[keysT.length - 1][0]) { requestAnimationFrame(f); return; }
         const fin = performance.now();
-        const letGo = () => { // wait for the trackpad to go quiet, so its momentum doesn't carry on (at most another 1.2s)
-          if (performance.now() - quietSince < 260 && performance.now() - fin < 1200) { setTimeout(letGo, 80); return; }
+        const letGo = () => { // wait for the trackpad to go quiet, so its momentum doesn't carry on (at most another 0.6s)
+          if (performance.now() - quietSince < 260 && performance.now() - fin < 600) { setTimeout(letGo, 80); return; }
           auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; kick();
         };
         letGo();
