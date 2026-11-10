@@ -991,3 +991,5 @@ html.h-drag, html.h-drag * { cursor: grabbing !important; -webkit-user-select: n
 @media (max-width: 720px) { .join .join-cta { flex-direction: column; width: min(360px, 100%); margin-inline: auto; } .join .join-su { width: 100%; } }
 /* One signup button mid-page, under the Boki still to find */
 .bk-cta { display: flex; justify-content: center; margin-top: clamp(6px, 1vw, 14px); }
+/* The top bar's "Sign in" is for admins: it stays on the Bokidex and /admin, and is hidden on the public pages */
+header.nav.tb-site .tb-sign { display: none !important; }

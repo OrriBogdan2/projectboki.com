@@ -246,15 +246,6 @@ if (pick) {
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
-  const skip = plab && (() => { // jump straight to the next section
-    const b = document.createElement("button"); b.type = "button"; b.className = "h-skip";
-    b.innerHTML = 'Skip Hunters<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    b.addEventListener("click", () => { // the section after the Hunters
-      let to = sec.nextElementSibling; while (to && to.tagName !== "SECTION") to = to.nextElementSibling;
-      if (to) to.scrollIntoView({ behavior: "instant", block: "start" });
-    });
-    plab.appendChild(b); return b;
-  })();
   const bar = plab && (() => { const s = document.createElement("span"); s.className = "h-bar"; s.setAttribute("aria-hidden", "true"); s.innerHTML = "<i></i>"; plab.insertBefore(s, plab.querySelector(".swipe")); return s.firstChild; })();
   const clamp = (v) => Math.min(1, Math.max(0, v)), sm = (v) => v * v * (3 - 2 * v);
   let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
