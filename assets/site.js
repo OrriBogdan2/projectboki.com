@@ -1604,17 +1604,26 @@ if (POSTHOG_KEY) {
   }
 })();
 
-
-/* ---------- Trailer headline: one line at a time, on a loop while it's on screen. "The Skylands have crumbled." rises in word
-   by word, holds, lifts away, then "Find your allies and get out alive." does the same in its place. Leave and come back:
-   it starts over from the first line. ---------- */
+/* ---------- Trailer panel: footage of the Skylands plays behind the two lines. The lines rise in (first, then second) when
+   the panel is on screen. The clip loads as you get near, plays only while it's on screen, and dissolves through its
+   first frame at the loop point. Lite and reduced motion: the still image only. ---------- */
 (function () {
-  const h = document.querySelector(".tr-head h2");
-  if (!h || calm) return;
-  [...h.children].forEach((line) => {
-    const words = line.textContent.trim().split(/\s+/);
-    line.innerHTML = words.map((w, k) => `<span class="w" style="--k:${k}">${w}</span>`).join(" ");
-  });
-  h.classList.add("seq");
-  new IntersectionObserver((es) => { h.classList.toggle("go", es[0].isIntersecting); }, { threshold: 0.9 }).observe(h);
+  const sec = document.getElementById("trailer");
+  if (!sec) return;
+  const copy = sec.querySelector(".tr-copy h2"), v = sec.querySelector("video");
+  if (copy && !calm) new IntersectionObserver((es) => sec.classList.toggle("in", es[0].isIntersecting), { threshold: 0.6 }).observe(copy);
+  else sec.classList.add("in");
+  if (!v) return;
+  if (calm || LITE.on()) { v.remove(); return; }
+  let near = false, vis = false;
+  const sync = () => { if (!near || !v.isConnected) return; if (vis) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); };
+  new IntersectionObserver((es, o) => {
+    if (!es[0].isIntersecting) return;
+    o.disconnect(); near = true;
+    v.src = innerWidth > 1000 ? "assets/video/drop.mp4" : "assets/video/drop-720.mp4"; sync();
+  }, { rootMargin: "100% 0px" }).observe(sec);
+  new IntersectionObserver((es) => { vis = es[0].isIntersecting; sync(); }, { threshold: 0.05 }).observe(sec);
+  v.addEventListener("playing", () => sec.classList.add("live"), { once: true });
+  v.addEventListener("timeupdate", () => v.classList.toggle("dip", v.duration - v.currentTime < 0.6));
+  document.addEventListener("boki-lite", () => { v.pause(); v.remove(); sec.classList.remove("live"); });
 })();

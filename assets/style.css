@@ -964,53 +964,36 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 @media (max-width: 720px) { .head h2.h-crumble { font-size: min(8.8vw, 42px); } }
 .js #hunters.scene .h-crumble .nw { display: inline-block; transform-origin: 50% 50%; will-change: transform; } /* so the falling words can drop as one into the art */
 
-/* Gameplay trailer: the first section after the hero. A 16:9 frame with "Coming soon" over a gameplay still until the video is in. */
-.trailer { padding: calc(var(--sec) * .8) 0 calc(var(--sec) * .5); background: var(--bg); }
-.tr-head { text-align: center; max-width: 820px; margin: 0 auto; }
-.tr-eyebrow { margin: 0 0 14px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgba(220,228,245,.6); }
-.tr-head h2 { margin: 0; font-family: "Lilita", sans-serif; font-weight: 400; font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; color: #fff; }
-.tr-sub { margin: 18px 0 0; font-size: clamp(16px, 1.4vw, 19px); color: rgba(220,228,245,.72); }
-.tr-frame { position: relative; max-width: 1100px; margin: clamp(28px, 4vw, 44px) auto 0; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; background: #0b1120; box-shadow: 0 30px 70px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.07); }
-.tr-frame img, .tr-frame video, .tr-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
-.tr-frame img { filter: brightness(.42) saturate(.85); transform: scale(1.02); }
-.tr-soon { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: #fff; pointer-events: none; }
-.tr-play { display: grid; place-items: center; width: 78px; height: 78px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); background: rgba(8,12,24,.35); }
-.tr-play svg { width: 30px; height: 30px; fill: rgba(255,255,255,.85); margin-left: 4px; }
-.tr-soon b { font-family: "Lilita", sans-serif; font-weight: 400; font-size: clamp(22px, 2.4vw, 30px); letter-spacing: .3px; }
-@media (max-width: 720px) { .tr-frame { border-radius: 16px; } .tr-play { width: 60px; height: 60px; } .tr-play svg { width: 24px; height: 24px; } }
-.tr-head h2 span { display: block; white-space: nowrap; } /* one sentence per line, never wrapped */
-@media (max-width: 720px) { .tr-head h2 { font-size: min(7.4vw, 34px); } .tr-sub { max-width: 30ch; margin-left: auto; margin-right: auto; } }
-/* Trailer: big type throughout */
-.tr-head { max-width: none; }
-.tr-eyebrow { margin-bottom: 16px; font-family: "Lilita", sans-serif; font-weight: 400; font-size: clamp(18px, 1.7vw, 26px); letter-spacing: .08em; color: rgba(225,232,248,.7); }
-.tr-head h2 { font-size: clamp(40px, 5.6vw, 84px); line-height: 1.02; }
-.tr-play { width: clamp(64px, 7vw, 104px); height: clamp(64px, 7vw, 104px); }
-.tr-play svg { width: 40%; height: 40%; }
-.tr-soon { gap: clamp(14px, 1.6vw, 22px); }
-.tr-soon b { font-size: clamp(28px, 3.6vw, 52px); }
-@media (max-width: 720px) { .tr-head h2 { font-size: min(7.6vw, 46px); } .tr-eyebrow { font-size: 17px; } .tr-soon b { font-size: 26px; } .tr-play { width: 60px; height: 60px; } }
-/* No heading above the Hunters any more: less scroll before the stage */
+/* No heading above the Hunters: less scroll before the stage */
 .hunters { padding-top: calc(var(--sec) * .2); }
-.trailer { padding-bottom: calc(var(--sec) * .35); }
-/* "The Skylands have crumbled." / "Find your allies and get out alive.": the long line is ~14.2em, so the size follows the screen width */
-.tr-head h2 { font-size: clamp(30px, 5.9vw, 84px); }
-@media (max-width: 720px) { .tr-head h2 { font-size: 5.9vw; } }
-/* Trailer headline, one line at a time (site.js): both lines share one spot, so only one shows */
+
+/* Trailer panel: the sheet that slides over the hero. Footage of the Skylands fills it edge to edge and the two lines sit
+   on it, bottom left. One still image until the clip plays (site.js); lite and reduced motion keep the still. */
+.trailer { height: clamp(520px, 90svh, 1040px); overflow: hidden; background: #0a1020; isolation: isolate; }
+.tr-media { position: absolute; inset: 0; z-index: -1; }
+.tr-media img, .tr-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.tr-media video { opacity: 0; transition: opacity .5s linear; }
+.trailer.live .tr-media video { opacity: 1; }
+.trailer.live .tr-media video.dip { opacity: 0; } /* the loop point dissolves through the first frame (the still under it) */
+.tr-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgba(8,13,24,.82) 26%, rgba(8,13,24,.35) 52%, rgba(8,13,24,0) 74%); } /* shade: the lines read, and the footage melts into the page below */
+.tr-copy { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding-bottom: clamp(34px, 8vh, 84px); }
+.tr-copy h2 { margin: 0; font-family: "Lilita", sans-serif; font-weight: 400; font-size: clamp(34px, 5vw, 76px); line-height: 1.05; color: #fff; text-align: left; text-shadow: 0 2px 26px rgba(4,7,14,.6); }
+.tr-copy h2 span { display: block; white-space: nowrap; }
+.tr-status { display: inline-flex; align-items: center; gap: 10px; margin: clamp(18px, 2.2vw, 30px) 0 0; height: 54px; padding: 0 24px 0 18px; border-radius: 14px; font-family: "Lilita", sans-serif; font-size: 21px; letter-spacing: .02em; color: #fff; background: rgba(8,13,24,.6); border: 1px solid rgba(255,255,255,.3); }
+.tr-status svg { width: 20px; height: 20px; fill: currentColor; }
+@media (max-width: 720px) {
+  .tr-copy h2 { font-size: min(9.4vw, 44px); }
+  .tr-copy h2 span { white-space: normal; text-wrap: balance; max-width: 11.5em; }
+  .tr-copy h2 span + span { margin-top: .22em; }
+  .tr-status { height: 48px; font-size: 18px; padding: 0 20px 0 15px; }
+}
 @media (prefers-reduced-motion: no-preference) {
-  .js .tr-head h2 { display: grid; justify-items: center; }
-  .js .tr-head h2 > span { grid-area: 1 / 1; }
-  .tr-head h2.seq .w { display: inline-block; opacity: 0; transform: translateY(.38em); }
-  .tr-head h2.seq.go .w { animation: trw-cycle 7.2s linear infinite both; animation-delay: calc(.2s + var(--k) * 75ms); }
-  .tr-head h2.seq.go > span:last-child .w { animation-delay: calc(3.8s + var(--k) * 75ms); }
+  .js .tr-media img, .js .tr-media video { transform: scale(1.07); transition: transform 2.6s cubic-bezier(.2,.7,.2,1), opacity .5s linear; }
+  .js .trailer.in .tr-media img, .js .trailer.in .tr-media video { transform: none; }
+  .js .tr-copy h2 span, .js .tr-status { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+  .js .trailer.in .tr-copy h2 span, .js .trailer.in .tr-status { opacity: 1; transform: none; }
+  .js .trailer.in .tr-copy h2 span + span { transition-delay: .3s; }
+  .js .trailer.in .tr-status { transition-delay: .58s; }
 }
-@keyframes trw-in { to { opacity: 1; transform: none; } }
-@keyframes trw-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-.42em); } }
-/* Phones: one sentence at a time, so each can wrap onto two balanced lines and stay big */
-@media (max-width: 720px) { .tr-head h2 { font-size: min(9vw, 46px); line-height: 1.05; } .tr-head h2 > span { white-space: normal; text-wrap: balance; max-width: 13em; margin: 0 auto; } }
-/* one 7.2s cycle per line: rise in, hold about 2.5s, lift away, stay out while the other line has its turn */
-@keyframes trw-cycle {
-  0% { opacity: 0; transform: translateY(.38em); animation-timing-function: cubic-bezier(.2,.8,.2,1); }
-  9% { opacity: 1; transform: none; }
-  41% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.5,0,.8,.4); }
-  47%, 100% { opacity: 0; transform: translateY(-.42em); }
-}
+html.lite .tr-media img { transform: none !important; }
+.trailer + .hunters { background: var(--bg); } /* flat where it meets the panel: no seam */
