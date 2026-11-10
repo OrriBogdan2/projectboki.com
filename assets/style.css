@@ -1079,3 +1079,23 @@ html.lite #hunters.hint .h-peek.next img { animation: none; }
 }
 /* Phones: the label says it in words too */
 @media (max-width: 720px) { #hunters.pinned .pick-label .swipe { display: inline-flex; } }
+
+/* ---------- Key art ---------- */
+/* The Boki open on the egg art, shaped like the Hunters stage, with the heading on its quiet left side */
+.bk-key { position: relative; margin-bottom: clamp(36px, 5vw, 60px); border-radius: var(--r); overflow: hidden; border: 1px solid rgba(255,255,255,.08); background: #070b14; box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+.bk-key img { display: block; width: 100%; height: auto; aspect-ratio: 2576 / 1438; object-fit: cover; }
+.bk-key .head { position: absolute; top: 0; bottom: 0; left: clamp(28px, 4.6vw, 68px); width: 42%; margin: 0; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+.bk-key .head h2 { text-shadow: 0 2px 26px rgba(4,7,14,.7); }
+.bk-key .head .sub { margin-inline: 0; max-width: 21ch; color: #fff; text-shadow: 0 2px 18px rgba(4,7,14,.8); }
+@media (max-width: 900px) { /* no room on the art: heading first, then the art cropped to the Boki */
+  .bk-key { display: flex; flex-direction: column; border: 0; border-radius: 0; overflow: visible; background: none; box-shadow: none; margin-bottom: 28px; }
+  #boki .bk-key .head { position: static; order: -1; width: auto; margin: 0 0 28px; text-align: center; }
+  .bk-key .head .sub { margin-inline: auto; color: var(--ink-2); text-shadow: none; }
+  .bk-key .head h2 { text-shadow: none; }
+  .bk-key img { aspect-ratio: 4 / 3; object-position: 74% 50%; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); }
+}
+/* The signup closes on the aurora art, dimmed flat so the heading and the email box stay the loudest things there */
+.join-bg { background: #070b14; }
+.join-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 38%; }
+.join-bg::before { display: none; }
+.join-bg::after { background: rgba(8,13,24,.6); opacity: 1; }
