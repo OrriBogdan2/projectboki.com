@@ -22,11 +22,11 @@ TAGS = """<!-- Share preview (site repo: tools/bokidex/patch.py). -->
 <meta property="og:url" content="https://projectboki.com/bokidex/">
 <meta property="og:title" content="Bokidex · Project Boki">
 <meta property="og:description" content="Meet the Boki.">
-<meta property="og:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=3">
+<meta property="og:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=4">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=3">
+<meta name="twitter:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=4">
 """
 SWIPE = '<script>\n/* Swipe left / right on an open entry to go to the next / previous Boki (and between pictures when one is zoomed).\n   Added from the projectboki.com site repo: keep this block in exports. Horizontal scrollers, the 3D viewer and form\n   fields keep their own swipes. */\n(function(){\n  let x0=0,y0=0,t0=0,ok=false;\n  const scroller=el=>{for(let n=el;n&&n!==document.body;n=n.parentElement){if(n.scrollWidth>n.clientWidth+4){const o=getComputedStyle(n).overflowX;if(o==="auto"||o==="scroll")return true}}return false};\n  addEventListener("touchstart",e=>{\n    if(e.touches.length!==1){ok=false;return}\n    const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();\n    const zoom=!$("#zoom").hidden, el=e.target;\n    ok=zoom||(view==="dex"&&!!sel&&!viewerOpen()&&!!el.closest("#detail")&&!scroller(el)&&!el.closest("input,textarea,select,canvas,model-viewer,[data-noswipe]"));\n  },{passive:true});\n  addEventListener("touchend",e=>{\n    if(!ok)return; ok=false;\n    const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;\n    if(Date.now()-t0>800||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.6)return;\n    const d=dx<0?1:-1;\n    if(!$("#zoom").hidden){if(zoomList.length>1){zoomI=(zoomI+d+zoomList.length)%zoomList.length;$("#zoom-img").src=zoomList[zoomI]}return}\n    const det=$("#detail"), was=sel;\n    moveSel(d);\n    if(sel===was||!det||matchMedia("(prefers-reduced-motion: reduce)").matches)return;\n    det.animate([{transform:`translateX(${d*42}px)`,opacity:.35},{transform:"none",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"});\n  },{passive:true});\n})();\n</script>\n'
 
