@@ -959,3 +959,7 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 .h-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 1000px) { .h-more { margin-top: 12px; padding: 7px 13px 7px 11px; font-size: 15px; gap: 7px; border-radius: 10px; } .h-more svg { width: 16px; height: 16px; } }
 .pick.wave button::after { animation: pick-shine .7s ease-out both; animation-delay: calc(var(--i, 0) * 55ms); } /* the first time the Hunters land */
+/* "Hunters are all that's left." under the broken heading: the reason the Hunters come next (site.js fades it in as the letters fall) */
+.h-intro .h-sub { margin-top: 18px; font-family: "Lilita", sans-serif; font-size: clamp(24px, 2.9vw, 42px); line-height: 1.1; color: #fff; text-align: center; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.js #hunters.scene .h-intro .h-sub { opacity: 0; }
+@media (max-width: 720px) { .h-intro .h-sub { margin-top: 12px; font-size: 21px; } }

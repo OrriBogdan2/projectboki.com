@@ -360,6 +360,7 @@ if (pick) {
   const stage = pinEl && pinEl.querySelector(".stage"), intro = $("h-intro"), shot = stage && stage.querySelector(".shot");
   const plab = pinEl && pinEl.querySelector(".pick-label");
   const ask = pinEl && pinEl.querySelector(".h-ask:not(.h-choose)"), askWords = ask ? [...ask.querySelectorAll("span:not(.sk)")] : [];
+  const hsub = pinEl && pinEl.querySelector(".h-intro .h-sub");
   const choose = pinEl && pinEl.querySelector(".h-choose"), chooseWords = choose ? [...choose.querySelectorAll("span")] : [];
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
@@ -455,7 +456,9 @@ if (pick) {
   const render = (y) => {
     if (!scn) return;
     const vh = innerHeight;
-    if (window.bokiCrumble) window.bokiCrumble.set(clamp((y - (scn.s0 - vh * 0.3)) / (vh * 0.45)));
+    const cr = clamp((y - (scn.s0 - vh * 0.3)) / (vh * 0.45));
+    if (window.bokiCrumble) window.bokiCrumble.set(cr);
+    if (hsub) { const a = sm(clamp((cr - 0.3) / 0.4)); hsub.style.opacity = a.toFixed(3); hsub.style.translate = `0 ${(14 * (1 - a)).toFixed(1)}px`; } // "Hunters are all that's left." rises in as the letters fall
     paintScene(clamp((y - (scn.s0 + vh * 0.1)) / (scn.lead - vh * 0.1)));
     if (pin) {
       const k = (y - pin.start) / pin.step, i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor(k))), fr = clamp(k - i);
@@ -580,7 +583,7 @@ if (pick) {
       const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
-      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
+      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [1.05, scn.s0 + vh * 0.1, 0], [1.75, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
