@@ -1000,10 +1000,17 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
   .js .tr-head h2 { display: grid; justify-items: center; }
   .js .tr-head h2 > span { grid-area: 1 / 1; }
   .tr-head h2.seq .w { display: inline-block; opacity: 0; transform: translateY(.38em); }
-  .tr-head h2.seq.go > span:first-child .w { animation: trw-in .6s cubic-bezier(.2,.8,.2,1) forwards, trw-out .45s cubic-bezier(.5,0,.8,.4) forwards; animation-delay: calc(var(--k) * 75ms), calc(2.1s + var(--k) * 40ms); }
-  .tr-head h2.seq.go > span:last-child .w { animation: trw-in .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(2.6s + var(--k) * 75ms); }
+  .tr-head h2.seq.go .w { animation: trw-cycle 7.2s linear infinite both; animation-delay: calc(.2s + var(--k) * 75ms); }
+  .tr-head h2.seq.go > span:last-child .w { animation-delay: calc(3.8s + var(--k) * 75ms); }
 }
 @keyframes trw-in { to { opacity: 1; transform: none; } }
 @keyframes trw-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-.42em); } }
 /* Phones: one sentence at a time, so each can wrap onto two balanced lines and stay big */
 @media (max-width: 720px) { .tr-head h2 { font-size: min(9vw, 46px); line-height: 1.05; } .tr-head h2 > span { white-space: normal; text-wrap: balance; max-width: 13em; margin: 0 auto; } }
+/* one 7.2s cycle per line: rise in, hold about 2.5s, lift away, stay out while the other line has its turn */
+@keyframes trw-cycle {
+  0% { opacity: 0; transform: translateY(.38em); animation-timing-function: cubic-bezier(.2,.8,.2,1); }
+  9% { opacity: 1; transform: none; }
+  41% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.5,0,.8,.4); }
+  47%, 100% { opacity: 0; transform: translateY(-.42em); }
+}

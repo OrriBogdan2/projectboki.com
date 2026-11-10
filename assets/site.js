@@ -1605,8 +1605,9 @@ if (POSTHOG_KEY) {
 })();
 
 
-/* ---------- Trailer headline: one line at a time. "The Skylands have crumbled." rises in word by word, holds, lifts away,
-   then "Find your allies and get out alive." rises in its place and stays. Plays once, when the section comes into view. ---------- */
+/* ---------- Trailer headline: one line at a time, on a loop while it's on screen. "The Skylands have crumbled." rises in word
+   by word, holds, lifts away, then "Find your allies and get out alive." does the same in its place. Leave and come back:
+   it starts over from the first line. ---------- */
 (function () {
   const h = document.querySelector(".tr-head h2");
   if (!h || calm) return;
@@ -1615,5 +1616,5 @@ if (POSTHOG_KEY) {
     line.innerHTML = words.map((w, k) => `<span class="w" style="--k:${k}">${w}</span>`).join(" ");
   });
   h.classList.add("seq");
-  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { o.disconnect(); h.classList.add("go"); } }, { threshold: 0.6 }).observe(h);
+  new IntersectionObserver((es) => { h.classList.toggle("go", es[0].isIntersecting); }, { threshold: 0.9 }).observe(h);
 })();
