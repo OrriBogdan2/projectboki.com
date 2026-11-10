@@ -157,7 +157,7 @@ html.modal-open body{overflow:hidden}
 .mtabs button{font:600 .92rem var(--body);background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);padding:10px 13px;cursor:pointer;margin-bottom:-1px;white-space:nowrap}
 .mtabs button:hover{color:var(--ink)}
 .mtabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ty)}
-.blurb{font-size:1.2rem;line-height:1.55;margin:20px 0 4px}
+.blurb{font-size:1.12rem;line-height:1.55;margin:16px 0 0}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row dense;gap:8px;margin:12px 0}
 .facts>div{background:var(--soft);border-radius:14px;padding:8px 12px;min-width:0}
 .facts .wide{grid-column:1/-1}
@@ -541,6 +541,8 @@ header{padding-block:16px 4px}header::after{display:none}
 .kchips{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 22px;margin:18px 0 0;padding:14px 0 0;border-top:1px solid var(--line)}
 .kc{display:flex;flex-direction:column;gap:3px;min-width:0}
 .kc.w2{grid-column:span 2}.kc.w3{grid-column:1/-1}
+#keysbtn{display:none}
+.kchips.core{margin-top:14px}.kc .kb{display:block;height:5px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:3px;max-width:120px}.kc .kb b{display:block;height:100%;background:var(--ty);border-radius:99px}
 .kc small{font:600 .62rem var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
 .kc b{font:600 1.02rem/1.25 var(--body);overflow-wrap:anywhere}
 .kc .pp{font:600 .9rem var(--body);display:inline-flex;align-items:center;gap:6px;margin-right:12px;white-space:nowrap}.kc .pp:last-child{margin-right:0}
@@ -797,7 +799,7 @@ function evoHTML(e){
 }
 function abilitiesHTML(v){
   const A=v.d?.abilities||[]; if(!A.length)return"";
-  return panel("",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}</div>`).join("")}</div>`);
+  return panel("",`<div class="ab2">${A.map((a,k)=>`<div${A.length%2&&k===A.length-1?' class="one"':""}><span class="tag${a.slot==="Carry"||a.slot==="Merge"?" alt":""}">${esc(a.slot)}</span><b>${esc(a.name)}</b>${a.cd?` <span class="mut">${a.cd}s cooldown</span>`:""}${a.dur?` <span class="mut">lasts ${a.dur}s</span>`:""}${a.text?`<p>${esc(a.text)}</p>`:""}${!a.text&&a.list&&a.list.length?`<p>${a.list.map(esc).join(" · ")}</p>`:""}</div>`).join("")}</div>`);
 }
 function statsHTML(v){
   const d=v.d||{}, C=META?.caps||{kin_hp:16,kin_damage:8,kin_speed:16,owner:8}, U=META?.units||{};
@@ -810,6 +812,16 @@ function statsHTML(v){
   if(g1)h+=`<div>${g1}</div>`;
   if(d.pers)h+=`<div><span class="lbl" style="display:block;margin-bottom:4px">Personality</span>`+PERS.filter(([k])=>typeof d.pers[k]==="number").map(([k,l])=>row(l,d.pers[k],1,Math.round(d.pers[k]*100)+"%")).join("")+`</div>`;
   return h?panel("",`<div class="sgrid">${h}</div>`):"";
+}
+/* 11-10 owner: simplest useful view. About carries the core numbers; personality bars and the Stats tab are gone. */
+function coreHTML(v){
+  const d=v.d||{}, C=META?.caps||{kin_hp:16,kin_damage:8,kin_speed:16,owner:8}, U=META?.units||{}, st=v.stats;
+  const un=(u,x)=>u?Number((u[0]+u[1]*x).toFixed(2))+" "+u[2]:String(x);
+  let h="";
+  if(st){const r=[["HP","kin_hp"],["Damage","kin_damage"],["Speed","kin_speed"]].filter(([k])=>st[k]!=null);
+    h+=r.map(([k,u])=>`<span class="kc"><small>${k}</small><b>${esc(un(U[u],st[k]))}</b><i class="kb"><b style="width:${Math.max(4,Math.round(100*Math.min(1,st[k]/(C[u]||16))))}%"></b></i></span>`).join("")}
+  if(d.owner?.length)h+=`<span class="kc w3"><small>Hunter bonus</small><b>${d.owner.map(o=>esc(o.txt)).join(" · ")}</b></span>`;
+  return h?`<div class="kchips core">${h}</div>`:"";
 }
 function mutHTML(v){
   const d=v.d||{}; let h="";
@@ -859,10 +871,8 @@ function factsHTML(v,e){
   const wide=t=>t.length>34?"w3":t.length>15?"w2":"";
   out.push(h?kc("Height",esc(h[0]),h[1]):kc("Height",esc(v.size||"")));
   out.push(w?kc("Weight",esc(w[0]),w[1]):kc("Weight",esc(v.weight||"")));
-  out.push(kc("Size",esc(m?.size||d.gameSize&&cap1(d.gameSize)||"")));
   out.push(kc("Role",esc(d.role||""),"",wide(d.role||"")));
   {const t=m?.habitat||v.habitat||"";out.push(kc("Habitat",esc(t),"",wide(t)));}
-  out.push(kc("Group",esc(d.group||""),"",wide(d.group||"")));
   {const W=Object.entries(d.work||{}).filter(([,n])=>typeof n==="number"&&n>0).sort((x,y)=>y[1]-x[1]).map(([k])=>[k,cap1(k)]);
    if(W.length)out.push(kc("Work",W.map(([k,l])=>`<span class="pp">${l}${pips(d.work[k],3)}</span>`).join(""),"",W.length>2?"w3":W.length>1?"w2":""));}
   {const gt=d.sexNote||SEXTXT[d.sex];if(gt)out.push(kc("Gender",esc(gt),"",wide(gt)));}
@@ -877,7 +887,7 @@ function publicText(t,v){
   return parts.join(" ");
 }
 /* 11-09: Variants ("vari") and More ("more") are parked: tabBody/mutHTML/extrasHTML stay below so they can come back by adding them here. */
-const MTABS=[["about","About"],["abil","Abilities"],["stats","Stats"],["evolve","Evolution"],["alts","Alts"]];
+const MTABS=[["about","About"],["abil","Abilities"],["evolve","Evolution"],["alts","Alts"]];
 /* 11-09: Alts = extra angles/poses of the same Boki (dex entry v.alts [{label,src}], written by dex_art_sync from the manifest's extra_angles). Never replaces the hero. */
 function altsHTML(v){const A=(v.alts||[]).filter(a=>a&&a.src);
   return A.length?panel("Alts",`<div class="gal alts">${A.map(a=>`<figure><img src="${esc(P("dex/"+a.src))}" alt="${esc(v.name)} ${esc(a.label||"alt")}" loading="lazy" data-zoom><figcaption>${esc(a.label||"Alt")}</figcaption></figure>`).join("")}</div>`):"";}
@@ -894,7 +904,7 @@ function tabBody(v,e,d){
      open them below, collapsed. */
   const lore=publicText(v.lore||d.lore||v.entry,v);
   const more=!isAdmin?"":[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
-  return`${factsHTML(v,e)}${lore?`<p class="blurb">${esc(lore)}</p>`:""}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
+  return`${lore?`<p class="blurb">${esc(lore)}</p>`:""}${factsHTML(v,e)}${coreHTML(v)}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
 }
 const CHEV=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
 let dsig="", wasOpen=false, dkey="";
