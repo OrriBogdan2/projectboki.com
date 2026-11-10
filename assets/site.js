@@ -163,7 +163,7 @@ const wmBreak = (() => {
 
 // Hero: pinned while the next section slides over it. The title lifts away, the wall pushes in and dims.
 const heroIn = document.getElementById("hero-in"), heroDim = document.getElementById("hero-dim"), heroEl = document.getElementById("hero");
-const hunIn = document.querySelector("#hunters > .wrap"); // trails the sheet a little as it slides up, then settles
+const hunIn = document.querySelector(".hero-wrap + section > .wrap"); // trails the sheet a little as it slides up, then settles
 if (heroIn && !calm) {
   let ticking = false;
   const ease = (v) => 1 - Math.pow(1 - v, 2);
@@ -405,7 +405,7 @@ if (pick) {
     if (q === lastQ) return;
     lastQ = q;
     if (q >= 1) { // fully in: hand everything back to the stylesheet
-      tidy([stage, plab, pick, ...late]); intro.style.opacity = "0"; intro.style.visibility = "hidden"; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; } if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
+      tidy([stage, plab, pick, ...late]); if (intro) { intro.style.opacity = "0"; intro.style.visibility = "hidden"; } if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; } if (ask) ask.style.visibility = "hidden"; if (choose) choose.style.visibility = "hidden";
       if (cw) { cw.style.clipPath = cw.style.webkitClipPath = ""; cw.style.opacity = ""; } shot.style.filter = ""; if (rift) rift.svg.style.opacity = "0";
     } else {
       // 1) the pieces keep falling: "Solmere Kingdom has" fades where it is, and the broken words drop, shrinking as
@@ -413,7 +413,7 @@ if (pick) {
       const kf = clamp(q / 0.22), g = kf * kf; // gravity: faster and faster
       if (fallD === null && hFall && shot) { const a = hFall.getBoundingClientRect(), b = shot.getBoundingClientRect(); fallD = (b.top + b.height / 2) - (a.top + a.height / 2) + (parseFloat(hFall.dataset.ty) || 0); }
       const gone = kf >= 1;
-      intro.style.opacity = gone ? "0" : ""; intro.style.visibility = gone ? "hidden" : ""; intro.style.transform = "";
+      if (intro) { intro.style.opacity = gone ? "0" : ""; intro.style.visibility = gone ? "hidden" : ""; intro.style.transform = ""; }
       if (hTop) hTop.style.opacity = (1 - sm(clamp(q / 0.12))).toFixed(3);
       if (hFall) {
         const ty = (fallD || 0) * g; hFall.dataset.ty = ty.toFixed(1);
@@ -443,7 +443,7 @@ if (pick) {
       q = clamp((q - 0.06) / 0.94); // the art cracks open right under the breaking heading
       const f = sm(clamp(q / 0.2)); // the stage's dark frame surfaces under the fault
       stage.style.transition = "none"; stage.style.opacity = f.toFixed(3); stage.style.transform = `scale(${(0.975 + 0.025 * f).toFixed(4)})`;
-      const draw = sm(clamp((q - 0.16) / 0.2)); // the fault runs out from where the pieces land
+      const draw = sm(clamp((q - (hFall ? 0.16 : 0.02)) / (hFall ? 0.2 : 0.24))); // the fault runs out (from where the pieces land, when there is a heading)
       // 2) then it splits open along that line, glowing ember, cooling as it widens
       const r = sm(clamp((q - 0.3) / 0.46));
       if (rift) {
@@ -508,7 +508,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (on ? 1.15 : 1.05)), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : (on ? 0.85 : 0.8))), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
@@ -593,7 +593,8 @@ if (pick) {
       const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
-      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
+      const keysT = hFall ? [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]] // ease in to the heading, drift while it breaks, then the crack
+        : [[0, from, 0], [1.25, end, 1]]; // no heading: settle onto the stage while the crack opens
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -616,7 +617,7 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY;
       if (!done && !auto && scn) {
-        const vh = innerHeight, gate = scn.s0 - vh * 0.32;
+        const vh = innerHeight, gate = scn.s0 - vh * (hFall ? 0.32 : 0.22);
         if (prev < gate && y >= gate) {
           if (y - prev < vh * 1.5 && y < scn.s0 + scn.lead * 0.5) play(y); // a scroll, not a jump (a link, End)
           else done = true;
