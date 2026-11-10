@@ -400,7 +400,7 @@ if (pick) {
     return { svg, paths };
   })();
   const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
-  let scn = null, sceneOn = false, lastQ = -1, waved = false;
+  let scn = null, sceneOn = false, lastQ = -1, waved = false, idleArm = null, byIdle = false;
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -460,7 +460,7 @@ if (pick) {
         el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
     }
     const on = q > 0.8;
-    if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on);
+    if (on !== sceneOn) { sceneOn = on; sec.classList.toggle("scene-on", on); if (idleArm) idleArm();
       if (on && !waved && pick) { waved = true; pick.classList.add("wave"); setTimeout(() => pick.classList.remove("wave"), 1600); } } // the first time: a shine runs across the portraits, so the eye goes to the choice
   };
   const render = (y) => {
@@ -608,7 +608,7 @@ if (pick) {
         const fin = performance.now();
         const letGo = () => { // wait for the trackpad to go quiet, so its momentum doesn't carry on (at most another 0.6s)
           if (performance.now() - quietSince < 260 && performance.now() - fin < 600) { setTimeout(letGo, 80); return; }
-          auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; kick();
+          auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; kick(); if (idleArm) idleArm();
         };
         letGo();
       };
@@ -702,6 +702,7 @@ if (pick) {
 
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
+    if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
     if (i === current) return;
     current = i;
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
@@ -795,6 +796,30 @@ if (pick) {
       acc += dx * (e.deltaMode === 1 ? 32 : 1);
       if (Math.abs(acc) > 40) { used = true; show(current + Math.sign(acc)); }
     }, { passive: false });
+  }
+  // Idle tour: if nobody touches it, the stage moves on to the next Hunter every few seconds, so the roster shows itself.
+  // A thin line fills along the active portrait while it counts. Moving the mouse, touching, or opening Abilities holds it. A pick
+  // of your own (a portrait, an arrow, a key, a swipe) stops it until you leave the section and come back.
+  if (!calm && pick) {
+    const DWELL = 4500, root = document.documentElement, stageEl = document.querySelector("#hunters .stage");
+    let on = true, vis = false, timer = 0, still = 0;
+    pick.style.setProperty("--dwell", DWELL + "ms");
+    const ok = () => on && vis && sceneOn && !auto && !document.hidden && !root.classList.contains("hm-open") && !root.classList.contains("lb-open")
+      && !sec.querySelector("button:hover, a:hover"); // not while the pointer rests on something you might press
+    idleArm = (stop) => {
+      if (stop === true) on = false;
+      clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle");
+      if (!ok()) { if (on && vis && sceneOn) still = setTimeout(() => idleArm(), 1500); return; } // (resting on a button: look again shortly)
+      void pick.offsetWidth; pick.classList.add("idle"); // restart the line with the timer
+      const n = HUNTERS[(current + 1) % HUNTERS.length], pre = new Image(); pre.sizes = art.sizes; pre.srcset = set(n[0]); // the next splash is ready when its turn comes
+      timer = setTimeout(() => { if (ok()) { byIdle = true; show(current + 1); byIdle = false; } idleArm(); }, DWELL);
+    };
+    new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (!vis) on = true; idleArm(); }, { threshold: 0.6 }).observe(stageEl);
+    // any movement in the section means you're not idle: the count waits for a moment of stillness, then starts over
+    const busy = () => { if (!on) return; clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle"); still = setTimeout(() => idleArm(), 700); };
+    ["pointermove", "pointerdown", "touchstart", "touchmove", "keydown"].forEach((t) => sec.addEventListener(t, busy, { passive: true }));
+    document.addEventListener("visibilitychange", () => idleArm());
+    new MutationObserver(() => idleArm()).observe(root, { attributes: true, attributeFilter: ["class"] }); // Abilities / full-size art opened or closed
   }
   $("h-prev").addEventListener("click", () => show(current - 1));
   arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
@@ -1604,14 +1629,16 @@ if (POSTHOG_KEY) {
   }
 })();
 
-/* ---------- Trailer panel: footage of the Skylands plays behind the two lines. The lines rise in (first, then second) when
-   the panel is on screen. The clip loads as you get near, plays only while it's on screen, and dissolves through its
+/* ---------- Trailer panel: footage of the Skylands plays behind the two lines. The two lines sit apart (top and bottom) and each rises in
+   when it is on screen. The clip loads as you get near, plays only while it's on screen, and dissolves through its
    first frame at the loop point. Lite and reduced motion: the still image only. ---------- */
 (function () {
   const sec = document.getElementById("trailer");
   if (!sec) return;
-  const copy = sec.querySelector(".tr-copy h2"), v = sec.querySelector("video");
-  if (copy && !calm) new IntersectionObserver((es) => sec.classList.toggle("in", es[0].isIntersecting), { threshold: 0.6 }).observe(copy);
+  const v = sec.querySelector("video");
+  // each line rises in when it is on screen: the top one as the panel slides up, the bottom one as it settles
+  const rise = (el, th) => { if (el) new IntersectionObserver((es) => el.classList.toggle("in", es[0].isIntersecting), { threshold: th }).observe(el); };
+  if (!calm) { rise(sec, 0.3); rise(sec.querySelector("h2.tr-line"), 0.9); rise(sec.querySelector(".tr-bottom"), 0.7); }
   else sec.classList.add("in");
   if (!v) return;
   if (calm || LITE.on()) { v.remove(); return; }
