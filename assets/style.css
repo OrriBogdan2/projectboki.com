@@ -1118,3 +1118,11 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
   #hunters .info .role { grid-column: 1; margin-bottom: 5px; font-size: 14px; }
   #hunters .h-more { grid-row: 1 / span 3; }
 }
+
+/* ---------- Raise your Boki: this picture has a Hunter on its left, so the heading sits above it at every size ---------- */
+.bk-key.above { display: flex; flex-direction: column; border: 0; border-radius: 0; overflow: visible; background: none; box-shadow: none; }
+#boki .bk-key.above .head { position: static; order: -1; display: block; width: auto; margin: 0 0 clamp(28px, 3.4vw, 48px); text-align: center; }
+.bk-key.above .head h2 { text-shadow: none; }
+.bk-key.above .head .sub { margin-inline: auto; max-width: none; color: var(--ink-2); text-shadow: none; }
+.bk-key.above img { aspect-ratio: 2 / 1; object-position: 50% 40%; border-radius: var(--r); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+@media (max-width: 900px) { .bk-key.above img { aspect-ratio: 4 / 3; object-position: 60% 50%; border-radius: 18px; box-shadow: none; } }
