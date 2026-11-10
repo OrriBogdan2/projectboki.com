@@ -1023,3 +1023,14 @@ html.su-signed .hero-su, html.su-signed .join .join-su { width: 100%; }
 .nav-su .su-done { margin: 0; padding: 4px 0 0; }
 /* While the cookie bar is up, the hero lifts so the lines under the buttons stay readable on short screens */
 @media (min-width: 601px) { .hero { padding-bottom: max(clamp(56px, 9vh, 96px), calc(var(--ch, 0px) + 8px)); transition: padding-bottom .3s ease; } }
+
+/* ---------- Hunters: name on the left, Abilities on the right ---------- */
+@media (min-width: 721px) {
+  #hunters .info { width: 100%; pointer-events: none; }
+  #hunters .h-more { position: absolute; right: 40px; bottom: 36px; margin: 0; }
+}
+@media (min-width: 340px) and (max-width: 720px) {
+  #hunters .info { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding-right: 18px; }
+  #hunters .info h3, #hunters .info .title { grid-column: 1; }
+  #hunters .h-more { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+}

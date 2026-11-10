@@ -626,7 +626,10 @@ if (pick) {
     const n = $("h-name"), t = $("h-title"), info = t.closest(".info");
     n.style.fontSize = t.style.fontSize = "";
     if (getComputedStyle(t).whiteSpace !== "nowrap") return;
-    const cs = getComputedStyle(info), room = info.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;
+    const cs = getComputedStyle(info), more = $("h-more");
+    // The Abilities button sits to the right of the name here, so the name and title get what is left of the row
+    const beside = cs.display === "grid" && more ? more.offsetWidth + (parseFloat(cs.columnGap) || 0) : 0;
+    const room = info.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4 - beside;
     const widest = (el, k) => {
       const c = getComputedStyle(el), sp = document.createElement("span");
       Object.assign(sp.style, { font: c.font, letterSpacing: c.letterSpacing, textTransform: c.textTransform, whiteSpace: "nowrap", position: "absolute", visibility: "hidden" });
