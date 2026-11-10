@@ -508,7 +508,7 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : (on ? 0.85 : 0.8))), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : (on ? 0.5 : 0.45))), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
@@ -594,7 +594,7 @@ if (pick) {
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
       const keysT = hFall ? [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]] // ease in to the heading, drift while it breaks, then the crack
-        : [[0, from, 0], [1.25, end, 1]]; // no heading: settle onto the stage while the crack opens
+        : [[0, from, 0], [1.15, end, 1]]; // no heading: settle onto the stage while the crack opens
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -617,7 +617,7 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY;
       if (!done && !auto && scn) {
-        const vh = innerHeight, gate = scn.s0 - vh * (hFall ? 0.32 : 0.22);
+        const vh = innerHeight, gate = scn.s0 - vh * (hFall ? 0.32 : 0.5);
         if (prev < gate && y >= gate) {
           if (y - prev < vh * 1.5 && y < scn.s0 + scn.lead * 0.5) play(y); // a scroll, not a jump (a link, End)
           else done = true;

@@ -980,3 +980,15 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 @media (max-width: 720px) { .tr-frame { border-radius: 16px; } .tr-play { width: 60px; height: 60px; } .tr-play svg { width: 24px; height: 24px; } }
 .tr-head h2 span { display: block; white-space: nowrap; } /* one sentence per line, never wrapped */
 @media (max-width: 720px) { .tr-head h2 { font-size: min(7.4vw, 34px); } .tr-sub { max-width: 30ch; margin-left: auto; margin-right: auto; } }
+/* Trailer: big type throughout */
+.tr-head { max-width: none; }
+.tr-eyebrow { margin-bottom: 16px; font-family: "Lilita", sans-serif; font-weight: 400; font-size: clamp(18px, 1.7vw, 26px); letter-spacing: .08em; color: rgba(225,232,248,.7); }
+.tr-head h2 { font-size: clamp(40px, 5.6vw, 84px); line-height: 1.02; }
+.tr-play { width: clamp(64px, 7vw, 104px); height: clamp(64px, 7vw, 104px); }
+.tr-play svg { width: 40%; height: 40%; }
+.tr-soon { gap: clamp(14px, 1.6vw, 22px); }
+.tr-soon b { font-size: clamp(28px, 3.6vw, 52px); }
+@media (max-width: 720px) { .tr-head h2 { font-size: min(7.6vw, 46px); } .tr-eyebrow { font-size: 17px; } .tr-soon b { font-size: 26px; } .tr-play { width: 60px; height: 60px; } }
+/* No heading above the Hunters any more: less scroll before the stage */
+.hunters { padding-top: calc(var(--sec) * .2); }
+.trailer { padding-bottom: calc(var(--sec) * .35); }
