@@ -1175,3 +1175,13 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 /* Raise your Boki picture (the tent): crop that keeps Meeko's ears and the sleeping Boki in the tub */
 @media (min-width: 901px) { .bk-key.above img { object-position: 50% 62%; } }
 @media (max-width: 900px) { .bk-key.above img { object-position: 42% 50%; } }
+
+/* ---------- Hunters: the picture slides sideways and follows the hand (site.js). The incoming picture is a second layer in the frame. ---------- */
+.shot-in { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; }
+.shot-in[hidden] { display: none; }
+.shot-in img { display: block; }
+.shot-in .hi { position: absolute; left: 0; top: 0; opacity: 0; }
+.shot-in .hi.ok { opacity: 1; }
+#hunters .stage { touch-action: pan-y; }
+#hunters .info h3, #hunters .info .title, #hunters .info .role { transition: opacity .2s ease; }
+#hunters .info.swap h3, #hunters .info.swap .title, #hunters .info.swap .role { opacity: 0; transition-duration: .1s; }

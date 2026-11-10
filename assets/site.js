@@ -625,12 +625,14 @@ if (pick) {
     }
   }
 
+  let slider = null; // the sideways slide between Hunters (set up further down); without it the art cross-fades
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
     if (!byIdle && !fromScroll) { browsed = true; sec.classList.remove("hint"); }
     if (i === current) return;
-    current = i; setPeeks();
+    const was = current, slide = slider && stageUp();
+    current = i; if (!slide) setPeeks(); // (when it slides, the edge previews change once it lands)
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
@@ -641,6 +643,7 @@ if (pick) {
       const btn = pick.children[i];
       if (pick.scrollWidth > pick.clientWidth) pick.scrollTo({ left: btn.offsetLeft - (pick.clientWidth - btn.clientWidth) / 2, behavior: "smooth" });
     }
+    if (slide) { const n = HUNTERS.length; slider.go(i, (i - was + n) % n <= n / 2 ? 1 : -1); return; } // slides in from the side it sits on
     art.classList.add("out");
     const next = new Image();
     next.sizes = art.sizes;
@@ -725,34 +728,95 @@ if (pick) {
       if (Math.abs(acc) > 40) { used = true; show(current + Math.sign(acc)); }
     }, { passive: false });
   }
-  // PC: press and drag the stage sideways to browse, the mouse's version of a swipe. The art follows the hand a little,
-  // and letting go past 60px moves one Hunter (left for the next, right for the one before).
-  {
-    const stageEl = document.querySelector("#hunters .stage"), root = document.documentElement;
-    let d = null;
-    stageEl.addEventListener("dragstart", (e) => e.preventDefault());
-    stageEl.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button, a, .fig") || !stageUp()) return;
-      d = { x: e.clientX, dx: 0, moved: false };
+  // The Hunters slide. The picture follows your finger or mouse: pull sideways and the next Hunter comes in from that side,
+  // let go past a fifth of the way (or with a flick) and it carries on, otherwise it springs back. Arrows, keys, the
+  // portrait strip, the edge previews and the idle tour all use the same slide. The incoming picture is a second layer
+  // inside the frame: it shows the mid-size file the edge preview has already loaded, and the sharp one takes over when it
+  // is ready, so nothing extra is fetched to move. Only the two pictures move (translate), nothing is re-laid-out.
+  if (cw && !calm) {
+    const shotEl = cw.parentNode, root = document.documentElement, info = stage.querySelector(".info"), GAP = 14;
+    const inc = document.createElement("div"); inc.className = "shot-in"; inc.hidden = true;
+    inc.innerHTML = '<img class="lo" alt="" decoding="async"><img class="hi" alt="" decoding="async">';
+    shotEl.insertBefore(inc, cw.nextSibling);
+    const lo = inc.firstChild, hi = inc.lastChild;
+    hi.addEventListener("load", () => hi.classList.add("ok"));
+    let mode = 0, tgt = -1, dir = 0, x = 0, rid = 0, token = 0, drag = null; // mode: 0 resting, 1 held, 2 moving, 3 settling in
+    const W = () => shotEl.offsetWidth + GAP;
+    const place = (dx) => { x = dx; cw.style.translate = `${dx.toFixed(1)}px 0`; inc.style.translate = `${(dx + dir * W()).toFixed(1)}px 0`; };
+    const label = (i) => {
+      const [id, name, title, , role] = HUNTERS[i];
+      art.alt = `${name}, ${title}`; stage.dataset.h = id;
+      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; alignTitle();
+    };
+    const prep = (i, d) => {
+      tgt = i; dir = d; const id = HUNTERS[i][0];
+      hi.classList.remove("ok"); hi.removeAttribute("srcset"); hi.removeAttribute("src");
+      lo.src = src(id, 960); hi.sizes = art.sizes; hi.srcset = set(id);
+      inc.hidden = false; info.classList.add("swap");
+    };
+    const rest = () => { rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true; info.classList.remove("swap"); setPeeks(); };
+    const run = (to, ms, then) => {
+      mode = 2; const from = x, t0 = performance.now(), my = ++rid;
+      const f = (now) => {
+        if (my !== rid) return;
+        const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+        place(from + (to - from) * e);
+        if (k < 1) requestAnimationFrame(f); else then();
+      };
+      requestAnimationFrame(f);
+    };
+    const commit = () => { // landed: the frame's own picture takes the new Hunter under the incoming layer, then that layer steps aside
+      const i = tgt, id = HUNTERS[i][0], my = ++token;
+      mode = 3; label(i); info.classList.remove("swap"); setPeeks();
+      cw.style.translate = ""; x = 0; inc.style.translate = "0px 0";
+      art.srcset = set(id); art.src = src(id, 1600);
+      const done = () => { if (my === token) rest(); };
+      (art.decode ? art.decode() : Promise.resolve()).then(done, done);
+    };
+    const snap = (i) => { // asked for another Hunter mid-move (a held arrow key, a fast scroll): no slide, just show it
+      rest(); drag = null; root.classList.remove("h-drag");
+      const id = HUNTERS[i][0]; label(i); art.srcset = set(id); art.src = src(id, 1600);
+    };
+    slider = {
+      go(i, d) {
+        if (mode === 1 && tgt === i) { run(-dir * W(), Math.max(160, Math.min(380, 420 * (1 - Math.abs(x) / W()))), commit); return; } // let go of a pull: carry on from where it is
+        if (mode !== 0) { snap(i); return; }
+        prep(i, d); place(0); mode = 2;
+        const my = ++rid, start = () => { if (my === rid && tgt === i) run(-d * W(), 440, commit); };
+        // a far jump may not have its picture yet: give it a moment to arrive, then go regardless
+        Promise.race([lo.decode ? lo.decode().catch(() => {}) : Promise.resolve(), new Promise((r) => setTimeout(r, 260))]).then(start);
+      },
+    };
+    stage.addEventListener("dragstart", (e) => e.preventDefault());
+    stage.addEventListener("pointerdown", (e) => {
+      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("button, a, .fig") || !stageUp() || mode !== 0) return;
+      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false, lx: e.clientX, lt: e.timeStamp, v: 0 };
     });
     addEventListener("pointermove", (e) => {
-      if (!d) return;
-      d.dx = e.clientX - d.x;
-      if (!d.moved && Math.abs(d.dx) > 6) { d.moved = true; root.classList.add("h-drag"); }
-      if (d.moved) art.style.translate = `${(d.dx * 0.28).toFixed(1)}px 0`;
+      if (!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+      if (!drag.on) {
+        if (mode !== 0) { drag = null; return; }
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.2) return; // not a sideways pull (yet)
+        drag.on = true; mode = 1; root.classList.add("h-drag");
+      }
+      const d = dx < 0 ? 1 : -1;
+      if (d !== dir || tgt < 0) prep(current + d < 0 ? HUNTERS.length - 1 : (current + d) % HUNTERS.length, d);
+      drag.v = (e.clientX - drag.lx) / Math.max(1, e.timeStamp - drag.lt); drag.lx = e.clientX; drag.lt = e.timeStamp;
+      place(dx);
     });
-    const end = () => {
-      if (!d) return;
-      const { dx, moved } = d; d = null;
-      if (!moved) return;
-      root.classList.remove("h-drag");
-      const from = art.style.translate; art.style.translate = "";
-      if (!calm && art.animate) art.animate([{ translate: from }, { translate: "0px 0px" }], { duration: 280, easing: "cubic-bezier(.2,.8,.2,1)" });
-      stageEl._dragged = Date.now();
-      if (Math.abs(dx) > 60) show(current + (dx < 0 ? 1 : -1));
+    const end = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const g = drag; drag = null;
+      if (!g.on) return;
+      root.classList.remove("h-drag"); stage._dragged = Date.now();
+      const far = Math.abs(x) > W() * 0.2 || (Math.abs(g.v) > 0.45 && Math.sign(g.v) === Math.sign(x));
+      if (far && e.type !== "pointercancel" && mode === 1) show(tgt); // show() does the bookkeeping and hands back to go()
+      else if (mode === 1) run(0, 240, rest);
     };
     addEventListener("pointerup", end); addEventListener("pointercancel", end);
-    stageEl.addEventListener("click", (e) => { if (stageEl._dragged && Date.now() - stageEl._dragged < 400) { e.stopPropagation(); e.preventDefault(); } }, true); // a drag isn't a click
+    stage.addEventListener("click", (e) => { if (stage._dragged && Date.now() - stage._dragged < 400) { e.stopPropagation(); e.preventDefault(); } }, true); // a pull isn't a click
+    addEventListener("resize", () => { if (mode !== 0 && tgt >= 0) snap(current); });
   }
   // Idle tour: if nobody touches it, the stage moves on to the next Hunter every few seconds, so the roster shows itself.
   // A thin line fills along the active portrait while it counts. Moving the mouse, touching, or opening Abilities holds it. A pick
@@ -781,7 +845,7 @@ if (pick) {
   $("h-prev").addEventListener("click", () => show(current - 1));
   arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
   $("h-next").addEventListener("click", () => show(current + 1));
-  swipe(document.querySelector(".stage .shot"), (d) => show(current + d));
+  if (calm) swipe(document.querySelector(".stage .shot"), (d) => show(current + d)); // (otherwise the slide below follows the finger itself)
   nudge(pick);
 
   pick.addEventListener("keydown", (e) => {
