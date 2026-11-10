@@ -469,7 +469,7 @@ if (pick) {
     const cr = clamp((y - (scn.s0 - vh * 0.3)) / (vh * 0.45));
     if (window.bokiCrumble) window.bokiCrumble.set(cr);
     if (hsub) { const a = sm(clamp((cr - 0.3) / 0.4)); hsub.style.opacity = a.toFixed(3); hsub.style.translate = `0 ${(14 * (1 - a)).toFixed(1)}px`; } // "Hunters are all that's left." rises in as the letters fall
-    paintScene(clamp((y - (scn.s0 + vh * 0.1)) / (scn.lead - vh * 0.1)));
+    paintScene(clamp((y - scn.q0) / (scn.s0 + scn.lead - scn.q0)));
     if (pin) {
       const k = (y - pin.start) / pin.step, i = Math.min(HUNTERS.length - 1, Math.max(0, Math.floor(k))), fr = clamp(k - i);
       if (i !== current) { fromScroll = true; show(i); fromScroll = false; }
@@ -487,9 +487,9 @@ if (pick) {
     if (ys === null || !scn) ys = y;
     let d = y - ys;
     if (Math.abs(d) > vh * 2.2) { ys = y - Math.sign(d) * vh * 0.5; d = y - ys; } // a long jump (a link, End): only play the last bit
-    const inScene = ys > scn.s0 - vh * 0.31 && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
+    const inScene = ys > Math.min(scn.s0 - vh * 0.31, scn.q0) && ys < scn.s0 + scn.lead, breaking = ys < scn.s0 + vh * 0.15;
     const asking = ys < scn.s0 + vh * 0.1 + (scn.lead - vh * 0.1) * 0.8; // "Choose your Hunter." gets a slower pass too
-    const cap = (inScene ? (breaking ? (touchy ? 0.28 : 0.55) : asking ? (touchy ? 0.42 : 0.6) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
+    const cap = (inScene ? !hFall ? (touchy ? 0.75 : 0.9) : (breaking ? (touchy ? 0.28 : 0.55) : asking ? (touchy ? 0.42 : 0.6) : (touchy ? 0.5 : 0.8)) : 2.4) * vh * (d < 0 ? 1.8 : 1) * dt; // phones play it slower: a thumb flick covers the whole scene at once
     ys += Math.max(-cap, Math.min(cap, d * (1 - Math.exp(-dt * 14))));
     if (Math.abs(y - ys) < 0.5) ys = y;
     render(ys);
@@ -508,12 +508,17 @@ if (pick) {
     const vh = innerHeight, h = pinEl.offsetHeight, navH = (document.getElementById("nav") || {}).offsetHeight || 64;
     let top = on ? Math.max(80, Math.round((vh - h) / 2 + 34)) : Math.max(navH + 10, Math.round((vh - h) / 2 + navH / 2));
     if (top + h > vh - 8) top = Math.max(vh - h - 8, navH + 6 - Math.max(0, h - vh + navH + 14)); // taller than the screen: keep the bottom in view
-    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : (on ? 0.5 : 0.45))), step = Math.max(240, Math.round(vh * 0.36));
+    const lead = Math.round(vh * (hFall ? (on ? 1.15 : 1.05) : 0.12)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
     const s0 = docTop(track) - top;
-    scn = { s0, lead }; fallD = null; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; }
+    // Where the page takes over on the way down. With the footage panel above: once you have scrolled about a third of a
+    // screen past it (not sooner, so nobody is pulled off the footage). The reveal starts at that same point, so it only
+    // ever plays at its own speed.
+    const panel = document.getElementById("trailer");
+    const gate = hFall || !panel ? s0 - Math.round(vh * 0.32) : Math.min(docTop(panel) + Math.round(vh * 0.3), s0 - Math.round(vh * 0.2));
+    scn = { s0, lead, gate, q0: hFall ? s0 + Math.round(vh * 0.1) : gate }; fallD = null; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; }
     void step; // Hunters are browsed sideways now (arrows, the strip, a sideways swipe), so scrolling down leaves the section
     if (ys === null) ys = scrollY;
     lastQ = -1; render(ys); kick();
@@ -578,23 +583,24 @@ if (pick) {
     }, { passive: true });
   }
 
-  // The first time you scroll down into the Hunters, the intro plays itself (about a second and a half) while the page holds
-  // still: the heading breaks and the first Hunter's art cracks open under it, then the page is yours again. Leftover trackpad momentum is soaked up so it doesn't fling
-  // you past. Once per visit; scrolling back up and down after that is normal.
+  // Every time you scroll down into the Hunters, the page takes over at the gate (layoutPin) and plays the arrival itself:
+  // it glides to the stage while the first Hunter's art cracks open, always at the same speed however hard you scroll,
+  // then holds still for a moment before the page is yours again (leftover wheel or trackpad momentum is soaked up).
+  // Jumps (a link, End, a reload part-way down) skip it. Reduced motion: off.
   if (!calm) {
     const root = document.documentElement;
-    let done = false, prev = scrollY, quietSince = 0;
+    let prev = scrollY, quietSince = 0;
     const stop = (e) => { if (auto) { e.preventDefault(); quietSince = performance.now(); } };
     const keys = (e) => { if (auto && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
     addEventListener("wheel", stop, { passive: false }); addEventListener("touchmove", stop, { passive: false }); addEventListener("keydown", keys);
     const play = (from) => {
-      auto = true; done = true;
+      auto = true;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
-      const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
+      const vh = innerHeight, end = scn.s0 + scn.lead + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
       const keysT = hFall ? [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]] // ease in to the heading, drift while it breaks, then the crack
-        : [[0, from, 0], [1.3, end, 1]]; // no heading: settle onto the stage while the crack opens
+        : [[0, from, 0], [1.15, end, 1]]; // no heading: one eased glide onto the stage while the crack opens
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -606,9 +612,10 @@ if (pick) {
         scrollTo({ top: Math.round(y), behavior: "instant" }); ys = scrollY; render(ys);
         if (t < keysT[keysT.length - 1][0]) { requestAnimationFrame(f); return; }
         const fin = performance.now();
-        const letGo = () => { // wait for the trackpad to go quiet, so its momentum doesn't carry on (at most another 0.6s)
-          if (performance.now() - quietSince < 260 && performance.now() - fin < 600) { setTimeout(letGo, 80); return; }
-          auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; kick(); if (idleArm) idleArm();
+        const letGo = () => { // landed: hold for half a second at least, and until the wheel goes quiet (1.2s at most)
+          const n = performance.now();
+          if (n - fin < 500 || (n - quietSince < 220 && n - fin < 1200)) { setTimeout(letGo, 60); return; }
+          auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; prev = ys; kick(); if (idleArm) idleArm();
         };
         letGo();
       };
@@ -616,15 +623,7 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY;
-      if (!done && !auto && scn) {
-        const vh = innerHeight, panel = document.getElementById("trailer");
-        // with the footage panel above: a small scroll past it (a sixth of a screen) and the page carries you on to the Hunters
-        const gate = panel ? Math.min(docTop(panel) + vh * 0.16, scn.s0 - vh * 0.2) : scn.s0 - vh * (hFall ? 0.32 : 0.5);
-        if (prev < gate && y >= gate) {
-          if (y - prev < vh * 1.5 && y < scn.s0 + scn.lead * 0.5) play(y); // a scroll, not a jump (a link, End)
-          else done = true;
-        } else if (y > scn.s0 + scn.lead) done = true; // already past it (a link, a reload part-way down)
-      }
+      if (!auto && scn && prev < scn.gate && y >= scn.gate && y - prev < innerHeight * 1.5 && y < scn.s0 + scn.lead) play(y); // a scroll down across the gate, not a jump
       prev = y;
     }, { passive: true });
   }
