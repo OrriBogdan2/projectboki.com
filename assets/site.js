@@ -308,9 +308,9 @@ const ART_V = "2026-11-09f"; // bump when a Hunter splash changes
 const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
-  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
-  ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
+  ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
+  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["cinder", "Cinder", "The Ashen Kiss", true, "Engage"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
