@@ -959,6 +959,6 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 .h-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 1000px) { .h-more { margin-top: 12px; padding: 7px 13px 7px 11px; font-size: 15px; gap: 7px; border-radius: 10px; } .h-more svg { width: 16px; height: 16px; } }
 .pick.wave button::after { animation: pick-shine .7s ease-out both; animation-delay: calc(var(--i, 0) * 55ms); } /* the first time the Hunters land */
-/* The broken heading is always two lines: "Solmere Kingdom" / "has broken into pieces." On phones it scales with the screen so line two never wraps. */
-.head h2.h-crumble .nw { white-space: nowrap; }
-@media (max-width: 720px) { .head h2.h-crumble { font-size: min(8.2vw, 40px); } }
+/* The broken heading is always two lines: "Solmere Kingdom has" / "broken into pieces." On phones it scales with the screen so line two never wraps. */
+.head h2.h-crumble .nw, .head h2.h-crumble .h-w { white-space: nowrap; }
+@media (max-width: 720px) { .head h2.h-crumble { font-size: min(8.8vw, 42px); } }
