@@ -185,136 +185,9 @@ if (heroIn && !calm) {
   draw();
 }
 
-/* ---------- Hunter figure: faces you, emotes when picked, idles, and now and then emotes again; drag to turn ---------- */
-// Pose sheets are 10 columns, 80 ms a frame. POSE[id] = [[frames of each emote], idle frames]:
-// <id>-pose.webp holds the first emote then the idle loop; <id>-e2.webp, -e3... hold the others.
-// The spin sheet (6x4) is the 24-frame turntable for dragging; its first frame is the pose's angle.
-function spinner(box, el) {
-  const SPIN = 24, SC = 6, SR = 4, PC = 10;
-  let id = "", mode = "", timer = null, drag = null, back = null, seen = false, sn = 0;
-  let em = [], ni = 0, urls = [], ready = [], spin = null;
-  let seg = 0, f = 0, wait = 0, played = 0;   // seg: the emote playing, or -1 for idle; f: frame within it
-  const url = (k) => `assets/img/hunters/3d/${id}-${k ? `e${k + 1}` : "pose"}.webp?v=${MODEL_V}`;
-  const rowsOf = (k) => Math.ceil((k ? em[k] : em[0] + ni) / PC);
-  const draw = () => {
-    const k = seg < 0 ? 0 : seg, n = seg < 0 ? em[0] + f : f, rows = rowsOf(k), key = "p" + k;
-    if (mode !== key) { mode = key; el.style.backgroundImage = `url(${urls[k]})`; el.style.backgroundSize = `${PC * 100}% ${rows * 100}%`; }
-    const c = n % PC, r = Math.floor(n / PC);
-    el.style.backgroundPosition = `${(c / (PC - 1)) * 100}% ${rows > 1 ? (r / (rows - 1)) * 100 : 0}%`;
-  };
-  const showSpin = (n) => {
-    sn = n;
-    if (mode !== "spin") { mode = "spin"; el.style.backgroundImage = `url(${spin})`; el.style.backgroundSize = `${SC * 100}% ${SR * 100}%`; }
-    el.style.backgroundPosition = `${((n % SC) / (SC - 1)) * 100}% ${(Math.floor(n / SC) / (SR - 1)) * 100}%`;
-  };
-  const idleFor = () => 70 + Math.floor(Math.random() * 40);   // frames of idle between emotes: about 5.5 to 9 s
-  const tick = () => {
-    if (seg >= 0) {
-      if (++f < em[seg]) return draw();
-      played++; seg = -1; f = 0; wait = idleFor(); fetchNext();
-    } else {
-      f = (f + 1) % ni;
-      if (--wait <= 0 && f === 0) {           // start the next emote at the top of an idle loop
-        const k = played % em.length;
-        if (ready[k]) { seg = k; f = 0; }
-      }
-    }
-    draw();
-  };
-  const stop = () => { clearInterval(timer); timer = null; };
-  document.addEventListener("boki-lite", () => { if (!timer) return; stop(); seg = -1; f = 0; draw(); });
-  const play = () => {
-    if (timer || !ready[0] || !seen || drag || back) return;
-    if (calm || LITE.on()) { seg = -1; f = 0; draw(); return; } // lite: hold the pose (still turns by drag)
-    timer = setInterval(tick, 80);
-  };
-  // the other emotes load one at a time, only once the first has played and only while this Hunter is up
-  const fetchNext = () => {
-    const k = ready.indexOf(false); if (k < 0) return;
-    const want = id, im = new Image();
-    im.onload = () => { if (id === want) ready[k] = true; };
-    im.src = urls[k];
-  };
-  new IntersectionObserver(([e]) => { seen = e.isIntersecting; seen ? play() : stop(); }).observe(box);
-  // Nothing downloads until the figure is about a screen away, so the top of the page loads light.
-  let near = false, pending = null;
-  new IntersectionObserver(([e]) => { if (e.isIntersecting && !near) { near = true; if (pending) { const f = pending; pending = null; f(); } } }, { rootMargin: "25% 0px" }).observe(box);
-  const whenNear = (f) => { if (near) f(); else pending = f; };
-  const fetchSpin = () => {
-    if (spin || !id) return;
-    const want = id, u = `assets/img/hunters/3d/${id}-spin.webp?v=${MODEL_V}`, im = new Image();
-    im.onload = () => { if (id === want) spin = u; };
-    im.src = u;
-  };
-  let wantFull = null; // loads the animated sheet for a Hunter that is showing its still
-  box.addEventListener("pointerenter", () => { if (wantFull) wantFull(); fetchSpin(); });
-  box.addEventListener("pointerdown", (e) => {
-    if (wantFull) wantFull();
-    fetchSpin();
-    if (!ready[0]) return;
-    stop(); clearInterval(back); clearTimeout(back); back = null;
-    const n = mode === "spin" ? sn : 0;
-    drag = { x: e.clientX, n, last: n };
-    box.setPointerCapture(e.pointerId); box.classList.add("grab");
-  });
-  box.addEventListener("pointermove", (e) => {
-    if (!drag || !spin) return;
-    const step = Math.round((e.clientX - drag.x) / 14);
-    drag.last = (((drag.n - step) % SPIN) + SPIN) % SPIN;
-    showSpin(drag.last);
-  });
-  const end = () => {
-    if (!drag) return;
-    let n = drag.last; drag = null; box.classList.remove("grab");
-    if (mode !== "spin") { play(); return; }
-    // after a moment, turn back to face you the short way round, then pick the idle back up
-    back = setTimeout(() => {
-      back = setInterval(() => {
-        if (n === 0) { clearInterval(back); back = null; seg = -1; f = 0; wait = idleFor(); draw(); play(); return; }
-        n = n <= SPIN / 2 ? n - 1 : (n + 1) % SPIN; showSpin(n);
-      }, calm ? 0 : 45);
-    }, 1400);
-  };
-  box.addEventListener("pointerup", end);
-  box.addEventListener("pointercancel", end);
-  return {
-    full() { if (wantFull) wantFull(); }, // the visitor is engaged: swap the still for the animation
-    load(next, name, light) {
-      if (next === id) { if (!light && wantFull) wantFull(); return; }
-      wantFull = null;
-      id = next; stop(); clearInterval(back); clearTimeout(back); back = null; drag = null;
-      spin = null; mode = ""; seg = 0; f = 0; played = 0;
-      box.hidden = !next;
-      if (!next) return;
-      [em, ni] = POSE[next] || [[1], 1];
-      urls = em.map((_, k) => url(k)); ready = em.map(() => false);
-      el.setAttribute("aria-label", `${name}'s in-game model`);
-      box.classList.add("swap");
-      const still = `assets/img/hunters/3d/${next}.webp?v=${MODEL_V}`;
-      const im = new Image();
-      im.onload = () => {
-        if (id !== next) return;
-        el.style.backgroundImage = `url(${still})`; el.style.backgroundSize = "100% 100%"; el.style.backgroundPosition = "0 0";
-        box.classList.remove("swap");
-        const full = () => {
-          wantFull = null;
-          const ps = new Image();
-          ps.onload = () => { if (id !== next) return; ready[0] = true; draw(); play(); };
-          ps.src = urls[0];
-        };
-        if (light || LITE.on() || (navigator.connection && navigator.connection.saveData)) wantFull = full; // the still only, until asked
-        else full();
-      };
-      whenNear(() => setTimeout(() => { im.src = still; }, 180));
-    },
-  };
-}
-
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const MODEL_V = "2026-11-09";
 const ART_V = "2026-11-09f"; // bump when a Hunter splash changes
-const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
@@ -338,9 +211,6 @@ if (pick) {
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp?v=${ART_V}`;
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
   let current = 0;
-  const fig = spinner(document.getElementById("h-fig"), document.getElementById("h-fig-img"));
-  // load the first turntable only once the Hunters section is close to view
-  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { o.disconnect(); fig.load(HUNTERS[current][3] ? HUNTERS[current][0] : "", HUNTERS[current][1]); } }, { rootMargin: "400px 0px" }).observe(document.getElementById("hunters"));
 
   HUNTERS.forEach(([id, name, title], i) => {
     const b = document.createElement("button");
@@ -713,13 +583,13 @@ if (pick) {
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
-    if (i === current) { if (!byIdle) fig.full(); return; }
+    if (i === current) return;
     current = i;
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
     if (bar) bar.style.transform = `scaleX(${((i + 1) / HUNTERS.length).toFixed(4)})`;
-    const [id, name, title, model, role] = HUNTERS[i], light = byIdle;
+    const [id, name, title, , role] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     { // keep the picked portrait in view by scrolling the strip only, never the page
       const btn = pick.children[i];
@@ -739,7 +609,6 @@ if (pick) {
       $("h-title").textContent = title;
       $("h-role").textContent = role;
       alignTitle();
-      fig.load(model ? id : "", name, light);
       art.classList.remove("out");
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
@@ -855,7 +724,7 @@ if (pick) {
     };
     new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (!vis) on = true; idleArm(); }, { threshold: 0.6 }).observe(stageEl);
     // any movement in the section means you're not idle: the count waits for a moment of stillness, then starts over
-    const busy = () => { fig.full(); if (!on) return; clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle"); still = setTimeout(() => idleArm(), 700); };
+    const busy = () => { if (!on) return; clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle"); still = setTimeout(() => idleArm(), 700); };
     ["pointermove", "pointerdown", "touchstart", "touchmove", "keydown"].forEach((t) => sec.addEventListener(t, busy, { passive: true }));
     document.addEventListener("visibilitychange", () => idleArm());
     new MutationObserver(() => idleArm()).observe(root, { attributes: true, attributeFilter: ["class"] }); // Abilities / full-size art opened or closed
@@ -1249,39 +1118,6 @@ if (POSTHOG_KEY) {
   const more = document.getElementById("h-more"); // the scroll under the name: the way in
   if (more) { more.addEventListener("click", (e) => { e.stopPropagation(); open(); }); more.addEventListener("pointerenter", load, { once: true }); }
   ex.addEventListener("pointerenter", load, { once: true });
-})();
-
-/* ---------- How it works: cards grow in and stack as you scroll ---------- */
-(function () {
-  const cards = [...document.querySelectorAll(".how .step-card")];
-  if (!cards.length || calm) return;
-  cards.forEach((c) => { const s = document.createElement("i"); s.className = "step-shade"; c.appendChild(s); });
-  const clamp = (v) => Math.min(1, Math.max(0, v));
-  let ticking = false, sticks = [];
-  const measure = () => { sticks = cards.map((c) => parseFloat(getComputedStyle(c.parentElement).top) || 0); };
-  measure();
-  const frame = () => {
-    ticking = false;
-    const vh = innerHeight;
-    const first = cards[0].parentElement.getBoundingClientRect(), lastR = cards[cards.length - 1].parentElement.getBoundingClientRect();
-    if (first.top > vh * 1.2 || lastR.bottom < -vh) return; // the whole stack is off screen
-    const prog = cards.map((c, i) => {
-      const top = c.parentElement.getBoundingClientRect().top;
-      const stick = sticks[i];
-      return clamp((vh - top) / Math.max(1, vh - stick)); // 0 = just below the screen, 1 = pinned
-    });
-    cards.forEach((c, i) => {
-      const grow = 0.86 + 0.14 * prog[i];                 // arrives small, settles full size
-      const under = i + 1 < cards.length ? prog[i + 1] : 0; // how far the next card has covered it
-      const sink = 1 - 0.07 * under;
-      c.style.transform = `scale(${(grow * sink).toFixed(4)})`;
-      c.querySelector(".step-shade").style.opacity = (0.55 * under).toFixed(3);
-    });
-  };
-  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
-  addEventListener("scroll", req, { passive: true });
-  addEventListener("resize", () => { measure(); req(); });
-  frame();
 })();
 
 /* ---------- "broken into pieces.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through

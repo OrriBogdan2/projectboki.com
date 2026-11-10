@@ -189,18 +189,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .relic { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 7px 14px 7px 8px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); font-size: 16px; font-weight: 700; }
 .relic span { padding: 2px 10px; border-radius: 999px; background: #fff; color: #0a1222; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
 .relic em { font-style: normal; }
-.fig { position: absolute; right: 2%; bottom: 2%; z-index: 2; height: 38%; aspect-ratio: 1; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; transition: opacity .25s ease, transform .4s cubic-bezier(.2,.7,.2,1); }
-.fig::before { content: ""; position: absolute; inset: 18% -6% -2%; z-index: -1; border-radius: 50%; background: radial-gradient(ellipse 50% 50% at 50% 60%, rgba(8,13,24,.75), rgba(8,13,24,0) 70%); }
-.fig.grab { cursor: grabbing; }
-@media (min-width: 1700px) {
-  #hunters .stage { overflow: visible; }
-  #hunters .shot, #hunters .stage::after { border-radius: inherit; overflow: hidden; }
-  #hunters .fig { left: auto; right: calc((100% - 100vw) / 2 + 16px); bottom: 0; height: auto; width: min(calc((100vw - 100%) / 2 * 1.2), 40vh); }
-}
-.fig.swap { opacity: 0; transform: translateY(14px); }
-.fig-img { width: 100%; height: 100%; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); pointer-events: none; }
-.fig-hint { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700;  color: rgba(255,255,255,.8); opacity: 0; transition: opacity .3s; pointer-events: none; }
-@media (hover: hover) { .fig:hover .fig-hint { opacity: 1; } } /* mouse only: no sticky hover after a tap */
 .pick { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 11px; margin-top: 16px; }
 @media (min-width: 1001px) { .pick, .pick-label:has(+ .pick) { --pw: min(100vw - 48px, 1560px); margin-inline: calc((100% - var(--pw)) / 2); } }
 .pick button { all: unset; box-sizing: border-box; position: relative; cursor: pointer; border-radius: 14px; overflow: hidden; aspect-ratio: 1; border: 2px solid transparent; opacity: .72; filter: saturate(.8); transition: opacity .2s, filter .2s, border-color .2s, transform .2s; }
@@ -259,32 +247,25 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
 .how { padding: calc(var(--sec) * .6) var(--pad) calc(var(--sec) * .8); }
-.how-stack { width: min(1340px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 22svh; }
-/* Each card pins under the nav and the next one slides over it; site.js grows a card as it arrives and sinks the one beneath */
-.step { position: sticky; top: calc(84px + var(--i) * 14px); }
-.step-card { position: relative; height: min(calc(100svh - 140px), 760px); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: var(--bg-2); box-shadow: 0 -20px 60px -20px rgba(0,0,0,.7); transform-origin: 50% 0; will-change: transform; }
-.step-media { position: absolute; inset: 0; }
-.step-media img, .step-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.step-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(6,10,20,.92) 0%, rgba(6,10,20,.55) 26%, transparent 55%), linear-gradient(90deg, rgba(6,10,20,.45), transparent 50%); }
-.step-shade { position: absolute; inset: 0; z-index: 2; background: #04070e; opacity: 0; pointer-events: none; }
-.step-text { position: absolute; z-index: 1; left: clamp(22px, 4vw, 56px); right: clamp(22px, 4vw, 56px); bottom: clamp(22px, 4vw, 52px); pointer-events: none; }
+/* The three steps sit side by side on one screen (one column on phones): a 4:3 picture, the step, two short lines */
+.how-stack { width: min(var(--max), 100%); margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 24px); }
+.step-card { position: relative; height: 100%; display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: var(--bg-2); }
+.step-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+.step-media img, .step-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--mp, 50% 50%) !important; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+@media (hover: hover) { .step-card:hover .step-media img { transform: scale(1.04); } }
+.step-text { padding: clamp(18px, 1.8vw, 26px) clamp(18px, 1.9vw, 28px) clamp(22px, 2.2vw, 30px); }
 .step-n { font-family: "Lilita"; font-size: 16px; letter-spacing: .16em; color: rgba(255,255,255,.6); }
-.step h3 { margin-top: 2px; font-size: clamp(52px, 8vw, 120px); line-height: .92; text-shadow: 0 6px 30px rgba(0,0,0,.5); }
-.step-sub { margin-top: 14px; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.45; color: rgba(255,255,255,.88); max-width: 34em; }
+.step h3 { font-size: clamp(30px, 3.5vw, 50px); line-height: 1; }
+.step-sub { margin-top: 12px; font-size: clamp(15px, 1.25vw, 18px); line-height: 1.45; color: rgba(255,255,255,.88); }
 .step-sub span { display: block; text-wrap: balance; }
 @media (max-width: 860px) {
-  .how-stack { gap: 14svh; }
-  .step { top: calc(76px + var(--i) * 10px); }
-    /* Phones: nearly edge to edge, a 4:3 frame showing most of each painting, text underneath */
-  .how { padding-inline: 8px; }
-  .step-card { height: auto; border-radius: 20px; }
-  .step-media { position: relative; aspect-ratio: 4 / 3; } /* wide enough to show most of each painting, still and steady */
-  .step-media img { object-position: var(--mp, 50% 50%) !important; }
-  .step-media::after { background: none; }
-  .step-text { position: relative; left: auto; right: auto; bottom: auto; padding: 16px 18px 22px; }
-  .step h3 { font-size: clamp(44px, 13vw, 60px); }
+  .how { padding-inline: 12px; }
+  .how-stack { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .step-card { border-radius: 20px; }
+  .step-text { padding: 16px 18px 22px; }
+  .step h3 { font-size: clamp(38px, 11vw, 52px); }
+  .step-sub { font-size: 16px; }
 }
-@media (prefers-reduced-motion: reduce) { .step-card { transform: none !important; } .step-shade { display: none; } }
 .band p { font-family: "Lilita"; font-size: clamp(20px, 2vw, 26px); }
 h1, h2, h3, .band p { text-wrap: balance; }
 /* Phones: the one-line Relic subline would shrink to ~13px, so let it wrap at a readable size */
@@ -300,7 +281,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .faq-in { position: relative; max-width: 1120px; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
 .faq-side { position: sticky; top: 110px; display: flex; flex-direction: column; align-items: flex-start; }
 .faq .head { text-align: left; margin: 0; }
-.faq .head h2 { font-size: clamp(64px, 8vw, 120px); line-height: .9; background: linear-gradient(180deg, #ffffff 15%, #d9c8ff 70%, #b79bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.faq .head h2 { font-size: clamp(64px, 8vw, 120px); line-height: .9; color: #fff; }
 .faq-art { position: relative; width: min(100%, 300px); margin: 6px 0 4px -14px; }
 .faq-art::before { content: ""; position: absolute; inset: 12% 8% 4%; border-radius: 50%; background: radial-gradient(circle, rgba(190,140,255,.35), transparent 70%); filter: blur(18px); }
 .faq-art img { position: relative; width: 100%; height: auto; }
@@ -362,7 +343,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 @keyframes grid-drift { from { transform: perspective(700px) rotateX(58deg) translateY(18%); } to { transform: perspective(700px) rotateX(58deg) translateY(calc(18% + 56px)); } } /* moves the layer, not its pixels: no repaint each frame */
 @media (prefers-reduced-motion: reduce) { .join-bg::before { animation: none; } }
 .join-q { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 30px); color: var(--ink-2); }
-.join h2 { margin: 6px 0 clamp(40px, 5vw, 64px); font-size: clamp(52px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #fff 35%, #cfd8ea 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
+.join h2 { margin: 6px 0 clamp(40px, 5vw, 64px); font-size: clamp(52px, 7vw, 104px); line-height: .95; color: #fff; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
 .join .cta { width: min(460px, 100%); margin-inline: auto; display: grid; grid-template-columns: 1fr; gap: 10px; }
 .join .cta .btn { justify-content: center; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -449,13 +430,11 @@ h1, h2, h3, .band p { text-wrap: balance; }
   .tiles li { flex: 0 0 72%; scroll-snap-align: start; }
   .stage { border-radius: 18px; }
   .stage::after { display: none; }
-  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 42%; grid-template-areas: "shot shot" "info fig"; align-items: end; }
+  .stage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "shot" "info"; align-items: end; }
   .shot { grid-area: shot; }
   .info { grid-area: info; position: static; width: auto; padding: 18px 0 24px 20px; position: relative; z-index: 3; pointer-events: none; }
   .info h3, .info .title { white-space: nowrap; }
   .info .title { font-size: 15px; letter-spacing: .05em; }
-  .fig { grid-area: fig; position: relative; right: auto; height: auto; width: 119%; margin-left: -19%; margin-top: -48%; } /* same size as before; its clear left edge overlaps the text column */
-  .fig-hint { display: none; }
   .info h3 { font-size: 42px; }
   .relic { font-size: 13px; white-space: nowrap; gap: 8px; padding-right: 12px; }
   .relic span { font-size: 11px; padding: 2px 8px; }
@@ -521,7 +500,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .nf p { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
 
 /* headings: a soft top-lit fill on solid backgrounds */
-.head h2 { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.head h2 { color: #fff; }
 
 /* picker cues */
 .h-arrow { z-index: 3; }
@@ -625,7 +604,7 @@ html.hm-open { overflow: hidden; }
 
 .head h2.h-crumble { background: none; color: #fff; }
 /* Boki heading: white melting into lavender */
-.head h2.hb { background: linear-gradient(180deg, #ffffff 15%, #d9c8ff 70%, #b79bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.head h2.hb { color: #fff; }
 .head h2.h-crumble .h-w, .crumble i { background: linear-gradient(180deg, #ffffff 30%, #c8d3e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .head h2 .crumble, .head h2 .nw { white-space: nowrap; }
 /* "crumbling." comes apart: the last letters loosen and slip as the heading comes into view */
@@ -857,7 +836,7 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 639px) { .bk-sils { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; max-height: calc(3 * 62px + 2 * 7px); } .bk-sil { height: 62px; border-radius: 12px; } .bk-sil.egg i { font-size: 15px; } }
 
 /* Art is never selectable or draggable, so a stray click-drag can't paint it blue or pull out a ghost copy */
-img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, .pj, .fig, .tiles, .pk-grid a, button, .btn, .nav a, .brand, .bk-arrow, .h-skip { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, .pj, .tiles, .pk-grid a, button, .btn, .nav a, .brand, .bk-arrow, .h-skip { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
 ::selection { background: rgba(160, 120, 255, .45); color: #fff; }
 @media (max-width: 720px) { #hunters.pinned .pick-label .h-bar, #hunters.pinned .pick-label .scrollcue { display: none; } #hunters.pinned .pick-label b, .h-skip { white-space: nowrap; } }
 /* Phones: room to breathe around the Hunters and the Boki */
@@ -895,8 +874,7 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 .join .cta .btn { height: 58px; font-size: 21px; }
 .su-or { margin: 26px 0 14px; font-size: 15px; color: rgba(255,255,255,.55); }
 #signup .su-row { height: 58px; box-sizing: border-box; align-items: center; }
-#signup .su-row .btn { height: 44px; background: rgba(255,255,255,.1); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.22); }
-#signup .su-row .btn:hover { background: rgba(255,255,255,.18); }
+#signup .su-row .btn { height: 44px; } /* the white "Join the beta" button, the same as the hero: email is the lead ask */
 #signup .su-done { margin-top: 14px; }
 @media (max-width: 720px) {
   .join { padding: calc(64px + 44px) 0 56px; min-height: 0; }
@@ -939,7 +917,7 @@ html.lite .btn-glass, html.lite .su-row, html.lite .bk-arrow, html.lite .h-expan
 html.lite .cast .row { animation-play-state: paused !important; }
 html.lite .cast li, html.lite .step-card, html.lite .bw-card, html.lite .qa details, html.lite .hm-card, html.lite .bm-card { box-shadow: none !important; }
 html.lite .join-bg::before { animation: none !important; }
-html.lite .fig-img, html.lite #hunters.scene .h-ask .sk span, html.lite #hunters.scene .h-choose .hu, html.lite .bm-art img, html.lite .bw-art img { filter: none !important; }
+html.lite #hunters.scene .h-ask .sk span, html.lite #hunters.scene .h-choose .hu, html.lite .bm-art img, html.lite .bw-art img { filter: none !important; }
 html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 #hunters.scene .stage { will-change: transform, opacity; } /* its own layer: the scroll-in fade then composites instead of redrawing the big figure sheet each frame */
 /* Cheaper for everyone. The top bar is 90% opaque, so its blur barely shows but costs the most of anything on the page. */
@@ -1004,3 +982,12 @@ html.lite .tr-media img { transform: none !important; }
 html.h-drag, html.h-drag * { cursor: grabbing !important; -webkit-user-select: none; user-select: none; }
 /* Phones: a tighter cookie bar, so it covers less of whatever is at the bottom of the screen */
 @media (max-width: 600px) { .consent { gap: 8px; padding: 10px 12px 12px; border-radius: 18px; } .consent p { font-size: 13px; line-height: 1.35; } .consent-b .btn { padding: 8px 14px; height: auto; min-height: 38px; } }
+/* Join: the email box leads and Discord sits beside it, the same as the hero */
+.join .join-cta { width: auto; display: flex; flex-wrap: nowrap; justify-content: center; align-items: stretch; gap: 12px; }
+.join .join-su { width: min(440px, 100%); margin: 0; }
+.join .join-su .su-row .btn { white-space: nowrap; }
+.join .join-su .su-done { margin: 0; padding: 14px 0; font-size: 18px; }
+.join .join-cta .js-discord { flex: none; }
+@media (max-width: 720px) { .join .join-cta { flex-direction: column; width: min(360px, 100%); margin-inline: auto; } .join .join-su { width: 100%; } }
+/* One signup button mid-page, under the Boki still to find */
+.bk-cta { display: flex; justify-content: center; margin-top: clamp(6px, 1vw, 14px); }

@@ -75,7 +75,7 @@
 <link rel="preload" href="assets/fonts/LilitaOne.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 720px) 90vw, 720px">
 
-<link rel="stylesheet" href="assets/style.css?v=214">
+<link rel="stylesheet" href="assets/style.css?v=215">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -184,10 +184,6 @@
         <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span></button>
         <div class="role" id="h-role">Marksman</div>
       </div>
-      <div class="fig" id="h-fig" title="Drag to turn">
-        <div class="fig-img" id="h-fig-img" role="img" aria-label="Lace's in-game model on a stand" ></div>
-        <span class="fig-hint">Drag to turn</span>
-      </div>
     </div>
     <div class="pick-label" data-r><b>Choose your Hunter</b><span class="swipe">Swipe for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="scrollcue">Drag or scroll sideways for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div class="pick" data-r id="h-pick" role="group" aria-label="Choose your Hunter"></div>
@@ -207,16 +203,17 @@
       <h3 class="bk-dark-n"></h3>
       <p class="bk-dark-s"></p>
       <div class="bk-sils" aria-hidden="true"></div>
+      <div class="bk-cta"><a class="btn btn-solid" href="#join">Join the beta</a></div>
     </div>
   </div>
 </section>
 <section id="how" class="how" aria-label="How it works">
   <div class="wrap"><header class="head" data-r="stagger"><h2>Write your legend.</h2></header></div>
-  <div class="how-stack">
+  <div class="how-stack" data-r="stagger">
     <article class="step" style="--i:0">
       <div class="step-card">
         <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/drop-in.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="drop-in"><img data-full="assets/img/lore/throne-2400.webp" src="assets/img/lore/throne-1600.webp" srcset="assets/img/lore/throne-960.webp 960w, assets/img/lore/throne-1600.webp 1600w, assets/img/lore/throne-2400.webp 2400w" sizes="(max-width: 860px) 120vw, (max-width: 1400px) 100vw, 1340px" width="2576" height="1438" style="object-position: 50% 40%; --mp: 52% 50%" alt="Six Hunters face a masked figure at a broken throne" loading="lazy" decoding="async"></div>
+        <div class="step-media" data-clip="drop-in"><img data-full="assets/img/lore/throne-2400.webp" src="assets/img/lore/throne-1600.webp" srcset="assets/img/lore/throne-960.webp 960w, assets/img/lore/throne-1600.webp 1600w, assets/img/lore/throne-2400.webp 2400w" sizes="(max-width: 860px) 100vw, 440px" width="2576" height="1438" style="object-position: 50% 40%; --mp: 52% 50%" alt="Six Hunters face a masked figure at a broken throne" loading="lazy" decoding="async"></div>
         <div class="step-text">
           <p class="step-n">01</p>
           <h3>Drop in.</h3>
@@ -227,7 +224,7 @@
     <article class="step" style="--i:1">
       <div class="step-card">
         <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/squad-up.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="squad-up"><img data-full="assets/img/lore/squad-2400.webp" src="assets/img/lore/squad-1600.webp" srcset="assets/img/lore/squad-960.webp 960w, assets/img/lore/squad-1600.webp 1600w, assets/img/lore/squad-2400.webp 2400w" sizes="(max-width: 860px) 120vw, (max-width: 1400px) 100vw, 1340px" width="2576" height="1438" style="object-position: 40% 45%; --mp: 42% 50%" alt="Albert shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
+        <div class="step-media" data-clip="squad-up"><img data-full="assets/img/lore/squad-2400.webp" src="assets/img/lore/squad-1600.webp" srcset="assets/img/lore/squad-960.webp 960w, assets/img/lore/squad-1600.webp 1600w, assets/img/lore/squad-2400.webp 2400w" sizes="(max-width: 860px) 100vw, 440px" width="2576" height="1438" style="object-position: 40% 45%; --mp: 42% 50%" alt="Albert shields Meeko, Grimble and Neve from Motley's burning cards" loading="lazy" decoding="async"></div>
         <div class="step-text">
           <p class="step-n">02</p>
           <h3>Squad up.</h3>
@@ -238,7 +235,7 @@
     <article class="step" style="--i:2">
       <div class="step-card">
         <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/get-out.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="get-out"><img data-full="assets/img/lore/rivals-2400.webp" src="assets/img/lore/rivals-1600.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w, assets/img/lore/rivals-2400.webp 2400w" sizes="(max-width: 860px) 120vw, (max-width: 1400px) 100vw, 1340px" width="2576" height="1438" style="object-position: 50% 40%; --mp: 58% 50%" alt="Kael holds his blade to Vex's throat" loading="lazy" decoding="async"></div>
+        <div class="step-media" data-clip="get-out"><img data-full="assets/img/lore/rivals-2400.webp" src="assets/img/lore/rivals-1600.webp" srcset="assets/img/lore/rivals-960.webp 960w, assets/img/lore/rivals-1600.webp 1600w, assets/img/lore/rivals-2400.webp 2400w" sizes="(max-width: 860px) 100vw, 440px" width="2576" height="1438" style="object-position: 50% 40%; --mp: 58% 50%" alt="Kael holds his blade to Vex's throat" loading="lazy" decoding="async"></div>
         <div class="step-text">
           <p class="step-n">03</p>
           <h3>Get out alive.</h3>
@@ -273,18 +270,17 @@
   <div class="wrap" data-r="stagger">
     <p class="join-q">Miss SUPERVIVE or Battlerite?</p>
     <h2>Join the closed beta.</h2>
-    <div class="cta">
-      <a class="btn btn-solid js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
+    <div class="cta join-cta">
+      <form class="signup join-su" id="signup" hidden>
+        <label class="sr" for="su-email">Email for beta invites</label>
+        <div class="su-row">
+          <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+          <button class="btn btn-solid btn-sm" type="submit">Join the beta</button>
+        </div>
+        <p class="su-done" role="status" hidden>You're on the list.</p>
+      </form>
+      <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
     </div>
-    <form class="signup" id="signup" hidden>
-      <label class="sr" for="su-email">Email for beta invites</label>
-      <p class="su-or"><span>or get invites by email</span></p>
-      <div class="su-row">
-        <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
-        <button class="btn btn-solid btn-sm" type="submit">Notify me</button>
-      </div>
-      <p class="su-done" role="status" hidden>You're on the list.</p>
-    </form>
   </div>
 </section>
 
@@ -316,7 +312,7 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=201"></script>
+<script src="assets/site.js?v=202"></script>
 <script src="/assets/topbar.js?v=1" defer></script>
 </body>
 </html>
