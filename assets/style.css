@@ -993,3 +993,28 @@ html.h-drag, html.h-drag * { cursor: grabbing !important; -webkit-user-select: n
 .bk-cta { display: flex; justify-content: center; margin-top: clamp(6px, 1vw, 14px); }
 /* The top bar's "Sign in" is for admins: it stays on the Bokidex and /admin, and is hidden on the public pages */
 header.nav.tb-site .tb-sign { display: none !important; }
+
+/* ---------- Early sign-up egg and invite link ---------- */
+.su-perk { display: flex; align-items: center; justify-content: center; gap: 9px; margin: 18px 0 0; font-size: 17px; font-weight: 700; color: #fff; }
+.su-perk svg { width: 14px; height: 18px; flex: none; }
+html.su-signed .su-perk { display: none; }
+.signup .su-done { margin: 0; padding: 0; text-align: center; }
+.sd-t { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2; color: #fff; }
+.sd-s { margin: 10px 0 14px; font-size: 16px; font-weight: 700; color: rgba(255,255,255,.82); }
+.sd-row input { font-size: 15px; text-overflow: ellipsis; cursor: text; }
+.sd-row .btn { white-space: nowrap; min-width: 104px; }
+/* Once you're in, the invite link takes the row and Discord drops underneath as the next step */
+html.su-signed .hero-cta, html.su-signed .join .join-cta { flex-direction: column; align-items: center; gap: 16px; }
+html.su-signed .hero-cta, html.su-signed .join .join-cta { width: min(460px, 100%); margin-inline: auto; }
+html.su-signed .hero-su, html.su-signed .join .join-su { width: 100%; }
+.su-perk { white-space: nowrap; max-width: none; }
+@media (max-width: 600px) {
+  .su-perk { font-size: 16px; }
+  /* Phones: the link gets its own line so the whole address shows, with the button full width under it */
+  .signup .sd-row, #signup .sd-row { flex-direction: column; height: auto; gap: 4px; padding: 8px; }
+  .sd-row input { width: 100%; height: 40px; padding: 0 8px; text-align: center; box-sizing: border-box; flex: none; }
+  .sd-row .btn { width: 100%; height: 46px; }
+}
+.sd-row input { padding: 0 6px 0 14px; }
+.nav-su .sd-t { font-size: 20px; }
+.nav-su .su-done { margin: 0; padding: 4px 0 0; }

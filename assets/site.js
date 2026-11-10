@@ -920,7 +920,7 @@ if (POSTHOG_KEY) {
   const bar = document.getElementById("consent");
   const choose = (v) => {
     try { localStorage.setItem("boki-consent", v); } catch (e) {}
-    if (v === "yes") posthog.set_config({ persistence: "localStorage+cookie" });
+    if (v === "yes") { posthog.set_config({ persistence: "localStorage+cookie" }); try { if (window.__bokiRefBy) localStorage.setItem("boki-ref-by", window.__bokiRefBy); } catch (e) {} }
     else { posthog.set_config({ persistence: "memory" }); try { posthog.persistence && posthog.persistence.clear(); } catch (e) {} }
     bar.classList.remove("show"); setTimeout(() => { bar.hidden = true; }, 300);
     document.documentElement.style.removeProperty("--ch");
@@ -953,14 +953,50 @@ if (POSTHOG_KEY) {
   // Every email form (hero, nav pop-out, end of page) signs up the same way; once you're on the list, they all say so.
   const forms = [...document.querySelectorAll("form.signup")];
   let signed = false; try { signed = localStorage.getItem("boki-signed") === "1"; } catch (e) {}
-  const done = () => forms.forEach((f) => { f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true; f.querySelector(".su-done").hidden = false; });
+  // Invite links. Everyone who signs up gets projectboki.com/?r=CODE; a signup that arrives through one carries
+  // referred_by, so "3 friends signed up" is a count of email_signup events per code. The code is random, never
+  // built from the email. Who sent a visitor is only remembered on the device once they accept cookies.
+  let myRef = "", refBy = "";
+  try { myRef = localStorage.getItem("boki-ref") || ""; refBy = localStorage.getItem("boki-ref-by") || ""; } catch (e) {}
+  { const r = (new URLSearchParams(location.search).get("r") || "").toLowerCase();
+    if (/^[a-z0-9]{6,10}$/.test(r) && r !== myRef && !refBy) {
+      refBy = window.__bokiRefBy = r; posthog.capture("invite_visit", { referred_by: r });
+      if (consent === "yes") try { localStorage.setItem("boki-ref-by", r); } catch (e) {}
+    } }
+  const mkRef = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789", b = new Uint8Array(7); crypto.getRandomValues(b); return [...b].map((n) => a[n % a.length]).join(""); };
+  const canShare = !!navigator.share && matchMedia("(pointer: coarse)").matches;
+  const done = () => {
+    document.documentElement.classList.add("su-signed");
+    forms.forEach((f) => {
+      f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true;
+      const d = f.querySelector(".su-done");
+      d.innerHTML = '<p class="sd-t">You\'re in.<br>Your rare egg is saved.</p>' + (myRef
+        ? '<p class="sd-s">Invite 3 friends for a second egg.</p><div class="su-row sd-row"><input readonly aria-label="Your invite link" value="projectboki.com/?r=' + myRef + '"><button class="btn btn-solid btn-sm" type="button">' + (canShare ? "Share" : "Copy link") + "</button></div>" : "");
+      d.hidden = false;
+    });
+  };
+  document.addEventListener("click", (e) => {
+    const i = e.target.closest(".sd-row input"); if (i) { i.select(); return; }
+    const b = e.target.closest(".sd-row button"); if (!b) return;
+    const url = "https://projectboki.com/?r=" + myRef;
+    posthog.capture("invite_share", { how: canShare ? "share" : "copy" });
+    if (canShare) { navigator.share({ title: "Project Boki", text: "Join the Project Boki beta with me.", url }).catch(() => {}); return; }
+    const ok = () => { b.textContent = "Copied"; setTimeout(() => { b.textContent = "Copy link"; }, 1600); };
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(ok).catch(() => {
+      const f = b.previousElementSibling; f.value = url; f.select();
+      try { if (document.execCommand("copy")) ok(); } catch (e) {}
+      f.value = url.replace("https://", "");
+    });
+  });
   forms.forEach((form) => {
     if (form.id !== "nav-su") form.hidden = false;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = form.email.value.trim(); if (!email) return;
-      posthog.identify(email, { email });
-      posthog.capture("email_signup", { email, where: form.id });
+      if (!myRef) { myRef = mkRef(); try { localStorage.setItem("boki-ref", myRef); } catch (e) {} }
+      const who = { email, ref_code: myRef }; if (refBy) who.referred_by = refBy;
+      posthog.identify(email, who);
+      posthog.capture("email_signup", { ...who, where: form.id });
       try { localStorage.setItem("boki-signed", "1"); } catch (e) {}
       done();
     });
