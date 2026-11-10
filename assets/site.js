@@ -465,7 +465,7 @@ if (pick) {
     }
   };
   // the smoothed scroll: eases after the real one, never faster than the scene's speed limit
-  let ys = null, raf = 0, lt = 0, zs = 0, zsGoal = 0;
+  let ys = null, raf = 0, lt = 0, zs = 0, zsGoal = 0, auto = false; // auto: the intro is playing itself (below)
   const touchy = matchMedia("(pointer: coarse)").matches;
   const tick = (now) => {
     raf = 0;
@@ -535,7 +535,7 @@ if (pick) {
     }; // the stage is held in place, so nothing jumps
     ["mousedown", "keydown", "touchstart"].forEach((ev) => addEventListener(ev, () => { caught = null; spent = true; }, { passive: true }));
     addEventListener("wheel", (e) => {
-      if (!scn || !e.deltaY) return;
+      if (!scn || !e.deltaY || auto) return;
       const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1), a = Math.abs(dy), d = Math.sign(dy);
       // a new gesture, not the tail of the last one: a pause, a reversal, or (once a caught flick has had time to fade)
       // the wheel picking up hard again. A swipe ramps up as it starts, so that alone doesn't count.
@@ -556,11 +556,60 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY, now = performance.now(), live = now - lastW < 220, fast = Math.abs(y - prevY) / Math.max(8, now - prevT) > 1.5;
       if (caught !== null) { if (now - since < 1600 && (dir > 0 ? y > caught : y < caught)) scrollTo({ top: caught, behavior: "instant" }); }
-      else if (scn && live && !spent && !free[dir] && steady < 3 && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
+      else if (scn && !auto && live && !spent && !free[dir] && steady < 3 && (peak >= 60 || fast)) { // smooth-scrolling mice glide between wheel events: catch the glide too
         const s = stopFor();
         if (crosses(prevY, y, s)) land(s, now);
       }
       prevY = scrollY; prevT = now;
+    }, { passive: true });
+  }
+
+  // The first time you scroll down into the Hunters, the intro plays itself (about two and a half seconds) while the
+  // page holds still: the heading breaks, the question and "Choose your Hunter." each get a moment to read, the first
+  // Hunter's art cracks open, then the page is yours again. Leftover trackpad momentum is soaked up so it doesn't fling
+  // you past. Once per visit; scrolling back up and down after that is normal.
+  if (!calm) {
+    const root = document.documentElement;
+    let done = false, prev = scrollY, quietSince = 0;
+    const stop = (e) => { if (auto) { e.preventDefault(); quietSince = performance.now(); } };
+    const keys = (e) => { if (auto && /^(ArrowDown|ArrowUp|PageDown|PageUp| |End|Home)$/.test(e.key)) e.preventDefault(); };
+    addEventListener("wheel", stop, { passive: false }); addEventListener("touchmove", stop, { passive: false }); addEventListener("keydown", keys);
+    const play = (from) => {
+      auto = true; done = true;
+      root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // body stays visible so the sticky stage keeps working
+      const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
+      const sm = (k) => k * k * (3 - 2 * k);
+      // [seconds, where] — moving beats ease, the reading beats drift slowly
+      const keysT = [[0, from, 0], [0.6, at(0.3), 1], [1.0, at(0.4), 0], [1.5, at(0.7), 1], [1.85, at(0.76), 0], [2.5, end, 1]];
+      const t0 = performance.now();
+      const f = (now) => {
+        const t = (now - t0) / 1000;
+        let y = end;
+        for (let i = 1; i < keysT.length; i++) if (t < keysT[i][0]) {
+          const [ta, ya] = keysT[i - 1], [tb, yb, ease] = keysT[i], k = (t - ta) / (tb - ta);
+          y = ya + (yb - ya) * (ease ? sm(k) : k); break;
+        }
+        scrollTo({ top: Math.round(y), behavior: "instant" }); ys = scrollY; render(ys);
+        if (t < keysT[keysT.length - 1][0]) { requestAnimationFrame(f); return; }
+        const fin = performance.now();
+        const letGo = () => { // wait for the trackpad to go quiet, so its momentum doesn't carry on (at most another 1.2s)
+          if (performance.now() - quietSince < 260 && performance.now() - fin < 1200) { setTimeout(letGo, 80); return; }
+          auto = false; root.style.overflow = ""; document.body.style.overflow = ""; ys = scrollY; kick();
+        };
+        letGo();
+      };
+      requestAnimationFrame(f);
+    };
+    addEventListener("scroll", () => {
+      const y = scrollY;
+      if (!done && !auto && scn) {
+        const vh = innerHeight, gate = scn.s0 - vh * 0.32;
+        if (prev < gate && y >= gate) {
+          if (y - prev < vh * 1.5 && y < scn.s0 + scn.lead * 0.5) play(y); // a scroll, not a jump (a link, End)
+          else done = true;
+        } else if (y > scn.s0 + scn.lead) done = true; // already past it (a link, a reload part-way down)
+      }
+      prev = y;
     }, { passive: true });
   }
 
@@ -590,6 +639,7 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY, now = performance.now();
+      if (auto) { prevY = scrollY; prevT = now; return; }
       if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; prevT = now; return; } // leftover momentum can't move it
       if (scn && coarse.matches && now - jump > 1500) {
         const c = Math.round(scn.s0 + scn.lead) + 2, v = (y - prevY) / Math.max(8, now - prevT); // px per ms
