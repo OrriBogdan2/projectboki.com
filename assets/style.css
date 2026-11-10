@@ -546,7 +546,7 @@ html.hm-open { overflow: hidden; }
 .hm-card { position: relative; width: min(1240px, 100%); height: min(720px, calc(100dvh - 2 * clamp(10px, 3vw, 40px))); display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.12);
   background: #0f1626; box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); transform: translateY(14px) scale(.98); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
 .hm.show .hm-card { transform: none; }
-.hm-art { position: relative; min-height: 0; background: #070b14; cursor: zoom-in; }
+.hm-art { position: relative; min-height: 0; background: #070b14; cursor: zoom-in; touch-action: pan-y; }
 .hm-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: 0; transition: opacity .3s ease; }
 .hm-art img.on { opacity: 1; }
 .hm-txt { min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; justify-content: center; padding: 40px 40px 36px; scrollbar-width: thin; }
@@ -941,8 +941,10 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 @media (max-width: 720px) { .head h2.h-crumble { font-size: min(8.8vw, 42px); } }
 .js #hunters.scene .h-crumble .nw { display: inline-block; transform-origin: 50% 50%; will-change: transform; } /* so the falling words can drop as one into the art */
 
-/* No heading above the Hunters: less scroll before the stage */
-.hunters { padding-top: calc(var(--sec) * .2); }
+/* The Hunters follow the loop cards now, under their own heading */
+.hunters { padding-top: calc(var(--sec) * .7); background: var(--bg); }
+#hunters .head { margin-bottom: clamp(28px, 4vw, 48px); }
+#hunters .head .sub { margin-top: 14px; }
 
 /* Trailer panel: the sheet that slides over the hero. Footage of the Skylands fills it edge to edge and the two lines sit
    on it, bottom left. One still image until the clip plays (site.js); lite and reduced motion keep the still. */
@@ -972,7 +974,6 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
   .js .tr-bottom.in .tr-status { transition-delay: .28s; }
 }
 html.lite .tr-media img { transform: none !important; }
-.trailer + .hunters { background: var(--bg); } /* flat where it meets the panel: no seam */
 /* Hunters idle tour: a line fills along the active portrait while it counts to the next one (site.js) */
 .pick button::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: 1; background: #fff; transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
 .pick.idle button[aria-pressed="true"]::before { animation: pick-count var(--dwell, 4.5s) linear both; }
@@ -1034,3 +1035,5 @@ html.su-signed .hero-su, html.su-signed .join .join-su { width: 100%; }
   #hunters .info h3, #hunters .info .title { grid-column: 1; }
   #hunters .h-more { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
 }
+/* The section after the footage panel covers the last strip of the pinned hero behind it */
+.trailer + section { position: relative; z-index: 2; background: var(--bg); }

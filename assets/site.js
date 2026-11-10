@@ -271,6 +271,7 @@ if (pick) {
   })();
   const tidy = (els) => els.forEach((el) => { el.style.opacity = el.style.translate = el.style.transition = el.style.transform = ""; });
   let scn = null, sceneOn = false, lastQ = -1, waved = false, idleArm = null, byIdle = false;
+  const stageUp = () => calm || sceneOn || lastQ > 0.6; // the art is open enough to browse (swipes and drags wait for this)
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -383,17 +384,25 @@ if (pick) {
     track.style.scrollMarginTop = top + "px";
     track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
     const s0 = docTop(track) - top;
-    // Where the page takes over on the way down. With the footage panel above: once you have scrolled about a third of a
-    // screen past it (not sooner, so nobody is pulled off the footage). The reveal starts at that same point, so it only
-    // ever plays at its own speed.
-    const panel = document.getElementById("trailer");
-    const gate = hFall || !panel ? s0 - Math.round(vh * 0.32) : Math.min(docTop(panel) + Math.round(vh * 0.3), s0 - Math.round(vh * 0.2));
+    // Where the page takes over on the way down: once the stage's place has come about two fifths of the way up the
+    // screen, so the heading above it has been read on the way and is still in view. The reveal starts at that same
+    // point, so it only ever plays at its own speed.
+    const gate = hFall ? s0 - Math.round(vh * 0.32) : Math.min(docTop(track) - Math.round(vh * 0.62), s0 - Math.round(vh * 0.2));
     scn = { s0, lead, gate, q0: hFall ? s0 + Math.round(vh * 0.1) : gate }; fallD = null; if (hFall) { hFall.style.transform = ""; hFall.dataset.ty = "0"; }
     void step; // Hunters are browsed sideways now (arrows, the strip, a sideways swipe), so scrolling down leaves the section
     if (ys === null) ys = scrollY;
     lastQ = -1; render(ys); kick();
   };
   addEventListener("scroll", kick, { passive: true });
+  // "Hunters" links land on the stage itself. The section starts with its heading, above the reveal, and stopping there
+  // would leave the art half open.
+  const toStage = (smooth) => { if (!scn) return false; scrollTo({ top: scn.s0 + scn.lead + 2, behavior: smooth ? "smooth" : "instant" }); return true; };
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href$="#hunters"]');
+    if (!a || a.pathname !== location.pathname || !toStage(true)) return;
+    e.preventDefault(); history.replaceState(null, "", "#hunters");
+  });
+  if (location.hash === "#hunters") addEventListener("load", () => setTimeout(() => toStage(false), 80));
   let lw = innerWidth, lh = innerHeight;
   addEventListener("resize", () => { // phones resize as the toolbar hides on scroll: only re-measure on a real change
     if (innerWidth === lw && Math.abs(innerHeight - lh) < 160 && matchMedia("(pointer: coarse)").matches) return;
@@ -661,7 +670,7 @@ if (pick) {
     sec.addEventListener("wheel", (e) => {
       const dx = e.deltaX || (e.shiftKey ? e.deltaY : 0);
       if (!dx || Math.abs(dx) < Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
-      if (!sceneOn && !calm) return; // only once the stage is up
+      if (!stageUp()) return; // only once the stage is up
       e.preventDefault(); // and not the browser's back/forward swipe
       const now = performance.now();
       if (now - lastX > 220) { acc = 0; used = false; } // a new swipe
@@ -677,7 +686,7 @@ if (pick) {
     let d = null;
     stageEl.addEventListener("dragstart", (e) => e.preventDefault());
     stageEl.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button, a, .fig") || (!sceneOn && !calm)) return;
+      if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button, a, .fig") || !stageUp()) return;
       d = { x: e.clientX, dx: 0, moved: false };
     });
     addEventListener("pointermove", (e) => {
@@ -892,11 +901,14 @@ function nudge(strip) {
    (The picker strips handle their own keys when focused, so skip those.) */
 function arrowKeys(section, strip, go) {
   if (!section) return;
-  let over = false;
-  section.addEventListener("pointerenter", () => { over = true; });
-  section.addEventListener("pointerleave", () => { over = false; });
+  // The section across the middle of the screen gets the keys, wherever the pointer is resting (it used to need the
+  // pointer over the section, which failed after closing a panel or scrolling in without moving the mouse).
   document.addEventListener("keydown", (e) => {
-    if (!over || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const root = document.documentElement;
+    if (root.classList.contains("hm-open") || root.classList.contains("lb-open")) return; // a panel on top has the keys
+    const r = section.getBoundingClientRect(), mid = innerHeight / 2;
+    if (r.top > mid || r.bottom < mid) return;
     if (strip && strip.contains(document.activeElement)) return;
     const t = document.activeElement && document.activeElement.tagName;
     if (t === "INPUT" || t === "TEXTAREA" || t === "SELECT") return;
@@ -1117,6 +1129,7 @@ if (POSTHOG_KEY) {
     box.querySelector(".lb-x").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
     box.querySelector(".next").addEventListener("click", () => fill(at + 1));
+    swipe(box.querySelector(".hm-art"), (d) => fill(at + d)); // phones: swipe the art for the next Hunter
     const bar = box.querySelector(".hm-bar"); bar.style.setProperty("--dwell", DWELL + "ms");
     const slotAt = (e) => { const b = e.target.closest("button"); return b ? [...bar.children].indexOf(b) : -1; };
     bar.addEventListener("click", (e) => { const i = slotAt(e); if (i >= 0) pickAb(i, true); });
