@@ -583,7 +583,7 @@ if (pick) {
       const vh = innerHeight, a = scn.s0 + vh * 0.1, span = scn.lead - vh * 0.1, at = (q) => a + span * q, end = Math.round(at(1)) + 2;
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
-      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [1.05, scn.s0 + vh * 0.1, 0], [1.75, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
+      const keysT = [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]]; // ease in to the heading, drift while it breaks, then the crack
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
