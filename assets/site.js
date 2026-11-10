@@ -804,7 +804,7 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const LIST = data.revealed;
-  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 6; // two or three tidy rows of the front-page shots; the full list lives on the Bokidex page
+  const FEATURED = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 8 : 6; // one row on desktop, two or three short ones on smaller screens; the full list lives on the Bokidex page
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
   const cards = LIST.slice(0, FEATURED).map((b, i) => {
     const c = document.createElement("button");

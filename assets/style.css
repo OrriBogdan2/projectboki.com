@@ -1151,3 +1151,8 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 @media (max-width: 639px) { .bk-sils { max-height: calc(2 * 62px + 7px); } }
 @media (min-width: 901px) { .bk-key.above img { aspect-ratio: 21 / 9; object-position: 50% 43%; } }
 @media (max-width: 860px) { .step-media { aspect-ratio: 16 / 9; } }
+
+/* ---------- Footage panel: three quarters of the screen, one line at the bottom ---------- */
+.trailer { height: clamp(460px, 75svh, 860px); }
+.tr-copy { justify-content: flex-end; }
+.head .sub .nb { white-space: nowrap; }
