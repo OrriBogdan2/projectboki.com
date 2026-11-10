@@ -1083,7 +1083,24 @@ if (POSTHOG_KEY) {
   let box, at = 0, back = null, KIT = null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const load = () => KIT || (KIT = fetch("assets/hunters.json?v=2").then((r) => r.json()).catch(() => ({})));
-  const keyOf = (k) => k.key || "P";
+  // The kit shows as an ability bar: six slots, one in focus with its name and line. Left alone it steps through
+  // them; the first hover, tap or number key hands it over for as long as the panel is open.
+  const DWELL = 4200, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let kit = [], sel = 0, tour = 0, hands = false;
+  const slot = (k) => k.key ? esc(k.key) : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 9-9 9-9-9z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+  const pickAb = (i, byUser) => {
+    if (!kit.length) return;
+    sel = (i + kit.length) % kit.length;
+    const k = kit[sel], bar = box.querySelector(".hm-bar"), ab = box.querySelector(".hm-ab");
+    [...bar.children].forEach((b, n) => b.setAttribute("aria-pressed", n === sel));
+    ab.querySelector(".hm-kind").textContent = k.kind;
+    ab.querySelector(".hm-an").textContent = k.name;
+    ab.querySelector(".hm-al").textContent = k.line;
+    ab.classList.remove("sw"); void ab.offsetWidth; ab.classList.add("sw");
+    if (byUser) hands = true;
+    clearTimeout(tour); bar.classList.remove("auto");
+    if (!hands && !calm) { bar.classList.add("auto"); tour = setTimeout(() => pickAb(sel + 1), DWELL); }
+  };
   const build = () => {
     box = document.createElement("div");
     box.className = "hm"; box.hidden = true;
@@ -1091,18 +1108,25 @@ if (POSTHOG_KEY) {
     box.innerHTML = `<div class="hm-card"><div class="hm-art" title="View full art"><img alt="">
       <button class="bk-arrow prev" type="button" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="bk-arrow next" type="button" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-      <div class="hm-txt"><div class="hm-role"></div><h3></h3><div class="hm-title"></div><p class="hm-style"></p><ul class="hm-kit"></ul></div>
+      <div class="hm-txt"><div class="hm-role"></div><h3></h3><div class="hm-title"></div><p class="hm-style"></p>
+        <div class="hm-bar" role="group" aria-label="Abilities"></div>
+        <div class="hm-ab" aria-live="polite"><div class="hm-kind"></div><div class="hm-an"></div><p class="hm-al"></p></div></div>
       <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
     document.body.appendChild(box);
     box.addEventListener("click", (e) => { if (e.target === box) close(); });
     box.querySelector(".lb-x").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
     box.querySelector(".next").addEventListener("click", () => fill(at + 1));
+    const bar = box.querySelector(".hm-bar"); bar.style.setProperty("--dwell", DWELL + "ms");
+    const slotAt = (e) => { const b = e.target.closest("button"); return b ? [...bar.children].indexOf(b) : -1; };
+    bar.addEventListener("click", (e) => { const i = slotAt(e); if (i >= 0) pickAb(i, true); });
+    bar.addEventListener("pointerover", (e) => { if (e.pointerType !== "mouse") return; const i = slotAt(e); if (i >= 0 && (i !== sel || !hands)) pickAb(i, true); });
     document.addEventListener("keydown", (e) => {
       if (box.hidden || document.querySelector(".lb:not([hidden])")) return; // the full-size art closes first
       if (e.key === "Escape") close();
       else if (e.key === "ArrowRight") fill(at + 1);
       else if (e.key === "ArrowLeft") fill(at - 1);
+      else if (/^[1-6]$/.test(e.key)) pickAb(+e.key - 1, true);
     });
   };
   const fill = (i) => {
@@ -1118,19 +1142,23 @@ if (POSTHOG_KEY) {
     box.querySelector(".hm-title").textContent = title;
     box.querySelector(".hm-role").textContent = role;
     box.querySelector(".hm-style").textContent = "";
-    box.querySelector(".hm-kit").innerHTML = "";
+    clearTimeout(tour); kit = [];
+    box.querySelector(".hm-bar").innerHTML = "";
+    box.querySelectorAll(".hm-kind, .hm-an, .hm-al").forEach((el) => { el.textContent = ""; });
     box.querySelector(".hm-card").scrollTop = 0;
     load().then((all) => {
       const h = all[id]; if (!h || HUNTERS[at][0] !== id) return;
       box.style.setProperty("--g", h.color || "#9a7dff");
       box.querySelector(".hm-style").textContent = h.style;
-      box.querySelector(".hm-kit").innerHTML = h.kit.map((k) =>
-        `<li class="k-${k.kind.toLowerCase()}"><kbd>${esc(keyOf(k))}</kbd><div><b>${esc(k.name)}<small>${esc(k.kind)}</small></b><span>${esc(k.line)}</span></div></li>`).join("");
+      kit = h.kit;
+      box.querySelector(".hm-bar").innerHTML = kit.map((k) =>
+        `<button type="button" class="k-${k.kind.toLowerCase()}" aria-pressed="false" aria-label="${esc(k.name)}, ${esc(k.kind)}">${slot(k)}</button>`).join("");
+      pickAb(0);
     });
   };
   const open = () => {
     if (!box) build();
-    back = document.activeElement;
+    back = document.activeElement; hands = false;
     const cur = (stage && stage.dataset.h) || HUNTERS[0][0];
     fill(Math.max(0, HUNTERS.findIndex((h) => h[0] === cur)));
     box.hidden = false; document.documentElement.classList.add("hm-open");
@@ -1139,7 +1167,7 @@ if (POSTHOG_KEY) {
     if (window.posthog && posthog.capture) posthog.capture("hunter_details", { hunter: HUNTERS[at][0] });
   };
   function close() {
-    box.classList.remove("show"); document.documentElement.classList.remove("hm-open");
+    box.classList.remove("show"); document.documentElement.classList.remove("hm-open"); clearTimeout(tour);
     setTimeout(() => { box.hidden = true; }, 220);
     if (back) back.focus({ preventScroll: true });
   }

@@ -539,68 +539,68 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .lb-x:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 html.lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
-/* Hunter details (the splash's expand button): art and kit side by side, stacked on narrow screens */
-.hm { position: fixed; inset: 0; z-index: 79; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); background: rgba(4,7,14,.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transition: opacity .22s ease; --g: #9a7dff; }
+/* Hunter details: the splash on one side, the kit on the other as an ability bar with one ability in focus */
+.hm { position: fixed; inset: 0; z-index: 79; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); background: rgba(4,7,14,.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transition: opacity .22s ease; --g: #9a7dff; }
 .hm.show { opacity: 1; }
 html.hm-open { overflow: hidden; }
-.hm-card { position: relative; width: min(1240px, 100%); max-height: calc(100dvh - 2 * clamp(10px, 3vw, 40px)); display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(330px, 1fr); border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.12);
-  background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--g) 18%, transparent), transparent 50%), linear-gradient(160deg, #141c31, #0a101d);
-  box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); transform: translateY(14px) scale(.98); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.hm-card { position: relative; width: min(1240px, 100%); height: min(720px, calc(100dvh - 2 * clamp(10px, 3vw, 40px))); display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.12);
+  background: #0f1626; box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); transform: translateY(14px) scale(.98); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
 .hm.show .hm-card { transform: none; }
 .hm-art { position: relative; min-height: 0; background: #070b14; cursor: zoom-in; }
 .hm-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: 0; transition: opacity .3s ease; }
 .hm-art img.on { opacity: 1; }
-.hm-art::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 30%; background: linear-gradient(90deg, transparent, rgba(12,18,32,.85)); pointer-events: none; }
-.hm-txt { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 34px 34px 30px 26px; scrollbar-width: thin; }
-.hm-role { display: inline-block; font-family: "Lilita"; font-size: 19px; color: var(--g); }
-.hm-txt h3 { font-family: "Lilita"; font-weight: 400; font-size: clamp(44px, 4.6vw, 64px); line-height: .95; margin: 6px 0 2px; }
-.hm-title { font-family: "Lilita"; font-size: clamp(19px, 1.7vw, 23px); color: var(--ink-2); }
-.hm-style { margin: 14px 0 18px; color: var(--soft); font-size: 16px; line-height: 1.45; min-height: 2.9em; }
-.hm-kit { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.hm-kit li { display: grid; grid-template-columns: 50px 1fr; gap: 12px; align-items: start; padding: 10px 12px 10px 10px; border-radius: 14px; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.06); }
-.hm-kit kbd { display: grid; place-items: center; height: 34px; border-radius: 9px; font: 800 12px/1 inherit; font-family: inherit; letter-spacing: .04em; color: #fff; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); border-bottom-width: 3px; }
-.hm-kit .k-passive kbd { color: var(--g); background: transparent; border-style: dashed; border-bottom-width: 1px; }
-.hm-kit .k-ultimate { background: color-mix(in srgb, var(--g) 12%, transparent); border-color: color-mix(in srgb, var(--g) 40%, transparent); }
-.hm-kit .k-ultimate kbd { color: #0a1222; background: var(--g); border-color: color-mix(in srgb, var(--g) 70%, #000); }
-.hm-kit b { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 16px; font-weight: 800; color: #fff; }
-.hm-kit small { font-size: 13px; font-weight: 600; color: var(--ink-3); }
-.hm-kit span { display: block; margin-top: 2px; font-size: 14.5px; line-height: 1.4; color: var(--soft); }
+.hm-txt { min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; justify-content: center; padding: 40px 40px 36px; scrollbar-width: thin; }
+.hm-role, .hm-kind { font-family: "Lilita"; letter-spacing: .08em; text-transform: uppercase; color: var(--g); }
+.hm-role { font-size: 18px; }
+.hm-txt h3 { font-family: "Lilita"; font-weight: 400; font-size: clamp(52px, 5vw, 72px); line-height: .95; margin: 8px 0 4px; }
+.hm-title { font-family: "Lilita"; font-size: 22px; color: var(--ink-2); }
+.hm-style { margin: 18px 0 0; color: rgba(255,255,255,.8); font-size: 17px; line-height: 1.45; min-height: 2.9em; }
+/* The bar reads like the in-game one: weapon, passive, dash, two abilities, ultimate */
+.hm-bar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 28px; }
+.hm-bar button { all: unset; box-sizing: border-box; position: relative; overflow: hidden; aspect-ratio: 1; display: grid; place-items: center; border-radius: 14px; cursor: pointer; font-family: inherit; font-weight: 800; font-size: 15px; line-height: 1; color: #fff; background: #1b2438; border: 1px solid rgba(255,255,255,.1); transition: background-color .18s ease, color .18s ease, border-color .18s ease; }
+.hm-bar button svg { width: 18px; height: 18px; }
+.hm-bar .k-ultimate { border: 2px solid var(--g); }
+.hm-bar button[aria-pressed="true"] { background: #f2e8d2; color: #2b1d12; border-color: #f2e8d2; }
+.hm-bar button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.hm-bar.auto button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #2b1d12; transform-origin: 0 50%; animation: hm-dwell var(--dwell, 4.2s) linear both; }
+@keyframes hm-dwell { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.hm-ab { margin-top: 24px; min-height: 176px; }
+.hm-kind { font-size: 16px; }
+.hm-an { margin-top: 4px; font-family: "Lilita"; font-size: clamp(34px, 3vw, 42px); line-height: 1.05; color: #fff; }
+.hm-al { margin: 10px 0 0; font-size: 19px; line-height: 1.45; color: rgba(255,255,255,.86); }
+.hm-ab.sw > * { animation: hm-in .22s ease both; }
+@keyframes hm-in { from { opacity: 0; transform: translateY(6px); } }
 .hm .bk-arrow { top: 50%; z-index: 1; }
 .hm .bk-arrow.prev { left: 14px; } .hm .bk-arrow.next { right: 14px; }
 .hm .lb-x { top: 12px; right: 12px; z-index: 2; }
-@media (max-width: 1000px) { /* phones and small tablets: one full screen, art on top, the kit shares the rest */
+@media (max-width: 1000px) { /* phones and small tablets: one full screen, the art takes whatever the kit leaves */
   .hm { place-items: stretch; padding: 0; }
   .hm-card { display: flex; flex-direction: column; width: 100%; height: 100dvh; max-height: none; border-radius: 0; border: 0; overflow: hidden; }
-  .hm-art { flex: none; aspect-ratio: 16 / 9; max-height: 31dvh; }
-  .hm-art img { object-position: 50% 30%; }
-  .hm-art::after { inset: auto 0 0 0; width: auto; height: 38%; background: linear-gradient(180deg, transparent, #121a2e); }
-  .hm-txt { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; position: relative; margin-top: -20px; padding: 0 16px calc(14px + env(safe-area-inset-bottom)); }
-  .hm-role { position: absolute; right: 16px; top: 34px; font-size: 15px; } /* beside the name, not above it */
-  .hm-txt h3 { font-size: clamp(30px, 5.4dvh, 42px); margin: 0 0 1px; padding-right: 110px; }
-  .hm-title { font-size: 16px; }
-  .hm-style { flex: none; min-height: 0; margin: 5px 0 9px; font-size: 13.5px; line-height: 1.35; }
-  .hm-kit { flex: 1 1 auto; align-content: stretch; grid-auto-rows: auto; gap: 4px; }
-  .hm-kit li { grid-template-columns: 40px 1fr; gap: 9px; align-items: center; padding: 5px 10px 6px 8px; border-radius: 11px; }
-  .hm-kit kbd { height: 26px; font-size: 10.5px; border-radius: 7px; border-bottom-width: 2px; }
-  .hm-kit b { font-size: 14px; gap: 6px; }
-  .hm-kit small { font-size: 11.5px; }
-  .hm-kit span { margin-top: 1px; font-size: 12.5px; line-height: 1.3; }
+  .hm-art { flex: 1 1 0; min-height: 24dvh; }
+  .hm-txt { flex: none; max-height: 76dvh; justify-content: flex-start; padding: 20px 18px calc(24px + env(safe-area-inset-bottom)); }
+  .hm-role { font-size: 14px; }
+  .hm-txt h3 { font-size: 44px; margin: 4px 0 2px; }
+  .hm-title { font-size: 17px; }
+  .hm-style { margin-top: 10px; font-size: 15px; line-height: 1.4; min-height: 0; }
+  .hm-bar { gap: 6px; margin-top: 18px; }
+  .hm-bar button { border-radius: 12px; font-size: 13px; }
+  .hm-ab { margin-top: 18px; min-height: 134px; }
+  .hm-kind { font-size: 13px; }
+  .hm-an { font-size: 30px; }
+  .hm-al { margin-top: 6px; font-size: 17px; line-height: 1.4; }
   .hm .lb-x { position: fixed; top: calc(10px + env(safe-area-inset-top)); right: 10px; width: 38px; height: 38px; font-size: 24px; background: rgba(8,13,24,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .hm .bk-arrow { margin-top: -20px; }
 }
-@media (max-width: 1000px) and (max-height: 600px) { .hm-style { display: none; } .hm-art { max-height: 23dvh; } }
-@media (max-width: 1000px) and (max-height: 700px) { .hm-txt h3 { font-size: 30px; } .hm-kit span { font-size: 12px; line-height: 1.25; } .hm-kit b { font-size: 13.5px; } .hm-kit li { padding: 4px 9px 5px 8px; } .hm-kit { gap: 3px; } } /* the smallest phones: the kit comes first */
-@media (min-width: 1001px) and (max-height: 860px) {
-  .hm-txt { padding: 24px 28px 20px 22px; }
-  .hm-txt h3 { font-size: 46px; }
-  .hm-style { margin: 10px 0 12px; font-size: 15px; min-height: 0; }
-  .hm-kit { gap: 5px; }
-  .hm-kit li { padding: 7px 10px 7px 8px; gap: 10px; grid-template-columns: 46px 1fr; }
-  .hm-kit kbd { height: 30px; font-size: 11px; }
-  .hm-kit b { font-size: 15px; }
-  .hm-kit span { font-size: 13.5px; line-height: 1.35; margin-top: 1px; }
+@media (max-width: 1000px) and (max-height: 640px) { .hm-style { display: none; } .hm-art { min-height: 20dvh; } .hm-txt h3 { font-size: 36px; } }
+@media (min-width: 1001px) and (max-height: 760px) {
+  .hm-txt { padding: 26px 34px 24px; }
+  .hm-txt h3 { font-size: 50px; }
+  .hm-style { margin-top: 12px; font-size: 16px; min-height: 0; }
+  .hm-bar { margin-top: 20px; }
+  .hm-ab { margin-top: 18px; min-height: 150px; }
+  .hm-an { font-size: 32px; }
+  .hm-al { font-size: 17px; }
 }
-@media (prefers-reduced-motion: reduce) { .hm, .hm-card, .hm-art img { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .hm, .hm-card, .hm-art img { transition: none; } .hm-ab.sw > *, .hm-bar.auto button::after { animation: none !important; } .hm-bar.auto button[aria-pressed="true"]::after { display: none; } }
 
 .head h2.h-crumble { background: none; color: #fff; }
 /* Boki heading: white melting into lavender */
@@ -892,7 +892,7 @@ img, svg, picture, video, canvas, .cast, .shot, .stage, .bw-card, .pick button, 
 /* Text selection: copyable reading text only. Display type, names, cards, questions, buttons and labels never highlight;
    answers, descriptions, ability text, the email field and the press kit, privacy and devlog pages do. */
 body { -webkit-user-select: none; user-select: none; }
-.qa .a, .bm-desc, .bm-line, .hm-style, .hm-kit span, input, textarea, .pk, .consent p a { -webkit-user-select: text; user-select: text; }
+.qa .a, .bm-desc, .bm-line, .hm-style, .hm-al, input, textarea, .pk, .consent p a { -webkit-user-select: text; user-select: text; }
 .pk .btn, .pk-grid a, .pk-key { -webkit-user-select: none; user-select: none; }
 
 /* Touch feel: no grey tap flash, no double-tap zoom delay, and every tappable thing answers the press at once */
