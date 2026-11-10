@@ -1165,3 +1165,13 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 @media (max-width: 999px) { .bk-sils { --c: 8; --c1: 9; } }
 @media (max-width: 639px) { .bk-sils { --c: 5; --c1: 6; --gap: 7px; max-height: none; } .bk-row { height: 62px; } }
 .bk-cta { margin-top: clamp(24px, 2.6vw, 36px); } /* the rows above are no longer faded out, so the button needs its own room */
+
+/* the silhouette tiles also step up and down (site.js sets --dy), so the two rows read as a scatter, not a grid */
+.bk-sils { --k: 1px; padding-bottom: calc(30 * var(--k)); }
+.bk-row { overflow: visible; }
+.bk-row + .bk-row { margin-top: calc(var(--gap) + 4px); }
+.bk-sil { translate: 0 calc(var(--dy, 0) * var(--k)); }
+@media (max-width: 639px) { .bk-sils { --k: .62px; } }
+/* Raise your Boki picture (the tent): crop that keeps Meeko's ears and the sleeping Boki in the tub */
+@media (min-width: 901px) { .bk-key.above img { object-position: 50% 62%; } }
+@media (max-width: 900px) { .bk-key.above img { object-position: 42% 50%; } }

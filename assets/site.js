@@ -852,11 +852,16 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     const types = Object.keys(TYPE), cols = +getComputedStyle(grid).getPropertyValue("--c") || 13, need = cols * 2 + 1;
     const list = data.hidden.slice(0, need);
     for (let i = 0; list.length < need; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
+    const DROP = [0, 22, 8, 30, 14, 26, 4, 20, 10, 28, 6, 18, 12];
     const rows = [0, 1].map((r) => { const d = document.createElement("div"); d.className = "bk-row" + (r ? " off" : ""); grid.appendChild(d); return d; });
     list.forEach((h, i) => {
       const t = document.createElement("span");
       t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
       t.innerHTML = h.sil ? `<img src="assets/img/boki-sil/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
+      // each tile also sits a little lower or higher than its neighbours, like the cards above (row two takes the
+      // average of the two tiles it sits under, so the rows never touch)
+      const j = i < cols ? i : i - cols, drop = (k) => DROP[Math.min(cols - 1, Math.max(0, k)) % DROP.length];
+      t.style.setProperty("--dy", i < cols ? drop(j) : (drop(j - 1) + drop(j)) / 2);
       rows[i < cols ? 0 : 1].appendChild(t);
     });
     dark.hidden = false;
