@@ -995,3 +995,15 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 /* "The Skylands have crumbled." / "Find your allies and get out alive.": the long line is ~14.2em, so the size follows the screen width */
 .tr-head h2 { font-size: clamp(30px, 5.9vw, 84px); }
 @media (max-width: 720px) { .tr-head h2 { font-size: 5.9vw; } }
+/* Trailer headline, one line at a time (site.js): both lines share one spot, so only one shows */
+@media (prefers-reduced-motion: no-preference) {
+  .js .tr-head h2 { display: grid; justify-items: center; }
+  .js .tr-head h2 > span { grid-area: 1 / 1; }
+  .tr-head h2.seq .w { display: inline-block; opacity: 0; transform: translateY(.38em); }
+  .tr-head h2.seq.go > span:first-child .w { animation: trw-in .6s cubic-bezier(.2,.8,.2,1) forwards, trw-out .45s cubic-bezier(.5,0,.8,.4) forwards; animation-delay: calc(var(--k) * 75ms), calc(2.1s + var(--k) * 40ms); }
+  .tr-head h2.seq.go > span:last-child .w { animation: trw-in .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(2.6s + var(--k) * 75ms); }
+}
+@keyframes trw-in { to { opacity: 1; transform: none; } }
+@keyframes trw-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-.42em); } }
+/* Phones: one sentence at a time, so each can wrap onto two balanced lines and stay big */
+@media (max-width: 720px) { .tr-head h2 { font-size: min(9vw, 46px); line-height: 1.05; } .tr-head h2 > span { white-space: normal; text-wrap: balance; max-width: 13em; margin: 0 auto; } }
