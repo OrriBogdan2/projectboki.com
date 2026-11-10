@@ -12,16 +12,24 @@ const LITE = (function () {
   };
   if (lite) { root.classList.add("lite"); return { on: () => true }; }
   if (/[?&]full\b/.test(q) || matchMedia("(prefers-reduced-motion: reduce)").matches) return { on: () => false };
-  // Every ~2s, measure how much of that time went to stalled frames (over 34ms). A third or more, twice running, is a struggling machine.
+  // No real graphics card (hardware acceleration off, broken drivers): everything is drawn on the processor. Go light straight away.
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    const ext = gl && gl.getExtension("WEBGL_debug_renderer_info");
+    const gpu = gl ? String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER)) : "none";
+    if (gl) { const lc = gl.getExtension("WEBGL_lose_context"); if (lc) lc.loseContext(); }
+    if (gpu === "none" || /swiftshader|llvmpipe|softpipe|software|basic render/i.test(gpu)) { root.classList.add("lite"); try { sessionStorage.setItem("boki-lite", "1"); } catch (e) {} return { on: () => true }; }
+  } catch (e) {}
+  // Every second, measure how much of that time went to stalled frames (over 34ms). A third or more, twice running, is a struggling machine.
   let last = 0, w0 = 0, jank = 0, bad = 0; const t0 = performance.now();
   const step = (t) => {
     if (document.hidden) { last = 0; w0 = 0; jank = 0; } else {
       if (last) { const d = t - last; if (d > 34) jank += Math.min(d, 2000) - 17; }
       last = t;
       if (!w0) w0 = t;
-      else if (t - w0 >= 2000) {
+      else if (t - w0 >= 1000) {
         const share = jank / (t - w0); w0 = t; jank = 0;
-        if (t - t0 > 2500) { bad = share > 0.33 ? bad + 1 : 0; if (bad >= 2) { on(); return; } }
+        if (t - t0 > 1200) { bad = share > 0.33 ? bad + 1 : 0; if (bad >= 2) { on(); return; } }
       }
     }
     if (t - t0 < 90000) requestAnimationFrame(step);

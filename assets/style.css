@@ -357,9 +357,9 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .join-bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; background:
   radial-gradient(ellipse 55% 70% at 50% 45%, rgba(170,110,255,.22), transparent 70%),
   radial-gradient(ellipse 80% 70% at 50% 50%, #1c1430, #0d0a18 75%); }
-.join-bg::before { content: ""; position: absolute; inset: -50%; background-image: linear-gradient(rgba(170,140,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(170,140,255,.11) 1px, transparent 1px); background-size: 56px 56px; transform: perspective(700px) rotateX(58deg) translateY(18%); -webkit-mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); animation: grid-drift 18s linear infinite; }
+.join-bg::before { content: ""; position: absolute; inset: -50%; background-image: linear-gradient(rgba(170,140,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(170,140,255,.11) 1px, transparent 1px); background-size: 56px 56px; transform: perspective(700px) rotateX(58deg) translateY(18%); -webkit-mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); animation: grid-drift 18s linear infinite; will-change: transform; }
 .join-bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 0 30%, rgba(8,13,24,.0) 30%), url("img/grain.png"); opacity: .06; }
-@keyframes grid-drift { to { background-position: 0 56px, 56px 0; } }
+@keyframes grid-drift { from { transform: perspective(700px) rotateX(58deg) translateY(18%); } to { transform: perspective(700px) rotateX(58deg) translateY(calc(18% + 56px)); } } /* moves the layer, not its pixels: no repaint each frame */
 @media (prefers-reduced-motion: reduce) { .join-bg::before { animation: none; } }
 .join-q { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 30px); color: var(--ink-2); }
 .join h2 { margin: 6px 0 clamp(40px, 5vw, 64px); font-size: clamp(52px, 7vw, 104px); line-height: .95; background: linear-gradient(180deg, #fff 35%, #cfd8ea 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
@@ -943,3 +943,5 @@ html.lite .join-bg::before { animation: none !important; }
 html.lite .fig-img, html.lite #hunters.scene .h-ask .sk span, html.lite #hunters.scene .h-choose .hu, html.lite .bm-art img, html.lite .bw-art img { filter: none !important; }
 html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 #hunters.scene .stage { will-change: transform, opacity; } /* its own layer: the scroll-in fade then composites instead of redrawing the big figure sheet each frame */
+/* Cheaper for everyone. The top bar is 90% opaque, so its blur barely shows but costs the most of anything on the page. */
+.tb-bar, .nav.scrolled { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
