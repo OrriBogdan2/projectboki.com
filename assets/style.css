@@ -1156,3 +1156,12 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 .trailer { height: clamp(460px, 75svh, 860px); }
 .tr-copy { justify-content: flex-end; }
 .head .sub .nb { white-space: nowrap; }
+
+/* ---------- "Over 200 Boki to find.": two rows laid like bricks, nothing faded out ---------- */
+.bk-sils { --c: 13; --c1: 14; --gap: 10px; display: block; max-height: none; overflow: hidden; -webkit-mask-image: none; mask-image: none; }
+.bk-row { display: grid; grid-template-columns: repeat(var(--c), minmax(0, 1fr)); gap: var(--gap); height: 94px; overflow: hidden; }
+.bk-row + .bk-row { margin-top: var(--gap); }
+.bk-row.off { grid-template-columns: repeat(var(--c1), minmax(0, 1fr)); width: calc(100% + (100% - (var(--c) - 1) * var(--gap)) / var(--c) + var(--gap)); margin-left: calc(((100% - (var(--c) - 1) * var(--gap)) / var(--c) + var(--gap)) / -2); }
+@media (max-width: 999px) { .bk-sils { --c: 8; --c1: 9; } }
+@media (max-width: 639px) { .bk-sils { --c: 5; --c1: 6; --gap: 7px; max-height: none; } .bk-row { height: 62px; } }
+.bk-cta { margin-top: clamp(24px, 2.6vw, 36px); } /* the rows above are no longer faded out, so the button needs its own room */

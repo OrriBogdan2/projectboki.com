@@ -847,14 +847,17 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
     dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
-    // one row of the mystery (two on phones): silhouettes from the dex, eggs, and more eggs if the dex is short
-    const types = Object.keys(TYPE), list = data.hidden.slice(0, 16);
-    for (let i = 0; list.length < 16; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
-    list.forEach((h) => {
+    // two rows of the mystery, laid like bricks (the second row sits half a tile over, with a half tile at each end):
+    // silhouettes from the dex, and eggs if the dex is short
+    const types = Object.keys(TYPE), cols = +getComputedStyle(grid).getPropertyValue("--c") || 13, need = cols * 2 + 1;
+    const list = data.hidden.slice(0, need);
+    for (let i = 0; list.length < need; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
+    const rows = [0, 1].map((r) => { const d = document.createElement("div"); d.className = "bk-row" + (r ? " off" : ""); grid.appendChild(d); return d; });
+    list.forEach((h, i) => {
       const t = document.createElement("span");
       t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
       t.innerHTML = h.sil ? `<img src="assets/img/boki-sil/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
-      grid.appendChild(t);
+      rows[i < cols ? 0 : 1].appendChild(t);
     });
     dark.hidden = false;
   }
