@@ -122,6 +122,7 @@ body.v-dex header .themebtn{display:none}
 .tl i{width:6px;height:6px;border-radius:50%;background:var(--ty);display:inline-block}
 .tl+.tl::before{content:"\00b7";margin:0 .55em 0 .45em}
 .dcard.unk .dnm{color:var(--mute)}
+.dcard .fbadge .fsx{letter-spacing:0;font:700 .78rem/1 var(--body)}
 .dcard .fbadge{position:absolute;top:20px;right:22px;font:700 .6rem var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);border-radius:999px;padding:2px 8px;z-index:1}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{--ty:var(--ty-wild);font:700 .72rem var(--body);letter-spacing:.09em;text-transform:uppercase;border-radius:999px;padding:5px 13px 5px 10px;border:1px solid color-mix(in srgb,var(--ty) 55%,transparent);background:color-mix(in srgb,var(--ty) 16%,var(--panel));color:var(--ink);display:inline-flex;align-items:center;gap:7px}
@@ -760,9 +761,15 @@ function filtered(){
   return L;
 }
 function navList(){const L=filtered();return sel&&!L.some(e=>e.id===sel)?D:L}
+function fbadgeHTML(e){ // owner 11-10: mark Boki with male + female forms (manifest sex_forms), alongside the multi-form count
+  const sx=!e.unknown&&e.sex_forms, n=e.forms?e.forms.length:0;
+  if(!sx&&!n)return"";
+  const t=[n?`${n} forms`:"",sx?`<span class="fsx" aria-hidden="true">\u2642\u2640</span>`:""].filter(Boolean).join(" ");
+  return`<span class="fbadge"${sx?` title="Male and female forms" aria-label="${n?n+" forms, ":""}male and female forms"`:""}>${t}</span>`;
+}
 function cardHTML(e){
   const un=e.unknown, dim=noArt(e)&&!un?" dim":"";
-  return`<a class="dcard${un?" unk dim":dim}" role="listitem" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${e.forms?`<span class="fbadge">${e.forms.length} forms</span>`:""}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
+  return`<a class="dcard${un?" unk dim":dim}" role="listitem" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${fbadgeHTML(e)}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
 }
 function renderGrid(){
   const L=filtered(), key=[$("#q").value,[...tsel].join(),tmode,$("#sort").value,curTheme(),D.length,Object.keys(ovl).map(k=>k+(ovl[k].hero?.src||"")).join(),Object.keys(aspect).length].join("|");
