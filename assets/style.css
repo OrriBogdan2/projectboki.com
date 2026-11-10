@@ -1105,3 +1105,16 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 .bw-txt i { color: rgba(255,255,255,.78); } /* type labels: readable, not small grey */
 @media (max-width: 639px) { .bw-txt i { font-size: 12px; letter-spacing: .04em; } }
 @media (max-width: 720px) { #hunters .info .title { font-size: 14px; color: #fff; } }
+
+/* ---------- Footage panel says what the game is; "Trailer coming soon." is a plain line, not a button shape ---------- */
+.tr-status { display: block; height: auto; padding: 0; border: 0; border-radius: 0; background: none; margin-top: clamp(14px, 1.6vw, 22px); font-size: clamp(20px, 2vw, 30px); letter-spacing: .02em; text-shadow: 0 2px 20px rgba(4,7,14,.7); }
+.tr-line .nb { white-space: nowrap; }
+@media (max-width: 720px) { .tr-status { height: auto; padding: 0; font-size: 18px; } .tr-line { font-size: min(8.3vw, 44px); max-width: none; } } /* sized so "top-down hero shooter." holds one line on a phone */
+
+/* ---------- Hunters: the role sits above the name, the title stays below ---------- */
+#hunters .info .role { display: block; margin: 0 0 10px; padding: 0; border: 0; background: none; font-family: "Lilita"; font-size: 20px; line-height: 1.1; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 2px 18px rgba(0,0,0,.65); }
+#hunters .pick-label { justify-content: flex-end; }
+@media (min-width: 340px) and (max-width: 720px) {
+  #hunters .info .role { grid-column: 1; margin-bottom: 5px; font-size: 14px; }
+  #hunters .h-more { grid-row: 1 / span 3; }
+}
