@@ -1254,7 +1254,7 @@ if (POSTHOG_KEY) {
   // ---- the living version: every pixel is pulled through a warp (WebGL), so the painting itself moves
   const cv = document.createElement("canvas"); cv.className = "bub-gl";
   document.addEventListener("boki-lite", () => { // lite switched on mid-visit: back to the still picture
-    ready = false; gl = null; cv.remove(); wrap.classList.remove("gl"); wrap.style.transform = "";
+    ready = false; gl = null; cv.remove(); wrap.classList.remove("gl"); wrap.style.transform = ""; const hd = wrap.querySelector(".bub-grab"); if (hd) hd.remove();
     btn.style.translate = ""; burst.style.translate = "";
   });
   gl = cv.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
@@ -1346,14 +1346,14 @@ if (POSTHOG_KEY) {
   addEventListener("pointermove", track, { passive: true }); addEventListener("pointerdown", track, { passive: true });
   // phones: follow the finger itself, even while it scrolls the page, and forget it the moment it lifts
   const touch = (e) => {
-    const p = e.touches[0]; if (!p) return;
+    const p = e.touches[0]; if (!p || drag) return;
     if (e.type === "touchstart" && !btn.hidden) { // the mini-game: land right on the bubble and it pops before he can dodge
       const b = btn.getBoundingClientRect(), r = Math.max(b.width, b.height) / 2 + 10, cx = b.left + b.width / 2, cy = b.top + b.height / 2;
       if (Math.hypot(p.clientX - cx, p.clientY - cy) < r) { finger = false; px = py = null; btn.click(); return; }
     }
     px = p.clientX; py = p.clientY; lastMove = performance.now(); finger = true;
   };
-  const lift = (e) => { if (!e.touches.length) { finger = false; px = py = null; } };
+  const lift = (e) => { if (!e.touches.length && !drag) { finger = false; px = py = null; } };
   addEventListener("touchstart", touch, { passive: true }); addEventListener("touchmove", touch, { passive: true });
   addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", lift, { passive: true });
   // his little brain: where to look, when to blink, when to hop
@@ -1363,6 +1363,37 @@ if (POSTHOG_KEY) {
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches, faqSec = document.getElementById("faq"), home = wrap.parentNode;
   let sx = 0, sy = 0, vx = 0, vy = 0, swim = 0, ph = 0, tilt = 0, fl = 1, flT = 1, flee = null, wT = Math.random() * 50, calmUntil = 0, dirHold = 0, lastDir = 0;
   btn.addEventListener("click", () => { wide = 1; hopK = 0; blinkK = -1; });
+  // Catch him and you can drag him around and fling him. He trails your hand like he's underwater, keeps the throw,
+  // bounces off the edges of the FAQ, wobbles upright and swims home.
+  let drag = null, flungUntil = 0, spin = 0, spinV = 0, pvx = 0, pvy = 0;
+  const grab = (x, y, id) => {
+    drag = { id, x0: x, y0: y, sx0: sx, sy0: sy, x, y, t: performance.now() }; pvx = pvy = 0;
+    flee = null; finger = false; px = x; py = y; lastMove = performance.now();
+    wide = 1; blinkK = -1; wrap.classList.add("held"); loop();
+  };
+  const dragTo = (x, y) => {
+    const now = performance.now(), dt = Math.max(1, now - drag.t) / 1000, a = 1 - Math.exp(-dt * 18);
+    pvx += ((x - drag.x) / dt - pvx) * a; pvy += ((y - drag.y) / dt - pvy) * a; // the hand's speed, smoothed
+    drag.x = x; drag.y = y; drag.t = now; px = x; py = y; lastMove = now;
+  };
+  const drop = () => {
+    if (!drag) return;
+    const fresh = performance.now() - drag.t < 80; // a hand that stopped before letting go doesn't throw
+    const cap = 2600, kx = fresh ? Math.max(-cap, Math.min(cap, pvx)) : 0, ky = fresh ? Math.max(-cap, Math.min(cap, pvy)) : 0;
+    vx = kx; vy = ky; spinV += kx * 0.25; flungUntil = performance.now() + 2200; calmUntil = flungUntil + 600;
+    if (Math.hypot(kx, ky) > 600) hopK = 0;
+    drag = null; wrap.classList.remove("held");
+  };
+  // an invisible round handle on his body (the rest of him lets clicks through to the FAQ). Mouse and finger alike.
+  const handle = document.createElement("span"); handle.className = "bub-grab"; handle.setAttribute("aria-hidden", "true"); wrap.insertBefore(handle, btn);
+  handle.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !ready || drag) return;
+    e.preventDefault(); try { handle.setPointerCapture(e.pointerId); } catch (er) {}
+    grab(e.clientX, e.clientY, e.pointerId);
+  });
+  handle.addEventListener("pointermove", (e) => { if (drag && e.pointerId === drag.id) dragTo(e.clientX, e.clientY); });
+  const up = (e) => { if (drag && e.pointerId === drag.id) { drop(); if (e.pointerType === "touch") px = py = null; } };
+  handle.addEventListener("pointerup", up); handle.addEventListener("pointercancel", up); handle.addEventListener("lostpointercapture", up);
   new IntersectionObserver(([en]) => { vis = en.isIntersecting; if (vis && ready) loop(); }, { rootMargin: "100px" }).observe(wrap);
   const U = {}; const loc = (p, n) => (U[n + p.__id] ||= gl.getUniformLocation(p, n)); baseP.__id = "b"; bubP.__id = "u";
   let raf = 0;
@@ -1384,7 +1415,8 @@ if (POSTHOG_KEY) {
     const hr = home.getBoundingClientRect(), AX = Math.min(80, hr.width * 0.3), AY = Math.min(46, hr.height * 0.17);
     wT += dt;
     let gx = (Math.sin(wT * 0.21) * 0.8 + Math.sin(wT * 0.47 + 1.7) * 0.2) * AX, gy = (Math.cos(wT * 0.29) * 0.75 + Math.sin(wT * 0.61) * 0.25) * AY;
-    if (finger && px !== null) { // phones: a wider sense of the finger, a bigger escape, and he keeps clear while it stays
+    if (drag || now < flungUntil) { /* held or just thrown: no dodging */ }
+    else if (finger && px !== null) { // phones: a wider sense of the finger, a bigger escape, and he keeps clear while it stays
       const vw = innerWidth, R = Math.max(95, hr.width * 0.85);
       const bx = hr.left + hr.width / 2 + sx, by = hr.top + hr.height / 2 + sy;
       const hx0 = hr.left + hr.width / 2, hy0 = hr.top + hr.height / 2;
@@ -1408,21 +1440,36 @@ if (POSTHOG_KEY) {
       }
     }
     if (flee) { if (now > flee.until) { flee = null; calmUntil = now + 900; } else { gx = flee.x; gy = flee.y; } }
-    const k = flee ? 22 : 3, c = flee ? 9 : 3.4;
-    vx += ((gx - sx) * k - vx * c) * dt; vy += ((gy - sy) * k - vy * c) * dt;
+    if (drag) { // he trails the hand, a little behind, like he's underwater
+      const txx = drag.sx0 + drag.x - drag.x0, tyy = drag.sy0 + drag.y - drag.y0;
+      vx += ((txx - sx) * 70 - vx * 12) * dt; vy += ((tyy - sy) * 70 - vy * 12) * dt;
+    } else {
+      const thrown = now < flungUntil, k = flee ? 22 : thrown ? 1.6 : 3, c = flee ? 9 : thrown ? 1.1 : 3.4; // thrown: he carries the throw, then drifts home
+      vx += ((gx - sx) * k - vx * c) * dt; vy += ((gy - sy) * k - vy * c) * dt;
+    }
     sx += vx * dt; sy += vy * dt;
+    if (!drag) { // bounce off the edges of the FAQ (it clips anything outside) and the screen
+      const fr = faqSec.getBoundingClientRect(), cx0 = hr.left + hr.width / 2, cy0 = hr.top + hr.height / 2, mx = hr.width * 0.42, my = hr.height * 0.42;
+      const L = Math.max(fr.left, 0) + mx - cx0, R = Math.min(fr.right, innerWidth) - mx - cx0, T = Math.max(fr.top, 0) + my - cy0, B = Math.min(fr.bottom, innerHeight) - my - cy0;
+      if (L < R) { if (sx < L) { sx = L; vx = Math.abs(vx) * 0.55; spinV -= vy * 0.1; } else if (sx > R) { sx = R; vx = -Math.abs(vx) * 0.55; spinV += vy * 0.1; } }
+      if (T < B) { if (sy < T) { sy = T; vy = Math.abs(vy) * 0.55; } else if (sy > B) { sy = B; vy = -Math.abs(vy) * 0.55; } }
+    }
+    // a wobble that settles him upright again
+    spinV += (-spin * 14 - spinV * 2.6) * dt; spin += spinV * dt;
     const sp = Math.hypot(vx, vy);
     swim += (Math.min(1, 0.2 + sp / 300) - swim) * (1 - Math.exp(-dt * 4));
     ph += dt * (1.6 + swim * 5);
-    if (!flee) { // while floating, only turn once he's clearly been heading one way for a moment
+    if (drag || now < flungUntil) { const d = vx > 40 ? -1 : vx < -40 ? 1 : 0; if (d) flT = d; } // face the way he's moving
+    else if (!flee) { // while floating, only turn once he's clearly been heading one way for a moment
       const d = vx > 6 ? -1 : vx < -6 ? 1 : 0;
       if (d && d === lastDir) dirHold += dt; else dirHold = 0;
       lastDir = d; if (d && dirHold > 0.7) flT = d;
     }
     fl += (flT - fl) * (1 - Math.exp(-dt * (flee ? 12 : 5)));
-    tilt += ((Math.max(-1, Math.min(1, vy / 300)) * 10 * -fl) - tilt) * (1 - Math.exp(-dt * 4));
+    tilt += ((Math.max(-1, Math.min(1, vy / 300)) * 10 * -fl + (drag ? Math.max(-22, Math.min(22, pvx / 45)) : 0)) - tilt) * (1 - Math.exp(-dt * (drag ? 10 : 4)));
+    if (drag) { wide = Math.max(wide, 0.6); pvx *= Math.exp(-dt * 6); pvy *= Math.exp(-dt * 6); } // eyes wide while held; the hand's speed fades if it stops
     const edge = 1 - Math.abs(fl);
-    wrap.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${(fl * (1 - 0.06 * edge) || 0.001).toFixed(3)}, ${(1 + 0.08 * edge).toFixed(3)})`;
+    wrap.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) rotate(${(tilt + Math.max(-60, Math.min(60, spin))).toFixed(2)}deg) scale(${(fl * (1 - 0.06 * edge) || 0.001).toFixed(3)}, ${(1 + 0.08 * edge).toFixed(3)})`;
     if (fl < 0) dirx = -dirx; // look the right way while mirrored
     tx = dirx * 0.045; ty = diry * 0.035;
     const f = 1 - Math.exp(-dt * 7), fe = 1 - Math.exp(-dt * 16);

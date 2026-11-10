@@ -945,3 +945,5 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 #hunters.scene .stage { will-change: transform, opacity; } /* its own layer: the scroll-in fade then composites instead of redrawing the big figure sheet each frame */
 /* Cheaper for everyone. The top bar is 90% opaque, so its blur barely shows but costs the most of anything on the page. */
 .tb-bar, .nav.scrolled { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.bub-grab { position: absolute; left: 22%; top: 20%; width: 60%; height: 62%; border-radius: 50%; pointer-events: auto; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.bub-wrap.held .bub-grab { cursor: grabbing; }
