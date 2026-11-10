@@ -1,0 +1,190 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>Boki Model Room: v95 masters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+/* One turntable stage, the 12 hunters as chips, and for the picked hunter: judge score, what is still short, and the turnaround-vs-model sheet. */
+:root{
+  --bg:#14121c; --panel:#1d1a29; --line:#332e47; --fg:#ece8f6; --muted:#9d96b8;
+  --accent:#ffb347; --good:#3fbf7f; --low:#e8585c; --stage1:#2a2540; --stage2:#100e17;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif; color-scheme:dark}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f3f1f8; --panel:#fff; --line:#dcd6ea; --fg:#1d1a29; --muted:#625b7c;
+  --accent:#b35f00; --good:#1d8a55; --low:#c23b3f; --stage1:#e6e1f2; --stage2:#c9c1de; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f3f1f8; --panel:#fff; --line:#dcd6ea; --fg:#1d1a29; --muted:#625b7c;
+  --accent:#b35f00; --good:#1d8a55; --low:#c23b3f; --stage1:#e6e1f2; --stage2:#c9c1de; color-scheme:light}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,44px);margin:0;letter-spacing:-.01em}
+header p{margin:4px 0 0;color:var(--muted);max-width:68ch}
+.stage{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,var(--stage1),var(--stage2))}
+#mv{width:100%;height:min(66vh,600px);min-height:340px;display:block;touch-action:pan-y}
+.load{position:absolute;top:14px;left:16px;color:var(--muted);font-size:13px}
+.nav{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+.nav button{font:inherit;font-weight:700;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.nav button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.cap{position:absolute;left:16px;bottom:14px;right:16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;pointer-events:none}
+.cap .nm{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,36px);line-height:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.chip{font:inherit;text-align:left;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;min-width:0}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip:focus-visible,.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sc{font-variant-numeric:tabular-nums;font-weight:700}
+.good{color:var(--good)} .mid{color:var(--accent)} .low{color:var(--low)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px}
+@media (max-width:760px){.panel{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.box h2{margin:0;font-family:var(--display);font-weight:600;font-size:17px}
+.big{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:16px;color:var(--muted);font-weight:600}
+.subs{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;font-size:13.5px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.muted{color:var(--muted);font-size:13px}
+.sheet img{width:100%;height:auto;display:block;border-radius:8px;background:#fff}
+.lock{min-height:70vh;display:grid;place-items:center}
+.lock form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px;width:min(360px,100%)}
+.lock h1{font-size:28px}
+.lock input{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.lock button{font:inherit;font-weight:700;padding:10px;border-radius:8px;border:0;background:var(--accent);color:#1d1a29;cursor:pointer}
+.lock .err{color:var(--low);font-size:14px;min-height:1.2em;margin:0}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.top a{color:var(--accent);font-weight:700}
+.upd{font-size:12px;color:var(--muted)}
+body{margin:0}[hidden]{display:none!important}
+footer{color:var(--muted);font-size:13px}
+</style>
+
+<div class="wrap lock" id="lock"><form id="lf"><h1>Boki Model Room</h1><label for="pw">Password</label>
+<input id="pw" type="password" autocomplete="current-password" required><label style="font-size:14px;color:var(--muted)"><input id="rem" type="checkbox"> Remember on this device</label>
+<button type="submit">Open</button><p class="err" id="err"></p><a href="../" style="color:var(--accent)">Back to the in-game model room</a></form></div>
+<div class="wrap" id="app" hidden>
+  <header>
+    <div class="top"><h1>v95 masters</h1><a href="../">&larr; In-game model room</a></div>
+    <p>The newest 3D model for each of the 12 hunters, built to match their turnaround sheets. Drag to spin, scroll or pinch to zoom. The viewer shows a lighter copy (about 80k triangles); the full-detail masters are kept on the server. This page refreshes itself about once an hour as new masters are built. Below: the judge's score out of 100, what is still short of 95, and the sheet next to the model.</p>
+  </header>
+
+  <div class="stage">
+    <canvas id="mv" aria-label="3D model viewer"></canvas>
+    <div class="load" id="load"></div>
+    <div class="nav"><button id="prev" aria-label="Previous hunter">&larr;</button><button id="next" aria-label="Next hunter">&rarr;</button><button id="spin" aria-pressed="false">Spin</button></div>
+    <div class="cap"><span class="nm" id="nm"></span><span class="sc" id="capsc"></span></div>
+  </div>
+
+  <div class="grid" id="chips"></div>
+
+  <div class="panel">
+    <div class="box">
+      <h2>Judge score</h2>
+      <div class="big" id="score"></div><div class="upd" id="upd"></div>
+      <div class="subs" id="subs"></div>
+      <div class="muted" id="rounds"></div>
+    </div>
+    <div class="box">
+      <h2>Still short of 95</h2>
+      <ul id="deltas"></ul>
+    </div>
+  </div>
+
+  <div class="box sheet">
+    <h2>Turnaround (top) vs 3D model (bottom)</h2>
+    <img id="cmp" alt="">
+  </div>
+
+  <footer><span id="asof"></span> v95 pass. Scored by a Fable judge on: silhouette 25, costume 20, colour 15, hair and loose parts 15, face 10, props and sides 10, clean geometry 5.</footer>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js";
+const MAX={silhouette:25,costume:20,colour:15,hair_parts:15,face:10,props_side:10,geometry:5};
+const LBL={silhouette:"Silhouette",costume:"Costume",colour:"Colour",hair_parts:"Hair, loose parts",face:"Face",props_side:"Props, sides",geometry:"Clean geometry"};
+const cls=s=>s>=85?"good":s>=78?"mid":"low";
+const $=id=>document.getElementById(id);
+const canvas=$("mv"), load=$("load");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();
+scene.environment=new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),0.04).texture;
+scene.add(new THREE.HemisphereLight(0xffffff,0x444455,0.6));
+const sun=new THREE.DirectionalLight(0xffffff,1.4);sun.position.set(2,4,3);scene.add(sun);
+const camera=new THREE.PerspectiveCamera(30,1,0.01,1000);
+const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.autoRotateSpeed=1.4;
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener("resize",resize);resize();
+(function tick(){requestAnimationFrame(tick);controls.update();renderer.render(scene,camera)})();
+{const b=$("spin");b.onclick=()=>{controls.autoRotate=!controls.autoRotate;b.setAttribute("aria-pressed",String(controls.autoRotate))}}
+
+const loader=new GLTFLoader();
+loader.register(p=>{p.textureLoader=new THREE.TextureLoader(p.options.manager);return {name:"img_textures"}});
+// Encrypted data: d/key.json (the room's password wrap, one level up) -> AES-GCM key; every file is iv(12) + ciphertext.
+let KEY=null; const cache=new Map();
+async function deriveKey(pw){const k=await (await fetch("../d/key.json",{cache:"no-store"})).json();
+  const b64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  const d=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",salt:b64(k.salt),iterations:k.iter,hash:"SHA-256"},base,512));
+  const chk=[...new Uint8Array(await crypto.subtle.digest("SHA-256",d.slice(32)))].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(chk!==k.check)throw new Error("wrong password");
+  const w=b64(k.wrapped), m=w.map((x,i)=>x^d[i]);
+  return crypto.subtle.importKey("raw",m,{name:"AES-GCM"},false,["decrypt"])}
+async function decFetch(path,fresh){const r=await fetch(path,fresh?{cache:"no-store"}:undefined);if(!r.ok)throw new Error("missing file");const b=new Uint8Array(await r.arrayBuffer());
+  return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12))}
+async function getGlb(h){const k=h.model+"?"+h.v; if(!cache.has(k))cache.set(k,decFetch(k)); return cache.get(k)}
+const cmpCache=new Map();
+async function getCmp(h){const k=h.cmp+"?"+h.v; if(!cmpCache.has(k))cmpCache.set(k,decFetch(k).then(b=>URL.createObjectURL(new Blob([b],{type:"image/webp"})))); return cmpCache.get(k)}
+let model=null, token=0;
+async function setModel(h){
+  const my=++token; if(model){scene.remove(model);model=null}
+  if(!h.model){load.textContent="No viewer copy of this model yet.";return}
+  load.textContent="Loading…";
+  try{
+    const buf=await getGlb(h); if(my!==token)return;
+    const g=await new Promise((res,rej)=>loader.parse(buf,"",res,rej)); if(my!==token)return;
+    model=g.scene; scene.add(model);
+    const box=new THREE.Box3().setFromObject(model), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+    const r=Math.max(size.x,size.y,size.z), vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
+    const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12;
+    controls.target.copy(c);
+    camera.position.copy(c).addScaledVector(new THREE.Vector3(0.3,0.1,1).normalize(),d);
+    camera.near=r/100;camera.far=r*100;camera.updateProjectionMatrix();controls.minDistance=d*0.2;controls.maxDistance=d*3;
+    load.textContent="";
+  }catch(e){if(my===token)load.textContent="This model did not load ("+(e.message||e)+")."}}
+
+let rows=[], cur=0;
+function pick(i){ if(!rows.length)return;
+  cur=(i+rows.length)%rows.length; const h=rows[cur];
+  [...$("chips").children].forEach((b,j)=>b.setAttribute("aria-pressed",String(j===cur)));
+  $("nm").textContent=h.name; $("capsc").textContent=h.score+" / 100"; $("capsc").className="sc "+cls(h.score);
+  $("score").innerHTML=`<span class="${cls(h.score)}">${h.score}</span> <small>/ 100, goal 95</small>`;
+  $("subs").innerHTML=""; for(const k of Object.keys(MAX)){const v=h.sub[k]; if(v==null)continue;
+    const a=document.createElement("span");a.textContent=LBL[k];
+    const bar=document.createElement("div");bar.className="bar";const fill=document.createElement("i");fill.style.width=(100*v/MAX[k])+"%";bar.appendChild(fill);
+    const n=document.createElement("span");n.className="sc";n.textContent=v+"/"+MAX[k];$("subs").append(a,bar,n)}
+  $("rounds").textContent=(h.rounds&&h.rounds.length?"Rounds: "+h.rounds.join(" → ")+". ":"")+(h.credits!=null?"Meshy credits used: "+h.credits+".":"");
+  $("deltas").innerHTML=""; (h.deltas.length?h.deltas:["Nothing listed."]).forEach(t=>{const li=document.createElement("li");li.textContent=t;$("deltas").appendChild(li)});
+  $("upd").textContent=h.updated?"Master built "+h.updated+" UTC.":"";
+  $("cmp").removeAttribute("src"); getCmp(h).then(u=>{if(rows[cur]===h)$("cmp").src=u}).catch(()=>{});
+  $("cmp").alt=h.name+": turnaround sheet above the 3D model's front, side and back views";
+  setModel(h)}
+$("prev").onclick=()=>pick(cur-1); $("next").onclick=()=>pick(cur+1);
+addEventListener("keydown",e=>{if(e.key==="ArrowLeft")pick(cur-1);if(e.key==="ArrowRight")pick(cur+1)});
+function start(d){rows=d.hunters; $("asof").textContent="Updated "+d.asof+".";
+  rows.forEach((h,i)=>{const b=document.createElement("button");b.className="chip";b.type="button";
+    const n=document.createElement("b");n.textContent=h.name;const s=document.createElement("span");s.className="sc "+cls(h.score);s.textContent=h.score;
+    b.append(n,s);b.onclick=()=>pick(i);$("chips").appendChild(b)});
+  $("lock").hidden=true; $("app").hidden=false; resize(); pick(0)}
+async function unlock(pw,remember){KEY=await deriveKey(pw);
+  const d=JSON.parse(new TextDecoder().decode(await decFetch("d/manifest.bin",true)));
+  try{if(remember)localStorage.setItem("bmr",pw)}catch(e){}
+  start(d)}
+$("lf").addEventListener("submit",async e=>{e.preventDefault();const err=$("err");err.textContent="Checking…";
+  try{await unlock($("pw").value,$("rem").checked);err.textContent=""}catch(x){KEY=null;err.textContent=String(x.message||x).includes("password")?"Wrong password.":"Could not load: "+(x.message||x)}});
+(async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){} if(p){try{await unlock(p,false)}catch(e){try{if(String(e.message).includes("password"))localStorage.removeItem("bmr")}catch(_){}}}})();
+</script>
