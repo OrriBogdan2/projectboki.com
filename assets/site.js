@@ -879,16 +879,15 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const bw = document.getElementById("bw");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const LIST = data.revealed;
-  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 6; // two or three tidy rows, the front-page shots first; the rest are one tap away
+  const FEATURED = innerWidth >= 1000 ? 12 : innerWidth >= 640 ? 8 : 6; // two or three tidy rows of the front-page shots; the full list lives on the Bokidex page
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
-  const cards = LIST.map((b, i) => {
+  const cards = LIST.slice(0, FEATURED).map((b, i) => {
     const c = document.createElement("button");
     c.type = "button"; c.className = "bw-card";
     c.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
     c.innerHTML = `<span class="bw-art"><img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
     c.querySelector("b").textContent = b.name; c.querySelector("i").textContent = b.types.map(cap).join(" · ");
     c.setAttribute("aria-label", `${b.name}, ${b.types.join(" and ")} type`);
-    if (i >= FEATURED) c.hidden = true;
     c.addEventListener("click", () => openCard(i));
     return c;
   });
@@ -901,14 +900,6 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     cards.forEach((c, i) => cols[i % n].appendChild(c));
     drift();
   };
-  const more = document.getElementById("bw-more");
-  if (LIST.length > FEATURED) {
-    more.hidden = false; more.textContent = `See all ${LIST.length}`;
-    more.addEventListener("click", () => {
-      cards.forEach((c, i) => { if (c.hidden) { c.hidden = false; c.style.setProperty("--d", ((i - FEATURED) % 6) * 50 + "ms"); } });
-      more.parentElement.hidden = true; drift();
-    });
-  } else more.parentElement.hidden = true;
   let tick = false;
   const drift = () => {
     if (calm || !cols.length) return;

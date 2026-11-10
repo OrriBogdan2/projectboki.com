@@ -805,7 +805,6 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .js .bw-card { opacity: 0; transform: translateY(40px) scale(.96); }
 .js .bw-card.in { opacity: 1; transform: none; transition: opacity .7s ease var(--d, 0s), transform .9s cubic-bezier(.2,.8,.2,1) var(--d, 0s), border-color .3s ease, box-shadow .5s ease; }
 @media (hover: hover) { .js .bw-card.in:hover { transform: translateY(-6px); transition-delay: 0s; } }
-.bw-more { display: flex; justify-content: center; margin-top: clamp(28px, 4vw, 56px); }
 @media (prefers-reduced-motion: reduce) { .js .bw-card { opacity: 1; transform: none; } .bw-col { transform: none !important; } }
 
 /* A closer look at one Boki */
