@@ -502,5 +502,47 @@
     "line": "Blades fly at every foe in a ring around you."
    }
   ]
+ },
+ "gill": {
+  "color": "#3f8fe0",
+  "style": "Throw whatever vial comes out of the bag, stack different effects to Beach your foes, then spin up a waterspout.",
+  "kit": [
+   {
+    "key": "LMB",
+    "kind": "Weapon",
+    "name": "Fencer",
+    "line": "Two quick thrusts with the swordfish, then a lunge that pierces and slows."
+   },
+   {
+    "key": "",
+    "kind": "Passive",
+    "name": "Fish Out of Water",
+    "line": "Hit a foe with three different vials and they're Beached: a short stun."
+   },
+   {
+    "key": "Shift",
+    "kind": "Dash",
+    "name": "Ground Swim",
+    "line": "Swim through the ground. Surface next to foes to knock them up."
+   },
+   {
+    "key": "RMB",
+    "kind": "Ability",
+    "name": "Grab Bag",
+    "line": "Throw the vial in your hand: thunder, slime, air, fire, or a rare Super Zeep."
+   },
+   {
+    "key": "E",
+    "kind": "Ability",
+    "name": "Riptide",
+    "line": "Spin with the swordfish, then send a waterspout down a line."
+   },
+   {
+    "key": "X",
+    "kind": "Ultimate",
+    "name": "Tidal Wave",
+    "line": "Surf a wave of fish that knocks up and slows everything in its path."
+   }
+  ]
  }
 }

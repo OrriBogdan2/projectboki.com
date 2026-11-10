@@ -307,17 +307,18 @@ const MODEL_V = "2026-11-09";
 const ART_V = "2026-11-09f"; // bump when a Hunter splash changes
 const POSE = {"vex": [[43, 19], 40], "kael": [[43, 13, 13], 40], "cinder": [[43, 13], 45], "pip": [[38, 14, 13], 45], "tarek": [[33, 17, 15], 45], "lisette": [[43, 15], 45], "grimble": [[13, 43], 38], "claire": [[46, 13], 45], "ryzz": [[43, 23, 21], 45], "breaker": [[30, 13, 17], 40], "sable": [[46, 26], 45], "motley": [[13, 17, 17], 40]}; // filled by tools/turntable/pack.py // bump when the turntables are re-rendered so browsers fetch the new ones
 const HUNTERS = [
+  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
+  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
-  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["cinder", "Cinder", "The Ashen Kiss", true, "Engage"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
   ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
-  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
+  ["gill", "Gill", "The Novice Mage", false, "Mage"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
 
@@ -363,7 +364,7 @@ if (pick) {
   const late = stage ? [...stage.children].filter((el) => el !== shot).concat([...stage.querySelectorAll(".h-expand")]) : [];
   let cw = null;
   if (shot && art) { cw = document.createElement("div"); cw.className = "shot-c"; art.parentNode.insertBefore(cw, art); cw.appendChild(art); }
-  const skip = plab && (() => { // jump past the twelve steps to the next section
+  const skip = plab && (() => { // jump straight to the next section
     const b = document.createElement("button"); b.type = "button"; b.className = "h-skip";
     b.innerHTML = 'Skip Hunters<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     b.addEventListener("click", () => { // the section after the Hunters
@@ -496,10 +497,10 @@ if (pick) {
     const lead = Math.round(vh * (on ? 2.3 : 2.15)), step = Math.max(240, Math.round(vh * 0.36));
     pinEl.style.top = top + "px";
     track.style.scrollMarginTop = top + "px";
-    track.style.height = Math.round(h + lead + (on ? step * (HUNTERS.length - 0.3) : vh * 0.12)) + "px"; // the last Hunter gets its beat too, then it lets go
+    track.style.height = Math.round(h + lead + (on ? vh * 0.45 : vh * 0.12)) + "px"; // "Choose your Hunter." lands, the stage holds a beat, then the page scrolls on
     const s0 = docTop(track) - top;
     scn = { s0, lead };
-    if (on) pin = { start: s0 + lead, step };
+    void step; // Hunters are browsed sideways now (arrows, the strip, a sideways swipe), so scrolling down leaves the section
     if (ys === null) ys = scrollY;
     lastQ = -1; render(ys); kick();
   };
@@ -642,6 +643,7 @@ if (pick) {
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
     $("h-n").textContent = String(i + 1).padStart(2, "0");
+    if (bar) bar.style.transform = `scaleX(${((i + 1) / HUNTERS.length).toFixed(4)})`;
     const [id, name, title, model, role] = HUNTERS[i];
     pick.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
     { // keep the picked portrait in view by scrolling the strip only, never the page
@@ -712,6 +714,23 @@ if (pick) {
   document.fonts && document.fonts.ready.then(alignTitle);
   addEventListener("resize", alignTitle);
 
+  if (bar) bar.style.transform = `scaleX(${(1 / HUNTERS.length).toFixed(4)})`;
+  // Sideways scrolling browses the Hunters: a trackpad swipe left or right, or Shift + wheel. One Hunter per swipe.
+  // Up and down scrolling is left alone, so it carries on down the page.
+  {
+    let acc = 0, lastX = 0, used = false;
+    sec.addEventListener("wheel", (e) => {
+      const dx = e.deltaX || (e.shiftKey ? e.deltaY : 0);
+      if (!dx || Math.abs(dx) < Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+      if (!sceneOn && !calm) return; // only once the stage is up
+      e.preventDefault(); // and not the browser's back/forward swipe
+      const now = performance.now();
+      if (now - lastX > 220) { acc = 0; used = false; } // a new swipe
+      lastX = now; if (used) return;
+      acc += dx * (e.deltaMode === 1 ? 32 : 1);
+      if (Math.abs(acc) > 40) { used = true; show(current + Math.sign(acc)); }
+    }, { passive: false });
+  }
   $("h-prev").addEventListener("click", () => show(current - 1));
   arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
   $("h-next").addEventListener("click", () => show(current + 1));
@@ -1035,7 +1054,7 @@ if (POSTHOG_KEY) {
   if (!ex) return;
   let box, at = 0, back = null, KIT = null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=1").then((r) => r.json()).catch(() => ({})));
+  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=2").then((r) => r.json()).catch(() => ({})));
   const keyOf = (k) => k.key || "P";
   const build = () => {
     box = document.createElement("div");

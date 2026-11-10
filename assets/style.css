@@ -201,7 +201,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .fig-img { width: 100%; height: 100%; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 18px 28px rgba(0,0,0,.55)); pointer-events: none; }
 .fig-hint { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700;  color: rgba(255,255,255,.8); opacity: 0; transition: opacity .3s; pointer-events: none; }
 @media (hover: hover) { .fig:hover .fig-hint { opacity: 1; } } /* mouse only: no sticky hover after a tap */
-.pick { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.pick { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 11px; margin-top: 16px; }
 @media (min-width: 1001px) { .pick, .pick-label:has(+ .pick) { --pw: min(100vw - 48px, 1560px); margin-inline: calc((100% - var(--pw)) / 2); } }
 .pick button { all: unset; box-sizing: border-box; position: relative; cursor: pointer; border-radius: 14px; overflow: hidden; aspect-ratio: 1; border: 2px solid transparent; opacity: .72; filter: saturate(.8); transition: opacity .2s, filter .2s, border-color .2s, transform .2s; }
 .pick button img { width: 100%; height: 100%; object-fit: cover; }
@@ -699,10 +699,10 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 #faq .head { scroll-margin-top: 110px; }
 @media (max-width: 720px) { #hunters .head, #boki .head { scroll-margin-top: 80px; } }
 
-/* Desktop: the Hunters stage holds while scrolling steps through all twelve (site.js sizes the track and the hold) */
+/* The Hunters stage holds while "Choose your Hunter." plays (site.js sizes the track), then scrolls on. Sideways browses. */
 #hunters.pinned .h-pin { position: sticky; }
 .pick-label .scrollcue { display: none; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--soft); }
-.pick-label .scrollcue svg { width: 16px; height: 16px; transform: rotate(90deg); animation: nudge-y 1.4s ease-in-out infinite; }
+.pick-label .scrollcue svg { width: 16px; height: 16px; animation: nudge-x 1.4s ease-in-out infinite; }
 #hunters.pinned .pick-label .scrollcue { display: inline-flex; }
 #hunters.pinned .pick-label .swipe { display: none; }
 @keyframes nudge-y { 0%, 100% { translate: 0 0; } 50% { translate: 0 3px; } }
