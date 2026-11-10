@@ -194,13 +194,13 @@ const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
-  ["cinder", "Cinder", "The Ashen Kiss", true, "Engage"],
+  ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
   ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
-  ["gill", "Gill", "The Novice Mage", false, "Mage"],
+  ["gill", "Gill", "The Novice Mage", false, "Controller"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
 

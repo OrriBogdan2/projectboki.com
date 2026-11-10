@@ -36,21 +36,28 @@ by_id = {e["id"]: e for e in entries}
 mystery = [e for e in data["dex"]["entries"] if e not in entries]          # the dex's own ??? entries
 hero = lambda e: e.get("hero") and f"dex/{e['hero']}" in files and f"dex/{e['hero']}"
 
-# front-page portrait shots, newest per Boki
+# front-page portrait shots, newest per Boki (dropped below when the dex picture is newer than the shot)
+ms = lambda t: (t * 1000 if t < 1e11 else t) if t else 0
 shots = {}
 for g in sorted(data["gens"], key=lambda g: g.get("created", 0)):
     if g.get("kind") != "portrait" or g.get("status") != "approved" or g.get("form") == "f" or not g.get("images") or g["images"][0] not in files: continue
     n = g["name"].lower(); i = alias.get(n, n)
     if i in by_id: shots[i] = g
+has_shot = set(shots)   # these still lead the wall, whichever picture they use
+shots = {i: g for i, g in shots.items() if not (hero(by_id[i]) and ms(by_id[i].get("heroAt")) > ms(g.get("created")))}
 
 # ---- pick who is revealed
 # The Boki visitors see in the homepage pictures (first screen, "Raise your Boki.", the match cards) lead the wall,
 # in this order, so the cards under the pictures show the same creatures.
-FRONT = ["vespyx", "mycroll", "prismander", "kitlet", "kestrike", "lockatara"]
+# Between them sit fully grown Boki from other evolution lines, so every row mixes small and large, and no two
+# cards in the first twelve are stages of the same Boki.
+FRONT = ["vespyx", "glaciatee", "mycroll", "pyrraven", "prismander", "selenwhale",
+         "kitlet", "forgebrock", "kestrike", "dreadmonite", "lockatara", "blastopuff"]
 cands = [e for e in entries if hero(e) or e["id"] in shots]
+assert all(i in by_id and by_id[i] in cands for i in FRONT), [i for i in FRONT if i not in by_id or by_id[i] not in cands]
 front = [by_id[i] for i in FRONT if i in by_id and by_id[i] in cands]
-first = front + sorted((e for e in cands if e["id"] in shots and e not in front), key=lambda e: e.get("num", 999))
-rest = sorted((e for e in cands if e["id"] not in shots and e not in front),
+first = front + sorted((e for e in cands if e["id"] in has_shot and e not in front), key=lambda e: e.get("num", 999))
+rest = sorted((e for e in cands if e["id"] not in has_shot and e not in front),
               key=lambda e: (e.get("stage", 1) != e.get("stages", 1), -e.get("stage", 1), e.get("num", 999)))
 pools = {}
 for e in rest: pools.setdefault(e["types"][0], []).append(e)
