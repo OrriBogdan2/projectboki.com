@@ -1000,3 +1000,6 @@ html.lite .tr-media img { transform: none !important; }
 .pick button::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: 1; background: #fff; transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
 .pick.idle button[aria-pressed="true"]::before { animation: pick-count var(--dwell, 4.5s) linear both; }
 @keyframes pick-count { to { transform: scaleX(1); } }
+/* PC: the Hunters stage drags sideways (site.js) */
+@media (hover: hover) and (pointer: fine) { #hunters .stage .shot, #hunters .stage .info { cursor: grab; } }
+html.h-drag, html.h-drag * { cursor: grabbing !important; -webkit-user-select: none; user-select: none; }

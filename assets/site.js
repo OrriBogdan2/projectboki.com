@@ -797,6 +797,35 @@ if (pick) {
       if (Math.abs(acc) > 40) { used = true; show(current + Math.sign(acc)); }
     }, { passive: false });
   }
+  // PC: press and drag the stage sideways to browse, the mouse's version of a swipe. The art follows the hand a little,
+  // and letting go past 60px moves one Hunter (left for the next, right for the one before).
+  {
+    const stageEl = document.querySelector("#hunters .stage"), root = document.documentElement;
+    let d = null;
+    stageEl.addEventListener("dragstart", (e) => e.preventDefault());
+    stageEl.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button, a, .fig") || (!sceneOn && !calm)) return;
+      d = { x: e.clientX, dx: 0, moved: false };
+    });
+    addEventListener("pointermove", (e) => {
+      if (!d) return;
+      d.dx = e.clientX - d.x;
+      if (!d.moved && Math.abs(d.dx) > 6) { d.moved = true; root.classList.add("h-drag"); }
+      if (d.moved) art.style.translate = `${(d.dx * 0.28).toFixed(1)}px 0`;
+    });
+    const end = () => {
+      if (!d) return;
+      const { dx, moved } = d; d = null;
+      if (!moved) return;
+      root.classList.remove("h-drag");
+      const from = art.style.translate; art.style.translate = "";
+      if (!calm && art.animate) art.animate([{ translate: from }, { translate: "0px 0px" }], { duration: 280, easing: "cubic-bezier(.2,.8,.2,1)" });
+      stageEl._dragged = Date.now();
+      if (Math.abs(dx) > 60) show(current + (dx < 0 ? 1 : -1));
+    };
+    addEventListener("pointerup", end); addEventListener("pointercancel", end);
+    stageEl.addEventListener("click", (e) => { if (stageEl._dragged && Date.now() - stageEl._dragged < 400) { e.stopPropagation(); e.preventDefault(); } }, true); // a drag isn't a click
+  }
   // Idle tour: if nobody touches it, the stage moves on to the next Hunter every few seconds, so the roster shows itself.
   // A thin line fills along the active portrait while it counts. Moving the mouse, touching, or opening Abilities holds it. A pick
   // of your own (a portrait, an arrow, a key, a swipe) stops it until you leave the section and come back.
