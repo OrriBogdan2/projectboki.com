@@ -992,3 +992,6 @@ html.lite .hero.lit::before { -webkit-mask-image: none; mask-image: none; }
 /* No heading above the Hunters any more: less scroll before the stage */
 .hunters { padding-top: calc(var(--sec) * .2); }
 .trailer { padding-bottom: calc(var(--sec) * .35); }
+/* "The Skylands have crumbled." / "Find your allies and get out alive.": the long line is ~14.2em, so the size follows the screen width */
+.tr-head h2 { font-size: clamp(30px, 5.9vw, 84px); }
+@media (max-width: 720px) { .tr-head h2 { font-size: 5.9vw; } }
