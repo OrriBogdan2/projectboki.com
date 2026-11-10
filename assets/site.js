@@ -594,7 +594,7 @@ if (pick) {
       const sm = (k) => k * k * (3 - 2 * k);
       // [seconds, where] — moving beats ease, the reading beats drift slowly
       const keysT = hFall ? [[0, from, 0], [0.45, scn.s0 - vh * 0.06, 1], [0.85, scn.s0 + vh * 0.1, 0], [1.6, end, 1]] // ease in to the heading, drift while it breaks, then the crack
-        : [[0, from, 0], [1.15, end, 1]]; // no heading: settle onto the stage while the crack opens
+        : [[0, from, 0], [1.3, end, 1]]; // no heading: settle onto the stage while the crack opens
       const t0 = performance.now();
       const f = (now) => {
         const t = (now - t0) / 1000;
@@ -617,7 +617,9 @@ if (pick) {
     addEventListener("scroll", () => {
       const y = scrollY;
       if (!done && !auto && scn) {
-        const vh = innerHeight, gate = scn.s0 - vh * (hFall ? 0.32 : 0.5);
+        const vh = innerHeight, panel = document.getElementById("trailer");
+        // with the footage panel above: a small scroll past it (a sixth of a screen) and the page carries you on to the Hunters
+        const gate = panel ? Math.min(docTop(panel) + vh * 0.16, scn.s0 - vh * 0.2) : scn.s0 - vh * (hFall ? 0.32 : 0.5);
         if (prev < gate && y >= gate) {
           if (y - prev < vh * 1.5 && y < scn.s0 + scn.lead * 0.5) play(y); // a scroll, not a jump (a link, End)
           else done = true;
