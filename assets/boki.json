@@ -2,40 +2,11 @@
  "total": 258,
  "revealed": [
   {
-   "id": "vespyx",
-   "name": "Vespyx",
+   "id": "pinguin",
+   "name": "Kegling",
    "types": [
-    "poison"
-   ],
-   "stage": 1,
-   "from": null,
-   "fromHidden": false,
-   "into": [
-    "Vespox"
-   ],
-   "desc": "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.",
-   "v": "h1794333172",
-   "shot": false
-  },
-  {
-   "id": "glaciatee",
-   "name": "Glaciatee",
-   "types": [
-    "ice"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Huge manatee, walk-in ice-vault body.",
-   "v": "h1794349255",
-   "shot": false
-  },
-  {
-   "id": "mycroll",
-   "name": "Mycroll",
-   "types": [
-    "spore"
+    "ice",
+    "normal"
    ],
    "stage": 1,
    "from": null,
@@ -43,8 +14,8 @@
    "into": [
     null
    ],
-   "desc": "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.",
-   "v": "h1794333153",
+   "desc": null,
+   "v": "h1794342506",
    "shot": false
   },
   {
@@ -63,10 +34,10 @@
    "shot": false
   },
   {
-   "id": "prismander",
-   "name": "Prismander",
+   "id": "dribbara",
+   "name": "Dribbara",
    "types": [
-    "crystal"
+    "water"
    ],
    "stage": 1,
    "from": null,
@@ -74,8 +45,8 @@
    "into": [
     null
    ],
-   "desc": "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.",
-   "v": "h1794294647",
+   "desc": "Capybara pup, a puddle cupped on its back.",
+   "v": "h1794328067",
    "shot": false
   },
   {
@@ -94,10 +65,10 @@
    "shot": false
   },
   {
-   "id": "kitlet",
-   "name": "Kitlet",
+   "id": "spanglin",
+   "name": "Spanglin",
    "types": [
-    "dragon"
+    "normal"
    ],
    "stage": 1,
    "from": null,
@@ -105,8 +76,70 @@
    "into": [
     null
    ],
-   "desc": "Tiny serpent with paper-kite fins.",
-   "v": "h1794290490",
+   "desc": null,
+   "v": "h1794342512",
+   "shot": false
+  },
+  {
+   "id": "blastopuff",
+   "name": "Blastopuff",
+   "types": [
+    "electric",
+    "psychic"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "A spiny puffer that has hardened into a grenade.",
+   "v": "h1794349242",
+   "shot": false
+  },
+  {
+   "id": "lanterloris",
+   "name": "Lanterloris",
+   "types": [
+    "fairy",
+    "fire"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A slow loris that is a paper lantern: its belly glows, and when it is scared it floats up like a balloon. Soft-spoken, sleepy by day, wide awake at night; clings to you when frightened.",
+   "v": "h1794333147",
+   "shot": false
+  },
+  {
+   "id": "glaciatee",
+   "name": "Glaciatee",
+   "types": [
+    "ice"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Huge manatee, walk-in ice-vault body.",
+   "v": "h1794349255",
+   "shot": false
+  },
+  {
+   "id": "fawngus",
+   "name": "Fawnshroom",
+   "types": [
+    "spore"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A resting fawn whose two big floppy ears are dappled mushroom caps.",
+   "v": "h1794297764",
    "shot": false
   },
   {
@@ -125,10 +158,10 @@
    "shot": false
   },
   {
-   "id": "kestrike",
-   "name": "Kestrike",
+   "id": "jerbit",
+   "name": "Jerbit",
    "types": [
-    "normal"
+    "electric"
    ],
    "stage": 1,
    "from": null,
@@ -136,8 +169,8 @@
    "into": [
     null
    ],
-   "desc": "A kestrel with a copper crest that draws lightning. It hangs still in the wind, then strikes like the bolt it caught.",
-   "v": "h1794287920",
+   "desc": null,
+   "v": "h1794333144",
    "shot": false
   },
   {
@@ -153,37 +186,6 @@
    "into": [],
    "desc": "A giant ammonite that is a battleship.",
    "v": "h1794333135",
-   "shot": false
-  },
-  {
-   "id": "lockatara",
-   "name": "Lockatara",
-   "types": [
-    "steel"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [
-    "Vaultara"
-   ],
-   "desc": "A lizard with a padlock shackle for a crest and a keyhole for a third eye; its tail is the key. Ancient, calm, faintly amused; watches you through the keyhole when you are not looking.",
-   "v": "h1794333148",
-   "shot": false
-  },
-  {
-   "id": "blastopuff",
-   "name": "Blastopuff",
-   "types": [
-    "electric",
-    "psychic"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "A spiny puffer that has hardened into a grenade.",
-   "v": "h1794349242",
    "shot": false
   },
   {
@@ -538,6 +540,102 @@
    "shot": false
   },
   {
+   "id": "vespyx",
+   "name": "Vespyx",
+   "types": [
+    "poison"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Vespox"
+   ],
+   "desc": "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.",
+   "v": "h1794333172",
+   "shot": false
+  },
+  {
+   "id": "mycroll",
+   "name": "Mycroll",
+   "types": [
+    "spore"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.",
+   "v": "h1794333153",
+   "shot": false
+  },
+  {
+   "id": "prismander",
+   "name": "Prismander",
+   "types": [
+    "crystal"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.",
+   "v": "h1794294647",
+   "shot": false
+  },
+  {
+   "id": "kitlet",
+   "name": "Kitlet",
+   "types": [
+    "dragon"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "Tiny serpent with paper-kite fins.",
+   "v": "h1794290490",
+   "shot": false
+  },
+  {
+   "id": "kestrike",
+   "name": "Kestrike",
+   "types": [
+    "normal"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A kestrel with a copper crest that draws lightning. It hangs still in the wind, then strikes like the bolt it caught.",
+   "v": "h1794287920",
+   "shot": false
+  },
+  {
+   "id": "lockatara",
+   "name": "Lockatara",
+   "types": [
+    "steel"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    "Vaultara"
+   ],
+   "desc": "A lizard with a padlock shackle for a crest and a keyhole for a third eye; its tail is the key. Ancient, calm, faintly amused; watches you through the keyhole when you are not looking.",
+   "v": "h1794333148",
+   "shot": false
+  },
+  {
    "id": "dreadnoyak",
    "name": "Dreadnoyak",
    "types": [
@@ -598,21 +696,6 @@
    "shot": false
   },
   {
-   "id": "eclipsowl",
-   "name": "Eclipsowl",
-   "types": [
-    "fairy",
-    "dark"
-   ],
-   "stage": 3,
-   "from": "Lunowl",
-   "fromHidden": false,
-   "into": [],
-   "desc": "Great owl, eclipse-ring facial disc, moth cloak wings.",
-   "v": "h1794280684",
-   "shot": false
-  },
-  {
    "id": "druzemole",
    "name": "Gemole",
    "types": [
@@ -643,18 +726,18 @@
    "shot": false
   },
   {
-   "id": "ringrove",
-   "name": "Ringrove",
+   "id": "eclipsowl",
+   "name": "Eclipsowl",
    "types": [
-    "spore",
-    "grass"
+    "fairy",
+    "dark"
    ],
    "stage": 3,
-   "from": null,
-   "fromHidden": true,
+   "from": "Lunowl",
+   "fromHidden": false,
    "into": [],
-   "desc": "Huge calm elder, a fairy ring grove on its back, shelf-fungus armour.",
-   "v": "h1794298817",
+   "desc": "Great owl, eclipse-ring facial disc, moth cloak wings.",
+   "v": "h1794280684",
    "shot": false
   },
   {
@@ -669,6 +752,21 @@
    "into": [],
    "desc": "A dragon whose crown is four gramophone horns.",
    "v": "h1794333156",
+   "shot": false
+  },
+  {
+   "id": "ringrove",
+   "name": "Ringrove",
+   "types": [
+    "spore",
+    "grass"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Huge calm elder, a fairy ring grove on its back, shelf-fungus armour.",
+   "v": "h1794298817",
    "shot": false
   },
   {
@@ -1044,10 +1142,6 @@
   },
   {
    "t": "water",
-   "sil": "dribbara"
-  },
-  {
-   "t": "water",
    "sil": "soakybara"
   },
   {
@@ -1084,10 +1178,6 @@
   },
   {
    "t": "fairy",
-   "sil": "lanterloris"
-  },
-  {
-   "t": "fairy",
    "sil": "lanternlong"
   },
   {
@@ -1109,10 +1199,6 @@
   {
    "t": "normal",
    "sil": "murmuron"
-  },
-  {
-   "t": "normal",
-   "sil": "spanglin"
   },
   {
    "t": "crystal",
@@ -1305,10 +1391,6 @@
   {
    "t": "fairy",
    "sil": "domeleon"
-  },
-  {
-   "t": "spore",
-   "sil": "fawngus"
   },
   {
    "t": "spore",
@@ -1524,10 +1606,6 @@
   },
   {
    "t": "electric",
-   "sil": "jerbit"
-  },
-  {
-   "t": "electric",
    "sil": "jerbolt"
   },
   {
@@ -1573,10 +1651,6 @@
   {
    "t": "water",
    "sil": "glockodile"
-  },
-  {
-   "t": "ice",
-   "sil": "pinguin"
   },
   {
    "t": "ice",

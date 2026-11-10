@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Build the homepage Boki wall (assets/boki.json and its art) from the Bokidex.
 
-    python3 -I tools/boki/build.py [--reveal 56]
+    python3 -I tools/boki/build.py [--reveal 62]
 
 Reads only the public Bokidex export in this repo (bokidex/d/data.json and its images), so the wall always matches
 the dex: names, types, descriptions and evolution lines.
 
-  - revealed (default 56): the Boki in the homepage pictures first (FRONT below), then every Boki with a front-page
+  - revealed (default 62): a hand-picked dozen first (FRONT below), then every Boki with a front-page
     portrait shot in the Bokidex (cut out with rembg,
     pip install "rembg[cpu]"), then the rest picked for variety: final evolutions first, spread across types.
     Card art goes to assets/img/boki-front/{id}-{480,960}.webp. Art for anything not revealed is deleted, so
@@ -14,9 +14,9 @@ the dex: names, types, descriptions and evolution lines.
   - hidden: everyone else, as black silhouettes (baked black, assets/img/boki-sil/{id}-240.webp) or eggs.
 """
 import argparse, io, json, os, glob, re
-# Some dex entries are still working notes ("Male locked, female redo out.", "art-lane design.", "Evolution of X.",
+# Some dex entries are still working notes ("Male locked, female redo out.", "art-lane design.", "Evolution of X.", "Pre-evolution of X.",
 # which can also name a Boki that is not revealed yet). Those never reach the homepage; a few get a plain line instead.
-NOTE = re.compile(r"art-lane|\blocked\b|\bredo\b|^Evolution of\b", re.I)
+NOTE = re.compile(r"art-lane|\blocked\b|\bredo\b|^(?:Pre-)?evolution of\b", re.I)
 DESC = {"vespox": "A fox with a scorpion's pincers and sting tail."}
 def public_desc(e):
     if e["id"] in DESC: return DESC[e["id"]]
@@ -25,7 +25,7 @@ def public_desc(e):
 from PIL import Image
 
 SITE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ap = argparse.ArgumentParser(); ap.add_argument("--reveal", type=int, default=56)
+ap = argparse.ArgumentParser(); ap.add_argument("--reveal", type=int, default=62)
 a = ap.parse_args()
 
 data = json.load(open(f"{SITE}/bokidex/d/data.json"))
@@ -47,16 +47,16 @@ has_shot = set(shots)   # these still lead the wall, whichever picture they use
 shots = {i: g for i, g in shots.items() if not (hero(by_id[i]) and ms(by_id[i].get("heroAt")) > ms(g.get("created")))}
 
 # ---- pick who is revealed
-# The Boki visitors see in the homepage pictures (first screen, "Raise your Boki.", the match cards) lead the wall,
-# in this order, so the cards under the pictures show the same creatures.
-# Between them sit fully grown Boki from other evolution lines, so every row mixes small and large, and no two
-# cards in the first twelve are stages of the same Boki.
-FRONT = ["vespyx", "glaciatee", "mycroll", "pyrraven", "prismander", "selenwhale",
-         "kitlet", "forgebrock", "kestrike", "dreadmonite", "lockatara", "blastopuff"]
+# The wall leads with a hand-picked dozen: small, cute Boki next to fully grown ones, one per evolution line, and
+# none of the Boki already shown in the homepage pictures (those are in SEEN: still revealed, just further down).
+FRONT = ["pinguin", "pyrraven", "dribbara", "selenwhale", "spanglin", "blastopuff",
+         "lanterloris", "glaciatee", "fawngus", "forgebrock", "jerbit", "dreadmonite"]
+SEEN = ["vespyx", "mycroll", "prismander", "kitlet", "kestrike", "lockatara"]
 cands = [e for e in entries if hero(e) or e["id"] in shots]
-assert all(i in by_id and by_id[i] in cands for i in FRONT), [i for i in FRONT if i not in by_id or by_id[i] not in cands]
-front = [by_id[i] for i in FRONT if i in by_id and by_id[i] in cands]
-first = front + sorted((e for e in cands if e["id"] in has_shot and e not in front), key=lambda e: e.get("num", 999))
+assert all(i in by_id and by_id[i] in cands for i in FRONT + SEEN), [i for i in FRONT + SEEN if i not in by_id or by_id[i] not in cands]
+front = [by_id[i] for i in FRONT]; seen = [by_id[i] for i in SEEN]
+first = front + sorted((e for e in cands if e["id"] in has_shot and e not in front + seen), key=lambda e: e.get("num", 999)) + seen
+front = front + seen
 rest = sorted((e for e in cands if e["id"] not in has_shot and e not in front),
               key=lambda e: (e.get("stage", 1) != e.get("stages", 1), -e.get("stage", 1), e.get("num", 999)))
 pools = {}
