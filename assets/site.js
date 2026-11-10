@@ -281,10 +281,11 @@ if (pick) {
     const b = document.createElement("button"); b.type = "button"; b.className = "h-peek " + (d < 0 ? "prev" : "next");
     b.innerHTML = `<img alt="" decoding="async" loading="lazy"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
     b.addEventListener("click", () => show(current + d));
-    pinEl.appendChild(b); late.push(b);
+    pinEl.appendChild(b);
     return { el: b, img: b.firstChild, d };
   }) : [];
-  const setPeeks = () => peeks.forEach((p) => {
+  let peeksLive = false; // their art is only fetched once the Hunters are getting close
+  const setPeeks = () => peeksLive && peeks.forEach((p) => {
     const h = HUNTERS[(current + p.d + HUNTERS.length) % HUNTERS.length], u = src(h[0], 960);
     p.el.setAttribute("aria-label", `${p.d < 0 ? "Previous" : "Next"} Hunter: ${h[1]}`);
     if (p.img.getAttribute("src") !== u) { p.img.style.opacity = "0"; p.img.onload = () => { p.img.style.opacity = ""; }; p.img.src = u; }
@@ -302,7 +303,10 @@ if (pick) {
     });
     sec.classList.toggle("peeks", peeks.every((p) => !p.el.hidden && !p.el.classList.contains("slim"))); // room for their own arrows: the small ones on the art step aside
   };
-  setPeeks();
+  if (peeks.length && "IntersectionObserver" in window) {
+    const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { peeksLive = true; setPeeks(); near.disconnect(); } }, { rootMargin: "1400px 0px" });
+    near.observe(sec);
+  } else { peeksLive = true; setPeeks(); }
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
