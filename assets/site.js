@@ -846,9 +846,9 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
     dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
-    // three full rows of the mystery: silhouettes from the dex, eggs, and more eggs if the dex is short
-    const types = Object.keys(TYPE), list = data.hidden.slice(0, 39);
-    for (let i = 0; list.length < 39; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
+    // one row of the mystery (two on phones): silhouettes from the dex, eggs, and more eggs if the dex is short
+    const types = Object.keys(TYPE), list = data.hidden.slice(0, 16);
+    for (let i = 0; list.length < 16; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
     list.forEach((h) => {
       const t = document.createElement("span");
       t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");

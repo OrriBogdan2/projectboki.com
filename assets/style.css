@@ -1144,3 +1144,10 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
   html.su-signed .hero-cta { width: 100%; margin-inline: 0; align-items: stretch; }
   .hero-su .su-done, .hero-su .su-done * { text-align: left; }
 }
+
+/* ---------- Shorter road to the Hunters: one row of silhouettes, a wider-format Boki picture, shorter match cards on phones ---------- */
+.bk-dark { margin-top: clamp(44px, 6vw, 88px); }
+.bk-sils { max-height: 94px; }
+@media (max-width: 639px) { .bk-sils { max-height: calc(2 * 62px + 7px); } }
+@media (min-width: 901px) { .bk-key.above img { aspect-ratio: 21 / 9; object-position: 50% 43%; } }
+@media (max-width: 860px) { .step-media { aspect-ratio: 16 / 9; } }
