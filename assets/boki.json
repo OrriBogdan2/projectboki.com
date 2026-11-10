@@ -1,6 +1,102 @@
 {
- "total": 206,
+ "total": 258,
  "revealed": [
+  {
+   "id": "vespyx",
+   "name": "Vespyx",
+   "types": [
+    "poison"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    "Vespox"
+   ],
+   "desc": "A sly fox with a scorpion's curled tail. Its sting drips venom that keeps eating at foes after the hit.",
+   "v": "h1794333172",
+   "shot": false
+  },
+  {
+   "id": "mycroll",
+   "name": "Mycroll",
+   "types": [
+    "spore"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A hedgehog whose quills are glowing toadstools. It puffs spore clouds that root foes where they stand.",
+   "v": "h1794333153",
+   "shot": false
+  },
+  {
+   "id": "prismander",
+   "name": "Prismander",
+   "types": [
+    "crystal"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "An axolotl whose frills grew into living crystal. It bends light into shields and dazzling beams.",
+   "v": "h1794294647",
+   "shot": false
+  },
+  {
+   "id": "kitlet",
+   "name": "Kitlet",
+   "types": [
+    "dragon"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "Tiny serpent with paper-kite fins.",
+   "v": "h1794290490",
+   "shot": false
+  },
+  {
+   "id": "kestrike",
+   "name": "Kestrike",
+   "types": [
+    "normal"
+   ],
+   "stage": 1,
+   "from": null,
+   "fromHidden": false,
+   "into": [
+    null
+   ],
+   "desc": "A kestrel with a copper crest that draws lightning. It hangs still in the wind, then strikes like the bolt it caught.",
+   "v": "h1794287920",
+   "shot": false
+  },
+  {
+   "id": "lockatara",
+   "name": "Lockatara",
+   "types": [
+    "steel"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [
+    "Vaultara"
+   ],
+   "desc": "A lizard with a padlock shackle for a crest and a keyhole for a third eye; its tail is the key. Ancient, calm, faintly amused; watches you through the keyhole when you are not looking.",
+   "v": "h1794333148",
+   "shot": false
+  },
   {
    "id": "vespox",
    "name": "Vespox",
@@ -8,10 +104,10 @@
     "poison"
    ],
    "stage": 2,
-   "from": null,
-   "fromHidden": true,
+   "from": "Vespyx",
+   "fromHidden": false,
    "into": [
-    "Glaivyx"
+    "Sabryx"
    ],
    "desc": "A fox with a scorpion's pincers and sting tail.",
    "v": "s1794187725",
@@ -66,7 +162,7 @@
   },
   {
    "id": "gloamshell",
-   "name": "Gloamshell",
+   "name": "Duskargot",
    "types": [
     "dark",
     "fairy"
@@ -85,8 +181,8 @@
    "id": "glomwort",
    "name": "Glomwort",
    "types": [
-    "spore",
-    "poison"
+    "poison",
+    "fairy"
    ],
    "stage": 1,
    "from": null,
@@ -157,6 +253,7 @@
    "from": null,
    "fromHidden": false,
    "into": [
+    null,
     null
    ],
    "desc": "A leafcutter ant hauling a leaf ten times its size, with a column of tiny workers marching behind. It never stops working.",
@@ -174,7 +271,7 @@
    "from": null,
    "fromHidden": false,
    "into": [
-    "Murmuron"
+    null
    ],
    "desc": "A starling with pan-pipes for a tail; every note it plays flies off as another tiny bird. Sociable, noisy, lonely in a second; mimics your footsteps.",
    "v": "s1794187725",
@@ -233,7 +330,7 @@
    "id": "thrumbird",
    "name": "Thrumbird",
    "types": [
-    "sound"
+    "flying"
    ],
    "stage": 1,
    "from": null,
@@ -352,36 +449,6 @@
    "shot": true
   },
   {
-   "id": "ringrove",
-   "name": "Ringrove",
-   "types": [
-    "spore",
-    "grass"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Huge calm elder, a fairy ring grove on its back, shelf-fungus armour.",
-   "v": "h1794219111",
-   "shot": false
-  },
-  {
-   "id": "chandelapi",
-   "name": "Chandelapi",
-   "types": [
-    "dark",
-    "fire"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Tall okapi crowned with a great candle chandelier.",
-   "v": "h1794241178",
-   "shot": false
-  },
-  {
    "id": "glaciatee",
    "name": "Glaciatee",
    "types": [
@@ -392,13 +459,29 @@
    "fromHidden": true,
    "into": [],
    "desc": "Huge manatee, walk-in ice-vault body.",
-   "v": "h1794225887",
+   "v": "h1794349255",
+   "shot": false
+  },
+  {
+   "id": "cisternmander",
+   "name": "Vatmander",
+   "types": [
+    "water",
+    "grass"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Giant salamander with a water-tower body.",
+   "v": "h1794333133",
    "shot": false
   },
   {
    "id": "voltalon",
    "name": "Voltalon",
    "types": [
+    "normal",
     "electric"
    ],
    "stage": 3,
@@ -406,51 +489,7 @@
    "fromHidden": true,
    "into": [],
    "desc": "Thunder falcon, coil talons, lightning crown.",
-   "v": "h1794224084",
-   "shot": false
-  },
-  {
-   "id": "dreadmonite",
-   "name": "Dreadmonite",
-   "types": [
-    "psychic",
-    "water"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "A giant ammonite that is a battleship.",
-   "v": "h1794219135",
-   "shot": false
-  },
-  {
-   "id": "phonodrake",
-   "name": "Phonodrake",
-   "types": [
-    "sound"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "A dragon whose crown is four gramophone horns.",
-   "v": "h1794219149",
-   "shot": false
-  },
-  {
-   "id": "glaivyx",
-   "name": "Glaivyx",
-   "types": [
-    "poison",
-    "steel"
-   ],
-   "stage": 3,
-   "from": "Vespox",
-   "fromHidden": false,
-   "into": [],
-   "desc": "Armoured bruiser, sting grown into a scythe blade.",
-   "v": "h1794220260",
+   "v": "h1794329442",
    "shot": false
   },
   {
@@ -465,111 +504,96 @@
    "fromHidden": false,
    "into": [],
    "desc": "Great owl, eclipse-ring facial disc, moth cloak wings.",
-   "v": "h1794241179",
+   "v": "h1794280684",
    "shot": false
   },
   {
-   "id": "mortarfly",
-   "name": "Mortarfly",
+   "id": "chandelapi",
+   "name": "Candelapi",
+   "types": [
+    "dark",
+    "fire"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Tall okapi crowned with a great candle chandelier.",
+   "v": "h1794328066",
+   "shot": false
+  },
+  {
+   "id": "druzemole",
+   "name": "Gemole",
    "types": [
     "rock",
-    "bug"
+    "crystal"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": null,
-   "v": "h1794219146",
+   "desc": "Giant, amethyst cavern for a back, crystal digging claws.",
+   "v": "h1794349249",
    "shot": false
   },
   {
-   "id": "forgebrock",
-   "name": "Forgebrock",
+   "id": "glaivyx",
+   "name": "Sabryx",
    "types": [
-    "fire",
+    "poison",
     "steel"
    ],
    "stage": 3,
-   "from": "Anvilbrock",
+   "from": "Vespox",
    "fromHidden": false,
    "into": [],
-   "desc": "Bigger forge badger, hammer-head paws, furnace chest.",
-   "v": "h0",
+   "desc": "Armoured bruiser, sting grown into a scythe blade.",
+   "v": "h1794333141",
    "shot": false
   },
   {
-   "id": "galleotter",
-   "name": "Galleotter",
+   "id": "ringrove",
+   "name": "Ringrove",
    "types": [
-    "water",
-    "steel"
+    "spore",
+    "grass"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "War-galley otter: oar spines down its sides, ram brow.",
-   "v": "h1794241803",
+   "desc": "Huge calm elder, a fairy ring grove on its back, shelf-fungus armour.",
+   "v": "h1794298817",
    "shot": false
   },
   {
-   "id": "dragonkite",
-   "name": "Dragonkite",
+   "id": "phonodrake",
+   "name": "Phonodrake",
    "types": [
-    "dragon",
-    "flying"
+    "sound"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Majestic sky dragon, kite-frame wings, crossbar spine.",
-   "v": "h1794240284",
+   "desc": "A dragon whose crown is four gramophone horns.",
+   "v": "h1794333156",
    "shot": false
   },
   {
-   "id": "murmuron",
-   "name": "Murmuron",
+   "id": "dreadmonite",
+   "name": "Dreadmonite",
    "types": [
-    "normal"
-   ],
-   "stage": 2,
-   "from": "Murmurling",
-   "fromHidden": false,
-   "into": [],
-   "desc": null,
-   "v": "h1794222029",
-   "shot": false
-  },
-  {
-   "id": "geysirbara",
-   "name": "Geysirbara",
-   "types": [
-    "grass",
+    "psychic",
     "water"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Massive capybara, erupting geyser pool and moss terraces.",
-   "v": "h1794224082",
-   "shot": false
-  },
-  {
-   "id": "chandelotl",
-   "name": "Chandelotl",
-   "types": [
-    "crystal",
-    "fairy"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Gills become a crystal chandelier crown.",
-   "v": "h1794218214",
+   "desc": "A giant ammonite that is a battleship.",
+   "v": "h1794333135",
    "shot": false
   },
   {
@@ -584,81 +608,7 @@
    "fromHidden": true,
    "into": [],
    "desc": "Queen ant, twin scythe mandibles.",
-   "v": "h1794224980",
-   "shot": false
-  },
-  {
-   "id": "vaultara",
-   "name": "Vaultara",
-   "types": [
-    "steel"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Huge tuatara with a vault-door shell.",
-   "v": "h1794224982",
-   "shot": false
-  },
-  {
-   "id": "canvastross",
-   "name": "Canvastross",
-   "types": [
-    "flying",
-    "water"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "An albatross with patched ship sails for wings; grab the rigging under it and it carries you across the gap. Easygoing, fearless, a wanderer; restless when it has not seen the sea.",
-   "v": "h1794219067",
-   "shot": false
-  },
-  {
-   "id": "medushroom",
-   "name": "Medushroom",
-   "types": [
-    "spore",
-    "poison"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "A jellyfish whose bell is a toadstool cap.",
-   "v": "h1794219145",
-   "shot": false
-  },
-  {
-   "id": "sloggoth",
-   "name": "Sloggoth",
-   "types": [
-    "dark",
-    "psychic"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "The ink pool risen into a towering wave of shadow.",
-   "v": "h1794219154",
-   "shot": false
-  },
-  {
-   "id": "dreadnoyak",
-   "name": "Dreadnoyak",
-   "types": [
-    "ice",
-    "steel"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Colossal icebreaker yak, ice-armour hull.",
-   "v": "h1794224978",
+   "v": "h1794333162",
    "shot": false
   },
   {
@@ -673,52 +623,140 @@
    "fromHidden": true,
    "into": [],
    "desc": "Coil-necked storm ostrich crackling with lightning.",
-   "v": "h1794215464",
+   "v": "h1794333170",
    "shot": false
   },
   {
-   "id": "gravitank",
-   "name": "Gravidon",
+   "id": "forgebrock",
+   "name": "Forgebrock",
    "types": [
-    "psychic",
-    "bug"
+    "fire",
+    "steel"
    ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
+   "stage": 3,
+   "from": "Anvilbrock",
+   "fromHidden": false,
    "into": [],
-   "desc": null,
-   "v": "h1794219140",
+   "desc": "Bigger forge badger, hammer-head paws, furnace chest.",
+   "v": "h1794333138",
    "shot": false
   },
   {
-   "id": "howlop",
-   "name": "Howlop",
+   "id": "geysirbara",
+   "name": "Geyserbara",
    "types": [
-    "sound",
-    "dark"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Predator bat-hare, sonic fangs.",
-   "v": "h0",
-   "shot": false
-  },
-  {
-   "id": "briarlynx",
-   "name": "Briarlynx",
-   "types": [
-    "poison",
-    "grass"
+    "grass",
+    "water"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Great lynx, briar mane, thorn-whip tail.",
-   "v": "h1794219062",
+   "desc": "Massive capybara, erupting geyser pool and moss terraces.",
+   "v": "h1794349253",
+   "shot": false
+  },
+  {
+   "id": "dragonkite",
+   "name": "Kitedrake",
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Majestic sky dragon, kite-frame wings, crossbar spine.",
+   "v": "h1794329433",
+   "shot": false
+  },
+  {
+   "id": "chandelotl",
+   "name": "Crystalotl",
+   "types": [
+    "crystal",
+    "fairy"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Gills become a crystal chandelier crown.",
+   "v": "h1794333130",
+   "shot": false
+  },
+  {
+   "id": "canvastross",
+   "name": "Canvastross",
+   "types": [
+    "flying",
+    "water"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "An albatross with patched ship sails for wings; grab the rigging under it and it carries you across the gap. Easygoing, fearless, a wanderer; restless when it has not seen the sea.",
+   "v": "h1794328066",
+   "shot": false
+  },
+  {
+   "id": "vaultara",
+   "name": "Vaultara",
+   "types": [
+    "steel"
+   ],
+   "stage": 3,
+   "from": "Lockatara",
+   "fromHidden": false,
+   "into": [],
+   "desc": "Huge tuatara with a vault-door shell.",
+   "v": "h1794333171",
+   "shot": false
+  },
+  {
+   "id": "dreadnoyak",
+   "name": "Dreadnoyak",
+   "types": [
+    "ice",
+    "steel"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Colossal icebreaker yak, ice-armour hull.",
+   "v": "h1794342490",
+   "shot": false
+  },
+  {
+   "id": "galleotter",
+   "name": "Galleotter",
+   "types": [
+    "water",
+    "steel"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "War-galley otter: oar spines down its sides, ram brow.",
+   "v": "h1794293570",
+   "shot": false
+  },
+  {
+   "id": "critwom",
+   "name": "Critwom",
+   "types": [
+    "normal"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "A glyptodont-sized wombat whose shell is a twenty-sided die.",
+   "v": "h1794333134",
    "shot": false
   },
   {
@@ -733,64 +771,104 @@
    "fromHidden": true,
    "into": [],
    "desc": "A giant chameleon that is a living observatory, its crest a great telescope.",
-   "v": "h1794219135",
+   "v": "h1794278452",
    "shot": false
   },
   {
-   "id": "bastionpet",
-   "name": "Bastionpet",
+   "id": "sloggoth",
+   "name": "Sloggoth",
    "types": [
-    "rock",
-    "water"
-   ],
-   "stage": 2,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": null,
-   "v": "h1794219131",
-   "shot": false
-  },
-  {
-   "id": "pyrraven",
-   "name": "Pyrraven",
-   "types": [
-    "fire",
-    "flying"
+    "dark",
+    "psychic"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Huge raven with smouldering coal-bed wings.",
-   "v": "h1794219106",
+   "desc": "The ink pool risen into a towering wave of shadow.",
+   "v": "h1794342510",
+   "shot": false
+  },
+  {
+   "id": "mortarfly",
+   "name": "Mortarfly",
+   "types": [
+    "rock",
+    "bug"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": null,
+   "v": "h1794342501",
+   "shot": false
+  },
+  {
+   "id": "briarlynx",
+   "name": "Briarlynx",
+   "types": [
+    "poison",
+    "grass"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Great lynx, briar mane, thorn-whip tail.",
+   "v": "h1794334929",
+   "shot": false
+  },
+  {
+   "id": "medushroom",
+   "name": "Medushroom",
+   "types": [
+    "spore",
+    "poison"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "A jellyfish whose bell is a toadstool cap.",
+   "v": "h1794329438",
+   "shot": false
+  },
+  {
+   "id": "sirencada",
+   "name": "Sirencada",
+   "types": [
+    "sound",
+    "bug"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "A giant cicada that is a living air-raid siren.",
+   "v": "h1794333167",
+   "shot": false
+  },
+  {
+   "id": "scarabit",
+   "name": "Scarabit",
+   "types": [
+    "psychic",
+    "fairy"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "A scarab that has opened into a living orrery.",
+   "v": "h1794333164",
    "shot": false
   }
  ],
  "hidden": [
   {
-   "t": "poison",
-   "sil": "vespyx"
-  },
-  {
-   "t": "crystal",
-   "sil": "prismander"
-  },
-  {
-   "t": "ice",
-   "sil": null
-  },
-  {
    "t": "crystal",
    "sil": "glassolotl"
-  },
-  {
-   "t": "spore",
-   "sil": "mycroll"
-  },
-  {
-   "t": "rock",
-   "sil": null
   },
   {
    "t": "spore",
@@ -801,8 +879,8 @@
    "sil": "gravadillo"
   },
   {
-   "t": "bug",
-   "sil": null
+   "t": "psychic",
+   "sil": "gravitank"
   },
   {
    "t": "fairy",
@@ -813,8 +891,8 @@
    "sil": "echolop"
   },
   {
-   "t": "flying",
-   "sil": null
+   "t": "sound",
+   "sil": "howlop"
   },
   {
    "t": "normal",
@@ -825,20 +903,12 @@
    "sil": "zipling"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "dark",
    "sil": "zippelith"
   },
   {
    "t": "psychic",
    "sil": "anchorbill"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "psychic",
@@ -849,10 +919,6 @@
    "sil": "bellowlet"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "fire",
    "sil": "furnacowary"
   },
@@ -861,20 +927,16 @@
    "sil": "wickapi"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "dark",
    "sil": "snuffapi"
   },
   {
    "t": "ice",
-   "sil": "frigatee"
+   "sil": "coolatee"
   },
   {
-   "t": "normal",
-   "sil": null
+   "t": "ice",
+   "sil": "frigatee"
   },
   {
    "t": "sound",
@@ -885,20 +947,12 @@
    "sil": "gongrowl"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "ice",
    "sil": "kayak"
   },
   {
    "t": "ice",
    "sil": "prowyak"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "rock",
@@ -909,20 +963,12 @@
    "sil": "geodemole"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "dark",
    "sil": "gloamspire"
   },
   {
-   "t": "spore",
+   "t": "poison",
    "sil": "glomworth"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "rock",
@@ -933,20 +979,12 @@
    "sil": "effigoon"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "grass",
    "sil": "crofthollow"
   },
   {
    "t": "ice",
    "sil": "skateron"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "ice",
@@ -957,20 +995,12 @@
    "sil": "ermink"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "fire",
    "sil": "flarmink"
   },
   {
    "t": "water",
    "sil": "rippmink"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "grass",
@@ -981,20 +1011,12 @@
    "sil": "voltmink"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "ice",
    "sil": "rimink"
   },
   {
    "t": "dark",
    "sil": "umbrink"
-  },
-  {
-   "t": "normal",
-   "sil": null
   },
   {
    "t": "fairy",
@@ -1005,19 +1027,11 @@
    "sil": "prismink"
   },
   {
-   "t": "normal",
-   "sil": null
-  },
-  {
    "t": "dragon",
    "sil": "wyrmink"
   },
   {
-   "t": "electric",
-   "sil": "kestrike"
-  },
-  {
-   "t": "electric",
+   "t": "normal",
    "sil": "arcestrel"
   },
   {
@@ -1033,6 +1047,10 @@
    "sil": "embrook"
   },
   {
+   "t": "fire",
+   "sil": "pyrraven"
+  },
+  {
    "t": "water",
    "sil": "dribbara"
   },
@@ -1045,12 +1063,32 @@
    "sil": "buckleron"
   },
   {
+   "t": "rock",
+   "sil": "bulwartoad"
+  },
+  {
+   "t": "rock",
+   "sil": "bastionpet"
+  },
+  {
    "t": "psychic",
    "sil": "lodestick"
   },
   {
    "t": "psychic",
    "sil": "lodestaff"
+  },
+  {
+   "t": "bug",
+   "sil": "shinobant"
+  },
+  {
+   "t": "bug",
+   "sil": "scythant"
+  },
+  {
+   "t": "bug",
+   "sil": "harvantis"
   },
   {
    "t": "fairy",
@@ -1075,6 +1113,10 @@
   {
    "t": "bug",
    "sil": "spirevark"
+  },
+  {
+   "t": "normal",
+   "sil": "murmuron"
   },
   {
    "t": "normal",
@@ -1130,7 +1172,15 @@
   },
   {
    "t": "electric",
+   "sil": "barokit"
+  },
+  {
+   "t": "electric",
    "sil": "barokat"
+  },
+  {
+   "t": "electric",
+   "sil": "barostorm"
   },
   {
    "t": "water",
@@ -1141,12 +1191,12 @@
    "sil": "barrelmander"
   },
   {
-   "t": "electric",
-   "sil": "cisternmander"
+   "t": "flying",
+   "sil": "kerchick"
   },
   {
    "t": "flying",
-   "sil": "kerchick"
+   "sil": "jibbatross"
   },
   {
    "t": "spore",
@@ -1163,10 +1213,6 @@
   {
    "t": "steel",
    "sil": "latchling"
-  },
-  {
-   "t": "steel",
-   "sil": "lockatara"
   },
   {
    "t": "dark",
@@ -1190,10 +1236,6 @@
   },
   {
    "t": "dragon",
-   "sil": "kitlet"
-  },
-  {
-   "t": "dragon",
    "sil": "ribbonwyrm"
   },
   {
@@ -1207,6 +1249,10 @@
   {
    "t": "psychic",
    "sil": "torpecone"
+  },
+  {
+   "t": "poison",
+   "sil": "pocketpus"
   },
   {
    "t": "poison",
@@ -1230,15 +1276,27 @@
   },
   {
    "t": "poison",
-   "sil": "bullsfrog"
+   "sil": "bullpole"
   },
   {
    "t": "poison",
+   "sil": "bullsfrog"
+  },
+  {
+   "t": "bug",
    "sil": "clinkpede"
+  },
+  {
+   "t": "poison",
+   "sil": "chainipede"
   },
   {
    "t": "normal",
    "sil": "cubbat"
+  },
+  {
+   "t": "normal",
+   "sil": "pipwom"
   },
   {
    "t": "bug",
@@ -1269,23 +1327,23 @@
    "sil": "foldbat"
   },
   {
+   "t": "sound",
+   "sil": "fanpire"
+  },
+  {
    "t": "poison",
    "sil": "gilabacus"
   },
   {
-   "t": "ice",
-   "sil": "glaciammoth"
-  },
-  {
-   "t": "dragon",
+   "t": "water",
    "sil": "olmlet"
   },
   {
-   "t": "dragon",
+   "t": "water",
    "sil": "glazolm"
   },
   {
-   "t": "dragon",
+   "t": "water",
    "sil": "kintsuwyrm"
   },
   {
@@ -1295,6 +1353,10 @@
   {
    "t": "rock",
    "sil": "sandwidow"
+  },
+  {
+   "t": "rock",
+   "sil": "hourachnid"
   },
   {
    "t": "sound",
@@ -1313,8 +1375,8 @@
    "sil": "orbitle"
   },
   {
-   "t": "grass",
-   "sil": "hydrangor"
+   "t": "psychic",
+   "sil": "meteorab"
   },
   {
    "t": "spore",
@@ -1373,24 +1435,244 @@
    "sil": "nymphane"
   },
   {
+   "t": "bug",
+   "sil": "rosedart"
+  },
+  {
    "t": "normal",
    "sil": "pawnfry"
+  },
+  {
+   "t": "normal",
+   "sil": "gambitfin"
+  },
+  {
+   "t": "dragon",
+   "sil": "checkmare"
   },
   {
    "t": "water",
    "sil": "pebblamb"
   },
   {
+   "t": "rock",
+   "sil": "tesselamb"
+  },
+  {
    "t": "dark",
    "sil": "reelacine"
+  },
+  {
+   "t": "ice",
+   "sil": "scoopsy"
+  },
+  {
+   "t": "ice",
+   "sil": "sundormouse"
+  },
+  {
+   "t": "grass",
+   "sil": "bonsolith"
+  },
+  {
+   "t": "rock",
+   "sil": "chiptero"
+  },
+  {
+   "t": "rock",
+   "sil": "pickadactyl"
+  },
+  {
+   "t": "bug",
+   "sil": "mumblet"
+  },
+  {
+   "t": "bug",
+   "sil": "klaxada"
+  },
+  {
+   "t": "ice",
+   "sil": "narfoil"
+  },
+  {
+   "t": "ice",
+   "sil": "parrywhal"
+  },
+  {
+   "t": "dragon",
+   "sil": "pagodito"
+  },
+  {
+   "t": "dragon",
+   "sil": "pagoguana"
+  },
+  {
+   "t": "steel",
+   "sil": "pinster"
+  },
+  {
+   "t": "steel",
+   "sil": "tiltster"
+  },
+  {
+   "t": "poison",
+   "sil": "quivertoad"
+  },
+  {
+   "t": "normal",
+   "sil": "citadoad"
+  },
+  {
+   "t": "electric",
+   "sil": "jerbit"
+  },
+  {
+   "t": "electric",
+   "sil": "jerbolt"
+  },
+  {
+   "t": "electric",
+   "sil": "dynaboa"
+  },
+  {
+   "t": "normal",
+   "sil": "bastling"
+  },
+  {
+   "t": "fairy",
+   "sil": "foalaround"
+  },
+  {
+   "t": "fairy",
+   "sil": "canopony"
+  },
+  {
+   "t": "fairy",
+   "sil": "carrousteed"
+  },
+  {
+   "t": "water",
+   "sil": "filefin"
+  },
+  {
+   "t": "water",
+   "sil": "carpenjaw"
+  },
+  {
+   "t": "water",
+   "sil": "sawright"
+  },
+  {
+   "t": "water",
+   "sil": "xylogator"
+  },
+  {
+   "t": "water",
+   "sil": "marimbite"
+  },
+  {
+   "t": "water",
+   "sil": "glockodile"
+  },
+  {
+   "t": "ice",
+   "sil": "pinguin"
+  },
+  {
+   "t": "ice",
+   "sil": "rollguin"
+  },
+  {
+   "t": "ice",
+   "sil": "kingpinguin"
+  },
+  {
+   "t": "normal",
+   "sil": "stamproo"
+  },
+  {
+   "t": "normal",
+   "sil": "postroo"
+  },
+  {
+   "t": "normal",
+   "sil": "pillaroo"
+  },
+  {
+   "t": "fairy",
+   "sil": "pavonazar"
+  },
+  {
+   "t": "fairy",
+   "sil": "ghoulamari"
+  },
+  {
+   "t": "water",
+   "sil": "wayshell"
+  },
+  {
+   "t": "ice",
+   "sil": "glacione"
+  },
+  {
+   "t": "fairy",
+   "sil": "cometail"
+  },
+  {
+   "t": "flying",
+   "sil": "pharoheron"
+  },
+  {
+   "t": "flying",
+   "sil": "lockwren"
+  },
+  {
+   "t": "grass",
+   "sil": "luckhop"
+  },
+  {
+   "t": "normal",
+   "sil": "twinklup"
+  },
+  {
+   "t": "ice",
+   "sil": "glaciammoth"
   },
   {
    "t": "dragon",
    "sil": "sarcobra"
   },
   {
+   "t": "steel",
+   "sil": "siegephant"
+  },
+  {
+   "t": "fire",
+   "sil": "calderoise"
+  },
+  {
+   "t": "grass",
+   "sil": "hydrangor"
+  },
+  {
    "t": "ice",
-   "sil": "sundormouse"
+   "sil": "aurostag"
+  },
+  {
+   "t": "sound",
+   "sil": "cetorgan"
+  },
+  {
+   "t": "fire",
+   "sil": "cindermaw"
+  },
+  {
+   "t": "poison",
+   "sil": "sphinxblight"
+  },
+  {
+   "t": "bug",
+   "sil": "palloth"
   }
  ]
 }

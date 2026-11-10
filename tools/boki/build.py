@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Build the homepage Boki wall (assets/boki.json and its art) from the Bokidex.
 
-    python3 -I tools/boki/build.py [--reveal 50]
+    python3 -I tools/boki/build.py [--reveal 56]
 
 Reads only the public Bokidex export in this repo (bokidex/d/data.json and its images), so the wall always matches
 the dex: names, types, descriptions and evolution lines.
 
-  - revealed (default 50): every Boki with a front-page portrait shot in the Bokidex first (cut out with rembg,
+  - revealed (default 56): the Boki in the homepage pictures first (FRONT below), then every Boki with a front-page
+    portrait shot in the Bokidex (cut out with rembg,
     pip install "rembg[cpu]"), then the rest picked for variety: final evolutions first, spread across types.
     Card art goes to assets/img/boki-front/{id}-{480,960}.webp. Art for anything not revealed is deleted, so
     hidden Boki can't be found by guessing a file name.
@@ -24,7 +25,7 @@ def public_desc(e):
 from PIL import Image
 
 SITE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ap = argparse.ArgumentParser(); ap.add_argument("--reveal", type=int, default=50)
+ap = argparse.ArgumentParser(); ap.add_argument("--reveal", type=int, default=56)
 a = ap.parse_args()
 
 data = json.load(open(f"{SITE}/bokidex/d/data.json"))
@@ -43,9 +44,13 @@ for g in sorted(data["gens"], key=lambda g: g.get("created", 0)):
     if i in by_id: shots[i] = g
 
 # ---- pick who is revealed
+# The Boki visitors see in the homepage pictures (first screen, "Raise your Boki.", the match cards) lead the wall,
+# in this order, so the cards under the pictures show the same creatures.
+FRONT = ["vespyx", "mycroll", "prismander", "kitlet", "kestrike", "lockatara"]
 cands = [e for e in entries if hero(e) or e["id"] in shots]
-first = sorted((e for e in cands if e["id"] in shots), key=lambda e: e.get("num", 999))
-rest = sorted((e for e in cands if e["id"] not in shots),
+front = [by_id[i] for i in FRONT if i in by_id and by_id[i] in cands]
+first = front + sorted((e for e in cands if e["id"] in shots and e not in front), key=lambda e: e.get("num", 999))
+rest = sorted((e for e in cands if e["id"] not in shots and e not in front),
               key=lambda e: (e.get("stage", 1) != e.get("stages", 1), -e.get("stage", 1), e.get("num", 999)))
 pools = {}
 for e in rest: pools.setdefault(e["types"][0], []).append(e)
@@ -72,17 +77,21 @@ def square(o):
 os.makedirs(f"{SITE}/assets/img/boki-front", exist_ok=True); os.makedirs(f"{SITE}/assets/img/boki-sil", exist_ok=True)
 name_of = lambda i: by_id[i]["name"] if i in shown else None
 revealed = []
+try: was = {r["id"]: r["v"] for r in json.load(open(f"{SITE}/assets/boki.json"))["revealed"]}
+except Exception: was = {}
 for e in picked:
-    s = shots.get(e["id"])
-    img = square(cut(blob(s["images"][0]))) if s else square(Image.open(io.BytesIO(blob(hero(e)))).convert("RGBA"))
-    for w in (480, 960):
-        img.resize((w, w), Image.LANCZOS).save(f"{SITE}/assets/img/boki-front/{e['id']}-{w}.webp", "WEBP", quality=84, method=6, alpha_quality=90)
+    s = shots.get(e["id"]); v = f"s{s['created']}" if s else f"h{e.get('heroAt') or 0}"
+    out = [f"{SITE}/assets/img/boki-front/{e['id']}-{w}.webp" for w in (480, 960)]
+    if not (was.get(e["id"]) == v and all(os.path.exists(o) for o in out)):   # art is only rebuilt when its source changed
+        img = square(cut(blob(s["images"][0]))) if s else square(Image.open(io.BytesIO(blob(hero(e)))).convert("RGBA"))
+        for w, o in zip((480, 960), out):
+            img.resize((w, w), Image.LANCZOS).save(o, "WEBP", quality=84, method=6, alpha_quality=90)
     prev, nxt = [p for p in e.get("prev") or [] if p in by_id], [n for n in e.get("next") or [] if n in by_id]
     revealed.append({
         "id": e["id"], "name": e["name"], "types": [t.lower() for t in e["types"]], "stage": e.get("stage", 1),
         "from": name_of(prev[0]) if prev else None, "fromHidden": bool(prev) and name_of(prev[0]) is None,
         "into": [name_of(n) for n in nxt],  # None = still hidden
-        "desc": public_desc(e), "v": f"s{s['created']}" if s else f"h{e.get('heroAt') or 0}", "shot": bool(s),
+        "desc": public_desc(e), "v": v, "shot": bool(s),
     })
 
 # hidden: black silhouettes from the dex picture, or eggs
