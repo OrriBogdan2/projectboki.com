@@ -15,6 +15,7 @@ It is safe to run more than once. It adds:
      sticky filter bar (cards no longer show through it), room for focus rings in the type-chip row, card labels for
      screen readers, contrast on the card number and entry kicker, bottom room for the Safari address pill, font
      preconnect
+  6. removes the "Project Boki creature dex" line under the title
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -136,6 +137,9 @@ if "bx-fix-1111" not in s:
     s = s[:at] + FIX_JS + s[at:]
 if "fonts.gstatic.com" not in s:
     s = s.replace('<link rel="stylesheet" href="https://fonts.googleapis.com', '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com', 1)
+
+# The "Project Boki creature dex" line under the title is not needed (the top bar already says where you are).
+s = s.replace('<div class="sub">Project Boki creature dex</div>', "")
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
