@@ -47,7 +47,8 @@ if (DISCORD_URL) {
 
 const nav = document.getElementById("nav");
 if (nav) {
-  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 40);
+  const heroEl = document.querySelector("section.hero"); // on the homepage, the bar's "Join the beta" waits until the first screen (which has the signup) is behind you
+  const onScroll = () => { nav.classList.toggle("scrolled", window.scrollY > 40); if (heroEl) nav.classList.toggle("at-hero", window.scrollY < innerHeight * 0.55); };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 }
@@ -188,6 +189,8 @@ if (heroIn && !calm) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const ART_V = "2026-11-10a"; // bump when a Hunter splash changes
+// each Hunter's colour (the same values as assets/hunters.json, kept here so the stage has them without fetching the kits)
+const HCOLOR = { lisette: "#e8483e", cinder: "#ff9a3a", breaker: "#8fd0ff", tarek: "#d9a35b", grimble: "#e0b040", vex: "#ff9a5c", kael: "#ff8a6a", ryzz: "#5fe3c8", motley: "#7fe0d0", claire: "#5fd6c4", pip: "#ffc46a", sable: "#c9a0ff", gill: "#3f8fe0" };
 const HUNTERS = [
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
@@ -656,7 +659,7 @@ if (pick) {
       art.closest(".stage").dataset.h = id; // hook for per-Hunter CSS tweaks
       $("h-name").textContent = name;
       $("h-title").textContent = title;
-      $("h-role").textContent = role;
+      $("h-role").textContent = role; $("h-role").style.color = HCOLOR[id] || "";
       alignTitle();
       art.classList.remove("out");
     };
@@ -758,7 +761,7 @@ if (pick) {
     const label = (i) => {
       const [id, name, title, , role] = HUNTERS[i];
       art.alt = `${name}, ${title}`; stage.dataset.h = id;
-      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; alignTitle();
+      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; $("h-role").style.color = HCOLOR[id] || ""; alignTitle();
     };
     const prep = (i, d) => {
       tgt = i; dir = d; const id = HUNTERS[i][0];
@@ -925,9 +928,9 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
     dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
-    // two rows of the mystery, laid like bricks (the second row sits half a tile over, with a half tile at each end):
+    // two rows of the mystery, laid like bricks (the second row is one tile shorter and sits half a tile in):
     // silhouettes from the dex, and eggs if the dex is short
-    const types = Object.keys(TYPE), cols = +getComputedStyle(grid).getPropertyValue("--c") || 13, need = cols * 2 + 1;
+    const types = Object.keys(TYPE), cols = +getComputedStyle(grid).getPropertyValue("--c") || 13, need = cols * 2 - 1;
     const list = data.hidden.slice(0, need);
     for (let i = 0; list.length < need; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
     const DROP = [0, 22, 8, 30, 14, 26, 4, 20, 10, 28, 6, 18, 12];
@@ -939,7 +942,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
       // each tile also sits a little lower or higher than its neighbours, like the cards above (row two takes the
       // average of the two tiles it sits under, so the rows never touch)
       const j = i < cols ? i : i - cols, drop = (k) => DROP[Math.min(cols - 1, Math.max(0, k)) % DROP.length];
-      t.style.setProperty("--dy", i < cols ? drop(j) : (drop(j - 1) + drop(j)) / 2);
+      t.style.setProperty("--dy", i < cols ? drop(j) : (drop(j) + drop(j + 1)) / 2);
       rows[i < cols ? 0 : 1].appendChild(t);
     });
     dark.hidden = false;

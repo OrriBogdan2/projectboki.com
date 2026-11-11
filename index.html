@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 33vw, 640px">
 
-<link rel="stylesheet" href="assets/style.css?v=242">
+<link rel="stylesheet" href="assets/style.css?v=243">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -152,7 +152,6 @@
         <div class="su-done" role="status" hidden></div>
       </form>
       <a class="btn btn-solid su-fallback" href="#join">Join the beta</a>
-      <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
     </div>
     <p class="su-perk"><span><svg class="rare-egg" viewBox="0 0 26 26" aria-hidden="true"><path fill="#ffd24a" d="M11 3C6.6 3 2 9.8 2 15.4 2 20.6 5.9 24.6 11 24.6s9-4 9-9.2C20 9.8 15.4 3 11 3z"/><path fill="#e59a17" d="M6.2 13.4a2.1 2.1 0 1 0 4.2 0 2.1 2.1 0 0 0-4.2 0zM12.6 18.6a1.7 1.7 0 1 0 3.4 0 1.7 1.7 0 0 0-3.4 0zM13.3 9.6a1.4 1.4 0 1 0 2.8 0 1.4 1.4 0 0 0-2.8 0zM6.4 19.3a1.1 1.1 0 1 0 2.2 0 1.1 1.1 0 0 0-2.2 0z"/><path fill="#fff" d="M21.5 0l1.2 3.3L26 4.5l-3.3 1.2L21.5 9l-1.2-3.3L17 4.5l3.3-1.2z"/></svg><span>Early sign-ups get a <b class="rare">rare Boki egg</b>.</span></span></p>
   </div>
@@ -161,10 +160,10 @@
 
 <section class="trailer" id="trailer" aria-label="Gameplay">
   <div class="tr-media" aria-hidden="true">
-    <img src="assets/img/game/extraction-1920.webp" srcset="assets/img/game/extraction-960.webp 960w, assets/img/game/extraction-1280.webp 1280w, assets/img/game/extraction-1920.webp 1920w" sizes="100vw" width="1920" height="1080" alt="" loading="lazy" decoding="async">
-    <!-- An in-game screenshot for now. To bring back the airship flyover clip (assets/video/drop.mp4, drop-720.mp4; site.js loads it
-         as you get near), put the drop-poster image back and add: <video muted loop playsinline preload="none" tabindex="-1"></video>
-         When the trailer is ready: add a "Watch the trailer" button under the line below (or drop the line). -->
+    <img src="assets/img/game/drop-poster-1920.webp" srcset="assets/img/game/drop-poster-960.webp 960w, assets/img/game/drop-poster-1280.webp 1280w, assets/img/game/drop-poster-1920.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async">
+    <!-- The airship flyover clip behind the line (site.js loads it as you get near; the image is its first frame). When the
+         trailer is ready: add a "Watch the trailer" button under the line below (or drop the line). -->
+    <video muted loop playsinline preload="none" tabindex="-1"></video>
   </div>
   <div class="wrap tr-copy">
     <div class="tr-bottom">
@@ -203,7 +202,7 @@
       <div class="bk-count h-count"><b id="h-n">01</b> / <span>13</span></div>
       <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/lisette-1600.webp" srcset="assets/img/hunters/lisette-960.webp 960w, assets/img/hunters/lisette-1600.webp 1600w, assets/img/hunters/lisette-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Lace, the Red Stitch" loading="lazy"><button class="h-expand" type="button" id="h-expand" aria-label="View full art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg></button></div>
       <div class="info" aria-live="polite">
-        <div class="role" id="h-role">Marksman</div>
+        <div class="role" id="h-role" style="color:#e8483e">Marksman</div>
         <h3 id="h-name">Lace</h3>
         <div class="title" id="h-title">The Red Stitch</div>
         <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span></button>
@@ -324,7 +323,7 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=223"></script>
+<script src="assets/site.js?v=224"></script>
 <script src="/assets/topbar.js?v=3" defer></script>
 </body>
 </html>

@@ -1269,13 +1269,6 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 @media (min-width: 901px) and (min-aspect-ratio: 501/400) and (max-aspect-ratio: 29/20) { .hero-in { width: min(32vw, 640px); margin-left: 3vw; } .lockup { --wm: min(32vw, 640px); } } /* squarer windows: a slimmer column, clear of the Boki */
 @media (max-width: 720px) { .join .join-cta { width: min(400px, 100vw - 40px); margin-inline: calc((100% - min(400px, 100vw - 40px)) / 2); } .join .join-su .su-row .btn { padding: 0 14px; font-size: 16px; } }
 
-/* Footage panel: an in-game screenshot for now. It drifts very slowly so the panel still feels alive (compositor-only). */
-.tr-media img { object-position: 50% 38%; }
-@media (prefers-reduced-motion: no-preference) {
-  .js .trailer.in .tr-media img { animation: tr-drift 26s ease-in-out 2.6s infinite alternate; }
-  @keyframes tr-drift { from { transform: none; } to { transform: scale(1.06) translate3d(-1%, -1%, 0); } }
-}
-html.lite .tr-media img { animation: none !important; }
 
 /* ---------- The rare egg: gold, speckled, with a glint, and its words in the same gold ---------- */
 .rare { color: #ffd24a; font-weight: inherit; }
@@ -1288,3 +1281,13 @@ html.lite .tr-media img { animation: none !important; }
 .su-perk span span { display: inline; }
 .su-perk svg.rare-egg { width: 30px; height: 30px; margin-top: -6px; }
 @media (max-width: 720px) { .su-perk svg.rare-egg { width: 26px; height: 26px; } }
+
+/* ---------- First screen, simpler: the signup is the only button. The top bar's "Join the beta" waits until the first
+   screen has been scrolled past (site.js sets .at-hero), so the same button isn't on screen twice. ---------- */
+header.nav #nav-join { transition: opacity .25s ease, visibility 0s linear 0s; }
+header.nav.at-hero #nav-join { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease, visibility 0s linear .2s; }
+/* "Over 200 Boki to find.": the second row is one tile shorter and centred, so no tile is cut off at the sides */
+.bk-row.off { grid-template-columns: repeat(calc(var(--c) - 1), minmax(0, 1fr)); width: calc(100% - (100% - (var(--c) - 1) * var(--gap)) / var(--c) - var(--gap)); margin-left: calc(((100% - (var(--c) - 1) * var(--gap)) / var(--c) + var(--gap)) / 2); }
+@media (min-width: 340px) and (max-width: 720px) { #hunters .info .role { margin-bottom: 10px; } } /* phones: the same visible gap above the name as below it */
+.hero .su-perk { margin-top: 30px; } /* the same gap under the signup as above it */
+@media (max-width: 900px) { .hero .su-perk { margin-top: 26px; } }
