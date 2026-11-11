@@ -1212,3 +1212,26 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 }
 /* short phones: a smaller logo, so the picture keeps a fair share of the screen */
 @media (max-width: 720px) and (max-height: 720px) { .lockup { --wm: min(66vw, 280px); } .tag { margin: 12px 0 20px; } .hero { padding-bottom: 28px; } }
+
+/* ---------- Top bar, tidied: the links sit dead centre on every page (the logo and the buttons take equal sides), one
+   quieter link style with a single underline for hover and for the page you are on, and a defined edge on the logo tile. ---------- */
+.nav { gap: 20px; }
+.nav .brand, .nav .nav-cta { flex: 1 1 0; }
+.nav .nav-cta { justify-content: flex-end; }
+.nav .brand { font-size: 22px; gap: 11px; letter-spacing: .01em; }
+.nav .brand img { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 0 0 1px rgba(255,255,255,.16); }
+.nav .links { flex: none; font-size: 15px; font-weight: 600; letter-spacing: .01em; }
+.nav .links a { opacity: 1; color: rgba(255,255,255,.8); }
+.nav .links a:hover, .nav .links a:focus-visible, .nav .links a[aria-current] { color: #fff; }
+.nav .links a[aria-current]::after { transform: scaleX(1); }
+.nav:not(.scrolled) .links a, .nav:not(.scrolled) .brand span { text-shadow: 0 1px 14px rgba(4,7,14,.75); }
+.nav .icon-btn { border-color: rgba(255,255,255,.22); }
+@media (max-width: 720px) { .nav .brand img { width: 34px; height: 34px; } }
+
+/* ---------- Buttons: flat fills, no gradients or bevels ---------- */
+.btn-solid { background: #fff; box-shadow: 0 10px 26px -16px rgba(0,0,0,.7); --fill: #7d5ff5; }
+
+/* ---------- Footer: readable type ---------- */
+.foot nav a { color: rgba(255,255,255,.88); }
+.foot-c { font-size: 15px; color: rgba(255,255,255,.7); }
+.nav .brand { pointer-events: none; } .nav .brand > * { pointer-events: auto; } /* the logo's side is wide (to centre the links) but only the logo itself is the link */

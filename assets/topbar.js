@@ -17,7 +17,7 @@
   } catch (e) {}
 
   var LINKS = [["Boki", "/#boki"], ["Hunters", "/#hunters"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
-  var DEX_LINKS = [["Home", "/"], ["Hunters", "/#hunters"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
+  var DEX_LINKS = LINKS; /* the same six on every page; the logo is the way home */
 
   var isDex = /\/bokidex(\/|$)/.test(location.pathname) && !!document.getElementById("app");
   var user = null, cfgP = null, doc = document, root = doc.documentElement;
@@ -41,7 +41,7 @@
   /* ---------- CSS ---------- */
   var CSS = [
     /* palette: site pages = the main page's dark palette; Bokidex = the page's own variables */
-    ".tb-scope{--tb-bg:#0b1224;--tb-ink:#f3f6fb;--tb-mute:#aab6cc;--tb-line:rgba(255,255,255,.14);--tb-acc:#ffb02e;--tb-acc-ink:#1a1100;--tb-fill:linear-gradient(180deg,#fff 0%,#e9eef6 100%);--tb-fill-ink:#0a1222;--tb-hover:rgba(255,255,255,.09);--tb-sh:rgba(0,0,0,.6);--tb-disp:\"Lilita\",\"Lilita One\",system-ui,sans-serif;--tb-body:\"Rubik\",system-ui,sans-serif}",
+    ".tb-scope{--tb-bg:#0b1224;--tb-ink:#f3f6fb;--tb-mute:#aab6cc;--tb-line:rgba(255,255,255,.14);--tb-acc:#fff;--tb-acc-ink:#0a1222;--tb-fill:linear-gradient(180deg,#fff 0%,#e9eef6 100%);--tb-fill-ink:#0a1222;--tb-hover:rgba(255,255,255,.09);--tb-sh:rgba(0,0,0,.6);--tb-disp:\"Lilita\",\"Lilita One\",system-ui,sans-serif;--tb-body:\"Rubik\",system-ui,sans-serif}",
     "html.tb-dex .tb-scope{--tb-bg:var(--panel);--tb-ink:var(--ink);--tb-mute:var(--mute);--tb-line:var(--line);--tb-acc:var(--accent);--tb-acc-ink:var(--bg);--tb-fill:var(--accent);--tb-fill-ink:var(--bg);--tb-hover:color-mix(in srgb,var(--ink) 8%,transparent);--tb-sh:var(--shadow,rgba(0,0,0,.35));--tb-disp:var(--display,\"Lilita One\"),system-ui,sans-serif;--tb-body:var(--body,\"Inter\"),system-ui,sans-serif}",
     ".tb-scope *{box-sizing:border-box}",
     ".tb-bar a,.tb-panel a{text-decoration:none}",
@@ -63,8 +63,7 @@
     ".tb-links a[aria-current]{color:var(--tb-ink);box-shadow:inset 0 -2px 0 var(--tb-acc);border-radius:0;padding:0 10px}",
 
     /* site pages: our extras inside the existing header */
-    "header.nav.tb-site .links{gap:clamp(12px,1.9vw,30px);font-size:15.5px}",
-    "header.nav.tb-site .links a[aria-current]{opacity:1;box-shadow:inset 0 -2px 0 var(--tb-acc)}",
+    "header.nav.tb-site .links{gap:clamp(12px,2.1vw,32px)}",
     "header.nav.tb-site{transition:background .25s,border-color .25s,transform .28s cubic-bezier(.2,.8,.2,1)}",
     "header.nav.tb-site.tb-hidden{transform:translateY(-100%)}",
     "header.nav.tb-site.tb-open{background:rgba(8,13,24,.96);border-color:var(--line)}",
