@@ -1291,3 +1291,29 @@ header.nav.at-hero #nav-join { opacity: 0; visibility: hidden; pointer-events: n
 @media (min-width: 340px) and (max-width: 720px) { #hunters .info .role { margin-bottom: 10px; } } /* phones: the same visible gap above the name as below it */
 .hero .su-perk { margin-top: 30px; } /* the same gap under the signup as above it */
 @media (max-width: 900px) { .hero .su-perk { margin-top: 26px; } }
+
+/* ---------- The rare egg, as a reward: a larger gold egg that rocks now and then as if about to hatch, with the prize
+   itself in big gold letters. Solid colours; the glow is a shadow. ---------- */
+.su-perk .perk { gap: 14px; align-items: center; }
+.su-perk .perk .perk-t { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; white-space: nowrap; }
+.su-perk .perk .perk-a { display: block; font-size: 16px; font-weight: 700; line-height: 1.15; color: #fff; }
+.su-perk .perk .rare { display: block; font-family: "Lilita"; font-weight: 400; font-size: 30px; line-height: 1; letter-spacing: .01em; }
+.su-perk svg.rare-egg, .sd-h svg.rare-egg { flex: none; width: 54px; height: 59px; margin: 0; overflow: visible; filter: drop-shadow(0 0 12px rgba(255,196,60,.5)); }
+.rare-egg .re-body { transform-origin: 18px 41px; }
+.rare-egg .re-glint { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .rare-egg .re-body { animation: egg-rock 4.2s ease-in-out infinite; }
+  .rare-egg .re-glint { animation: egg-glint 1.7s ease-in-out infinite alternate; }
+  .rare-egg .re-glint.g2 { animation-delay: -.9s; }
+  @keyframes egg-rock { 0%, 58%, 100% { transform: none; } 64% { transform: rotate(-10deg); } 72% { transform: rotate(8deg); } 80% { transform: rotate(-5deg); } 88% { transform: rotate(3deg); } }
+  @keyframes egg-glint { from { transform: scale(.55); opacity: .45; } to { transform: scale(1.1); opacity: 1; } }
+}
+html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
+.hero .su-perk { margin-top: 26px; }
+@media (max-width: 720px) { .su-perk .perk .rare { font-size: 27px; } .su-perk svg.rare-egg { width: 48px; height: 53px; } }
+/* after signing up: the same egg beside "Your rare egg is saved." */
+.sd-h { display: flex; align-items: center; gap: 14px; }
+.signup .sd-h, .join .sd-h { justify-content: center; }
+.hero-su .sd-h { justify-content: flex-start; }
+.nav-su .sd-h svg { display: none; }
+@media (max-width: 900px), (max-aspect-ratio: 5/4) { .hero-su .sd-h { justify-content: center; } .hero-su .sd-h .sd-t { text-align: left; } }
