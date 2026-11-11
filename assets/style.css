@@ -1317,3 +1317,10 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 .hero-su .sd-h { justify-content: flex-start; }
 .nav-su .sd-h svg { display: none; }
 @media (max-width: 900px), (max-aspect-ratio: 5/4) { .hero-su .sd-h { justify-content: center; } .hero-su .sd-h .sd-t { text-align: left; } }
+
+/* ---------- "Fight as one.": the bridge between the Boki and the Hunters, a Hunter and their Boki in one picture ---------- */
+.duo { position: relative; z-index: 2; background: var(--bg); padding: 0; }
+.duo .head { margin-bottom: clamp(28px, 3.4vw, 48px); }
+.duo-art { display: block; width: 100%; height: auto; aspect-ratio: 21 / 9; object-fit: cover; object-position: 50% 16%; border-radius: var(--r); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 40px 80px -40px rgba(0,0,0,.8); }
+@media (max-width: 900px) { .duo-art { aspect-ratio: 4 / 3; object-position: 54% 50%; border-radius: 18px; box-shadow: none; } }
+@media (max-width: 720px) { .duo .head h2 { font-size: clamp(34px, 9.4vw, 44px); } .duo .head .sub { font-size: 18px; max-width: 26ch; margin-top: 12px; } .duo .head { margin-bottom: 28px; } }
