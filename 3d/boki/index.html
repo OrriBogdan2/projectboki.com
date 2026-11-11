@@ -1,0 +1,231 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Boki 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+/* Layout: one big turntable stage on top, two rosters (Heroes, Boki) of pick-chips below. Dark-first: models read best on a deep stage. */
+:root{
+  --bg:#14121c; --panel:#1d1a29; --line:#332e47; --fg:#ece8f6; --muted:#9d96b8;
+  --accent:#ffb347; --boki:#7fd6c2; --stage1:#2a2540; --stage2:#100e17;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f3f1f8; --panel:#ffffff; --line:#dcd6ea; --fg:#1d1a29; --muted:#625b7c;
+  --accent:#b35f00; --boki:#137a66; --stage1:#e6e1f2; --stage2:#c9c1de; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f3f1f8; --panel:#ffffff; --line:#dcd6ea; --fg:#1d1a29; --muted:#625b7c;
+  --accent:#b35f00; --boki:#137a66; --stage1:#e6e1f2; --stage2:#c9c1de; color-scheme:light}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:22px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,44px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--muted);max-width:65ch}
+.stage{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 35%,var(--stage1),var(--stage2))}
+#mv{width:100%;height:min(68vh,620px);min-height:340px;display:block;touch-action:pan-y}
+.spin{position:absolute;top:54px;right:12px;z-index:2;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent);color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.spin[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.cap{position:absolute;left:16px;bottom:14px;right:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 14px;pointer-events:none}
+.cap .nm{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,36px);line-height:1}
+.cap .meta{color:var(--muted);font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.t-new{color:var(--accent)} .t-old{color:var(--muted)} .t-b{color:var(--boki)}
+.nav{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+.nav button{font:inherit;font-weight:700;background:var(--panel);color:var(--fg);border:1px solid var(--line);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+.nav button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.lbl{position:absolute;left:0;top:0;display:none;pointer-events:none;text-align:center;font-size:13px;line-height:1.15;white-space:nowrap;text-shadow:0 0 4px var(--stage2)}
+.stage.lineup .lbl{display:grid}
+.stage.lineup #mv{height:min(46vh,430px);min-height:300px}
+.lbl b{font-family:var(--display);font-weight:800}
+.lbl span{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.lbl.rule{color:var(--accent);font-size:12px;font-weight:700;padding-right:6px}
+.stage.dense .lbl:not(.rule) span{display:none}
+.stage.dense .lbl b{font-size:11px}
+.load{position:absolute;top:14px;left:16px;color:var(--muted);font-size:13px}
+section h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 4px}
+section .sub{color:var(--muted);margin:0 0 10px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.chip{font:inherit;text-align:left;background:var(--panel);color:var(--fg);border:1px solid var(--line);
+  border-radius:10px;padding:9px 12px;cursor:pointer;display:grid;gap:2px;min-width:0}
+.chip b{font-weight:700}
+.chip span{font-size:12.5px;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+#boki .chip[aria-pressed="true"]{border-color:var(--boki);box-shadow:inset 0 0 0 1px var(--boki)}
+.chip:focus-visible,.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px;background:var(--muted)}
+.dot.new{background:var(--accent)} .dot.b{background:var(--boki)}
+footer{color:var(--muted);font-size:13px}
+.panel{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+@media (max-width:760px){.panel{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.box h3{margin:0;font-family:var(--display);font-weight:600;font-size:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.anims{display:flex;flex-wrap:wrap;gap:6px;max-height:156px;overflow:auto}
+.anims button,.ctl button{font:inherit;font-size:13px;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:4px 9px;cursor:pointer}
+.anims button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#1d1a29}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.ctl input[type=range]{width:120px;accent-color:var(--accent)}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.score{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%}
+.good{color:#3fbf7f}.mid{color:var(--accent)}.low{color:#e8585c}
+.bar i.good{background:#3fbf7f}.bar i.mid{background:var(--accent)}.bar i.low{background:#e8585c}
+details{border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+.fix{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.fix li{display:grid;gap:2px;font-size:14px}
+.fix .w{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.pr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+.pr.high{color:#e8585c}.pr.medium{color:var(--accent)}.pr.low{color:var(--muted)}
+.chip .sc{font-variant-numeric:tabular-nums;font-weight:700;margin-left:6px}
+.lock{min-height:70vh;display:grid;place-items:center}
+.lock form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px;width:min(360px,100%)}
+.lock h1{font-family:var(--display);font-weight:800;font-size:28px;margin:0}
+.lock input{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.lock button{font:inherit;font-weight:700;padding:10px;border-radius:8px;border:0;background:var(--accent);color:#1d1a29;cursor:pointer}
+.lock .err{color:#e8585c;font-size:14px;min-height:1.2em;margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tabs a{font-weight:700;text-decoration:none;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 16px}
+.tabs a[aria-current="page"]{color:#1d1a29;background:var(--boki);border-color:var(--boki)}
+.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lines{display:grid;gap:18px}
+.line h3{font-family:var(--display);font-weight:600;font-size:15px;margin:0 0 6px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.tile{position:relative;font:inherit;text-align:center;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 6px 8px;cursor:pointer;display:grid;gap:2px;min-width:0}
+.tile img,.tile .ph{width:100%;aspect-ratio:1;object-fit:contain;border-radius:6px;background:radial-gradient(ellipse at 50% 40%,var(--stage1),var(--stage2));display:block}
+.tile b{font-size:13.5px;overflow-wrap:anywhere}.tile span{font-size:12px;color:var(--muted)}
+.tile[aria-pressed="true"]{border-color:var(--boki);box-shadow:inset 0 0 0 1px var(--boki)}
+.tile[disabled]{opacity:.55;cursor:default}
+.tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.badge{position:absolute;top:10px;left:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 7px;border-radius:999px;background:var(--bg);color:#e8585c;border:1px solid #e8585c}
+.t-redo{color:#e8585c}.t-cand{color:var(--accent)}
+.why{max-width:70ch}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}</style></head><body>
+<div class="wrap lock" id="lock"><form id="lf"><h1>Boki 3D</h1><label for="pw">Password</label>
+<input id="pw" type="password" autocomplete="current-password" required><label style="font-size:14px;color:var(--muted)"><input id="rem" type="checkbox"> Remember on this device</label>
+<button type="submit">Open</button><p class="err" id="err"></p></form></div>
+<div class="wrap" id="app" hidden>
+  <header>
+    <h1>Boki Model Room</h1>
+    <nav class="tabs" aria-label="Model Room sections"><a href="../">Hunters</a><a href="./" aria-current="page">Boki</a><a href="../v95/">v95 masters</a></nav>
+    <p id="intro"></p>
+  </header>
+  <div class="stage">
+    <canvas id="mv" aria-label="3D model viewer"></canvas>
+    <div class="load" id="load"></div>
+    <div class="nav"><button id="prev" aria-label="Previous model">&larr;</button><button id="next" aria-label="Next model">&rarr;</button></div>
+    <button id="spin" class="spin" type="button" aria-pressed="false" title="Auto-rotate the model">Auto-rotate: Off</button>
+    <div class="cap"><span class="nm" id="nm"></span><span id="tg"></span><span class="meta" id="meta"></span></div>
+  </div>
+  <p class="meta why" id="why" style="margin:-10px 0 0;color:var(--muted)"></p>
+  <section id="boki"><h2>Boki</h2><p class="sub" id="bsub"></p><div class="lines" id="lines"></div></section>
+  <section id="cands" hidden><h2>New hunter passes</h2>
+    <p class="sub">The newest candidate model per hunter from the v95 work folders (newest file by time). Candidates, not shipped.</p><div class="tiles" id="cgrid"></div></section>
+  <footer id="foot"></footer>
+</div>
+<script type="module">
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {DRACOLoader} from "three/addons/loaders/DRACOLoader.js";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js";
+const $=id=>document.getElementById(id), canvas=$("mv"), load=$("load");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();
+scene.environment=new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),0.04).texture;
+scene.add(new THREE.HemisphereLight(0xffffff,0x444455,0.6));
+const sun=new THREE.DirectionalLight(0xffffff,1.4);sun.position.set(2,4,3);scene.add(sun);
+const camera=new THREE.PerspectiveCamera(30,1,0.01,1000);
+const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.autoRotate=false;controls.autoRotateSpeed=1.4;
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener("resize",resize);resize();
+(function tick(){requestAnimationFrame(tick);controls.update();renderer.render(scene,camera)})();
+{const sb=$("spin");let on=false;try{on=localStorage.getItem("boki-room-spin")==="1"}catch(e){}
+ const set=v=>{on=v;controls.autoRotate=v;sb.setAttribute("aria-pressed",String(v));sb.textContent="Auto-rotate: "+(v?"On":"Off");try{localStorage.setItem("boki-room-spin",v?"1":"0")}catch(e){}};
+ set(on);sb.onclick=()=>set(!on)}
+const draco=new DRACOLoader().setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/");
+const loader=new GLTFLoader().setDRACOLoader(draco);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let KEY=null;
+async function deriveKey(pw){const k=await (await fetch("../d/key.json",{cache:"no-store"})).json();
+  const b64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  const d=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",salt:b64(k.salt),iterations:k.iter,hash:"SHA-256"},base,512));
+  const chk=[...new Uint8Array(await crypto.subtle.digest("SHA-256",d.slice(32)))].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(chk!==k.check)throw new Error("wrong password");
+  const w=b64(k.wrapped), m=w.map((x,i)=>x^d[i]);
+  return crypto.subtle.importKey("raw",m,{name:"AES-GCM"},false,["decrypt"])}
+async function decFetch(path){const r=await fetch(path);if(!r.ok)throw new Error("missing file");const b=new Uint8Array(await r.arrayBuffer());
+  return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12))}
+// Box of the posed model (skinned meshes need their bones updated first).
+function box(root){root.updateMatrixWorld(true);const b=new THREE.Box3();
+  root.traverse(o=>{if(!o.isMesh)return;if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();b.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld))});
+  if(b.isEmpty())b.setFromObject(root);return b}
+let model=null, token=0; const cache=new Map();
+async function setModel(src,face){
+  const my=++token; load.textContent="Loading…";
+  try{
+    let buf=cache.get(src); if(!buf){buf=await decFetch(src);cache.set(src,buf);if(cache.size>12)cache.delete(cache.keys().next().value)}
+    if(my!==token)return;
+    const g=await new Promise((res,rej)=>loader.parse(buf.slice(0),"",res,rej)); if(my!==token)return;
+    g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.side=THREE.DoubleSide}});
+    if(model)scene.remove(model); model=g.scene; scene.add(model);
+    const bx=box(model), size=bx.getSize(new THREE.Vector3()), c=bx.getCenter(new THREE.Vector3());
+    const r=Math.max(size.x,size.y,size.z), vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
+    const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12;
+    controls.target.set(c.x,c.y+size.y*0.05,c.z);
+    camera.position.copy(controls.target).addScaledVector(new THREE.Vector3(0.38,0.12,face).normalize(),d);
+    camera.near=r/100;camera.far=r*100;camera.updateProjectionMatrix();controls.minDistance=d*0.25;controls.maxDistance=d*3;
+    load.textContent="";
+  }catch(e){if(my===token)load.textContent="This model did not load ("+(e.message||e)+")."}}
+// Everything pickable, in page order: Boki (with a model) then candidate passes.
+let list=[], cur=0, tiles=[];
+function show(i,user){cur=(i+list.length)%list.length;const x=list[cur];
+  setModel(x.m,x.cand?-1:1); // Meshy exports face +Z; the hunter files come from the game (face -Z)
+  canvas.setAttribute("aria-label",x.name+" 3D model"); $("nm").textContent=x.name;
+  $("tg").innerHTML=x.cand?'<span class="tag t-cand">candidate, not shipped</span>':x.state==="redo"?'<span class="tag t-redo">redo</span>':"";
+  $("meta").textContent=x.cand?x.file+" · "+x.updated+" UTC":"#"+x.num+(x.types.length?" · "+x.types.join(" / "):"")+" · stage "+x.stage+" of "+x.stages;
+  $("why").textContent=x.state==="redo"?"Why redo: "+x.redo.why+" (score "+x.redo.score+")":"";
+  tiles.forEach((t,j)=>t.setAttribute("aria-pressed",j===cur));
+  if(user){try{history.replaceState(null,"","#"+x.id)}catch(e){location.hash=x.id}
+    document.querySelector(".stage").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest"})}}
+$("prev").onclick=()=>show(cur-1,true);$("next").onclick=()=>show(cur+1,true);
+addEventListener("keydown",e=>{if(e.target.closest&&e.target.closest("input"))return;if(e.key==="ArrowRight")show(cur+1,true);if(e.key==="ArrowLeft")show(cur-1,true)});
+// Thumbnails are encrypted files: fetch + decrypt only when a tile scrolls into view.
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;io.unobserve(en.target);const im=en.target;
+  decFetch(im.dataset.t).then(b=>{im.src=URL.createObjectURL(new Blob([b],{type:"image/webp"}))}).catch(()=>{})}),{rootMargin:"300px"});
+function tile(x,sub){const b=document.createElement("button");b.type="button";b.className="tile";
+  b.innerHTML=(x.t?`<img alt="" data-t="${x.t}" width="112" height="112">`:'<div class="ph"></div>')+`<b>${esc(x.name)}</b><span>${esc(sub)}</span>`+(x.state==="redo"?'<i class="badge">redo</i>':"");
+  const im=b.querySelector("img"); if(im)io.observe(im);
+  if(x.m){const i=list.push(x)-1;tiles.push(b);b.onclick=()=>show(i,true)}else{b.disabled=true;b.querySelector("span").textContent="no model"}
+  return b}
+function boot(man){
+  $("lock").hidden=true;$("app").hidden=false;resize();
+  const its=man.items, withM=Object.values(its).filter(x=>x.m), redo=withM.filter(x=>x.state==="redo").length;
+  $("intro").textContent="Every new Boki 3D model, grouped by evolution line. Drag to spin, pinch or scroll to zoom, arrow keys step through.";
+  $("bsub").textContent=withM.length+" Boki models shown, "+redo+" marked redo (the generator's own check wants another pass). "+(Object.keys(its).length-withM.length)+" have no model.";
+  const L=$("lines");
+  man.groups.forEach(g=>{const s=document.createElement("div");s.className="line";
+    const h=document.createElement("h3");h.textContent=g.map(n=>its[n].name).join(" → ");s.appendChild(h);
+    const t=document.createElement("div");t.className="tiles";g.forEach(n=>t.appendChild(tile(its[n],"stage "+its[n].stage+(its[n].types.length?" · "+its[n].types.join("/"):""))));
+    s.appendChild(t);L.appendChild(s)});
+  if(man.cands.length){$("cands").hidden=false;man.cands.forEach(c=>{c.cand=true;c.state="cand";$("cgrid").appendChild(tile(c,c.updated.slice(5,10)+" · "+c.file.split("/").pop()))})}
+  $("foot").textContent="Built "+man.asof+". Web copies: about 25k triangles (hunter candidates 40k), 1024 px base-colour texture, no animation or lighting maps.";
+  const fromHash=()=>{const i=list.findIndex(x=>x.id===location.hash.slice(1));show(i>=0?i:0,false)};
+  addEventListener("hashchange",fromHash);fromHash()}
+async function unlock(pw,remember){KEY=await deriveKey(pw);
+  const man=JSON.parse(new TextDecoder().decode(await decFetch("d/manifest.bin")));
+  try{if(remember)localStorage.setItem("bmr",pw)}catch(e){}
+  boot(man)}
+$("lf").addEventListener("submit",async e=>{e.preventDefault();const err=$("err");err.textContent="Checking…";
+  try{await unlock($("pw").value,$("rem").checked);err.textContent=""}catch(x){KEY=null;err.textContent=x.message==="wrong password"?"Wrong password.":"Could not open: "+x.message}});
+(async()=>{let p=null;try{p=localStorage.getItem("bmr")}catch(e){} if(p){try{await unlock(p,false)}catch(e){$("err").textContent=e.message==="wrong password"?"":"Could not open: "+e.message;if(e.message==="wrong password"){try{localStorage.removeItem("bmr")}catch(_){}}}}})();
+</script>
+</body></html>
