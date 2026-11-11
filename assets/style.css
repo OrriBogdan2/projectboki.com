@@ -1276,3 +1276,15 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
   @keyframes tr-drift { from { transform: none; } to { transform: scale(1.06) translate3d(-1%, -1%, 0); } }
 }
 html.lite .tr-media img { animation: none !important; }
+
+/* ---------- The rare egg: gold, speckled, with a glint, and its words in the same gold ---------- */
+.rare { color: #ffd24a; font-weight: inherit; }
+.su-perk { font-size: 18px; }
+.su-perk > span { gap: 10px; }
+.su-perk .rare { font-weight: 800; }
+.su-perk svg.rare-egg { width: 26px; height: 26px; margin-top: -4px; }
+.hero .su-perk, .join .su-perk { text-shadow: 0 1px 14px rgba(4,7,14,.8); }
+@media (max-width: 720px) { .su-perk { font-size: 17px; } .su-perk svg.rare-egg { width: 24px; height: 24px; } }
+.su-perk span span { display: inline; }
+.su-perk svg.rare-egg { width: 30px; height: 30px; margin-top: -6px; }
+@media (max-width: 720px) { .su-perk svg.rare-egg { width: 26px; height: 26px; } }
