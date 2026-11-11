@@ -1235,3 +1235,7 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 .foot nav a { color: rgba(255,255,255,.88); }
 .foot-c { font-size: 15px; color: rgba(255,255,255,.7); }
 .nav .brand { pointer-events: none; } .nav .brand > * { pointer-events: auto; } /* the logo's side is wide (to centre the links) but only the logo itself is the link */
+
+/* The first screen no longer shifts for the cookie message on wide screens: its logo and signup now sit on the left, clear
+   of the message, so there is nothing to lift (and nothing drops back when the message is dismissed). Short windows keep the lift. */
+@media (min-width: 901px) and (min-aspect-ratio: 401/300) and (min-height: 681px) { .hero { padding-bottom: clamp(56px, 9vh, 96px); } }
