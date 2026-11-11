@@ -279,16 +279,16 @@ if (pick) {
   // row to move along, which one picture with two small arrows did not. On phones they are slivers at the screen edges.
   const peeks = stage && pinEl ? [-1, 1].map((d) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "h-peek " + (d < 0 ? "prev" : "next");
-    b.innerHTML = `<img alt="" decoding="async" loading="lazy"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
+    b.innerHTML = `<img alt="" decoding="async" loading="lazy"><img class="pk2" alt="" decoding="async" hidden><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
     b.addEventListener("click", () => show(current + d));
     pinEl.appendChild(b);
-    return { el: b, img: b.firstChild, d };
+    return { el: b, img: b.firstChild, inc: b.children[1], d }; // inc: the picture that rides in while the stage slides
   }) : [];
   let peeksLive = false; // their art is only fetched once the Hunters are getting close
-  const setPeeks = () => peeksLive && peeks.forEach((p) => {
+  const setPeeks = (quiet) => peeksLive && peeks.forEach((p) => { // quiet: swap without the fade (the slide has already brought the new picture in)
     const h = HUNTERS[(current + p.d + HUNTERS.length) % HUNTERS.length], u = src(h[0], 960);
     p.el.setAttribute("aria-label", `${p.d < 0 ? "Previous" : "Next"} Hunter: ${h[1]}`);
-    if (p.img.getAttribute("src") !== u) { p.img.style.opacity = "0"; p.img.onload = () => { p.img.style.opacity = ""; }; p.img.src = u; }
+    if (p.img.getAttribute("src") !== u) { if (!quiet) { p.img.style.opacity = "0"; p.img.onload = () => { p.img.style.opacity = ""; }; } p.img.src = u; }
   });
   const layPeeks = () => {
     if (!peeks.length) return;
@@ -742,7 +742,19 @@ if (pick) {
     hi.addEventListener("load", () => hi.classList.add("ok"));
     let mode = 0, tgt = -1, dir = 0, x = 0, rid = 0, token = 0, drag = null; // mode: 0 resting, 1 held, 2 moving, 3 settling in
     const W = () => shotEl.offsetWidth + GAP;
-    const place = (dx) => { x = dx; cw.style.translate = `${dx.toFixed(1)}px 0`; inc.style.translate = `${(dx + dir * W()).toFixed(1)}px 0`; };
+    // The edge previews ride along: each one's picture moves out the same way the stage does while its next picture moves
+    // in behind it, so all three windows shift together like one belt.
+    let belt = false, beltTok = 0;
+    const place = (dx) => {
+      x = dx; cw.style.translate = `${dx.toFixed(1)}px 0`; inc.style.translate = `${(dx + dir * W()).toFixed(1)}px 0`;
+      if (belt) { const f = dx / W(); peeks.forEach((p) => { p.img.style.translate = `${(f * 100).toFixed(2)}% 0`; p.inc.style.translate = `${((f + dir) * 100).toFixed(2)}% 0`; }); }
+    };
+    const beltOff = () => { // once each preview's own picture is ready again, it takes over and the riding picture steps aside
+      if (!belt) return;
+      const my = ++beltTok;
+      peeks.forEach((p) => { const fin = () => { if (my !== beltTok) return; p.img.style.translate = ""; p.inc.hidden = true; p.inc.style.translate = ""; }; (p.img.decode ? p.img.decode() : Promise.resolve()).then(fin, fin); });
+      belt = false;
+    };
     const label = (i) => {
       const [id, name, title, , role] = HUNTERS[i];
       art.alt = `${name}, ${title}`; stage.dataset.h = id;
@@ -753,8 +765,10 @@ if (pick) {
       hi.classList.remove("ok"); hi.removeAttribute("srcset"); hi.removeAttribute("src");
       lo.src = src(id, 960); hi.sizes = art.sizes; hi.srcset = set(id);
       inc.hidden = false; info.classList.add("swap");
+      belt = peeksLive; beltTok++;
+      if (belt) peeks.forEach((p) => { p.inc.src = src(HUNTERS[(i + p.d + HUNTERS.length) % HUNTERS.length][0], 960); p.inc.hidden = false; });
     };
-    const rest = () => { rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true; info.classList.remove("swap"); setPeeks(); };
+    const rest = () => { rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true; info.classList.remove("swap"); setPeeks(true); beltOff(); };
     const run = (to, ms, then) => {
       mode = 2; const from = x, t0 = performance.now(), my = ++rid;
       const f = (now) => {
@@ -767,7 +781,7 @@ if (pick) {
     };
     const commit = () => { // landed: the frame's own picture takes the new Hunter under the incoming layer, then that layer steps aside
       const i = tgt, id = HUNTERS[i][0], my = ++token;
-      mode = 3; label(i); info.classList.remove("swap"); setPeeks();
+      mode = 3; label(i); info.classList.remove("swap"); setPeeks(true); // (the previews' own pictures are out of view right now)
       cw.style.translate = ""; x = 0; inc.style.translate = "0px 0";
       art.srcset = set(id); art.src = src(id, 1600);
       const done = () => { if (my === token) rest(); };

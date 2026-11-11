@@ -1239,3 +1239,7 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 /* The first screen no longer shifts for the cookie message on wide screens: its logo and signup now sit on the left, clear
    of the message, so there is nothing to lift (and nothing drops back when the message is dismissed). Short windows keep the lift. */
 @media (min-width: 901px) and (min-aspect-ratio: 401/300) and (min-height: 681px) { .hero { padding-bottom: clamp(56px, 9vh, 96px); } }
+
+/* Hunters: the edge previews carry a second picture that rides in while the stage slides (site.js) */
+.h-peek .pk2 { position: absolute; left: 0; top: 0; }
+.h-peek img[hidden] { display: none; }
