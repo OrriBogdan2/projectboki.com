@@ -1,19 +1,19 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
-ref origin/ext/mc-fix-1109b
-commit b5d030ef8199f55199f09c2f1c8fd3a1128ea412
-built 2026-11-10T03:00Z
-h_vex 613f3ae64d83d0ec08869a8d1699eaa913f67496 art/wardens/vex/vex.glb 8e7bcab6e 2026-11-08
+ref origin/main
+commit 88b06b9e7ea9f1b354013659aa5d767d0afb30b4
+built 2026-11-11T07:00Z
+h_vex 50ed67ce2d37f1a4b07187dd2105cf9422eac0d6 art/wardens/vex/vex.glb 52cd75906 2026-11-10
 h_breaker 5407fd1b87485e7a95b7c533a8ee09c06f5d4ddd art/wardens/breaker/breaker.glb 8a738e4dd 2026-11-08
-h_claire 134421885a15641975c1415dfc75edb7c59b30b6 art/wardens/claire/claire.glb 3306d774a 2026-11-09
-h_kael 4b2808ecac086b0d0d4c95f8481b9a09bd0058fd art/wardens/kael/kael.glb df7b2fa62 2026-11-08
-h_cinder 202116e51df49a810971e1fc65cd7b4314a03155 art/wardens/cinder/cinder.glb e557cd71e 2026-11-09
+h_claire 0add3c8aa48057b5eaa3ed1af5b5f4b65d6e7a59 art/wardens/claire/claire.glb 24abb8085 2026-11-10
+h_kael f0938dc18e08c2423fa4e3456109e53f633a096f art/wardens/kael/kael.glb 4e78aaa3b 2026-11-11
+h_cinder e28dba53f89ab866d8cb4a25679d3f66e45fd62b art/wardens/cinder/cinder.glb 0ca1c32c1 2026-11-11
 h_tarek 2aea771105cb9e270563b7d553729a383746758a art/wardens/tarek/tarek.glb f2cb1fa91 2026-11-09
-h_ryzz a3efbcfb6d6a5014687850dce633a69049fbd1c3 art/wardens/ryzz/ryzz.glb 6e5ad2b9c 2026-11-08
-h_dredge 41e30a25a09f0f3e04622f58c1b50384537f898f art/wardens/dredge/dredge.glb d6e54648c 2026-11-08
-h_pip 63a607c485b48eb199575729efd24c100bb6c746 art/wardens/pip/pip.glb f3c4e0e20 2026-11-08
-h_sable 6fc47886e194353d4182b01af02675e4117c928f art/wardens/sable/sable.glb 628195e5e 2026-11-07
-h_hem 5c85afd33108b85b761dcf591d8b2150c8a98ded art/wardens/hem/hem.glb e4b5f2ea6 2026-11-08
-h_ostra 0916437f4c54f24ff815f8f9c2dee64c655ab6eb art/wardens/ostra/ostra.glb 60e91e352 2026-11-08
+h_ryzz 387e11e5aa0b30160a8d98c1769b55ed1e8aefff art/wardens/ryzz/ryzz.glb 2d5a5d20d 2026-11-11
+h_dredge 2bbffd913d6c00eb0c7cb424edfee7b5274c35e3 art/wardens/dredge/dredge.glb 466f2d6ec 2026-11-10
+h_pip 34703783e471d7a64ac8c385668d3de68f6c1bab art/wardens/pip/pip.glb 2e0c6ac47 2026-11-10
+h_sable aae1a0d47e0e164591be03eda63d74a128711823 art/wardens/sable/sable.glb afc5a905e 2026-11-10
+h_hem 73441f1b8b26b8ba442909dd55dc7b371e34d55c art/wardens/hem/hem.glb 5feab5daf 2026-11-10
+h_ostra 9632c7f859af05efb6fbed51b41d19b40a04e2d9 art/wardens/ostra/ostra.glb 8a95b0091 2026-11-11
 b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
 b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
 b_cairnback sha256:0959fad3084d43f0219ee10da162c49e4a5d27f3 snapshot
