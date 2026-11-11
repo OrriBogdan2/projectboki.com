@@ -10,6 +10,11 @@ It is safe to run more than once. It adds:
   3. swipe left / right between entries, and between pictures when one is zoomed
   4. the shared top bar (assets/topbar.js: wordmark, links, Sign in / admin state, hamburger on phones) plus the
      layout reserve for it, so the sticky header and filter bar sit under it
+  5. UI fixes (11-11): the male/female badge drawn as SVG in the same pill as "N FORMS" (iOS drew the glyphs from a
+     taller fallback font and clipped the pill), tapping the badge opens the female look / the other form, an opaque
+     sticky filter bar (cards no longer show through it), room for focus rings in the type-chip row, card labels for
+     screen readers, contrast on the card number and entry kicker, bottom room for the Safari address pill, font
+     preconnect
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -55,6 +60,82 @@ if "<script src=\"/assets/topbar.js" not in s:
     at = s.find('<script src="owner.js')
     if at < 0: at = s.rfind("</body>")
     s = s[:at] + '<script src="/assets/topbar.js?v=1" defer></script>\n' + s[at:]
+
+# 5. UI fixes (11-11). Markers: "bx-fix-1111" (css + click script), "site fix 11-11" (badge + card label + sex toggle).
+SVG_M = '<svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg>'
+SVG_F = '<svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V22M8.5 18.5h7"/></svg>'
+FBADGE = ('function fbadgeHTML(e){ // owner 11-10, site fix 11-11 (tools/bokidex/patch.py): one pill for "N forms" and/or the male/female mark.\n'
+  '  // The symbols are SVG, not the \\u2642\\u2640 glyphs: iOS drew those from a taller fallback font and the pill clipped. A tap on it opens the female look / the other form.\n'
+  '  const sx=!e.unknown&&e.sex_forms, n=e.forms?e.forms.length:0;\n'
+  '  if(!sx&&!n)return"";\n'
+  '  const tap=sx&&femReady(e)?"f":n>1?"form":"";\n'
+  '  const tip=[n?n+" forms":"",sx?"male and female looks":""].filter(Boolean).join(", ")+(tap==="f"?" (tap: female look)":tap?" (tap: the other form)":"");\n'
+  '  return`<span class="fbadge"${tap?` data-alt="${tap}"`:""} title="${esc(cap1(tip))}">${n?`<span class="fn">${n} forms</span>`:""}${n&&sx?\'<i class="fsep"></i>\':""}${sx?`<span class="fsx">' + SVG_M + SVG_F + '</span>`:""}</span>`;\n'
+  '}\n'
+  'function cardLabel(e){ // site fix 11-11: one clean spoken label per card (number, name, types, forms) instead of name twice\n'
+  '  if(e.unknown)return`#${pad(e.num)}, not yet discovered`;\n'
+  '  const n=e.forms?e.forms.length:0;\n'
+  '  return[`#${pad(e.num)} ${e.name}`,typesOf(e).join(" and "),n?n+" forms":"",e.sex_forms?"male and female looks":""].filter(Boolean).join(", ");\n'
+  '}\n')
+FBADGE = FBADGE
+if "site fix 11-11" not in s:
+    s = re.sub(r'function fbadgeHTML\(e\)\{.*?\n\}\n', lambda m: FBADGE, s, count=1, flags=re.S)
+    s = s.replace('<a class="dcard${un?" unk dim":dim}" role="listitem"', '<a class="dcard${un?" unk dim":dim}" role="listitem" aria-label="${esc(cardLabel(e))}"', 1)
+    s = s.replace('<span aria-hidden="true">\\u2642</span> Male', '<span class="sxi" aria-hidden="true">' + SVG_M + '</span> Male', 1)
+    s = s.replace('<span aria-hidden="true">\\u2640</span> Female', '<span class="sxi" aria-hidden="true">' + SVG_F + '</span> Female', 1)
+FIX_CSS = """<!-- UI fixes 11-11 (site repo: tools/bokidex/patch.py) bx-fix-1111 -->
+<style>
+/* card badge: one fixed-height pill for every variant (N forms, male/female, both) */
+.dcard .fbadge{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:20px;padding:0 8px;box-sizing:border-box;font:700 .62rem/1 var(--mono);letter-spacing:.06em;white-space:nowrap;overflow:visible}
+.dcard .fbadge .fn{display:block;line-height:1;transform:translateY(.02em)}
+.dcard .fbadge .fsx{display:inline-flex;align-items:center;gap:1px;font:inherit;letter-spacing:0}
+.dcard .fbadge .fsep{display:block;width:1px;height:10px;background:currentColor;opacity:.4}
+.sxg{display:block;width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sxi{display:inline-flex;vertical-align:-2px}.sxi .sxg{width:13px;height:13px}
+.dcard .fbadge[data-alt]{cursor:pointer}
+.dcard .fbadge[data-alt]::after{content:"";position:absolute;inset:-12px -10px}
+@media (hover:hover) and (pointer:fine){.dcard .fbadge[data-alt]{transition:box-shadow .15s}.dcard .fbadge[data-alt]:hover{box-shadow:0 0 0 2px var(--ty)}}
+/* sticky filter bar: opaque (cards no longer show through), a little air top and bottom, a soft edge over the grid */
+.dbar{background:var(--bg);margin-top:0;padding:8px 0 6px}
+.dbar::before{content:"";position:absolute;inset:0 -16px;background:var(--bg);z-index:-1}
+.dbar.stuck::before{top:calc(-1 * (var(--tbo,0px) + env(safe-area-inset-top,0px)))}
+.dbar::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:12px;background:linear-gradient(var(--bg),color-mix(in srgb,var(--bg) 0%,transparent));pointer-events:none}
+#dgrid{margin-top:14px}
+/* type chips: room for the focus ring and chip edges inside the scroller */
+.tf{margin-top:6px;padding:4px 3px 5px;scroll-padding-inline:3px}
+@media (max-width:759px){.dbar{margin-top:0;padding-top:6px}.tf{margin-top:4px}}
+/* card type line: tighter tracking on phones so two types fit on one line */
+@media (max-width:759px){.tl{letter-spacing:.1em}.tl+.tl::before{margin:0 .35em 0 .3em}}
+/* contrast (WCAG AA): card number on the light art panel, entry kicker in light theme */
+:root[data-theme="light"] .dn{color:#5a5e6b}
+:root[data-theme="light"] .mkick{color:#7f5c2a}
+/* room at the end for the Safari address pill on phones */
+.wrap{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+@media (max-width:759px){.wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
+</style>
+"""
+FIX_JS = """<script>
+/* bx-fix-1111 (site repo: tools/bokidex/patch.py): a tap on a card's badge opens the female look, or the other form. */
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest&&ev.target.closest(".dcard .fbadge[data-alt]");
+  if(!b||ev.metaKey||ev.ctrlKey||ev.shiftKey||typeof byId==="undefined")return;
+  const e=byId[b.closest(".dcard").dataset.id];if(!e)return;
+  if(b.dataset.alt==="f"){sx="f";sxFor=e.id;return} /* the card's own click then opens the entry, on the female look */
+  if(e.forms&&e.forms[1]){ev.preventDefault();ev.stopPropagation();go(L_(e.forms[1].id))}
+},true);
+/* bx-fix-1111: while the filter bar is pinned, its opaque backing also fills the strip behind the (translucent) top bar */
+(function(){let bar=null,raf=0;const tick=()=>{raf=0;bar=bar||document.querySelector(".dbar");if(!bar)return;
+  const top=parseFloat(getComputedStyle(bar).top)||0;bar.classList.toggle("stuck",bar.getBoundingClientRect().top<=top+1&&scrollY>0)};
+  addEventListener("scroll",()=>{if(!raf)raf=requestAnimationFrame(tick)},{passive:true});addEventListener("resize",tick);})();
+</script>
+"""
+if "bx-fix-1111" not in s:
+    s = s.replace("</head>", FIX_CSS + "</head>", 1)
+    at = s.find('<script src="owner.js')
+    if at < 0: at = s.rfind("</body>")
+    s = s[:at] + FIX_JS + s[at:]
+if "fonts.gstatic.com" not in s:
+    s = s.replace('<link rel="stylesheet" href="https://fonts.googleapis.com', '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com', 1)
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")

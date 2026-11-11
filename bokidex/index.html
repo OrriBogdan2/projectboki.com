@@ -18,6 +18,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=7">
 <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <script>/* theme: saved choice, else whatever the host set, else the OS setting. Set before first paint. */
 (function(){var h=document.documentElement,t=null;try{t=localStorage.getItem("bokidex-theme")}catch(e){}
@@ -606,6 +608,36 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 <!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->
 <script>document.documentElement.classList.add("tb-dex")</script>
 <style>html.tb-dex{--tbh:52px;--tbo:var(--tbh)}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>
+<!-- UI fixes 11-11 (site repo: tools/bokidex/patch.py) bx-fix-1111 -->
+<style>
+/* card badge: one fixed-height pill for every variant (N forms, male/female, both) */
+.dcard .fbadge{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:20px;padding:0 8px;box-sizing:border-box;font:700 .62rem/1 var(--mono);letter-spacing:.06em;white-space:nowrap;overflow:visible}
+.dcard .fbadge .fn{display:block;line-height:1;transform:translateY(.02em)}
+.dcard .fbadge .fsx{display:inline-flex;align-items:center;gap:1px;font:inherit;letter-spacing:0}
+.dcard .fbadge .fsep{display:block;width:1px;height:10px;background:currentColor;opacity:.4}
+.sxg{display:block;width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sxi{display:inline-flex;vertical-align:-2px}.sxi .sxg{width:13px;height:13px}
+.dcard .fbadge[data-alt]{cursor:pointer}
+.dcard .fbadge[data-alt]::after{content:"";position:absolute;inset:-12px -10px}
+@media (hover:hover) and (pointer:fine){.dcard .fbadge[data-alt]{transition:box-shadow .15s}.dcard .fbadge[data-alt]:hover{box-shadow:0 0 0 2px var(--ty)}}
+/* sticky filter bar: opaque (cards no longer show through), a little air top and bottom, a soft edge over the grid */
+.dbar{background:var(--bg);margin-top:0;padding:8px 0 6px}
+.dbar::before{content:"";position:absolute;inset:0 -16px;background:var(--bg);z-index:-1}
+.dbar.stuck::before{top:calc(-1 * (var(--tbo,0px) + env(safe-area-inset-top,0px)))}
+.dbar::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:12px;background:linear-gradient(var(--bg),color-mix(in srgb,var(--bg) 0%,transparent));pointer-events:none}
+#dgrid{margin-top:14px}
+/* type chips: room for the focus ring and chip edges inside the scroller */
+.tf{margin-top:6px;padding:4px 3px 5px;scroll-padding-inline:3px}
+@media (max-width:759px){.dbar{margin-top:0;padding-top:6px}.tf{margin-top:4px}}
+/* card type line: tighter tracking on phones so two types fit on one line */
+@media (max-width:759px){.tl{letter-spacing:.1em}.tl+.tl::before{margin:0 .35em 0 .3em}}
+/* contrast (WCAG AA): card number on the light art panel, entry kicker in light theme */
+:root[data-theme="light"] .dn{color:#5a5e6b}
+:root[data-theme="light"] .mkick{color:#7f5c2a}
+/* room at the end for the Safari address pill on phones */
+.wrap{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+@media (max-width:759px){.wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
+</style>
 </head>
 <body>
 <div class="wrap" id="app" hidden>
@@ -761,15 +793,22 @@ function filtered(){
   return L;
 }
 function navList(){const L=filtered();return sel&&!L.some(e=>e.id===sel)?D:L}
-function fbadgeHTML(e){ // owner 11-10: mark Boki with male + female forms (manifest sex_forms), alongside the multi-form count
+function fbadgeHTML(e){ // owner 11-10, site fix 11-11 (tools/bokidex/patch.py): one pill for "N forms" and/or the male/female mark.
+  // The symbols are SVG, not the \u2642\u2640 glyphs: iOS drew those from a taller fallback font and the pill clipped. A tap on it opens the female look / the other form.
   const sx=!e.unknown&&e.sex_forms, n=e.forms?e.forms.length:0;
   if(!sx&&!n)return"";
-  const t=[n?`${n} forms`:"",sx?`<span class="fsx" aria-hidden="true">\u2642\u2640</span>`:""].filter(Boolean).join(" ");
-  return`<span class="fbadge"${sx?` title="Male and female forms" aria-label="${n?n+" forms, ":""}male and female forms"`:""}>${t}</span>`;
+  const tap=sx&&femReady(e)?"f":n>1?"form":"";
+  const tip=[n?n+" forms":"",sx?"male and female looks":""].filter(Boolean).join(", ")+(tap==="f"?" (tap: female look)":tap?" (tap: the other form)":"");
+  return`<span class="fbadge"${tap?` data-alt="${tap}"`:""} title="${esc(cap1(tip))}">${n?`<span class="fn">${n} forms</span>`:""}${n&&sx?'<i class="fsep"></i>':""}${sx?`<span class="fsx"><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V22M8.5 18.5h7"/></svg></span>`:""}</span>`;
+}
+function cardLabel(e){ // site fix 11-11: one clean spoken label per card (number, name, types, forms) instead of name twice
+  if(e.unknown)return`#${pad(e.num)}, not yet discovered`;
+  const n=e.forms?e.forms.length:0;
+  return[`#${pad(e.num)} ${e.name}`,typesOf(e).join(" and "),n?n+" forms":"",e.sex_forms?"male and female looks":""].filter(Boolean).join(", ");
 }
 function cardHTML(e){
   const un=e.unknown, dim=noArt(e)&&!un?" dim":"";
-  return`<a class="dcard${un?" unk dim":dim}" role="listitem" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${fbadgeHTML(e)}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
+  return`<a class="dcard${un?" unk dim":dim}" role="listitem" aria-label="${esc(cardLabel(e))}" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${fbadgeHTML(e)}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
 }
 function renderGrid(){
   const L=filtered(), key=[$("#q").value,[...tsel].join(),tmode,$("#sort").value,curTheme(),D.length,Object.keys(ovl).map(k=>k+(ovl[k].hero?.src||"")).join(),Object.keys(aspect).length].join("|");
@@ -929,7 +968,7 @@ function renderDetail(){
   const nav=(x,c,lab,ic)=>x?`<a class="mnav ${c}" href="${L_(x.id)}${sfx}" data-go aria-label="${lab}: ${x.unknown?"unknown":esc(x.name)}">${CHEV(ic)}</a>`:"";
   const o=ovl[v.id], vt=viewerTabs(v);
   const tog=e.forms?`<div class="ftog" role="group" aria-label="Alternate forms">${e.forms.map((f,k)=>`<a href="${L_(f.id)}${sfx}" data-go aria-current="${k===fi}" style="${pTy(f)}">${heroHTML(fv(e,k),f.name)}<span>${esc(f.name)}</span></a>`).join("")}</div>`:"";
-  const sxb=un?"":fr?`<div class="sxtog" role="group" aria-label="Male or female look"><div><button type="button" data-sx="m" aria-pressed="${sx==="m"}"><span aria-hidden="true">\u2642</span> Male</button><button type="button" data-sx="f" aria-pressed="${sx==="f"}"><span aria-hidden="true">\u2640</span> Female</button></div></div>`:v0.sex_forms&&tab!=="history"?`<p class="sxnote">Female look coming</p>`:"";
+  const sxb=un?"":fr?`<div class="sxtog" role="group" aria-label="Male or female look"><div><button type="button" data-sx="m" aria-pressed="${sx==="m"}"><span class="sxi" aria-hidden="true"><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg></span> Male</button><button type="button" data-sx="f" aria-pressed="${sx==="f"}"><span class="sxi" aria-hidden="true"><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V22M8.5 18.5h7"/></svg></span> Female</button></div></div>`:v0.sex_forms&&tab!=="history"?`<p class="sxnote">Female look coming</p>`:"";
   const cat=un?"":(m?.category||v.category||"");
   const kick=`<b class="mnum">#${pad(e.num)}</b>${cat?`<span>${esc(cat)}</span>`:""}${e.stages?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}${e.forms?`<span>${e.forms.length} forms</span>`:""}`;
   const ty2=typesOf(v), g2=`--g2:var(--g-${slugOf(ty2[1]||ty2[0]||"wild")})`;
@@ -1161,6 +1200,20 @@ async function ownerUnlock(k){
 })();
 </script>
 <script src="/assets/topbar.js?v=1" defer></script>
+<script>
+/* bx-fix-1111 (site repo: tools/bokidex/patch.py): a tap on a card's badge opens the female look, or the other form. */
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest&&ev.target.closest(".dcard .fbadge[data-alt]");
+  if(!b||ev.metaKey||ev.ctrlKey||ev.shiftKey||typeof byId==="undefined")return;
+  const e=byId[b.closest(".dcard").dataset.id];if(!e)return;
+  if(b.dataset.alt==="f"){sx="f";sxFor=e.id;return} /* the card's own click then opens the entry, on the female look */
+  if(e.forms&&e.forms[1]){ev.preventDefault();ev.stopPropagation();go(L_(e.forms[1].id))}
+},true);
+/* bx-fix-1111: while the filter bar is pinned, its opaque backing also fills the strip behind the (translucent) top bar */
+(function(){let bar=null,raf=0;const tick=()=>{raf=0;bar=bar||document.querySelector(".dbar");if(!bar)return;
+  const top=parseFloat(getComputedStyle(bar).top)||0;bar.classList.toggle("stuck",bar.getBoundingClientRect().top<=top+1&&scrollY>0)};
+  addEventListener("scroll",()=>{if(!raf)raf=requestAnimationFrame(tick)},{passive:true});addEventListener("resize",tick);})();
+</script>
 <script src="owner.js?v=64eac809bc"></script>
 </body>
 </html>
