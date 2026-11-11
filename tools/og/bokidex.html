@@ -1,52 +1,26 @@
 <!doctype html><html><head><meta charset="utf-8"><title>Bokidex share image</title>
-<!-- The Bokidex link preview (assets/img/og-bokidex.jpg, 1200x630). Re-render: node tools/og/render.js /tmp/og-bokidex.png bokidex.html (site served on :8765), then save as JPEG. -->
+<!-- The Bokidex link preview (assets/img/og-bokidex.jpg, 1200x630): the homepage's first screen, the hatching-egg picture with
+     the Project Boki logo on its calm left side. Re-render: node tools/og/render.js /tmp/og-bokidex.png bokidex.html (site served on :8765), then save as JPEG. -->
 <style>
 @font-face { font-family: "Lilita"; src: url("../../assets/fonts/LilitaOne.woff2") format("woff2"); }
-html,body{margin:0;background:#070b16}
-.og{position:relative;width:1200px;height:630px;overflow:hidden;font-family:"Lilita";
-  background:radial-gradient(ellipse 55% 75% at 76% 58%, #232a55 0%, transparent 70%), radial-gradient(ellipse 45% 60% at 8% 0%, #1c1336 0%, transparent 70%), #070b16}
-/* a soft pool of light the group stands in */
-.glow{position:absolute;inset:0;background:
-  radial-gradient(ellipse 34% 30% at 76% 66%, rgba(195,107,255,.30), transparent 70%),
-  radial-gradient(ellipse 26% 22% at 66% 80%, rgba(79,216,203,.22), transparent 70%),
-  radial-gradient(ellipse 22% 18% at 90% 30%, rgba(255,160,90,.14), transparent 70%)}
-.floor{position:absolute;left:520px;right:-60px;top:520px;height:150px;border-radius:50%;background:radial-gradient(ellipse at center, rgba(170,140,255,.28), rgba(79,216,203,.08) 50%, transparent 72%);filter:blur(8px)}
-.em i{position:absolute;border-radius:50%;width:var(--s);height:var(--s);background:rgb(var(--c));box-shadow:0 0 calc(var(--s)*2.4) calc(var(--s)*.5) rgba(var(--c),.6)}
-.b{position:absolute;filter:drop-shadow(0 18px 22px rgba(0,0,0,.6))}
-.b img{display:block;width:100%;height:auto}
-.back{filter:drop-shadow(0 14px 18px rgba(0,0,0,.6)) brightness(.78) saturate(.9)}
-.sky{filter:drop-shadow(0 24px 30px rgba(0,0,0,.55)) brightness(.9)}
-.fade{position:absolute;left:0;top:0;bottom:0;width:640px;background:linear-gradient(90deg,#070b16 38%,rgba(7,11,22,.75) 62%,transparent);z-index:8}
-.left{position:absolute;left:66px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;z-index:9}
-.word{margin:0 0 0 -10px;filter:drop-shadow(0 14px 30px rgba(0,0,0,.6))}
-.word img{width:540px;height:auto;display:block}
-.sub{margin-top:18px;font-size:76px;line-height:1;letter-spacing:.5px;
-  color:#fff;filter:drop-shadow(0 6px 20px rgba(0,0,0,.5))}
-.url{margin-top:22px;font-family:"Lilita";font-size:24px;letter-spacing:1px;color:rgba(220,226,245,.55)}
-</style></head><body>
-<div class="og" id="og">
-  <div class="glow"></div>
-  <div class="em" id="em"></div>
-  <!-- sky -->
-  <div class="b sky" style="left:930px;top:-6px;width:250px;z-index:2;transform:rotate(-6deg)"><img src="../../assets/img/boki-front/dragonkite-960.webp"></div>
-  <div class="b sky" style="left:610px;top:22px;width:200px;z-index:2;transform:rotate(4deg)"><img src="../../assets/img/boki-front/zephyrak-960.webp"></div>
-  <!-- back row -->
-  <div class="floor"></div>
-  <div class="b back" style="left:705px;top:172px;width:300px;z-index:3"><img src="../../assets/img/boki-front/eclipsowl-960.webp"></div>
-  <div class="b back" style="left:962px;top:222px;width:250px;z-index:3"><img src="../../assets/img/boki-front/pyrraven-960.webp"></div>
-  <!-- front row -->
-  <div class="b" style="left:632px;top:372px;width:215px;z-index:5"><img src="../../assets/img/boki-front/nettlynx-960.webp"></div>
-  <div class="b" style="left:812px;top:352px;width:245px;z-index:6"><img src="../../assets/img/boki-front/bubblisk-960.webp"></div>
-  <div class="b" style="left:1012px;top:405px;width:200px;z-index:5"><img src="../../assets/img/boki-front/glomwort-960.webp"></div>
-  <div class="fade"></div>
-  <div class="left">
-    <h1 class="word" aria-label="Bokidex"><img src="../../assets/img/wordmark-bokidex-2400.webp"></h1>
-    <div class="sub">Meet the Boki.</div>
-    <div class="url">projectboki.com/bokidex</div>
-  </div>
-</div>
-<script>
-let s=11;const r=()=>((s=s*16807%2147483647)/2147483647);const em=document.getElementById('em');
-const cs=['120,230,220','200,130,255','255,190,120'];
-for(let i=0;i<46;i++){const e=document.createElement('i');e.style.cssText=`left:${(42+r()*58).toFixed(1)}%;top:${(r()*100).toFixed(1)}%;--s:${(1.5+r()*3.5).toFixed(1)}px;--c:${cs[i%3]};opacity:${(.3+r()*.6).toFixed(2)}`;em.appendChild(e)}
-</script></body></html>
+html,body{margin:0;background:#05080f}
+.og{position:relative;width:1200px;height:630px;overflow:hidden;font-family:"Lilita"}
+.bg{position:absolute;inset:0;background:url("../../assets/img/key/egg-2400.webp") 12% 50%/cover}
+.lock{position:absolute;left:66px;top:50%;transform:translateY(-52%)}
+.lockup{--wm:452px;display:flex;flex-direction:column;align-items:center;margin:0;line-height:0}
+.lockup .wordmark{width:var(--wm);height:auto;filter:drop-shadow(0 14px 36px rgba(0,0,0,.75)) drop-shadow(0 0 30px rgba(150,120,255,.25))}
+.pj { position: relative; z-index: 2; display: inline-flex; white-space: nowrap; font-family: "Lilita"; font-size: calc(var(--wm) * .054); line-height: 1; letter-spacing: .3em; color: #f3ecdd;
+  padding: .45em 1.5em .4em 1.8em; margin-bottom: -.5em; transform: rotate(-3deg); text-shadow: none; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
+.pj i { font-style: normal; display: inline-block; }
+.pj-ghost { visibility: hidden; }
+.pj-pc { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: inherit; }
+.pj-l { transform: translate(-.3em, -.12em) rotate(-5deg); }
+.pj-r { transform: translate(.3em, .22em) rotate(4deg); }
+.pj-pl, .pj-pl::after { position: absolute; clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
+.pj-pl { inset: 0; z-index: -1; background: linear-gradient(90deg, #4fd8cb, #c36bff); }
+.pj-pl::after { content: ""; inset: 3px 4px; background: #120d1d; }
+.pj-edge { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
+.pj-edge .soft { fill: rgba(255, 80, 40, .35); filter: blur(3px); }
+.pj-edge .core { fill: #ff6a3a; }
+.pj-chip { position: absolute; width: .42em; height: .32em; background: linear-gradient(135deg, #8f7bff, #120d1d 45%); clip-path: polygon(0 20%, 60% 0, 100% 55%, 40% 100%); transform: rotate(var(--r, 0deg)); filter: drop-shadow(0 0 4px rgba(255,90,50,.7)); }
+</style></head><body><div class="og" id="og"><div class="bg"></div><div class="lock"><h1 class="lockup" aria-label="Project Boki"><span class="pj" aria-hidden="true"><span class="pj-ghost"><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-pc pj-l" style="clip-path:polygon(-5% -10%,-5% 110%,45% 110%,48% 80%,44% 62%,49% 40%,45% 22%,48% -10%)"><span class="pj-pl"><svg class="pj-edge" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon class="soft" points="47.06,0 45,22 49,40 44,62 48,80 46,100 42.8,100 44.8,80 40.8,62 45.8,40 41.8,22 43.86,0"/><polygon class="core" points="47.06,0 45,22 49,40 44,62 48,80 46,100 45.1,100 47.1,80 43.1,62 48.1,40 44.1,22 46.16,0"/></svg></span><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-pc pj-r" style="clip-path:polygon(48% -10%,45% 22%,49% 40%,44% 62%,48% 80%,45% 110%,105% 110%,105% -10%)"><span class="pj-pl"><svg class="pj-edge" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon class="soft" points="47.06,0 45,22 49,40 44,62 48,80 46,100 49.2,100 51.2,80 47.2,62 52.2,40 48.2,22 50.26,0"/><polygon class="core" points="47.06,0 45,22 49,40 44,62 48,80 46,100 46.9,100 48.9,80 44.9,62 49.9,40 45.9,22 47.96,0"/></svg></span><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-chip" style="left:45%;top:92%"></span><span class="pj-chip" style="left:52%;top:108%;--r:35deg"></span><span class="pj-chip" style="left:47%;top:128%;--r:-20deg"></span></span><img class="wordmark" src="../../assets/img/wordmark-boki-2000.webp"  sizes="(max-width: 720px) 90vw, 720px" width="2000" height="827" alt="" fetchpriority="high"></h1></div></div></body></html>
