@@ -1,26 +1,12 @@
 <!doctype html><html><head><meta charset="utf-8"><title>Bokidex share image</title>
-<!-- The Bokidex link preview (assets/img/og-bokidex.jpg, 1200x630): the homepage's first screen, the hatching-egg picture with
-     the Project Boki logo on its calm left side. Re-render: node tools/og/render.js /tmp/og-bokidex.png bokidex.html (site served on :8765), then save as JPEG. -->
+<!-- The Bokidex link preview (assets/img/og-bokidex.jpg, 1200x630): the homepage's first-screen picture (the hatching egg) with
+     the BOKIDEX wordmark on its calm left side, and nothing else. Re-render: node tools/og/render.js /tmp/og-bokidex.png bokidex.html (site served on :8765), then save as JPEG. -->
 <style>
-@font-face { font-family: "Lilita"; src: url("../../assets/fonts/LilitaOne.woff2") format("woff2"); }
 html,body{margin:0;background:#05080f}
-.og{position:relative;width:1200px;height:630px;overflow:hidden;font-family:"Lilita"}
+.og{position:relative;width:1200px;height:630px;overflow:hidden}
 .bg{position:absolute;inset:0;background:url("../../assets/img/key/egg-2400.webp") 12% 50%/cover}
-.lock{position:absolute;left:66px;top:50%;transform:translateY(-52%)}
-.lockup{--wm:452px;display:flex;flex-direction:column;align-items:center;margin:0;line-height:0}
-.lockup .wordmark{width:var(--wm);height:auto;filter:drop-shadow(0 14px 36px rgba(0,0,0,.75)) drop-shadow(0 0 30px rgba(150,120,255,.25))}
-.pj { position: relative; z-index: 2; display: inline-flex; white-space: nowrap; font-family: "Lilita"; font-size: calc(var(--wm) * .054); line-height: 1; letter-spacing: .3em; color: #f3ecdd;
-  padding: .45em 1.5em .4em 1.8em; margin-bottom: -.5em; transform: rotate(-3deg); text-shadow: none; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
-.pj i { font-style: normal; display: inline-block; }
-.pj-ghost { visibility: hidden; }
-.pj-pc { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: inherit; }
-.pj-l { transform: translate(-.3em, -.12em) rotate(-5deg); }
-.pj-r { transform: translate(.3em, .22em) rotate(4deg); }
-.pj-pl, .pj-pl::after { position: absolute; clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
-.pj-pl { inset: 0; z-index: -1; background: linear-gradient(90deg, #4fd8cb, #c36bff); }
-.pj-pl::after { content: ""; inset: 3px 4px; background: #120d1d; }
-.pj-edge { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
-.pj-edge .soft { fill: rgba(255, 80, 40, .35); filter: blur(3px); }
-.pj-edge .core { fill: #ff6a3a; }
-.pj-chip { position: absolute; width: .42em; height: .32em; background: linear-gradient(135deg, #8f7bff, #120d1d 45%); clip-path: polygon(0 20%, 60% 0, 100% 55%, 40% 100%); transform: rotate(var(--r, 0deg)); filter: drop-shadow(0 0 4px rgba(255,90,50,.7)); }
-</style></head><body><div class="og" id="og"><div class="bg"></div><div class="lock"><h1 class="lockup" aria-label="Project Boki"><span class="pj" aria-hidden="true"><span class="pj-ghost"><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-pc pj-l" style="clip-path:polygon(-5% -10%,-5% 110%,45% 110%,48% 80%,44% 62%,49% 40%,45% 22%,48% -10%)"><span class="pj-pl"><svg class="pj-edge" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon class="soft" points="47.06,0 45,22 49,40 44,62 48,80 46,100 42.8,100 44.8,80 40.8,62 45.8,40 41.8,22 43.86,0"/><polygon class="core" points="47.06,0 45,22 49,40 44,62 48,80 46,100 45.1,100 47.1,80 43.1,62 48.1,40 44.1,22 46.16,0"/></svg></span><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-pc pj-r" style="clip-path:polygon(48% -10%,45% 22%,49% 40%,44% 62%,48% 80%,45% 110%,105% 110%,105% -10%)"><span class="pj-pl"><svg class="pj-edge" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon class="soft" points="47.06,0 45,22 49,40 44,62 48,80 46,100 49.2,100 51.2,80 47.2,62 52.2,40 48.2,22 50.26,0"/><polygon class="core" points="47.06,0 45,22 49,40 44,62 48,80 46,100 46.9,100 48.9,80 44.9,62 49.9,40 45.9,22 47.96,0"/></svg></span><i>P</i><i>R</i><i>O</i><i>J</i><i>E</i><i>C</i><i>T</i></span><span class="pj-chip" style="left:45%;top:92%"></span><span class="pj-chip" style="left:52%;top:108%;--r:35deg"></span><span class="pj-chip" style="left:47%;top:128%;--r:-20deg"></span></span><img class="wordmark" src="../../assets/img/wordmark-boki-2000.webp"  sizes="(max-width: 720px) 90vw, 720px" width="2000" height="827" alt="" fetchpriority="high"></h1></div></div></body></html>
+.word{position:absolute;left:40px;top:50%;margin:0;transform:translateY(-52%);line-height:0;filter:drop-shadow(0 14px 36px rgba(0,0,0,.75))}
+.word img{display:block;width:540px;height:auto}
+</style></head><body><div class="og" id="og"><div class="bg"></div>
+<h1 class="word" aria-label="Bokidex"><img src="../../assets/img/wordmark-bokidex-2400.webp" alt=""></h1>
+</div></body></html>
