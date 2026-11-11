@@ -1268,3 +1268,11 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 @media (max-width: 720px) { .bm-dex { margin-top: 16px; } }
 @media (min-width: 901px) and (min-aspect-ratio: 501/400) and (max-aspect-ratio: 29/20) { .hero-in { width: min(32vw, 640px); margin-left: 3vw; } .lockup { --wm: min(32vw, 640px); } } /* squarer windows: a slimmer column, clear of the Boki */
 @media (max-width: 720px) { .join .join-cta { width: min(400px, 100vw - 40px); margin-inline: calc((100% - min(400px, 100vw - 40px)) / 2); } .join .join-su .su-row .btn { padding: 0 14px; font-size: 16px; } }
+
+/* Footage panel: an in-game screenshot for now. It drifts very slowly so the panel still feels alive (compositor-only). */
+.tr-media img { object-position: 50% 38%; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .trailer.in .tr-media img { animation: tr-drift 26s ease-in-out 2.6s infinite alternate; }
+  @keyframes tr-drift { from { transform: none; } to { transform: scale(1.06) translate3d(-1%, -1%, 0); } }
+}
+html.lite .tr-media img { animation: none !important; }
