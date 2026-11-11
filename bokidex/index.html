@@ -1048,7 +1048,7 @@ function renderViewer(){
   const mine=sel+"/"+fi;
   Promise.all([loadMV(),glbURL(e.glb)]).then(([,u])=>{
     if(vTab!=="3d"||sel+"/"+fi!==mine||!viewerOpen())return;
-    b.innerHTML=`<model-viewer src="${u}" alt="${esc(e.name)} 3D model" camera-controls auto-rotate auto-rotate-delay="1200" camera-orbit="215deg 78deg auto" shadow-intensity="0.7" shadow-softness="1" exposure="1" environment-image="neutral" interaction-prompt="none" tabindex="-1"></model-viewer>`;
+    b.innerHTML=`<model-viewer src="${u}" alt="${esc(e.name)} 3D model" camera-controls auto-rotate auto-rotate-delay="1200" camera-orbit="28deg 75deg auto" shadow-intensity="0.7" shadow-softness="1" exposure="1" environment-image="neutral" interaction-prompt="none" tabindex="-1"></model-viewer>`;
     const mv=b.firstChild;
     mv.addEventListener("load",()=>{try{for(const m of mv.model.materials){m.pbrMetallicRoughness.setMetallicFactor(0);m.pbrMetallicRoughness.setRoughnessFactor(0.8)}}catch{}});
     mv.addEventListener("error",()=>{b.innerHTML='<div class="vmsg">This model did not load.</div>'});

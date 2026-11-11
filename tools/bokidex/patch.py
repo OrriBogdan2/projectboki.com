@@ -16,6 +16,9 @@ It is safe to run more than once. It adds:
      screen readers, contrast on the card number and entry kicker, bottom room for the Safari address pill, font
      preconnect
   6. removes the "Project Boki creature dex" line under the title
+  7. the 3D viewer opens on a front three-quarter view: camera-orbit 28deg 75deg (28 deg off the front toward +X,
+     15 deg above). Every Bokidex GLB faces +Z (the glTF front; audit 11-11: /home/boki/meshy/facing/), so theta 0
+     is the face. The export wrote 215deg, which is the back.
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -140,6 +143,9 @@ if "fonts.gstatic.com" not in s:
 
 # The "Project Boki creature dex" line under the title is not needed (the top bar already says where you are).
 s = s.replace('<div class="sub">Project Boki creature dex</div>', "")
+
+# 7. 3D viewer opening angle: front three-quarter (the GLBs face +Z, the glTF front).
+s = re.sub(r'(<model-viewer [^>]*?)camera-orbit="[^"]*"', r'\1camera-orbit="28deg 75deg auto"', s)
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
