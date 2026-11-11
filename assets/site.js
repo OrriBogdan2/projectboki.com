@@ -951,7 +951,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     box = document.createElement("div");
     box.className = "bm"; box.hidden = true;
     box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Boki");
-    box.innerHTML = `<div class="bm-card"><div class="bm-art"><img alt=""></div><div class="bm-txt"><div class="bm-mix"></div><h3></h3><p class="bm-desc"></p><p class="bm-line"></p></div>
+    box.innerHTML = `<div class="bm-card"><div class="bm-art"><img alt=""></div><div class="bm-txt"><div class="bm-mix"></div><h3></h3><p class="bm-desc"></p><p class="bm-line"></p><a class="bm-dex" href="/bokidex/">See it in the Bokidex<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       <button class="bk-arrow prev" type="button" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="bk-arrow next" type="button" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
@@ -989,6 +989,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     if (b.from) line.push(`Evolves from ${b.from}.`); else if (b.fromHidden) line.push("Evolves from a Boki we haven't shown yet.");
     if (b.into.length) line.push(`Evolves into ${list(b.into)}.`);
     const l = box.querySelector(".bm-line"); l.textContent = line.join(" "); l.hidden = !line.length;
+    box.querySelector(".bm-dex").href = "/bokidex/#boki-" + b.id;
   };
   function openCard(i) {
     if (!box) build();
@@ -1002,7 +1003,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     setTimeout(() => { box.hidden = true; }, 220);
     if (back) back.focus({ preventScroll: true });
   }
-}).catch(() => {});
+}).catch(() => { bw.classList.add("none"); }); // (no data: give back the room held for the cards)
 
 /* ---------- shared: swipe to switch, and a one-time nudge so the strip reads as scrollable ---------- */
 function swipe(el, go) {
