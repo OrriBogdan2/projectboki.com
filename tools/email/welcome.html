@@ -1,0 +1,25 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>Your rare egg is saved</title></head>
+<body style="margin:0;padding:0;background:#05080f" bgcolor="#05080f">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#05080f" style="background:#05080f"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#0b1020" style="width:100%;max-width:560px;background:#0b1020;border-radius:18px;overflow:hidden;border:1px solid #1d2540;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+<tr><td style="padding:0;line-height:0"><a href="https://projectboki.com/" style="text-decoration:none"><img src="https://projectboki.com/assets/img/email/banner.jpg" width="560" alt="Project Boki" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:18px 18px 0 0"></a></td></tr>
+<tr><td style="padding:32px 32px 8px">
+<h1 style="margin:0 0 20px;font-size:30px;line-height:36px;font-weight:800;color:#ffffff">Your <span style="color:#ffd24a">rare egg</span> is saved</h1>
+<p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">Hi Hunter,</p>
+<p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">You&#x27;re on the list for the Project Boki closed beta. Your rare Boki egg is saved to this email and will be waiting when you get in.</p>
+</td></tr>
+{% if event.properties.ref_code %}<tr><td style="padding:8px 32px 8px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111830" style="background:#111830;border:1px solid #ffd24a;border-radius:14px"><tr><td style="padding:20px 22px">
+<p style="margin:0 0 10px;font-size:17px;line-height:25px;font-weight:700;color:#ffffff">Want a second, different egg?</p>
+<p style="margin:0 0 12px;font-size:16px;line-height:24px;color:#dfe4ee">Get 3 friends to sign up with your link:</p>
+<p style="margin:0;font-size:17px;line-height:24px;font-weight:700"><a href="https://projectboki.com/?r={{ event.properties.ref_code }}" style="color:#ffd24a;text-decoration:underline">https://projectboki.com/?r={{ event.properties.ref_code }}</a></p>
+</td></tr></table>
+</td></tr>{% endif %}
+<tr><td style="padding:16px 32px 30px">
+<p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">We&#x27;ll email you when the next playtest opens.</p>
+<p style="margin:0;font-size:17px;line-height:26px;color:#dfe4ee">Orri<br><span style="color:#ffffff;font-weight:700">Project Boki</span></p>
+</td></tr>
+<tr><td style="padding:18px 32px 26px;border-top:1px solid #1d2540;font-size:12px;line-height:18px;color:#8b93a8">You got this because you signed up at projectboki.com. <a href="{{ unsubscribe_url }}" style="color:#8b93a8;text-decoration:underline">Unsubscribe</a></td></tr>
+</table>
+</td></tr></table>
+</body></html>
