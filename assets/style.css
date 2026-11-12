@@ -1340,3 +1340,7 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
   #boki .pillar .head .sub { font-size: 18px; max-width: 28ch; margin-top: 10px; }
   .pillar img { border-radius: 18px; box-shadow: none; }
 }
+
+/* ---------- Page order (11-11): match cards, Hunters, then the Boki. The Boki section no longer follows the footage
+   panel, so it carries its own solid background and its own top spacing. ---------- */
+.boki { position: relative; z-index: 2; background: var(--bg); padding-top: calc(var(--sec) * .9); }

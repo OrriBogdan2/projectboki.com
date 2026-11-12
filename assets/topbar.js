@@ -16,7 +16,7 @@
     if (qa && /^https?:\/\/(127\.0\.0\.1|localhost)[:/]/.test(location.href) && /\/api$/.test(qa)) API = qa;
   } catch (e) {}
 
-  var LINKS = [["Boki", "/#boki"], ["Hunters", "/#hunters"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
+  var LINKS = [["Hunters", "/#hunters"], ["Boki", "/#boki"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
   var DEX_LINKS = LINKS; /* the same six on every page; the logo is the way home */
 
   var isDex = /\/bokidex(\/|$)/.test(location.pathname) && !!document.getElementById("app");

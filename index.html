@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 50vw, 960px">
 
-<link rel="stylesheet" href="assets/style.css?v=246">
+<link rel="stylesheet" href="assets/style.css?v=247">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -107,13 +107,13 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Project Boki","url":"https://projectboki.com/","description":"A creature-raising game where you catch new creatures in deadly extractions. It plays like a top-down hero shooter, with WASD controls and real physics.","image":"https://projectboki.com/assets/img/og.jpg","genre":["Creature collector","Extraction","MOBA"],"gamePlatform":"PC","playMode":"MultiPlayer","author":{"@type":"Organization","name":"Project Boki","url":"https://projectboki.com/"}}</script>
 </head>
 <body>
-<a class="skip" href="#boki">Skip to content</a>
+<a class="skip" href="#how">Skip to content</a>
 
 <header class="nav" id="nav">
   <a class="brand" href="#top" aria-label="Project Boki home"><img src="assets/img/brand-96.webp?v=2" width="36" height="36" alt=""><span>Project Boki</span></a>
   <nav class="links" aria-label="Main">
-    <a href="#boki">Boki</a>
     <a href="#hunters">Hunters</a>
+    <a href="#boki">Boki</a>
     <a href="#faq">FAQ</a>
   </nav>
   <div class="nav-cta">
@@ -172,58 +172,6 @@
   </div>
 </section>
 
-<section id="boki" class="boki">
-  <div class="wrap">
-    <!-- The two halves of the game, side by side: raise them, then fight beside them -->
-    <div class="pillars">
-      <div class="pillar">
-        <header class="head" data-r="stagger">
-          <h2 class="hb">Raise your Boki.</h2>
-          <div class="sub">Each Boki is 100% unique, with its own traits, mutations and personality.</div>
-        </header>
-        <img data-r src="assets/img/key/tent-1600.webp?v=2" srcset="assets/img/key/tent-960.webp?v=2 960w, assets/img/key/tent-1600.webp?v=2 1600w, assets/img/key/tent-2400.webp?v=2 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="In a tent out of the rain, Tenzo bandages a young Boki's paw while two more keep him company" loading="lazy" decoding="async">
-      </div>
-      <div class="pillar">
-        <header class="head" data-r="stagger">
-          <h2>Fight as one.</h2>
-          <div class="sub">Your Boki fights beside you in every match.</div>
-        </header>
-        <img data-r src="assets/img/key/mast-1600.webp" srcset="assets/img/key/mast-960.webp 960w, assets/img/key/mast-1600.webp 1600w, assets/img/key/mast-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="Kael and his Boki, Voltalon, stand ready on an airship's mast above the clouds" loading="lazy" decoding="async">
-      </div>
-    </div>
-    <div class="bw" id="bw" role="group" aria-label="Boki"></div>
-    <div class="bk-dark" id="bk-dark" hidden>
-      <h3 class="bk-dark-n"></h3>
-      <p class="bk-dark-s"></p>
-      <div class="bk-sils" aria-hidden="true"></div>
-    </div>
-  </div>
-</section>
-<section id="hunters" class="hunters">
-  <div class="wrap">
-    <header class="head" data-r="stagger">
-      <h2>Choose your Hunter.</h2>
-      <div class="sub">A <span class="nb">top-down</span> hero shooter with WASD controls.</div>
-    </header>
-    <div class="h-track" id="h-track"><div class="h-pin">
-    <div class="stage" data-r>
-      <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="bk-count h-count"><b id="h-n">01</b> / <span>13</span></div>
-      <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/lisette-1600.webp" srcset="assets/img/hunters/lisette-960.webp 960w, assets/img/hunters/lisette-1600.webp 1600w, assets/img/hunters/lisette-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Lace, the Red Stitch" loading="lazy"><button class="h-expand" type="button" id="h-expand" aria-label="View full art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg></button></div>
-      <div class="info" aria-live="polite">
-        <div class="role" id="h-role" style="color:#e8483e">Marksman</div>
-        <h3 id="h-name">Lace</h3>
-        <div class="title" id="h-title">The Red Stitch</div>
-        <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span></button>
-      </div>
-    </div>
-    <div class="pick-label" data-r><span class="swipe">Swipe for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-    <div class="pick" data-r id="h-pick" role="group" aria-label="Choose your Hunter"></div>
-    </div></div>
-  </div>
-</section>
-
 <section id="how" class="how" aria-label="How it works">
   <div class="wrap"><header class="head" data-r="stagger"><h2>Every match is a heist.</h2></header></div>
   <div class="how-stack" data-r="stagger">
@@ -260,6 +208,59 @@
         </div>
       </div>
     </article>
+  </div>
+</section>
+
+<section id="hunters" class="hunters">
+  <div class="wrap">
+    <header class="head" data-r="stagger">
+      <h2>Choose your Hunter.</h2>
+      <div class="sub">A <span class="nb">top-down</span> hero shooter with WASD controls.</div>
+    </header>
+    <div class="h-track" id="h-track"><div class="h-pin">
+    <div class="stage" data-r>
+      <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="bk-count h-count"><b id="h-n">01</b> / <span>13</span></div>
+      <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/lisette-1600.webp" srcset="assets/img/hunters/lisette-960.webp 960w, assets/img/hunters/lisette-1600.webp 1600w, assets/img/hunters/lisette-2400.webp 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Lace, the Red Stitch" loading="lazy"><button class="h-expand" type="button" id="h-expand" aria-label="View full art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg></button></div>
+      <div class="info" aria-live="polite">
+        <div class="role" id="h-role" style="color:#e8483e">Marksman</div>
+        <h3 id="h-name">Lace</h3>
+        <div class="title" id="h-title">The Red Stitch</div>
+        <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span></button>
+      </div>
+    </div>
+    <div class="pick-label" data-r><span class="swipe">Swipe for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+    <div class="pick" data-r id="h-pick" role="group" aria-label="Choose your Hunter"></div>
+    </div></div>
+  </div>
+</section>
+
+<section id="boki" class="boki">
+  <div class="wrap">
+    <!-- The two halves of the game, side by side: raise them, then fight beside them -->
+    <div class="pillars">
+      <div class="pillar">
+        <header class="head" data-r="stagger">
+          <h2 class="hb">Raise your Boki.</h2>
+          <div class="sub">Each Boki is 100% unique, with its own traits, mutations and personality.</div>
+        </header>
+        <img data-r src="assets/img/key/tent-1600.webp?v=2" srcset="assets/img/key/tent-960.webp?v=2 960w, assets/img/key/tent-1600.webp?v=2 1600w, assets/img/key/tent-2400.webp?v=2 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="In a tent out of the rain, Tenzo bandages a young Boki's paw while two more keep him company" loading="lazy" decoding="async">
+      </div>
+      <div class="pillar">
+        <header class="head" data-r="stagger">
+          <h2>Fight as one.</h2>
+          <div class="sub">Your Boki fights beside you in every match.</div>
+        </header>
+        <img data-r src="assets/img/key/mast-1600.webp" srcset="assets/img/key/mast-960.webp 960w, assets/img/key/mast-1600.webp 1600w, assets/img/key/mast-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="Kael and his Boki, Voltalon, stand ready on an airship's mast above the clouds" loading="lazy" decoding="async">
+      </div>
+    </div>
+    <div class="bw" id="bw" role="group" aria-label="Boki"></div>
+    <div class="bk-dark" id="bk-dark" hidden>
+      <h3 class="bk-dark-n"></h3>
+      <p class="bk-dark-s"></p>
+      <div class="bk-sils" aria-hidden="true"></div>
+    </div>
   </div>
 </section>
 
@@ -334,6 +335,6 @@
 </svg>
 
 <script src="assets/site.js?v=225"></script>
-<script src="/assets/topbar.js?v=3" defer></script>
+<script src="/assets/topbar.js?v=4" defer></script>
 </body>
 </html>

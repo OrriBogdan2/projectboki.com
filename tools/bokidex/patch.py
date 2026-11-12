@@ -63,7 +63,7 @@ if "tb-dex" not in s:
 if "<script src=\"/assets/topbar.js" not in s:
     at = s.find('<script src="owner.js')
     if at < 0: at = s.rfind("</body>")
-    s = s[:at] + '<script src="/assets/topbar.js?v=3" defer></script>\n' + s[at:]
+    s = s[:at] + '<script src="/assets/topbar.js?v=4" defer></script>\n' + s[at:]
 
 # 5. UI fixes (11-11). Markers: "bx-fix-1111" (css + click script), "site fix 11-11" (badge + card label + sex toggle).
 SVG_M = '<svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg>'
