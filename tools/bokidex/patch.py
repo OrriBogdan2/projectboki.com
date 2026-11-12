@@ -20,6 +20,7 @@ It is safe to run more than once. It adds:
   7. the 3D viewer opens on a front three-quarter view: camera-orbit 28deg 75deg (28 deg off the front toward +X,
      15 deg above). Every Bokidex GLB faces +Z (the glTF front; audit 11-11: /home/boki/meshy/facing/), so theta 0
      is the face. The export wrote 215deg, which is the back.
+  8. cleanup (11-12, tools/bokidex/patch.py step 8): old-concept leftovers out of the page. See CLEANUP_8 below.
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -151,6 +152,60 @@ s = re.sub(r'(<div class="brand">)<a class="lens"[^>]*>\s*<img[^>]*>\s*</a>', r'
 
 # 7. 3D viewer opening angle: front three-quarter (the GLBs face +Z, the glTF front).
 s = re.sub(r'(<model-viewer [^>]*?)camera-orbit="[^"]*"', r'\1camera-orbit="28deg 75deg auto"', s)
+
+# 8. Cleanup 11-12 (dex-cleanup-1111). The export still writes the old affinity idea (d.aff, d.via = Fierce / Steadfast / ...),
+#    design-lane placeholder lines and recipe-style categories into data.json and the page script. Each rule is a literal
+#    replace (or a small regex) and is skipped when already applied, so the step is safe to run after every export.
+def _sub(old, new, label, rx=False):
+    global s
+    if new and new in s:
+        return
+    t = re.sub(old, new, s, count=1, flags=re.S) if rx else s.replace(old, new, 1)
+    if t == s and new:  # a removal that matches nothing is already done
+        print("  patch step 8: no match for", label, "(export changed?)")
+    s = t
+
+# 8a. evolution edges name only a real requirement (an Ink). The four raise-affinity words are not shown any more.
+_sub('const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(Boolean))].join(" / ");',
+     'const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(v=>v&&!/^(fierce|steadfast|curious|swift)$/i.test(v)))].join(" / "); /* cleanup 11-12 */',
+     "viaOf")
+# 8b. the "Raised forms" block was the same four cards on 49 entries: gone. The chain stands on its own.
+_sub(r'\n  if\(aff\.length\)body\+=`<span class="lbl"[^\n]*?sidegrade[^\n]*?\.join\(""\)\}</div>`;',
+     "", "raised-forms block", rx=True)
+# 8b2. the card styles that block used
+_sub(".affs>div{font-size:.76rem}", "", "affs css 1")
+s = re.sub(r"\.affs\{display:grid[^\n]*\n\.affs>div\{[^\n]*\n\.affs p\{[^\n]*\n\.affs b\{[^\n]*\n", "", s, count=1)
+# 8c. the Evolution tab exists only when there is a chain (it used to show for every Boki, for the affinity list).
+_sub('k==="evolve"?!!(v.chain?.length>1||v.d?.aff?.length)', 'k==="evolve"?!!(v.chain?.length>1)', "evolve tab")
+# 8d. kicker: "Stage 1 of 1" is noise; a category that is a design recipe ("Fox + Scorpion") or a type guess that
+#     disagrees with the types ("Fire Boki" on a Fairy/Psychic) is not shown. Meta categories ("The Barbtail Boki") are.
+_sub('const cat=un?"":(m?.category||v.category||"");',
+     'const _vc=String(v.category||""), cat=un?"":(m?.category||(/^[A-Za-z]+ Boki$/.test(_vc)&&typesOf(v).some(t=>_vc.startsWith(t+" "))?_vc:"")); /* cleanup 11-12 */',
+     "category")
+_sub('${e.stages?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}', '${e.stages>1?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}', "stage 1 of 1")
+# 8e. About: production placeholders ("X, art-lane design.", "Pre-evolution of Y.") are not lore. Say so plainly instead.
+_sub('const DEVNOTE=/\\b(locked|redo|approved|pending|wip|todo|placeholder|in review|re-?do)\\b/i;',
+     'const DEVNOTE=/\\b(locked|redo|approved|pending|wip|todo|placeholder|in review|re-?do|art-lane)\\b/i;\nconst STUB=/^(pre-evolution of|evolution of) [^.]*\\.?$|art-lane design\\.?$/i; /* cleanup 11-12 */',
+     "DEVNOTE")
+_sub('const lore=publicText(v.lore||d.lore||v.entry,v);',
+     'const lore0=publicText(v.lore||d.lore||v.entry,v), lore=STUB.test(lore0.trim())?"":lore0;',
+     "lore stub")
+_sub('return`${lore?`<p class="blurb">${esc(lore)}</p>`:""}${factsHTML(v,e)}',
+     'return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}',
+     "empty about")
+# 8f. "Surprise me" was a bare "?" (it read as help): a shuffle mark instead.
+_sub('<span class="qm" aria-hidden="true">?</span>',
+     '<span class="qm" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 3.6c1.1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.5c2 0 3.2-1 4.3-2.7M13.2 9.5c1.1-1.7 2.3-2.5 4.3-2.5H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></span>',
+     "surprise icon")
+# 8g. phones: no orphan "·" at the start of a wrapped kicker line.
+CLEAN_CSS = """<style>/* cleanup-1112 (tools/bokidex/patch.py step 8) */
+#surprise .qm{display:flex;align-items:center;justify-content:center}
+.blurb.mut{color:var(--mute)}
+@media (max-width:759px){.mkick{gap:4px 14px}.mkick span::before{display:none}}
+</style>
+"""
+if "cleanup-1112" not in s:
+    s = s.replace("</head>", CLEAN_CSS + "</head>", 1)
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")

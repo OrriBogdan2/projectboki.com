@@ -202,7 +202,7 @@ html.modal-open body{overflow:hidden}
   .sxtog{margin-top:6px}.sxtog button{font-size:.76rem;padding:5px 12px}.sxnote{margin-top:6px;font-size:.68rem}
   .minfo{flex:1 1 auto;min-height:0;overflow:auto;padding:10px 16px calc(58px + env(safe-area-inset-bottom,0px))}
   .ab2,.sgrid{grid-template-columns:minmax(0,1fr)}
-  .mlist{gap:5px 10px}.mlist>div{font-size:.72rem}.affs>div{font-size:.76rem}
+  .mlist{gap:5px 10px}.mlist>div{font-size:.72rem}
   .panel{padding:10px 11px}.ec2{width:62px}.evo2 ul.many .ec2{width:52px}
   .mkick{padding-right:0}
   .mclose{position:fixed;top:max(12px,env(safe-area-inset-top,0px));right:16px}
@@ -252,10 +252,6 @@ body.v-dex header{position:static}
 .ec2 small{display:block;font:700 .6rem var(--mono);color:var(--mute);margin-top:3px}
 .ec2 b{display:block;font:800 .78rem var(--display);line-height:1.1;overflow-wrap:anywhere}
 .ec2 em{display:inline-block;font:800 .58rem var(--mono);font-style:normal;letter-spacing:.04em;text-transform:uppercase;background:var(--ink);color:var(--bg);border-radius:999px;padding:1px 7px;margin-top:3px}
-.affs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.affs>div{background:var(--panel);border-radius:12px;padding:8px 11px;font-size:.82rem;min-width:0}
-.affs p{margin:3px 0 0}
-.affs b{font:800 .95rem var(--display)}
 .sw{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:6px 0}
 .sw div{display:flex;gap:4px;align-items:center;font-size:.78rem;color:var(--mute)}
 .sw i{width:22px;height:22px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);display:inline-block}
@@ -638,6 +634,11 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 .wrap{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 @media (max-width:759px){.wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
 </style>
+<style>/* cleanup-1112 (tools/bokidex/patch.py step 8) */
+#surprise .qm{display:flex;align-items:center;justify-content:center}
+.blurb.mut{color:var(--mute)}
+@media (max-width:759px){.mkick{gap:4px 14px}.mkick span::before{display:none}}
+</style>
 </head>
 <body>
 <div class="wrap" id="app" hidden>
@@ -658,7 +659,7 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
         <option value="t+">Type</option>
       </select>
       <div class="seg" role="group" aria-label="Sort by"><button type="button" data-sk="n" aria-pressed="true">No.</button><button type="button" data-sk="a" aria-pressed="false">Name</button><button type="button" data-sk="t" aria-pressed="false">Type</button><button type="button" class="sdir" data-sdir aria-label="Reverse order" title="Reverse order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"/></svg></button></div>
-      <button class="ibtn" id="surprise" type="button" aria-label="Surprise me: random Boki (R)" title="Surprise me: jump to a random Boki (R)"><span class="qm" aria-hidden="true">?</span></button>
+      <button class="ibtn" id="surprise" type="button" aria-label="Surprise me: random Boki (R)" title="Surprise me: jump to a random Boki (R)"><span class="qm" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 3.6c1.1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.5c2 0 3.2-1 4.3-2.7M13.2 9.5c1.1-1.7 2.3-2.5 4.3-2.5H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></span></button>
       <button class="ibtn keysbtn" id="keysbtn" type="button" aria-label="Keyboard shortcuts" aria-pressed="false" title="Keyboard shortcuts"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h1M10.5 10h1M14.5 10h1M8 14h8"/></svg></button>
       <button class="ibtn themebtn" type="button" data-theme-toggle aria-label="Switch theme" title="Light or dark"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
     </div>
@@ -828,7 +829,7 @@ const hex=c=>typeof c==="string"&&/^#[0-9a-f]{3,8}$/i.test(c)?c:null;
 const cap1=t=>String(t||"").charAt(0).toUpperCase()+String(t||"").slice(1);
 const pips=(n,m)=>`<span class="pips" role="img" aria-label="${n} of ${m}">${Array.from({length:m},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
 const nodeName=x=>(x.forms||[x]).map(f=>f.name).join(" / ");
-const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(Boolean))].join(" / ");
+const viaOf=x=>[...new Set((x.forms||[x]).map(f=>f.d?.via).filter(v=>v&&!/^(fierce|steadfast|curious|swift)$/i.test(v)))].join(" / "); /* cleanup 11-12 */
 const SEXTXT={split:"Males and females look different."}; // owner 11-09: only show gender when it's unusual (ratio, single-sex, dimorphic)
 function panel(title,body,extra){return body?`<section class="panel"${extra||""}>${title?`<span class="lbl">${title}</span>`:""}${body}</section>`:""}
 function evoHTML(e){
@@ -840,7 +841,6 @@ function evoHTML(e){
       return`<li>${d?`<span class="lk">${via?`<small>${esc(via)}</small>`:""}<b>›</b></span>`:""}<a class="ec2${x.id===e.id?" on":""}" href="${L_(x.id)}" data-go style="${pTy(x)}" aria-label="${esc(nodeName(x))}${x.forms?", final, "+x.forms.length+" forms":""}">${heroHTML(x,nodeName(x))}<small>#${pad(x.num)}</small><b>${esc(nodeName(x))}</b>${x.forms?`<em>${x.forms.length} forms</em>`:""}</a>${kids.length?`<ul${kids.length>2?' class="many"':""}>${kids.map(k=>node(k,d+1,viaOf(k))).join("")}</ul>`:""}</li>`};
     body+=`<ul class="evo2">${node(root,0,"")}</ul>`;
   }
-  if(aff.length)body+=`<span class="lbl" style="display:block;margin:10px 0 6px">Raised forms</span><div class="affs">${aff.map(a=>`<div><b>${esc(a.label)}</b>${a.lvl?` <span class="mut">level ${a.lvl}</span>`:""}<p>${esc(a.text)}</p>${a.grant?`<p class="mut">${esc(a.grant)}</p>`:""}${a.extra?`<p><span class="tag alt">${a.extra.lvl?"Level "+a.extra.lvl+" ":""}sidegrade</span><b>${esc(a.extra.name)}</b></p><p class="mut">${esc(a.extra.text)}</p>`:""}</div>`).join("")}</div>`;
   return panel("",body);
 }
 function abilitiesHTML(v){
@@ -926,7 +926,8 @@ function factsHTML(v,e){
   return chips.length?`<div class="kchips">${chips.join("")}</div>`:"";
 }
 /* Public text never carries production notes. Design notes (entrySource "design") lose any sentence that reads like one; the owner sees the raw text. */
-const DEVNOTE=/\b(locked|redo|approved|pending|wip|todo|placeholder|in review|re-?do)\b/i;
+const DEVNOTE=/\b(locked|redo|approved|pending|wip|todo|placeholder|in review|re-?do|art-lane)\b/i;
+const STUB=/^(pre-evolution of|evolution of) [^.]*\.?$|art-lane design\.?$/i; /* cleanup 11-12 */
 function publicText(t,v){
   t=String(t||"").trim(); if(!t)return t;
   const parts=t.split(/(?<=[.!?])\s+/).filter(x=>!DEVNOTE.test(x));
@@ -937,7 +938,7 @@ const MTABS=[["about","About"],["abil","Abilities"],["evolve","Evolution"],["alt
 /* 11-09: Alts = extra angles/poses of the same Boki (dex entry v.alts [{label,src}], written by dex_art_sync from the manifest's extra_angles). Never replaces the hero. */
 function altsHTML(v){const A=(v.alts||[]).filter(a=>a&&a.src);
   return A.length?panel("Alts",`<div class="gal alts">${A.map(a=>`<figure><img src="${esc(P("dex/"+a.src))}" alt="${esc(v.name)} ${esc(a.label||"alt")}" loading="lazy" data-zoom><figcaption>${esc(a.label||"Alt")}</figcaption></figure>`).join("")}</div>`):"";}
-const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1||v.d?.aff?.length):k==="alts"?!!(v.alts||[]).some(a=>a&&a.src):true);
+const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1):k==="alts"?!!(v.alts||[]).some(a=>a&&a.src):true);
 function tabBody(v,e,d){
   if(mtab==="abil")return abilitiesHTML(v);
   if(mtab==="stats")return statsHTML(v);
@@ -948,9 +949,9 @@ function tabBody(v,e,d){
   /* About = one short in-world dex entry (v.lore, written per Boki/form; owner 11-09: no listed quirks). Older or new
      entries without one fall back to d.lore / entry. The quirk/voice/temper notes stay in the data; admins can still
      open them below, collapsed. */
-  const lore=publicText(v.lore||d.lore||v.entry,v);
+  const lore0=publicText(v.lore||d.lore||v.entry,v), lore=STUB.test(lore0.trim())?"":lore0;
   const more=!isAdmin?"":[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
-  return`${lore?`<p class="blurb">${esc(lore)}</p>`:""}${factsHTML(v,e)}${coreHTML(v)}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
+  return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}${coreHTML(v)}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
 }
 const CHEV=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
 let dsig="", wasOpen=false, dkey="";
@@ -969,8 +970,8 @@ function renderDetail(){
   const o=ovl[v.id], vt=viewerTabs(v);
   const tog=e.forms?`<div class="ftog" role="group" aria-label="Alternate forms">${e.forms.map((f,k)=>`<a href="${L_(f.id)}${sfx}" data-go aria-current="${k===fi}" style="${pTy(f)}">${heroHTML(fv(e,k),f.name)}<span>${esc(f.name)}</span></a>`).join("")}</div>`:"";
   const sxb=un?"":fr?`<div class="sxtog" role="group" aria-label="Male or female look"><div><button type="button" data-sx="m" aria-pressed="${sx==="m"}"><span class="sxi" aria-hidden="true"><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg></span> Male</button><button type="button" data-sx="f" aria-pressed="${sx==="f"}"><span class="sxi" aria-hidden="true"><svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V22M8.5 18.5h7"/></svg></span> Female</button></div></div>`:v0.sex_forms&&tab!=="history"?`<p class="sxnote">Female look coming</p>`:"";
-  const cat=un?"":(m?.category||v.category||"");
-  const kick=`<b class="mnum">#${pad(e.num)}</b>${cat?`<span>${esc(cat)}</span>`:""}${e.stages?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}${e.forms?`<span>${e.forms.length} forms</span>`:""}`;
+  const _vc=String(v.category||""), cat=un?"":(m?.category||(/^[A-Za-z]+ Boki$/.test(_vc)&&typesOf(v).some(t=>_vc.startsWith(t+" "))?_vc:"")); /* cleanup 11-12 */
+  const kick=`<b class="mnum">#${pad(e.num)}</b>${cat?`<span>${esc(cat)}</span>`:""}${e.stages>1?`<span>Stage ${e.stage} of ${e.stages}</span>`:""}${e.forms?`<span>${e.forms.length} forms</span>`:""}`;
   const ty2=typesOf(v), g2=`--g2:var(--g-${slugOf(ty2[1]||ty2[0]||"wild")})`;
   const stage=`<div class="aura" aria-hidden="true" style="${g2}"><i class="a1"></i><i class="a2"></i><i class="ring"></i></div><div class="wm" aria-hidden="true">${pad(e.num)}</div>`;
   const tabs=un?"":`<div class="mtabs" role="tablist" aria-label="Entry sections">${TB.map(([k,l])=>`<button type="button" role="tab" data-mtab="${k}" aria-selected="${k===mtab}">${l}</button>`).join("")}</div>`;
