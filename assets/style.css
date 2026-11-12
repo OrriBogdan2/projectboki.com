@@ -1385,3 +1385,14 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
    is a band in the page, not the closing screen. ---------- */
 .join { position: relative; z-index: 2; min-height: clamp(520px, 78svh, 820px); padding: clamp(72px, 10vh, 120px) 0; }
 .faq { border-bottom: 0; }
+
+/* ---------- One headline on screen at a time: the footage panel carries no text, and its line sits under the next heading ---------- */
+.head .sub.wide { max-width: 40ch; }
+
+/* "Check out the Bokidex" under the silhouettes: an outline button, so it doesn't compete with the white sign-up buttons */
+.bk-dark { text-align: center; }
+.bk-more { display: inline-flex; align-items: center; gap: 10px; height: 52px; margin-top: clamp(22px, 2.6vw, 34px); padding: 0 24px; border-radius: 14px; border: 2px solid rgba(255,255,255,.3); background: #141a2b; font-family: "Lilita"; font-size: 20px; letter-spacing: .02em; color: #fff; transition: border-color .2s ease, background-color .2s ease; }
+.bk-more svg { width: 18px; height: 18px; }
+@media (hover: hover) { .bk-more:hover { border-color: #fff; background: #1a2338; } }
+.bk-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (max-width: 720px) { .bk-more { height: 48px; font-size: 18px; padding: 0 20px; } }

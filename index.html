@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 50vw, 960px">
 
-<link rel="stylesheet" href="assets/style.css?v=250">
+<link rel="stylesheet" href="assets/style.css?v=252">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -161,19 +161,15 @@
 <section class="trailer" id="trailer" aria-label="Gameplay">
   <div class="tr-media" aria-hidden="true">
     <img src="assets/img/game/drop-poster-1920.webp" srcset="assets/img/game/drop-poster-960.webp 960w, assets/img/game/drop-poster-1280.webp 1280w, assets/img/game/drop-poster-1920.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async">
-    <!-- The airship flyover clip behind the line (site.js loads it as you get near; the image is its first frame). When the
-         trailer is ready: add a "Watch the trailer" button under the line below (or drop the line). -->
+    <!-- The airship flyover clip (site.js loads it as you get near; the image is its first frame). No text sits on it: the
+         line that used to ("A creature-raising extraction game.") is now under the next heading, so only one headline is
+         on screen at a time. When the trailer is ready, a "Watch the trailer" button can go here. -->
     <video muted loop playsinline preload="none" tabindex="-1"></video>
-  </div>
-  <div class="wrap tr-copy">
-    <div class="tr-bottom">
-      <h2 class="tr-line">A <span class="nb">creature-raising</span> extraction game.</h2>
-    </div>
   </div>
 </section>
 
 <section id="how" class="how" aria-label="How it works">
-  <div class="wrap"><header class="head" data-r="stagger"><h2>Every match is a heist.</h2></header></div>
+  <div class="wrap"><header class="head" data-r="stagger"><h2>Every match is a heist.</h2><div class="sub wide">A <span class="nb">creature-raising</span> extraction game.</div></header></div>
   <div class="how-stack" data-r="stagger">
     <article class="step" style="--i:0">
       <div class="step-card">
@@ -258,6 +254,7 @@
     <div class="bk-dark" id="bk-dark">
       <h3 class="bk-dark-n">Over 200 Boki to find.</h3>
       <div class="bk-sils" role="group" aria-label="Boki"></div>
+      <a class="bk-more" href="/bokidex/">Check out the Bokidex<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </div>
 </section>
