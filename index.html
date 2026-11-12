@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 50vw, 960px">
 
-<link rel="stylesheet" href="assets/style.css?v=253">
+<link rel="stylesheet" href="assets/style.css?v=254">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -234,22 +234,19 @@
 
 <section id="boki" class="boki">
   <div class="wrap">
-    <!-- The two halves of the game, side by side: raise them, then fight beside them -->
+    <!-- The two halves of the game under one heading: raise them, then fight beside them -->
+    <header class="head" data-r="stagger">
+      <h2 class="hb">Raise your Boki.<br>Fight as one.</h2>
+    </header>
     <div class="pillars">
-      <div class="pillar">
-        <header class="head" data-r="stagger">
-          <h2 class="hb">Raise your Boki.</h2>
-          <div class="sub">Each Boki is 100% unique, with its own traits, mutations and personality.</div>
-        </header>
-        <img data-r src="assets/img/key/tent-1600.webp?v=2" srcset="assets/img/key/tent-960.webp?v=2 960w, assets/img/key/tent-1600.webp?v=2 1600w, assets/img/key/tent-2400.webp?v=2 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="In a tent out of the rain, Tenzo bandages a young Boki's paw while two more keep him company" loading="lazy" decoding="async">
-      </div>
-      <div class="pillar">
-        <header class="head" data-r="stagger">
-          <h2>Fight as one.</h2>
-          <div class="sub">Your Boki fights beside you in every match.</div>
-        </header>
-        <img data-r src="assets/img/key/mast-1600.webp" srcset="assets/img/key/mast-960.webp 960w, assets/img/key/mast-1600.webp 1600w, assets/img/key/mast-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="Kael and his Boki, Voltalon, stand ready on an airship's mast above the clouds" loading="lazy" decoding="async">
-      </div>
+      <figure class="pillar" data-r>
+        <img src="assets/img/key/tent-1600.webp?v=2" srcset="assets/img/key/tent-960.webp?v=2 960w, assets/img/key/tent-1600.webp?v=2 1600w, assets/img/key/tent-2400.webp?v=2 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="In a tent out of the rain, Tenzo bandages a young Boki's paw while two more keep him company" loading="lazy" decoding="async">
+        <figcaption>Each Boki is 100% unique, with its own traits, mutations and personality.</figcaption>
+      </figure>
+      <figure class="pillar" data-r>
+        <img src="assets/img/key/mast-1600.webp" srcset="assets/img/key/mast-960.webp 960w, assets/img/key/mast-1600.webp 1600w, assets/img/key/mast-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 620px" width="2576" height="1438" alt="Kael and his Boki, Voltalon, stand ready on an airship's mast above the clouds" loading="lazy" decoding="async">
+        <figcaption>Your Boki fights beside you in every match.</figcaption>
+      </figure>
     </div>
     <div class="bk-dark" id="bk-dark">
       <h3 class="bk-dark-n">Over 200 Boki to find.</h3>

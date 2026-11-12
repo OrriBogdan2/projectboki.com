@@ -1325,20 +1325,17 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 @media (max-width: 900px) { .duo-art { aspect-ratio: 4 / 3; object-position: 54% 50%; border-radius: 18px; box-shadow: none; } }
 @media (max-width: 720px) { .duo .head h2 { font-size: clamp(34px, 9.4vw, 44px); } .duo .head .sub { font-size: 18px; max-width: 26ch; margin-top: 12px; } .duo .head { margin-bottom: 28px; } }
 
-/* ---------- "Raise your Boki." and "Fight as one." side by side: the two halves of the game in one row (stacked on
-   phones). Each column is heading, line, picture; the pictures line up because the columns share their rows. ---------- */
-.pillars { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; column-gap: clamp(20px, 2.6vw, 40px); margin-bottom: clamp(40px, 5vw, 64px); }
-.pillar { display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: clamp(22px, 2.4vw, 32px); min-width: 0; }
-#boki .pillar .head { margin: 0; scroll-margin-top: max(96px, 16vh); }
-.pillar .head h2 { font-size: clamp(38px, 4.6vw, 66px); white-space: nowrap; }
-.pillar .head .sub { font-size: clamp(19px, 1.9vw, 26px); max-width: 27ch; }
+/* ---------- "Raise your Boki." and "Fight as one." share one heading (one big text per screen). Under it the two
+   pictures sit side by side, each with its own line (stacked on phones). ---------- */
+.pillars { display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(20px, 2.6vw, 40px); margin-bottom: clamp(40px, 5vw, 64px); }
+.pillar { margin: 0; min-width: 0; }
+#boki > .wrap > .head { scroll-margin-top: max(96px, 16vh); margin-bottom: clamp(28px, 3.4vw, 48px); }
 .pillar img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 30px 60px -36px rgba(0,0,0,.8); }
+.pillar figcaption { margin: clamp(18px, 1.8vw, 26px) auto 0; max-width: 27ch; text-align: center; text-wrap: balance; font-family: "Lilita"; font-size: clamp(19px, 1.9vw, 26px); line-height: 1.2; color: var(--ink-2); }
 @media (max-width: 900px) {
-  .pillars { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 44px; margin-bottom: 36px; }
-  .pillar { grid-row: auto; grid-template-rows: none; row-gap: 20px; }
-  #boki .pillar .head h2 { font-size: clamp(34px, 9.4vw, 44px); }
-  #boki .pillar .head .sub { font-size: 18px; max-width: 28ch; margin-top: 10px; }
+  .pillars { grid-template-columns: 1fr; row-gap: 36px; margin-bottom: 36px; }
   .pillar img { border-radius: 18px; box-shadow: none; }
+  .pillar figcaption { font-size: 18px; max-width: 28ch; margin-top: 14px; }
 }
 
 /* ---------- Page order (11-11): match cards, Hunters, then the Boki. The Boki section no longer follows the footage
