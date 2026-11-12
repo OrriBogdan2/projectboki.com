@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 50vw, 960px">
 
-<link rel="stylesheet" href="assets/style.css?v=249">
+<link rel="stylesheet" href="assets/style.css?v=250">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -262,6 +262,26 @@
   </div>
 </section>
 
+<section class="join" id="join">
+  <div class="join-bg" aria-hidden="true"><img src="assets/img/key/aurora-1600.webp" srcset="assets/img/key/aurora-960.webp 960w, assets/img/key/aurora-1600.webp 1600w, assets/img/key/aurora-2400.webp 2400w" sizes="100vw" width="2576" height="1438" alt="" loading="lazy" decoding="async"></div>
+  <div class="wrap" data-r="stagger">
+    <p class="join-q">Miss SUPERVIVE or Battlerite?</p>
+    <h2>Join the closed beta.</h2>
+    <div class="cta join-cta">
+      <form class="signup join-su" id="signup" hidden>
+        <label class="sr" for="su-email">Email for beta invites</label>
+        <div class="su-row">
+          <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+          <button class="btn btn-solid btn-sm" type="submit">Join the beta</button>
+        </div>
+        <div class="su-done" role="status" hidden></div>
+      </form>
+      <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
+    </div>
+    <p class="su-perk"><span class="perk"><svg class="rare-egg" viewBox="0 0 40 44" aria-hidden="true"><clipPath id="re-c2"><path d="M18 6C11.5 6 4 16 4 25.5 4 34.6 10.2 42 18 42s14-7.4 14-16.5C32 16 24.5 6 18 6z"/></clipPath><g class="re-body"><g clip-path="url(#re-c2)"><path fill="#eda81f" d="M18 6C11.5 6 4 16 4 25.5 4 34.6 10.2 42 18 42s14-7.4 14-16.5C32 16 24.5 6 18 6z"/><ellipse fill="#ffd24a" cx="14.5" cy="21" rx="16" ry="20.5"/><circle fill="#d4860c" cx="11" cy="25" r="2.7"/><circle fill="#d4860c" cx="21" cy="32" r="2.2"/><circle fill="#d4860c" cx="21.5" cy="17" r="1.8"/><circle fill="#d4860c" cx="12" cy="35" r="1.4"/><circle fill="#d4860c" cx="26.5" cy="25.5" r="1.3"/><ellipse fill="#fff" opacity=".6" cx="11.5" cy="15.5" rx="2.4" ry="4.6" transform="rotate(28 11.5 15.5)"/></g></g><path class="re-glint" fill="#fff" d="M33 0l1.6 5.4L40 7l-5.4 1.6L33 14l-1.6-5.4L26 7l5.4-1.6z"/><path class="re-glint g2" fill="#fff" d="M37 19l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><span class="perk-t"><span class="perk-a">Early sign-ups get a</span><b class="rare">rare Boki egg.</b></span></span></p>
+  </div>
+</section>
+
 <section id="faq" class="faq">
   <div class="faq-glow" aria-hidden="true"></div>
   <div class="wrap faq-in">
@@ -281,26 +301,6 @@
       <details><summary><span class="qn" aria-hidden="true">08</span><span class="qt">What do I need to play?</span></summary><div class="a"><p>A Windows PC or a Mac.</p></div></details>
       <details><summary><span class="qn" aria-hidden="true">09</span><span class="qt">What do I get for signing up early?</span></summary><div class="a"><p>A rare egg, waiting for you when you get in. Get 3 friends to sign up with your invite link and you earn a second, different egg.</p></div></details>
     </div>
-  </div>
-</section>
-
-<section class="join" id="join">
-  <div class="join-bg" aria-hidden="true"><img src="assets/img/key/aurora-1600.webp" srcset="assets/img/key/aurora-960.webp 960w, assets/img/key/aurora-1600.webp 1600w, assets/img/key/aurora-2400.webp 2400w" sizes="100vw" width="2576" height="1438" alt="" loading="lazy" decoding="async"></div>
-  <div class="wrap" data-r="stagger">
-    <p class="join-q">Miss SUPERVIVE or Battlerite?</p>
-    <h2>Join the closed beta.</h2>
-    <div class="cta join-cta">
-      <form class="signup join-su" id="signup" hidden>
-        <label class="sr" for="su-email">Email for beta invites</label>
-        <div class="su-row">
-          <input id="su-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
-          <button class="btn btn-solid btn-sm" type="submit">Join the beta</button>
-        </div>
-        <div class="su-done" role="status" hidden></div>
-      </form>
-      <a class="btn btn-glass js-discord" href="#" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-discord"/></svg>Join our Discord</a>
-    </div>
-    <p class="su-perk"><span class="perk"><svg class="rare-egg" viewBox="0 0 40 44" aria-hidden="true"><clipPath id="re-c2"><path d="M18 6C11.5 6 4 16 4 25.5 4 34.6 10.2 42 18 42s14-7.4 14-16.5C32 16 24.5 6 18 6z"/></clipPath><g class="re-body"><g clip-path="url(#re-c2)"><path fill="#eda81f" d="M18 6C11.5 6 4 16 4 25.5 4 34.6 10.2 42 18 42s14-7.4 14-16.5C32 16 24.5 6 18 6z"/><ellipse fill="#ffd24a" cx="14.5" cy="21" rx="16" ry="20.5"/><circle fill="#d4860c" cx="11" cy="25" r="2.7"/><circle fill="#d4860c" cx="21" cy="32" r="2.2"/><circle fill="#d4860c" cx="21.5" cy="17" r="1.8"/><circle fill="#d4860c" cx="12" cy="35" r="1.4"/><circle fill="#d4860c" cx="26.5" cy="25.5" r="1.3"/><ellipse fill="#fff" opacity=".6" cx="11.5" cy="15.5" rx="2.4" ry="4.6" transform="rotate(28 11.5 15.5)"/></g></g><path class="re-glint" fill="#fff" d="M33 0l1.6 5.4L40 7l-5.4 1.6L33 14l-1.6-5.4L26 7l5.4-1.6z"/><path class="re-glint g2" fill="#fff" d="M37 19l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><span class="perk-t"><span class="perk-a">Early sign-ups get a</span><b class="rare">rare Boki egg.</b></span></span></p>
   </div>
 </section>
 
