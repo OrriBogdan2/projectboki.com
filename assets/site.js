@@ -189,8 +189,6 @@ if (heroIn && !calm) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const ART_V = "2026-11-10a"; // bump when a Hunter splash changes
-// each Hunter's colour (the same values as assets/hunters.json, kept here so the stage has them without fetching the kits)
-const HCOLOR = { lisette: "#e8483e", cinder: "#ff9a3a", breaker: "#8fd0ff", tarek: "#d9a35b", grimble: "#e0b040", vex: "#ff9a5c", kael: "#ff8a6a", ryzz: "#5fe3c8", motley: "#7fe0d0", claire: "#5fd6c4", pip: "#ffc46a", sable: "#c9a0ff", gill: "#3f8fe0" };
 const HUNTERS = [
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
@@ -659,7 +657,7 @@ if (pick) {
       art.closest(".stage").dataset.h = id; // hook for per-Hunter CSS tweaks
       $("h-name").textContent = name;
       $("h-title").textContent = title;
-      $("h-role").textContent = role; $("h-role").style.color = HCOLOR[id] || "";
+      $("h-role").textContent = role;
       alignTitle();
       art.classList.remove("out");
     };
@@ -761,7 +759,7 @@ if (pick) {
     const label = (i) => {
       const [id, name, title, , role] = HUNTERS[i];
       art.alt = `${name}, ${title}`; stage.dataset.h = id;
-      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; $("h-role").style.color = HCOLOR[id] || ""; alignTitle();
+      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; alignTitle();
     };
     const prep = (i, d) => {
       tgt = i; dir = d; const id = HUNTERS[i][0];
@@ -1715,3 +1713,11 @@ if (POSTHOG_KEY) {
   v.addEventListener("timeupdate", () => v.classList.toggle("dip", v.duration - v.currentTime < 0.6));
   document.addEventListener("boki-lite", () => { v.pause(); v.remove(); sec.classList.remove("live"); });
 })();
+
+/* ---------- The rare egg: press it and it lights up and hops ---------- */
+document.addEventListener("pointerdown", (e) => {
+  const egg = e.target.closest && e.target.closest(".rare-egg");
+  if (!egg) return;
+  egg.classList.remove("pop"); void egg.getBoundingClientRect(); egg.classList.add("pop"); // restart if it is pressed again mid-hop
+});
+document.addEventListener("animationend", (e) => { if (e.animationName === "egg-pop" || e.animationName === "egg-lit") e.target.classList.remove("pop"); });

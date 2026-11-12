@@ -1354,3 +1354,29 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 .bk-sil.known img { width: 88%; height: 88%; filter: none; }
 @media (hover: hover) { .bk-sil.known:hover { border-color: var(--g); background: #1a2338; scale: 1.06; } }
 .bk-sil.known:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- Press the rare egg: it squashes, hops and glows brighter for a moment ---------- */
+.su-perk svg.rare-egg, .sd-h svg.rare-egg { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transform-origin: 45% 92%; }
+.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
+.rare-egg.pop .re-body { animation: egg-shake .75s ease-in-out both; }
+.rare-egg.pop .re-glint { animation: egg-burst .75s ease-out both; }
+@keyframes egg-pop {
+  0% { transform: none; filter: drop-shadow(0 0 12px rgba(255,196,60,.5)); }
+  16% { transform: translateY(3px) scale(1.14, .84); filter: drop-shadow(0 0 22px rgba(255,214,90,1)) brightness(1.3); }
+  42% { transform: translateY(-18px) scale(.93, 1.1); filter: drop-shadow(0 0 26px rgba(255,214,90,1)) brightness(1.35); }
+  66% { transform: translateY(0) scale(1.08, .93); }
+  82% { transform: translateY(-5px) scale(.99, 1.02); }
+  100% { transform: none; filter: drop-shadow(0 0 12px rgba(255,196,60,.5)); }
+}
+@keyframes egg-shake { 0%, 100% { transform: none; } 30% { transform: rotate(-9deg); } 50% { transform: rotate(8deg); } 72% { transform: rotate(-4deg); } }
+@keyframes egg-burst { 0% { transform: scale(.6); opacity: .6; } 35% { transform: scale(1.7) rotate(40deg); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .rare-egg.pop, .rare-egg.pop .re-body, .rare-egg.pop .re-glint { animation: none; }
+  .rare-egg.pop { animation: egg-lit .6s ease-out both; }
+  @keyframes egg-lit { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255,196,60,.5)); } 40% { filter: drop-shadow(0 0 24px rgba(255,214,90,1)) brightness(1.3); } }
+}
+
+/* ---------- Hunter roles (Marksman, Bruiser, Controller…): one colour everywhere, on the stage and in the Abilities panel.
+   Gold was the pick: of the colours tried it stays clear of the most Hunter pictures (red disappears into several). ---------- */
+#hunters .info .role, .hm .hm-role { color: #ffd24a; }
+#hunters .info .role { text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 2px 16px rgba(0,0,0,.8); }
