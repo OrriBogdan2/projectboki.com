@@ -34,7 +34,7 @@
     "line": "Rain a wall of arrows that slows and burns."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Starpiercer",
     "line": "Three big piercing arrows, no draw needed."
@@ -76,7 +76,7 @@
     "line": "A heat blast drags foes in and shields you."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Flue Flight",
     "line": "Fly, laying a burning lava carpet."
@@ -118,7 +118,7 @@
     "line": "Call down a healing zone that ends in a burst."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Faultline",
     "line": "Slam the ground and throw every foe in a lane up."
@@ -160,7 +160,7 @@
     "line": "Raise three rocks to climb, hide behind or punch."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Basalt Spine",
     "line": "Raise a long ridge of rocks, even over the abyss."
@@ -202,7 +202,7 @@
     "line": "Slam your fist down for a long stun."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Brass Broadside",
     "line": "Two waves of brass slugs that block healing."
@@ -244,7 +244,7 @@
     "line": "Stand still, then fire a beam through walls."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Cinderfall",
     "line": "Call a burning shell down on the cursor."
@@ -286,7 +286,7 @@
     "line": "Chain a foe or a wall, then haul yourself in."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Gilded Riposte",
     "line": "Guard, then lunge into a healing cleave."
@@ -328,7 +328,7 @@
     "line": "Drop a circle. Lightning drags everyone inside."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Kitefall",
     "line": "Launch up, then strike down anywhere in a wide ring."
@@ -370,7 +370,7 @@
     "line": "A bomb that grows until you pop it."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Nightwell",
     "line": "Open a well that stuns and draws everything in."
@@ -412,7 +412,7 @@
     "line": "Slide an ice wall forward, then freeze it."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Rimelock",
     "line": "Seal yourself in ice, then crack out and stun everyone near."
@@ -454,7 +454,7 @@
     "line": "A healing ring for you and your team."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Hearth Call",
     "line": "Tether a teammate and heal them as you go."
@@ -496,7 +496,7 @@
     "line": "Throw a dagger, then blink to it."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Encore",
     "line": "Blades fly at every foe in a ring around you."
@@ -538,7 +538,7 @@
     "line": "Spin with the swordfish, then send a waterspout down a line."
    },
    {
-    "key": "X",
+    "key": "R",
     "kind": "Ultimate",
     "name": "Tidal Wave",
     "line": "Surf a wave of fish that knocks up and slows everything in its path."

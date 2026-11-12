@@ -1394,3 +1394,10 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 .bk-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 720px) { .bk-more { height: 48px; font-size: 18px; padding: 0 20px; } }
 .trailer + section { padding-top: calc(var(--sec) * .55); } /* the footage panel has no line on it any more, so the heading follows it sooner */
+
+/* ---------- Boki block (11-12): the heading is one sentence on one line (wide screens); the count sits under the rows
+   of Boki, above the Bokidex button. ---------- */
+@media (min-width: 901px) { #boki > .wrap > .head h2 { white-space: nowrap; font-size: clamp(44px, 5.2vw, 80px); } }
+.bk-dark .bk-sils { margin-top: 0; }
+.bk-dark .bk-dark-n { margin-top: clamp(20px, 2.4vw, 34px); }
+.bk-dark .bk-more { margin-top: clamp(20px, 2.2vw, 28px); }
