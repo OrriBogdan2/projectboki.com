@@ -1,13 +1,15 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>Your rare egg is saved</title></head>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>Project Boki</title></head>
 <body style="margin:0;padding:0;background:#05080f" bgcolor="#05080f">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#05080f" style="background:#05080f"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#0b1020" style="width:100%;max-width:560px;background:#0b1020;border-radius:18px;overflow:hidden;border:1px solid #1d2540;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
 <tr><td style="padding:0;line-height:0"><a href="https://projectboki.com/" style="text-decoration:none"><img src="https://projectboki.com/assets/img/email/banner.jpg" width="560" alt="Project Boki" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:18px 18px 0 0"></a></td></tr>
 <tr><td style="padding:32px 32px 8px">
-<h1 style="margin:0 0 20px;font-size:30px;line-height:36px;font-weight:800;color:#ffffff">Your <span style="color:#ffd24a">rare egg</span> is saved</h1>
+<h1 style="margin:0 0 20px;font-size:30px;line-height:36px;font-weight:800;color:#ffffff">{% if event.properties.verify_token %}Claim your <span style="color:#ffd24a">rare egg</span>{% else %}Your <span style="color:#ffd24a">rare egg</span> is saved{% endif %}</h1>
 <p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">Hi Hunter,</p>
-<p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">You&#x27;re on the list for the Project Boki closed beta. Your rare Boki egg is saved to this email and will be waiting when you get in.</p>
-</td></tr>
+{% if event.properties.verify_token %}<p style="margin:0 0 22px;font-size:17px;line-height:26px;color:#dfe4ee">You&#x27;re on the list for the Project Boki closed beta. Claim your rare Boki egg and it will be waiting when you get in.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px"><tr><td bgcolor="#ffd24a" style="background:#ffd24a;border-radius:12px"><a href="https://projectboki.com/?claim={{ event.properties.verify_token }}&amp;me={{ event.properties.ref_code }}" style="display:inline-block;padding:14px 30px;font-size:18px;line-height:22px;font-weight:800;color:#151005;text-decoration:none;border-radius:12px">Claim my egg</a></td></tr></table>
+{% else %}<p style="margin:0 0 16px;font-size:17px;line-height:26px;color:#dfe4ee">You&#x27;re on the list for the Project Boki closed beta. Your rare Boki egg is saved to this email and will be waiting when you get in.</p>
+{% endif %}</td></tr>
 {% if event.properties.ref_code %}<tr><td style="padding:8px 32px 8px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111830" style="background:#111830;border:1px solid #ffd24a;border-radius:14px"><tr><td style="padding:20px 22px">
 <p style="margin:0 0 10px;font-size:17px;line-height:25px;font-weight:700;color:#ffffff">Want a second, different egg?</p>

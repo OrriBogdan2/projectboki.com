@@ -1089,8 +1089,36 @@ if (POSTHOG_KEY) {
     } }
   const mkRef = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789", b = new Uint8Array(7); crypto.getRandomValues(b); return [...b].map((n) => a[n % a.length]).join(""); };
   const canShare = !!navigator.share && matchMedia("(pointer: coarse)").matches;
+  // Claiming the egg. A sign-up carries a random verify_token; the welcome email's "Claim my egg" button comes back
+  // as projectboki.com/?claim=TOKEN&me=CODE and fires email_verified with that token, which is how a sign-up counts
+  // as confirmed (PostHog matches the two). Until then the form says "Check your email". Sign-ups from before this
+  // existed have no token and are treated as claimed.
+  const mkTok = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789", b = new Uint8Array(16); crypto.getRandomValues(b); return [...b].map((n) => a[n % a.length]).join(""); };
+  let vt = "", claimed = false;
+  try { vt = localStorage.getItem("boki-vt") || ""; claimed = localStorage.getItem("boki-claimed") === "1"; } catch (e) {}
+  let justClaimed = false;
+  { const q = new URLSearchParams(location.search), c = (q.get("claim") || "").toLowerCase(), me = (q.get("me") || "").toLowerCase();
+    if (/^[a-z0-9]{12,24}$/.test(c)) {
+      const mine = /^[a-z0-9]{6,10}$/.test(me) ? me : "";
+      posthog.capture("email_verified", mine ? { verify_token: c, ref_code: mine } : { verify_token: c });
+      if (mine) myRef = mine;
+      signed = claimed = justClaimed = true;
+      try { localStorage.setItem("boki-signed", "1"); localStorage.setItem("boki-claimed", "1"); if (mine) localStorage.setItem("boki-ref", mine); } catch (e) {}
+      q.delete("claim"); q.delete("me"); const rest = q.toString();
+      history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
+    } }
+  const waiting = () => signed && !!vt && !claimed;
   const done = () => {
     document.documentElement.classList.add("su-signed");
+    if (waiting()) {
+      forms.forEach((f) => {
+        f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true;
+        const d = f.querySelector(".su-done");
+        d.innerHTML = '<div class="sd-h">' + ((document.querySelector(".su-perk .rare-egg") || {}).outerHTML || "") + '<p class="sd-t">Check your email<br>to claim your <b class="rare">rare egg</b>.</p></div><p class="sd-s">Not there? Look in your spam folder.</p>';
+        d.hidden = false;
+      });
+      return;
+    }
     forms.forEach((f) => {
       f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true;
       const d = f.querySelector(".su-done");
@@ -1130,13 +1158,17 @@ if (POSTHOG_KEY) {
       const email = form.email.value.trim(); if (!email) return;
       if (!myRef) { myRef = mkRef(); try { localStorage.setItem("boki-ref", myRef); } catch (e) {} }
       const who = { email, ref_code: myRef }; if (refBy) who.referred_by = refBy;
+      vt = mkTok(); claimed = false; signed = true;
       posthog.identify(email, who);
-      posthog.capture("email_signup", { ...who, where: form.id });
-      try { localStorage.setItem("boki-signed", "1"); } catch (e) {}
+      posthog.capture("email_signup", { ...who, where: form.id, verify_token: vt });
+      try { localStorage.setItem("boki-signed", "1"); localStorage.setItem("boki-vt", vt); localStorage.removeItem("boki-claimed"); } catch (e) {}
       saving(form);
     });
   });
   if (signed) done();
+  if (justClaimed) { const h = document.getElementById("hero"); if (h && !location.hash) scrollTo(0, 0); setTimeout(() => { const e2 = document.querySelector(".hero-su .sd-h .rare-egg"); if (e2) e2.classList.add("pop"); }, 900); }
+  // The email was opened in another tab of this browser: this one catches up
+  addEventListener("storage", (e) => { if (e.key === "boki-claimed" && e.newValue === "1" && !claimed) { claimed = true; try { myRef = localStorage.getItem("boki-ref") || myRef; } catch (x) {} done(); } });
   // Coming from another page's "Join the beta": land on the hero and put the cursor in the email field.
   if (location.hash === "#beta") { history.replaceState(null, "", location.pathname + location.search); const i = document.getElementById("hero-email"); if (i && !i.closest(".su-row").hidden && matchMedia("(pointer: fine)").matches) setTimeout(() => i.focus({ preventScroll: true }), 400); }
   document.querySelectorAll(".su-fallback").forEach((a) => a.remove());
