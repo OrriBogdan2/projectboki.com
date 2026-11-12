@@ -1099,6 +1099,17 @@ if (POSTHOG_KEY) {
       d.hidden = false;
     });
   };
+  // A short "saving" moment after the button is pressed: the form becomes the rare egg, shaking, while a gold line
+  // fills under it; then the egg pops and the confirmation shows. Reduced motion: straight to the confirmation.
+  const SAVE_MS = 1600;
+  const saving = (form) => {
+    if (calm) { done(); return; }
+    const row = form.querySelector(".su-row"), egg = document.querySelector(".su-perk .rare-egg");
+    const l = document.createElement("div"); l.className = "su-load"; l.setAttribute("role", "status");
+    l.innerHTML = (egg ? egg.outerHTML : "") + '<span>Saving your rare egg</span><i class="su-bar"></i>';
+    row.hidden = true; row.after(l);
+    setTimeout(() => { l.remove(); done(); const e2 = form.querySelector(".sd-h .rare-egg"); if (e2) e2.classList.add("pop"); }, SAVE_MS);
+  };
   document.addEventListener("click", (e) => {
     const i = e.target.closest(".sd-row input"); if (i) { i.select(); return; }
     const b = e.target.closest(".sd-row button"); if (!b) return;
@@ -1122,7 +1133,7 @@ if (POSTHOG_KEY) {
       posthog.identify(email, who);
       posthog.capture("email_signup", { ...who, where: form.id });
       try { localStorage.setItem("boki-signed", "1"); } catch (e) {}
-      done();
+      saving(form);
     });
   });
   if (signed) done();

@@ -1413,3 +1413,17 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
    Sparkle and the egg stay large. ---------- */
 .hero-pic { display: contents; }
 @media (max-width: 900px), (max-aspect-ratio: 5/4) { .hero-art { object-position: 62% 50%; } }
+
+/* ---------- Sign-up: the short "saving" moment (11-12). The form's place is held by the rare egg, shaking harder as a
+   gold line fills under it, then the confirmation takes over. ---------- */
+.su-load { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; box-sizing: border-box; height: 58px; border-radius: 16px; border: 1px solid rgba(255,210,74,.55); background: rgba(8,13,24,.62); overflow: hidden; font-family: "Lilita"; font-size: 21px; line-height: 1; color: #ffd24a; white-space: nowrap; }
+.su-load svg.rare-egg { flex: none; width: 30px; height: 33px; margin: 0; overflow: visible; filter: drop-shadow(0 0 10px rgba(255,196,60,.7)); }
+.su-load .rare-egg .re-body { animation: su-shake .42s ease-in-out infinite; }
+.su-load .rare-egg .re-glint { animation: egg-glint .5s ease-in-out infinite alternate; }
+.su-load span::after { content: ""; display: inline-block; width: 1.1em; text-align: left; animation: su-dots 1.2s steps(1) infinite; }
+.su-load .su-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #ffd24a; transform: scaleX(0); transform-origin: left center; animation: su-fill 1.6s cubic-bezier(.35, .1, .25, 1) forwards; }
+@keyframes su-shake { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+@keyframes su-fill { to { transform: scaleX(1); } }
+@keyframes su-dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+.nav-su .su-load { height: 48px; font-size: 18px; }
+@media (max-width: 720px) { .su-load { height: 56px; font-size: 19px; } }
