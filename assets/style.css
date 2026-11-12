@@ -1344,3 +1344,13 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 /* ---------- Page order (11-11): match cards, Hunters, then the Boki. The Boki section no longer follows the footage
    panel, so it carries its own solid background and its own top spacing. ---------- */
 .boki { position: relative; z-index: 2; background: var(--bg); padding-top: calc(var(--sec) * .9); }
+
+/* ---------- "Over 200 Boki to find." now stands alone (the card wall above it is gone). A few tiles are Boki you can
+   already meet, in colour among the silhouettes; the rows keep their height before the data arrives. ---------- */
+.bk-dark { margin-top: clamp(48px, 6vw, 84px); }
+.bk-sils { min-height: calc(2 * 94px + var(--gap) + 4px + 30px); }
+@media (max-width: 639px) { .bk-sils { min-height: calc(2 * 62px + var(--gap) + 4px + 19px); } }
+.bk-sil.known { padding: 0; cursor: pointer; background: #141b2c; border-color: color-mix(in srgb, var(--g) 55%, transparent); transition: border-color .2s ease, background-color .2s ease, scale .2s ease; }
+.bk-sil.known img { width: 88%; height: 88%; filter: none; }
+@media (hover: hover) { .bk-sil.known:hover { border-color: var(--g); background: #1a2338; scale: 1.06; } }
+.bk-sil.known:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }

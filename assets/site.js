@@ -883,50 +883,14 @@ const TYPE = { fire: "#ff8a4c", electric: "#ffd84a", ice: "#9fe3ff", dark: "#a78
   grass: "#7dde6b", sound: "#ffb36b", spore: "#9ef0c0", rock: "#d2bf9f", psychic: "#e39bff", bug: "#ffcf5a", steel: "#c8d2e0",
   dragon: "#8fe8c8", flying: "#a8d4ff", crystal: "#b8f0ff", normal: "#f4e2c4" }; // the Bokidex's types (tools/boki/build.py)
 const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
-const bw = document.getElementById("bw");
+const bw = document.getElementById("bk-dark");
 if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
   const LIST = data.revealed;
-  const FEATURED = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 8 : 6; // one row on desktop, two or three short ones on smaller screens; the full list lives on the Bokidex page
   const pic = (b, w) => `assets/img/boki-front/${b.id}-${w}.webp?v=${b.v}`;
-  const cards = LIST.slice(0, FEATURED).map((b, i) => {
-    const c = document.createElement("button");
-    c.type = "button"; c.className = "bw-card";
-    c.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
-    c.innerHTML = `<span class="bw-art"><img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480"></span><span class="bw-txt"><b></b><i></i></span>`;
-    c.querySelector("b").textContent = b.name; c.querySelector("i").textContent = b.types.map(cap).join(" · ");
-    c.setAttribute("aria-label", `${b.name}, ${b.types.join(" and ")} type`);
-    c.addEventListener("click", () => openCard(i));
-    return c;
-  });
-  let cols = [];
-  const deal = () => {
-    const n = innerWidth >= 1000 ? 6 : innerWidth >= 640 ? 4 : 2;
-    if (cols.length === n) return;
-    bw.innerHTML = ""; cols = [];
-    for (let k = 0; k < n; k++) { const col = document.createElement("div"); col.className = "bw-col"; bw.appendChild(col); cols.push(col); }
-    cards.forEach((c, i) => cols[i % n].appendChild(c));
-    drift();
-  };
-  let tick = false;
-  const drift = () => {
-    if (calm || !cols.length) return;
-    const r = bw.getBoundingClientRect(), vh = innerHeight;
-    if (r.bottom < -200 || r.top > vh + 200) return;
-    const p = (vh - r.top) / (vh + r.height) - 0.5;
-    const amp = innerWidth >= 640 ? 22 : 10; // a gentle drift, not a race
-    cols.forEach((col, k) => { col.style.transform = `translate3d(0, ${(-(k % 2 ? 1 : -0.4) * amp * p * 2).toFixed(1)}px, 0)`; });
-  };
-  addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; drift(); }); } }, { passive: true });
-  addEventListener("resize", deal);
-  deal();
-  const seen = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px" });
-  cards.forEach((c, i) => { c.style.setProperty("--d", (i % 6) * 60 + "ms"); seen.observe(c); });
 
   // The rest of the roster: silhouettes where we have a shape, eggs where we don't yet
   const dark = document.getElementById("bk-dark");
   if (dark) {
-    dark.querySelector(".bk-dark-n").textContent = "Over 200 Boki to find.";
-    dark.querySelector(".bk-dark-s").remove();
     const grid = dark.querySelector(".bk-sils");
     // two rows of the mystery, laid like bricks (the second row is one tile shorter and sits half a tile in):
     // silhouettes from the dex, and eggs if the dex is short
@@ -935,17 +899,28 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     for (let i = 0; list.length < need; i++) list.push({ t: types[(i * 7 + 3) % types.length], sil: null });
     const DROP = [0, 22, 8, 30, 14, 26, 4, 20, 10, 28, 6, 18, 12];
     const rows = [0, 1].map((r) => { const d = document.createElement("div"); d.className = "bk-row" + (r ? " off" : ""); grid.appendChild(d); return d; });
+    // A few tiles are Boki you can already meet, in colour among the shapes: tap one for a closer look.
+    let shown = 0;
     list.forEach((h, i) => {
-      const t = document.createElement("span");
-      t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
-      t.innerHTML = h.sil ? `<img src="assets/img/boki-sil/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
+      const jj = i < cols ? i : i - cols, b = (i < cols ? jj % 3 === 1 : jj % 4 === 2) ? LIST[shown] : null;
+      const t = document.createElement(b ? "button" : "span");
+      if (b) {
+        const k = shown++;
+        t.type = "button"; t.className = "bk-sil known"; t.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
+        t.innerHTML = `<img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480">`;
+        t.setAttribute("aria-label", `${b.name}, ${b.types.join(" and ")} type`);
+        t.addEventListener("click", () => openCard(k));
+      } else {
+        t.setAttribute("aria-hidden", "true");
+        t.className = "bk-sil" + (h.sil ? "" : " egg"); t.style.setProperty("--g", TYPE[h.t] || "#9a7dff");
+        t.innerHTML = h.sil ? `<img src="assets/img/boki-sil/${h.sil}-240.webp" alt="" loading="lazy">` : "<i>?</i>";
+      }
       // each tile also sits a little lower or higher than its neighbours, like the cards above (row two takes the
       // average of the two tiles it sits under, so the rows never touch)
       const j = i < cols ? i : i - cols, drop = (k) => DROP[Math.min(cols - 1, Math.max(0, k)) % DROP.length];
       t.style.setProperty("--dy", i < cols ? drop(j) : (drop(j) + drop(j + 1)) / 2);
       rows[i < cols ? 0 : 1].appendChild(t);
     });
-    dark.hidden = false;
   }
 
   // A closer look: big art, types, its line, and its description. Arrows, swipes and keys browse; Esc closes.
@@ -1006,7 +981,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
     setTimeout(() => { box.hidden = true; }, 220);
     if (back) back.focus({ preventScroll: true });
   }
-}).catch(() => { bw.classList.add("none"); }); // (no data: give back the room held for the cards)
+}).catch(() => { bw.hidden = true; }); // (no data: no block)
 
 /* ---------- shared: swipe to switch, and a one-time nudge so the strip reads as scrollable ---------- */
 function swipe(el, go) {
