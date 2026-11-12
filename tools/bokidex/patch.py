@@ -162,7 +162,7 @@ def _sub(old, new, label, rx=False):
         return
     t = re.sub(old, new, s, count=1, flags=re.S) if rx else s.replace(old, new, 1)
     if t == s and new:  # a removal that matches nothing is already done
-        print("  patch step 8: no match for", label, "(export changed?)")
+        print("  patch: no match for", label, "(export changed?)")
     s = t
 
 # 8a. evolution edges name only a real requirement (an Ink). The four raise-affinity words are not shown any more.
@@ -190,9 +190,10 @@ _sub('const DEVNOTE=/\\b(locked|redo|approved|pending|wip|todo|placeholder|in re
 _sub('const lore=publicText(v.lore||d.lore||v.entry,v);',
      'const lore0=publicText(v.lore||d.lore||v.entry,v), lore=STUB.test(lore0.trim())?"":lore0;',
      "lore stub")
-_sub('return`${lore?`<p class="blurb">${esc(lore)}</p>`:""}${factsHTML(v,e)}',
-     'return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}',
-     "empty about")
+if "function blurbHTML" not in s:  # step 9b rewrites this line
+    _sub('return`${lore?`<p class="blurb">${esc(lore)}</p>`:""}${factsHTML(v,e)}',
+         'return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}',
+         "empty about")
 # 8f. "Surprise me" was a bare "?" (it read as help): a shuffle mark instead.
 _sub('<span class="qm" aria-hidden="true">?</span>',
      '<span class="qm" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 3.6c1.1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.5c2 0 3.2-1 4.3-2.7M13.2 9.5c1.1-1.7 2.3-2.5 4.3-2.5H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></span>',
@@ -206,6 +207,86 @@ CLEAN_CSS = """<style>/* cleanup-1112 (tools/bokidex/patch.py step 8) */
 """
 if "cleanup-1112" not in s:
     s = s.replace("</head>", CLEAN_CSS + "</head>", 1)
+
+# 9. Detail polish 11-12 (dex-detail-1111): a short About with More, a big 3D button, a larger viewer, no generated-looking
+#    decoration. Same rules as step 8: literal replaces, skipped when already applied.
+# 9a. About summary: data.json gets "short" (the first sentence of the lore) on every entry and form whose lore has more
+#     than one sentence. The page shows it with a "More" toggle; the full lore stays the text behind More. No new words.
+import json
+DP = os.path.join(os.path.dirname(P), "d", "data.json")
+if os.path.exists(DP):
+    raw = open(DP, encoding="utf-8").read(); D = json.loads(raw)
+    def _short(lore):
+        parts = re.split(r'(?<=[.!?])\s+(?=[A-Z"“])', (lore or "").strip(), maxsplit=1)
+        return parts[0] if len(parts) == 2 else ""
+    for e in D["dex"]["entries"]:
+        for x in [e] + list(e.get("forms") or []):
+            sh = _short(x.get("lore"))
+            if sh: x["short"] = sh
+            else: x.pop("short", None)
+    out = json.dumps(D, separators=(",", ":"), ensure_ascii=False)
+    if out != raw:
+        open(DP, "w", encoding="utf-8").write(out); print("bokidex/d/data.json: About summaries written")
+# 9b. About: summary + inline More / Less (instead of the whole lore as one block)
+_sub('function tabBody(v,e,d){',
+     'function blurbHTML(lore,sh){ /* detail 11-12: the short line, the rest behind More */\n'
+     '  if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;\n'
+     '  if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;\n'
+     '  return`<p class="blurb">${esc(sh)}<span class="bl-rest" id="blrest" hidden> ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}\n'
+     'function tabBody(v,e,d){', "blurbHTML")
+_sub('return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}',
+     'return`${blurbHTML(lore,v.short)}${factsHTML(v,e)}', "about body")
+# the old "read more" remnants (clamped blurb + [data-more] click) are replaced by the toggle above
+s = re.sub(r'\ndocument\.addEventListener\("click",ev=>\{const b=ev\.target\.closest\("\[data-more\]"\)[^\n]*', '\ndocument.addEventListener("click",ev=>{const b=ev.target.closest("[data-rm]");if(!b)return;const r=$("#blrest"),on=r.hidden;r.hidden=!on;b.textContent=on?"Less":"More";b.setAttribute("aria-expanded",String(on));fitDetail()}); /* detail 11-12 */', s, count=1)
+s = s.replace(".blurb.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}\n", "")
+s = re.sub(r"\.readmore\{[^\n]*\n\.readmore:hover\{[^\n]*\n", "", s, count=1)
+# 9c. a real 3D button under the picture (was a tiny "3D" pill on the picture); the picture itself stays tappable
+_sub('${vt.length?`<span class="go">${vt.map(x=>x.label).join(" \u00b7 ")}</span>`:""}</button>${sxb}',
+     '</button>${vt.length?`<button class="v3d" type="button" data-v3d="${(vt.find(x=>x.k==="3d")||vt[0]).k}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7zM3.5 7l8.5 4.5L20.5 7M12 11.5v10"/></svg>${vt.some(x=>x.k==="3d")?"View in 3D":"Turnaround"}</button>`:""}${sxb}', "3d button")
+_sub('<button class="herobtn" type="button" id="herobtn" ${vt.length?"":"disabled"}', '<button class="herobtn" type="button" id="herobtn" ${vt.length?\'tabindex="-1"\':"disabled"}', "herobtn tabindex")
+_sub('if(t.closest?.("#herobtn")&&!t.closest("#herobtn").disabled){openViewer();return}',
+     'if(t.closest?.("[data-v3d]")){openViewer(t.closest("[data-v3d]").dataset.v3d);return}\n  if(t.closest?.("#herobtn")&&!t.closest("#herobtn").disabled){openViewer();return}', "3d click")
+s = re.sub(r"\.herobtn \.go\{[^\n]*\n", "", s)
+s = re.sub(r"  \.herobtn \.go\{[^\n]*\n", "", s)
+_sub('($("#herobtn")||document.body).focus?.({preventScroll:true})}', '($("[data-v3d]")||$("#herobtn")||document.body).focus?.({preventScroll:true})}', "viewer focus return")
+# 9d. viewer: no lone "3D" tab (the button already said it), a spinner while it loads
+_sub('$("#vtabs").innerHTML=v.map(', '$("#vtabs").innerHTML=v.length<2?"":v.map(', "single tab")
+_sub('<div class="vmsg">Loading the 3D model\u2026</div>', '<div class="vmsg load">Loading the 3D model</div>', "loading")
+DETAIL_CSS = """<style>/* detail-1112 (tools/bokidex/patch.py step 9) */
+/* 3D button: large, filled, under the picture */
+.v3d{display:inline-flex;align-items:center;justify-content:center;gap:10px;align-self:center;min-width:188px;min-height:48px;padding:0 24px 0 20px;border:0;border-radius:999px;background:var(--accent);color:var(--bg);font:700 1rem/1 var(--body);cursor:pointer;box-shadow:0 8px 18px -10px rgba(0,0,0,.5);transition:filter .15s,transform .15s}
+.v3d svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round;flex:none}
+.v3d:hover{filter:brightness(1.08)}.v3d:active{transform:scale(.97)}
+.v3d:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+/* About: short line, More toggle */
+.blurb .rm{background:none;border:0;padding:6px 4px;margin:-6px 0;font:700 .92rem var(--body);color:var(--accent);cursor:pointer;white-space:nowrap}
+.blurb .rm:hover{text-decoration:underline}.blurb .rm:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px}
+/* plain title, no gradient text, no glow, no ring */
+.mh{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink);padding-bottom:0;margin-bottom:0}
+.mhead .chip{box-shadow:none}
+.mline,.aura .ring{display:none}
+.mart .herobtn .hero.cut img{filter:var(--hshadow)}
+/* viewer: bigger on desktop, edge to edge on phones, the drag belongs to the model */
+.vbox{width:min(1240px,100%);height:100%}
+.vhead .t{word-spacing:.3em}
+.vtabs button{min-height:36px;padding:6px 16px}
+#vbody,#vbody model-viewer{touch-action:none;overscroll-behavior:contain}
+.vmsg.load{align-content:center;justify-items:center;row-gap:14px}
+.vmsg.load::before{content:"";width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@media (max-width:759px){
+  #viewer{padding:0}.vbox{border:0;border-radius:0}
+  .vhead{padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px}
+  .v3d{min-width:0;width:min(100%,220px);min-height:46px}
+  .mart{gap:10px}
+  /* prev / next sit beside the picture, not over the text */
+  .mnav{top:calc(max(14px,env(safe-area-inset-top,0px)) + 62px);bottom:auto;width:40px;height:40px}
+  .mnav.pv{left:10px}.mnav.nx{right:10px}
+  .minfo{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+"""
+if "detail-1112" not in s:
+    s = s.replace("</head>", DETAIL_CSS + "</head>", 1)
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")

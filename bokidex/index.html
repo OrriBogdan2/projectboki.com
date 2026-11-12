@@ -180,7 +180,6 @@ html.modal-open body{overflow:hidden}
 .herobtn{display:block;width:100%;padding:0;border:0;background:none;color:inherit;border-radius:24px;cursor:pointer;position:relative}
 .herobtn[disabled]{cursor:default}
 .herobtn .hero{border-radius:24px}
-.herobtn .go{position:absolute;right:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 82%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:999px;font:600 .75rem var(--body);padding:5px 12px}
 @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:no-preference){#detail.enter .mback{animation:fade .2s ease-out both}#detail.enter .msheet{animation:pop .28s cubic-bezier(.2,.8,.2,1) both}}
@@ -197,8 +196,7 @@ html.modal-open body{overflow:hidden}
   .msheet{display:flex;flex-direction:column;border-radius:0;border:0;height:100%;overflow:hidden}
   .mart{flex:none;padding:max(14px,env(safe-area-inset-top,0px)) 64px 10px;gap:8px}
   .mart .herobtn{max-width:min(52vw,19vh)}
-  .herobtn .go{font-size:.66rem;padding:3px 9px;right:4px;bottom:4px}
-  .ftog .hero{width:30px}
+    .ftog .hero{width:30px}
   .sxtog{margin-top:6px}.sxtog button{font-size:.76rem;padding:5px 12px}.sxnote{margin-top:6px;font-size:.68rem}
   .minfo{flex:1 1 auto;min-height:0;overflow:auto;padding:10px 16px calc(58px + env(safe-area-inset-bottom,0px))}
   .ab2,.sgrid{grid-template-columns:minmax(0,1fr)}
@@ -545,9 +543,6 @@ header{padding-block:16px 4px}header::after{display:none}
 .kc small{font:600 .62rem var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
 .kc b{font:600 1.02rem/1.25 var(--body);overflow-wrap:anywhere}
 .kc .pp{font:600 .9rem var(--body);display:inline-flex;align-items:center;gap:6px;margin-right:12px;white-space:nowrap}.kc .pp:last-child{margin-right:0}
-.blurb.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.readmore{background:none;border:0;padding:0;margin:0 0 6px;font:700 .86rem var(--body);color:var(--accent);cursor:pointer}
-.readmore:hover{text-decoration:underline}
 details.qk{margin:12px 0 0;border-top:1px solid var(--line);padding-top:10px}
 details.qk summary{cursor:pointer;font:700 .9rem var(--body);color:var(--accent);list-style:none;display:flex;align-items:center;gap:8px}
 details.qk summary::-webkit-details-marker{display:none}
@@ -638,6 +633,38 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 #surprise .qm{display:flex;align-items:center;justify-content:center}
 .blurb.mut{color:var(--mute)}
 @media (max-width:759px){.mkick{gap:4px 14px}.mkick span::before{display:none}}
+</style>
+<style>/* detail-1112 (tools/bokidex/patch.py step 9) */
+/* 3D button: large, filled, under the picture */
+.v3d{display:inline-flex;align-items:center;justify-content:center;gap:10px;align-self:center;min-width:188px;min-height:48px;padding:0 24px 0 20px;border:0;border-radius:999px;background:var(--accent);color:var(--bg);font:700 1rem/1 var(--body);cursor:pointer;box-shadow:0 8px 18px -10px rgba(0,0,0,.5);transition:filter .15s,transform .15s}
+.v3d svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round;flex:none}
+.v3d:hover{filter:brightness(1.08)}.v3d:active{transform:scale(.97)}
+.v3d:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+/* About: short line, More toggle */
+.blurb .rm{background:none;border:0;padding:6px 4px;margin:-6px 0;font:700 .92rem var(--body);color:var(--accent);cursor:pointer;white-space:nowrap}
+.blurb .rm:hover{text-decoration:underline}.blurb .rm:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px}
+/* plain title, no gradient text, no glow, no ring */
+.mh{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink);padding-bottom:0;margin-bottom:0}
+.mhead .chip{box-shadow:none}
+.mline,.aura .ring{display:none}
+.mart .herobtn .hero.cut img{filter:var(--hshadow)}
+/* viewer: bigger on desktop, edge to edge on phones, the drag belongs to the model */
+.vbox{width:min(1240px,100%);height:100%}
+.vhead .t{word-spacing:.3em}
+.vtabs button{min-height:36px;padding:6px 16px}
+#vbody,#vbody model-viewer{touch-action:none;overscroll-behavior:contain}
+.vmsg.load{align-content:center;justify-items:center;row-gap:14px}
+.vmsg.load::before{content:"";width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@media (max-width:759px){
+  #viewer{padding:0}.vbox{border:0;border-radius:0}
+  .vhead{padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px}
+  .v3d{min-width:0;width:min(100%,220px);min-height:46px}
+  .mart{gap:10px}
+  /* prev / next sit beside the picture, not over the text */
+  .mnav{top:calc(max(14px,env(safe-area-inset-top,0px)) + 62px);bottom:auto;width:40px;height:40px}
+  .mnav.pv{left:10px}.mnav.nx{right:10px}
+  .minfo{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 </head>
 <body>
@@ -939,6 +966,10 @@ const MTABS=[["about","About"],["abil","Abilities"],["evolve","Evolution"],["alt
 function altsHTML(v){const A=(v.alts||[]).filter(a=>a&&a.src);
   return A.length?panel("Alts",`<div class="gal alts">${A.map(a=>`<figure><img src="${esc(P("dex/"+a.src))}" alt="${esc(v.name)} ${esc(a.label||"alt")}" loading="lazy" data-zoom><figcaption>${esc(a.label||"Alt")}</figcaption></figure>`).join("")}</div>`):"";}
 const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1):k==="alts"?!!(v.alts||[]).some(a=>a&&a.src):true);
+function blurbHTML(lore,sh){ /* detail 11-12: the short line, the rest behind More */
+  if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;
+  if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;
+  return`<p class="blurb">${esc(sh)}<span class="bl-rest" id="blrest" hidden> ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}
 function tabBody(v,e,d){
   if(mtab==="abil")return abilitiesHTML(v);
   if(mtab==="stats")return statsHTML(v);
@@ -951,7 +982,7 @@ function tabBody(v,e,d){
      open them below, collapsed. */
   const lore0=publicText(v.lore||d.lore||v.entry,v), lore=STUB.test(lore0.trim())?"":lore0;
   const more=!isAdmin?"":[d.quirk?`<p><b>Quirk.</b> ${esc(publicText(d.quirk,v))}</p>`:"",d.voice?`<p><b>Voice.</b> ${esc(cap1(d.voice))}.</p>`:"",d.temper?`<p><b>Egg temper.</b> ${esc(d.temper.name)}.${d.temper.play?" "+esc(d.temper.play):""}</p>`:""].filter(Boolean).join("");
-  return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}${coreHTML(v)}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
+  return`${blurbHTML(lore,v.short)}${factsHTML(v,e)}${coreHTML(v)}${more?`<details class="qk"><summary>Design notes (admin)</summary>${more}</details>`:""}`;
 }
 const CHEV=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
 let dsig="", wasOpen=false, dkey="";
@@ -984,7 +1015,7 @@ function renderDetail(){
    dkey=key;}
   el.innerHTML=`<div class="mback" data-close></div><div class="mwrap">
    <div class="msheet">
-    <div class="mart">${stage}<button class="herobtn" type="button" id="herobtn" ${vt.length?"":"disabled"} aria-label="${vt.length?"Inspect "+esc(v.name)+" in 3D or turnaround":esc(v.name)+" hero"}">${heroHTML(v,v.name)}${vt.length?`<span class="go">${vt.map(x=>x.label).join(" · ")}</span>`:""}</button>${sxb}${tog}</div>
+    <div class="mart">${stage}<button class="herobtn" type="button" id="herobtn" ${vt.length?'tabindex="-1"':"disabled"} aria-label="${vt.length?"Inspect "+esc(v.name)+" in 3D or turnaround":esc(v.name)+" hero"}">${heroHTML(v,v.name)}</button>${vt.length?`<button class="v3d" type="button" data-v3d="${(vt.find(x=>x.k==="3d")||vt[0]).k}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7zM3.5 7l8.5 4.5L20.5 7M12 11.5v10"/></svg>${vt.some(x=>x.k==="3d")?"View in 3D":"Turnaround"}</button>`:""}${sxb}${tog}</div>
     <div class="minfo" tabindex="0">
      <div class="mfit">
      <div class="mkick">${kick}</div>
@@ -1018,7 +1049,7 @@ document.fonts?.ready?.then(()=>fitDetail());
     const r=sh.getBoundingClientRect();px=Math.max(-1,Math.min(1,((ev.clientX-r.left)/r.width-.5)*2));py=Math.max(-1,Math.min(1,((ev.clientY-r.top)/r.height-.5)*2));
     if(!raf)raf=requestAnimationFrame(()=>{raf=0;const m=sh.querySelector(".mart");if(m){m.style.setProperty("--px",px.toFixed(3));m.style.setProperty("--py",py.toFixed(3))}})},{passive:true});
 })();
-document.addEventListener("click",ev=>{const b=ev.target.closest("[data-more]");if(!b)return;const p=b.previousElementSibling;if(p?.classList.contains("clamp")){p.classList.remove("clamp");b.remove();fitDetail()}});
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rm]");if(!b)return;const r=$("#blrest"),on=r.hidden;r.hidden=!on;b.textContent=on?"Less":"More";b.setAttribute("aria-expanded",String(on));fitDetail()}); /* detail 11-12 */
 /* ---------- viewer ---------- */
 const _glbCache={};function glbURL(g){return _glbCache[g]||(_glbCache[g]=blobOf("dex/"+g).catch(x=>{delete _glbCache[g];throw x}))}
 function viewerTabs(e){const t=[];if(turnOf(e))t.push({k:"turn",label:"Turnaround"});if(e.glb)t.push({k:"3d",label:"3D"});return t}
@@ -1035,16 +1066,16 @@ function openViewer(k){
   const e=selView(); if(!e)return; const v=viewerTabs(e); if(!v.length)return;
   vTab=k&&v.some(x=>x.k===k)?k:v[0].k; $("#viewer").hidden=false; document.body.style.overflow="hidden"; renderViewer(); $("#vclose").focus();
 }
-function closeViewer(){if(!viewerOpen())return;$("#viewer").hidden=true;$("#vbody").innerHTML="";document.body.style.overflow="";($("#herobtn")||document.body).focus?.({preventScroll:true})}
+function closeViewer(){if(!viewerOpen())return;$("#viewer").hidden=true;$("#vbody").innerHTML="";document.body.style.overflow="";($("[data-v3d]")||$("#herobtn")||document.body).focus?.({preventScroll:true})}
 function cycleViewer(d){const e=selView();if(!e)return;const v=viewerTabs(e);if(v.length<2)return;const i=v.findIndex(x=>x.k===vTab);vTab=v[(i+d+v.length)%v.length].k;renderViewer()}
 function renderViewer(){
   const e=selView(); if(!e){closeViewer();return}
   const v=viewerTabs(e);
   $("#vtitle").textContent=`#${pad(e.num)} ${e.name}`;
-  $("#vtabs").innerHTML=v.map(x=>`<button type="button" role="tab" data-vt="${x.k}" aria-selected="${x.k===vTab}">${x.label}</button>`).join("");
+  $("#vtabs").innerHTML=v.length<2?"":v.map(x=>`<button type="button" role="tab" data-vt="${x.k}" aria-selected="${x.k===vTab}">${x.label}</button>`).join("");
   const b=$("#vbody");
   if(vTab==="turn"){const src=turnOf(e);b.innerHTML=`<div class="tz" id="tz"><img src="${esc(P(src))}" alt="${esc(e.name)} turnaround"></div>`;$("#vfoot").innerHTML="";pan($("#tz"));return}
-  b.innerHTML='<div class="vmsg">Loading the 3D model…</div>';
+  b.innerHTML='<div class="vmsg load">Loading the 3D model</div>';
   $("#vfoot").innerHTML="";
   const mine=sel+"/"+fi;
   Promise.all([loadMV(),glbURL(e.glb)]).then(([,u])=>{
@@ -1097,6 +1128,7 @@ document.addEventListener("click",e=>{
   const mt=t.closest?.("[data-mtab]");if(mt){mtab=mt.dataset.mtab;renderDetail();return}
   const sb=t.closest?.("[data-sx]");if(sb){const k=sb.dataset.sx;if(k!==sx){sx=k;renderDetail();$(`#detail [data-sx="${k}"]`)?.focus({preventScroll:true})}return}
   if(t.closest?.("[data-close]")||t.id==="detail"||t.classList?.contains("mwrap")){go("#dex");return}
+  if(t.closest?.("[data-v3d]")){openViewer(t.closest("[data-v3d]").dataset.v3d);return}
   if(t.closest?.("#herobtn")&&!t.closest("#herobtn").disabled){openViewer();return}
   if(t.closest?.("#vclose")||t.id==="viewer"){closeViewer();return}
   const vt=t.closest?.("[data-vt]");if(vt){vTab=vt.dataset.vt;renderViewer();return}
