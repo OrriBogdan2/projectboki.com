@@ -1717,7 +1717,7 @@ if (POSTHOG_KEY) {
   new IntersectionObserver((es, o) => {
     if (!es[0].isIntersecting) return;
     o.disconnect(); near = true;
-    v.src = innerWidth * (devicePixelRatio || 1) > 1500 ? "assets/video/drop.mp4" : "assets/video/drop-720.mp4"; sync(); // 1080p (3.9 MB) only where the screen has the pixels for it
+    v.src = innerWidth * (devicePixelRatio || 1) > 1500 ? "assets/video/drop.mp4?v=2" : "assets/video/drop-720.mp4?v=2"; sync(); // 1080p (3.9 MB) only where the screen has the pixels for it
   }, { rootMargin: "100% 0px" }).observe(sec);
   new IntersectionObserver((es) => { vis = es[0].isIntersecting; sync(); }, { threshold: 0.05 }).observe(sec);
   v.addEventListener("playing", () => sec.classList.add("live"), { once: true });
