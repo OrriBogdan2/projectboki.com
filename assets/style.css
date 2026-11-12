@@ -1408,3 +1408,8 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
   .hero-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(5,8,15,.78) 0%, rgba(5,8,15,.6) 24%, rgba(5,8,15,0) 50%); }
   .hero-art { object-position: 56% 50%; }
 }
+
+/* ---------- First screen, calm picture (11-12): phones and tall windows get a closer crop of the same picture, so
+   Sparkle and the egg stay large. ---------- */
+.hero-pic { display: contents; }
+@media (max-width: 900px), (max-aspect-ratio: 5/4) { .hero-art { object-position: 62% 50%; } }
