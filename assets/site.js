@@ -1298,6 +1298,17 @@ if (POSTHOG_KEY) {
   const more = document.getElementById("h-more"); // the scroll under the name: the way in
   if (more) { more.addEventListener("click", (e) => { e.stopPropagation(); open(); }); more.addEventListener("pointerenter", load, { once: true }); }
   ex.addEventListener("pointerenter", load, { once: true });
+  // Touch screens: a tap on the Hunter's picture opens the same full view (a sideways pull still slides to the next one)
+  if (stage) {
+    let pt = "";
+    stage.addEventListener("pointerdown", (e) => { pt = e.pointerType; if (pt !== "mouse") load(); }, { passive: true });
+    stage.addEventListener("click", (e) => {
+      const shot = stage.querySelector(".shot");
+      if ((e.pointerType || pt) === "mouse" || e.target.closest("button, a, .fig")) return;
+      if (shot && shot._swiped && Date.now() - shot._swiped < 500) return;
+      open();
+    });
+  }
 })();
 
 /* ---------- "broken into pieces.": the kingdom cracks like land. Scroll down and a hairline crack glows ember-red through
