@@ -1401,3 +1401,10 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 .bk-dark .bk-sils { margin-top: 0; }
 .bk-dark .bk-dark-n { margin-top: clamp(20px, 2.4vw, 34px); }
 .bk-dark .bk-more { margin-top: clamp(20px, 2.2vw, 28px); }
+
+/* ---------- First screen, calmer (11-12): the left side of the picture is darkened so the logo and sign-up sit on a
+   quiet ground, and the picture sits a little further right, clear of the logo. ---------- */
+@media (min-width: 901px) and (min-aspect-ratio: 501/400) {
+  .hero-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(5,8,15,.78) 0%, rgba(5,8,15,.6) 24%, rgba(5,8,15,0) 50%); }
+  .hero-art { object-position: 56% 50%; }
+}
