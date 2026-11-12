@@ -1427,3 +1427,13 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 @keyframes su-dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
 .nav-su .su-load { height: 48px; font-size: 18px; }
 @media (max-width: 720px) { .su-load { height: 56px; font-size: 19px; } }
+
+/* ---------- The rare egg is the painted gold egg now (a picture, not the drawn one); the second egg is the teal one ---------- */
+.su-perk img.rare-egg, .sd-h img.rare-egg { flex: none; width: 64px; height: 64px; margin: 0 -4px; filter: drop-shadow(0 0 10px rgba(255,196,60,.4)); cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transform-origin: 50% 86%; }
+@media (prefers-reduced-motion: no-preference) { img.rare-egg { animation: egg-rock 4.2s ease-in-out infinite; } }
+html.lite img.rare-egg:not(.pop) { animation: none; }
+img.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
+@media (max-width: 720px) { .su-perk img.rare-egg, .sd-h img.rare-egg { width: 56px; height: 56px; } }
+.su-load img.rare-egg { flex: none; width: 36px; height: 36px; margin: 0; animation: su-shake .42s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(255,196,60,.7)); }
+.nav-su .sd-h img.rare-egg { display: none; }
+.sd-s .egg2 { display: inline-block; width: 30px; height: 30px; vertical-align: -9px; margin: 0 6px 0 -2px; }

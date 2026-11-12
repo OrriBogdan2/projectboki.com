@@ -1123,7 +1123,7 @@ if (POSTHOG_KEY) {
       f.querySelector(".su-row").hidden = true; const t = f.querySelector(".nav-su-t"); if (t) t.hidden = true;
       const d = f.querySelector(".su-done");
       d.innerHTML = '<div class="sd-h">' + ((document.querySelector(".su-perk .rare-egg") || {}).outerHTML || "") + '<p class="sd-t">You\'re in.<br>Your <b class="rare">rare egg</b> is saved.</p></div>' + (myRef
-        ? '<p class="sd-s">Invite 3 friends for a second egg.</p><div class="su-row sd-row"><input readonly aria-label="Your invite link" value="projectboki.com/?r=' + myRef + '"><button class="btn btn-solid btn-sm" type="button">' + (canShare ? "Share" : "Copy link") + "</button></div>" : "");
+        ? '<p class="sd-s"><img class="egg2" src="assets/img/egg-teal-128.webp" width="28" height="28" alt="">Invite 3 friends for a second egg.</p><div class="su-row sd-row"><input readonly aria-label="Your invite link" value="projectboki.com/?r=' + myRef + '"><button class="btn btn-solid btn-sm" type="button">' + (canShare ? "Share" : "Copy link") + "</button></div>" : "");
       d.hidden = false;
     });
   };
