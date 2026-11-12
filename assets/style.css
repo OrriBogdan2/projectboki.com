@@ -1396,3 +1396,4 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 @media (hover: hover) { .bk-more:hover { border-color: #fff; background: #1a2338; } }
 .bk-more:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 720px) { .bk-more { height: 48px; font-size: 18px; padding: 0 20px; } }
+.trailer + section { padding-top: calc(var(--sec) * .55); } /* the footage panel has no line on it any more, so the heading follows it sooner */
