@@ -16,9 +16,10 @@ It is safe to run more than once. It adds:
      screen readers, contrast on the card number and entry kicker, bottom room for the Safari address pill, font
      preconnect
   6. removes the "Project Boki creature dex" line under the title
-  7. the 3D viewer opens on a front three-quarter view: camera-orbit 28deg 75deg (28 deg off the front toward +X,
-     15 deg above). Every Bokidex GLB faces +Z (the glTF front; audit 11-11: /home/boki/meshy/facing/), so theta 0
+  7. the 3D viewer opens FACING the viewer: camera-orbit 0deg 78deg (front toward the camera, 12 deg above), no
+     auto-rotate. Every Bokidex GLB faces +Z (the glTF front; audit 11-11: /home/boki/meshy/facing/), so theta 0
      is the face. The export wrote 215deg, which is the back.
+  8. previous / next Boki arrows in the viewer (buttons + arrow keys; swipes there rotate the model)
 """
 import os, re, sys
 P = os.path.join(os.path.dirname(__file__), "..", "..", "bokidex", "index.html")
@@ -144,8 +145,42 @@ if "fonts.gstatic.com" not in s:
 # The "Project Boki creature dex" line under the title is not needed (the top bar already says where you are).
 s = s.replace('<div class="sub">Project Boki creature dex</div>', "")
 
-# 7. 3D viewer opening angle: front three-quarter (the GLBs face +Z, the glTF front).
-s = re.sub(r'(<model-viewer [^>]*?)camera-orbit="[^"]*"', r'\1camera-orbit="28deg 75deg auto"', s)
+# 7. 3D viewer opening angle (owner 11-11): the model opens FACING the viewer, front toward the camera (theta 0; the GLBs
+#    face +Z, the glTF front), a little from above. No auto-rotate, so it stays front-on until the user turns it.
+s = re.sub(r'(<model-viewer [^>]*?)camera-orbit="[^"]*"', r'\1camera-orbit="0deg 78deg auto"', s)
+s = re.sub(r'(<model-viewer [^>]*?) auto-rotate(?:-delay="[^"]*")?(?= )', r'\1', s)
+s = re.sub(r'(<model-viewer [^>]*?) auto-rotate(?:-delay="[^"]*")?(?= )', r'\1', s)
+
+# 8. Previous / next Boki inside the viewer (owner 11-11; marker "vnav-1112"). Swipes rotate the model there, so: two big
+#    arrow buttons (side middles on desktop, bottom corners on phones for the thumb) and the arrow keys, which used to
+#    switch Turnaround / 3D (the tab buttons still do). It steps through the same list as the entry (search / type
+#    filter / sort), skips Boki with nothing to show in the viewer, keeps the tab, and each step loads a fresh model, so
+#    it opens front-on again.
+VNAV_CSS = '<style>/* vnav-1112 */.vbox{position:relative}.vnav{position:absolute;top:50%;z-index:3;width:56px;height:56px;margin-top:-28px;padding:0;border-radius:50%;border:1px solid var(--line);background:rgba(16,19,28,.8);background:color-mix(in srgb,var(--panel) 80%,transparent);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}.vnav svg{width:28px;height:28px;display:block}.vnav[data-d="-1"]{left:12px}.vnav[data-d="1"]{right:12px}.vnav:disabled{opacity:.28;cursor:default;box-shadow:none}.vnav:not(:disabled):hover{background:var(--accent);border-color:var(--accent);color:var(--bg)}.vnav:focus-visible{outline:3px solid var(--accent);outline-offset:2px}@media (max-width:700px),(pointer:coarse){.vnav{top:auto;bottom:14px;margin-top:0;width:64px;height:64px}.vnav svg{width:32px;height:32px}}</style>\n'
+VNAV_JS = r"""<script>
+/* vnav-1112: previous / next Boki inside the viewer (site repo: tools/bokidex/patch.py; keep this block in exports). */
+(function(){
+  const box=document.querySelector("#viewer .vbox");if(!box||typeof renderViewer!=="function")return;
+  const ico=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d<0?"M15 5l-7 7 7 7":"M9 5l7 7-7 7"}"/></svg>`;
+  for(const d of[-1,1]){const b=document.createElement("button");b.type="button";b.className="vnav";b.dataset.d=d;b.innerHTML=ico(d);box.appendChild(b)}
+  const tabsOf=e=>viewerTabs(sexV(fv(e,0)));
+  function target(d){const L=navList();const i=L.findIndex(x=>x.id===sel);if(i<0)return null;for(let j=i+d;j>=0&&j<L.length;j+=d)if(tabsOf(L[j]).length)return L[j];return null}
+  function step(d){const t=target(d);if(!t)return;const v=tabsOf(t);if(!v.some(x=>x.k===vTab))vTab=v[0].k;go("#boki-"+t.id,true);
+    document.querySelector(`.dcard[data-id="${CSS.escape(t.id)}"]`)?.scrollIntoView?.({block:"nearest"})}
+  function sync(){for(const b of box.querySelectorAll(".vnav")){const d=+b.dataset.d,t=viewerOpen()&&sel?target(d):null,lab=(d<0?"Previous Boki":"Next Boki")+(t?": "+t.name:"");
+    b.setAttribute("aria-label",lab);b.title=lab+(d<0?" (\u2190)":" (\u2192)");if(!t&&document.activeElement===b)$("#vclose").focus();b.disabled=!t}}
+  const rv=renderViewer;renderViewer=function(){rv.apply(this,arguments);sync()};
+  box.addEventListener("click",e=>{const b=e.target.closest(".vnav");if(!b)return;e.stopPropagation();if(!b.disabled)step(+b.dataset.d)});
+  addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight"))return;
+    if(!viewerOpen()||!$("#zoom").hidden)return;e.preventDefault();e.stopImmediatePropagation();step(e.key==="ArrowRight"?1:-1)},true);
+})();
+</script>
+"""
+if "vnav-1112" not in s:
+    s = s.replace("</head>", VNAV_CSS + "</head>", 1)
+    at = s.find('<script src="owner.js')
+    if at < 0: at = s.rfind("</body>")
+    s = s[:at] + VNAV_JS + s[at:]
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
