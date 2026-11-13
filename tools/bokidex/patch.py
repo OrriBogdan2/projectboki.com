@@ -31,8 +31,8 @@ TAGS = """<!-- Share preview (site repo: tools/bokidex/patch.py). -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Boki">
 <meta property="og:url" content="https://projectboki.com/bokidex/">
-<meta property="og:title" content="Bokidex · Project Boki">
-<meta property="og:description" content="Meet the Boki.">
+<meta property="og:title" content="Bokidex · Project Boki: creature collector × extraction">
+<meta property="og:description" content="Meet the Boki. Every creature in Project Boki, a creature collector × extraction game.">
 <meta property="og:image" content="https://projectboki.com/assets/img/og-bokidex.jpg?v=7">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
