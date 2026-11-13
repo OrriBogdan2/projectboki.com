@@ -813,6 +813,20 @@
    "shot": false
   },
   {
+   "id": "maulangler",
+   "name": "Maulangler",
+   "types": [
+    "dark"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
+   "v": "h1794278455",
+   "shot": false
+  },
+  {
    "id": "dragonkite",
    "name": "Kitedrake",
    "types": [
@@ -825,20 +839,6 @@
    "into": [],
    "desc": "Kitedrake is a great cream dragon with two huge red kite wings, grown from the little kite it wore as a Kitlet.",
    "v": "h1794434212",
-   "shot": false
-  },
-  {
-   "id": "maulangler",
-   "name": "Maulangler",
-   "types": [
-    "dark"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
-   "v": "h1794278455",
    "shot": false
   },
   {
@@ -1782,7 +1782,7 @@
    "sil": "orrinox"
   },
   {
-   "t": "psychic",
+   "t": "dark",
    "sil": "gloamwade"
   },
   {
