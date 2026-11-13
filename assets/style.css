@@ -1440,3 +1440,45 @@ img.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
 .su-load img.rare-egg { flex: none; width: 36px; height: 36px; margin: 0; animation: su-shake .42s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(255,196,60,.7)); }
 .nav-su .sd-h img.rare-egg { display: none; }
 .sd-s .egg2 { display: inline-block; width: 30px; height: 30px; vertical-align: -9px; margin: 0 6px 0 -2px; }
+
+/* ---------- The rare egg is the prize (11-13): in the join block it leads, between the heading and the form, twice the
+   size with its line near heading size. The signed-in state still hides it (html.su-signed .su-perk). ---------- */
+.join h2 { margin-bottom: clamp(20px, 2.4vw, 30px); }
+.su-perk.su-prize { margin: 0 0 clamp(26px, 3.2vw, 40px); }
+.su-prize .perk { gap: 20px; }
+.su-perk.su-prize img.rare-egg { width: 128px; height: 128px; margin: -10px -8px; filter: drop-shadow(0 0 22px rgba(255,196,60,.5)); }
+.su-prize .perk .perk-t { gap: 6px; }
+.su-perk.su-prize .perk .perk-a { font-family: "Lilita"; font-weight: 400; font-size: clamp(22px, 2vw, 28px); line-height: 1.05; }
+.su-perk.su-prize .perk .rare { font-size: clamp(40px, 3.8vw, 54px); }
+@media (max-width: 720px) {
+  .su-prize .perk { flex-direction: column; gap: 8px; }
+  .su-prize .perk .perk-t { align-items: center; text-align: center; }
+  .su-perk.su-prize img.rare-egg { width: 96px; height: 96px; margin: -6px 0; }
+  .su-perk.su-prize .perk .perk-a { font-size: 21px; }
+  .su-perk.su-prize .perk .rare { font-size: 36px; }
+}
+/* the hero twin: the same bigger egg and line, in its old place under the sign-up */
+.hero .su-perk.su-prize { margin: 26px 0 0; justify-content: flex-start; }
+@media (max-width: 720px) {
+  .hero .su-prize .perk { flex-direction: row; gap: 12px; }
+  .hero .su-prize .perk .perk-t { align-items: flex-start; text-align: left; }
+  .hero .su-perk.su-prize img.rare-egg { width: 88px; height: 88px; }
+  .hero .su-perk.su-prize .perk .perk-a { font-size: 19px; }
+  .hero .su-perk.su-prize .perk .rare { font-size: 32px; }
+}
+
+/* ---------- Heist line on the footage (11-13): the heading and its line sit on the bottom of the footage panel as a lower
+   third, same type as every section heading, over a soft dark shade; the separate block under the video is gone. ---------- */
+.trailer .tr-copy { position: absolute; left: 0; right: 0; bottom: 0; height: auto; display: block; padding-top: 0; padding-bottom: clamp(30px, 6vh, 64px); }
+.tr-head { margin: 0; }
+.tr-head h2 { text-shadow: 0 2px 28px rgba(4,7,14,.7); }
+.tr-head .sub { margin-top: 10px; color: #dfe5f0; text-shadow: 0 1px 16px rgba(4,7,14,.85); }
+.trailer .tr-media::after { background: linear-gradient(to top, var(--bg) 0%, rgba(8,13,24,.88) 22%, rgba(8,13,24,.45) 46%, rgba(8,13,24,0) 70%); }
+@media (max-width: 720px) {
+  .trailer .tr-copy { padding-bottom: 26px; }
+  .tr-head h2 { font-size: clamp(38px, 10.4vw, 48px); }
+  .tr-head .sub { font-size: 20px; }
+}
+/* Join button after the FAQ (11-13): sends readers who finish the FAQ back up to the sign-up */
+.faq-join { position: relative; text-align: center; margin: clamp(28px, 3vw, 44px) 0 0; }
+html.su-signed .faq-join { display: none; }

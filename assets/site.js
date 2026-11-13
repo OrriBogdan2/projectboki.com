@@ -73,6 +73,10 @@ if ("IntersectionObserver" in window && !calm) {
     });
   }, { rootMargin: "0px 0px -10% 0px", threshold: 0.06 });
   revealed.forEach((el) => io.observe(el));
+  // The sign-up: when the page lands below it (reload, Back from a footer link), it was never revealed, so scrolling up
+  // showed its bottom empty and then the egg, buttons and heading fading in. Already above you means already shown.
+  const jw = document.querySelector(".join [data-r]");
+  if (jw) new IntersectionObserver(([e]) => { if (e.isIntersecting && e.boundingClientRect.bottom < 0) jw.classList.add("in"); }, { rootMargin: "100000px 0px 0px 0px" }).observe(jw);
 } else {
   revealed.forEach((el) => el.classList.add("in"));
 }
