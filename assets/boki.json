@@ -177,7 +177,7 @@
    "name": "Dreadmonite",
    "types": [
     "psychic",
-    "water"
+    "steel"
    ],
    "stage": 3,
    "from": null,
@@ -354,7 +354,7 @@
    "id": "murmurling",
    "name": "Murmurling",
    "types": [
-    "bug",
+    "normal",
     "sound"
    ],
    "stage": 1,
@@ -497,8 +497,8 @@
    "id": "cairnback",
    "name": "Cairnback",
    "types": [
-    "steel",
-    "rock"
+    "rock",
+    "ghost"
    ],
    "stage": 1,
    "from": null,
@@ -638,7 +638,8 @@
    "id": "geysirbara",
    "name": "Geyserbara",
    "types": [
-    "water"
+    "water",
+    "fire"
    ],
    "stage": 3,
    "from": null,
@@ -753,18 +754,17 @@
    "shot": false
   },
   {
-   "id": "scarabit",
-   "name": "Scarabit",
+   "id": "maulangler",
+   "name": "Maulangler",
    "types": [
-    "psychic",
-    "fairy"
+    "dark"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Scarabit is an Orbitle that opened its shell and never closed it, a dark scarab circled by slow rings and tiny drifting moons.",
-   "v": "h1794333164",
+   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
+   "v": "h1794278455",
    "shot": false
   },
   {
@@ -802,7 +802,7 @@
    "name": "Thundrich",
    "types": [
     "electric",
-    "flying"
+    "sound"
    ],
    "stage": 3,
    "from": null,
@@ -813,17 +813,33 @@
    "shot": false
   },
   {
-   "id": "maulangler",
-   "name": "Maulangler",
+   "id": "scarabit",
+   "name": "Scarabit",
    "types": [
-    "dark"
+    "psychic",
+    "fairy"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
-   "v": "h1794278455",
+   "desc": "Scarabit is an Orbitle that opened its shell and never closed it, a dark scarab circled by slow rings and tiny drifting moons.",
+   "v": "h1794333164",
+   "shot": false
+  },
+  {
+   "id": "chandelotl",
+   "name": "Crystalotl",
+   "types": [
+    "crystal",
+    "fairy"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Crystalotl has grown long and serpent-like, with a hood of clear glass that chimes softly as it moves.",
+   "v": "h1794333130",
    "shot": false
   },
   {
@@ -854,21 +870,6 @@
    "into": [],
    "desc": "Crofthollow is a great highland bull with thatch and ripe wheat growing along its back and a tail like a tied sheaf.",
    "v": "h1794524624",
-   "shot": false
-  },
-  {
-   "id": "chandelotl",
-   "name": "Crystalotl",
-   "types": [
-    "crystal",
-    "fairy"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Crystalotl has grown long and serpent-like, with a hood of clear glass that chimes softly as it moves.",
-   "v": "h1794333130",
    "shot": false
   },
   {
@@ -1146,11 +1147,11 @@
    "sil": "bastionpet"
   },
   {
-   "t": "psychic",
+   "t": "dark",
    "sil": "lodestick"
   },
   {
-   "t": "psychic",
+   "t": "dark",
    "sil": "lodestaff"
   },
   {
@@ -1538,7 +1539,7 @@
    "sil": "checkmare"
   },
   {
-   "t": "water",
+   "t": "crystal",
    "sil": "pebblamb"
   },
   {
@@ -1630,7 +1631,7 @@
    "sil": "dynaboa"
   },
   {
-   "t": "rock",
+   "t": "water",
    "sil": "bastling"
   },
   {
