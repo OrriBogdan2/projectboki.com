@@ -59,13 +59,13 @@ if "Swipe left / right on an open entry" not in s:
     s = s[:at] + SWIPE + s[at:]
 
 # 4. shared top bar: a head-side layout reserve (no jump while the script loads) and the script itself
-TB_HEAD = '<!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->\n<script>document.documentElement.classList.add("tb-dex")</script>\n<style>html.tb-dex{--tbh:52px;--tbo:var(--tbh)}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>\n'
+TB_HEAD = '<!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->\n<script>document.documentElement.classList.add("tb-dex")</script>\n<style>html.tb-dex{--tbh:72px;--tbo:var(--tbh)}@media (max-width:720px){html.tb-dex{--tbh:64px}}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>\n'
 if "tb-dex" not in s:
     s = s.replace("</head>", TB_HEAD + "</head>", 1)
 if "<script src=\"/assets/topbar.js" not in s:
     at = s.find('<script src="owner.js')
     if at < 0: at = s.rfind("</body>")
-    s = s[:at] + '<script src="/assets/topbar.js?v=4" defer></script>\n' + s[at:]
+    s = s[:at] + '<script src="/assets/topbar.js?v=5" defer></script>\n' + s[at:]
 
 # 5. UI fixes (11-11). Markers: "bx-fix-1111" (css + click script), "site fix 11-11" (badge + card label + sex toggle).
 SVG_M = '<svg class="sxg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6M15 4h5v5"/></svg>'
@@ -228,12 +228,13 @@ if os.path.exists(DP):
     if out != raw:
         open(DP, "w", encoding="utf-8").write(out); print("bokidex/d/data.json: About summaries written")
 # 9b. About: summary + inline More / Less (instead of the whole lore as one block)
-_sub('function tabBody(v,e,d){',
-     'function blurbHTML(lore,sh){ /* detail 11-12: the short line, the rest behind More */\n'
-     '  if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;\n'
-     '  if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;\n'
-     '  return`<p class="blurb">${esc(sh)}<span class="bl-rest" id="blrest" hidden> ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}\n'
-     'function tabBody(v,e,d){', "blurbHTML")
+if "function blurbHTML" not in s:
+    _sub('function tabBody(v,e,d){',
+         'function blurbHTML(lore,sh){ /* detail 11-12: the short line, the rest behind More */\n'
+         '  if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;\n'
+         '  if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;\n'
+         '  return`<p class="blurb">${esc(sh)}<span class="bl-rest" id="blrest" hidden> ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}\n'
+         'function tabBody(v,e,d){', "blurbHTML")
 _sub('return`${lore?`<p class="blurb">${esc(lore)}</p>`:`<p class="blurb mut">No field notes yet.</p>`}${factsHTML(v,e)}',
      'return`${blurbHTML(lore,v.short)}${factsHTML(v,e)}', "about body")
 # the old "read more" remnants (clamped blurb + [data-more] click) are replaced by the toggle above
@@ -287,6 +288,82 @@ DETAIL_CSS = """<style>/* detail-1112 (tools/bokidex/patch.py step 9) */
 """
 if "detail-1112" not in s:
     s = s.replace("</head>", DETAIL_CSS + "</head>", 1)
+
+# 10. 3D viewer prev / next (dex-3dnav-1113, owner 11-13): round arrow buttons on the viewer + ArrowLeft / ArrowRight go
+#     to the previous / next Boki in dex order (all of them, wrapping), staying in the viewer with the camera reset per
+#     model. A Boki with no .glb yet shows its 2D art with a "3D soon" tag (the moment a .glb is in the data it shows).
+#     A "12 / 271" counter sits in the title. The next model's file is fetched in the background. Literal replaces.
+_sub('<div id="vbody"></div>',
+     '<div class="vstage"><div id="vbody"></div><button class="vnav pv" id="vprev" type="button" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><button class="vnav nx" id="vnext" type="button" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button></div>',
+     "viewer stage")
+_sub('function cycleViewer(d){',
+     '''/* 3dnav-1113: previous / next Boki in dex order (all entries, wraps), the viewer stays open and in 3D */
+function dexOrder(){return D.slice().sort((a,b)=>a.num-b.num)}
+function stepViewer(d){
+  if(!viewerOpen()||!sel)return; const L=dexOrder(); if(L.length<2)return;
+  const i=L.findIndex(x=>x.id===sel); if(i<0)return;
+  vStep=d; const n=L[(i+d+L.length)%L.length]; document.activeElement?.blur?.(); go("#boki-"+n.id,true);
+}
+let vStep=1;
+function vSoon(e){
+  const h=heroOf(e), tag='<span class="vtag">3D soon</span>';
+  return `<div class="vsoon">${h?heroHTML(e,e.name):`<div class="hero sil" role="img" aria-label="Not yet discovered">${SIL}</div>`}${tag}</div>`;
+}
+function cycleViewer(d){''', "stepViewer")
+_sub('  $("#vtitle").textContent=`#${pad(e.num)} ${e.name}`;',
+     '''  {const L=dexOrder(), i=L.findIndex(x=>x.id===sel), n=L.length; if(vTab==="turn"&&!turnOf(e))vTab="3d"; /* 3dnav-1113 */
+   $("#vtitle").innerHTML=`#${pad(e.num)} ${esc(e.name)} <small class="vcn" aria-label="Boki ${i+1} of ${n}">${i+1} / ${n}</small>`;
+   if(n>1){const p=L[(i-1+n)%n], q=L[(i+1)%n];$("#vprev").setAttribute("aria-label","Previous Boki: "+(p.unknown?"unknown":p.name));$("#vnext").setAttribute("aria-label","Next Boki: "+(q.unknown?"unknown":q.name))}
+   document.querySelectorAll(".vnav").forEach(x=>x.hidden=n<2)}''', "viewer title")
+_sub('''  b.innerHTML='<div class="vmsg load">Loading the 3D model</div>';''',
+     '''  if(!e.glb){b.innerHTML=vSoon(e);$("#vfoot").innerHTML="";return} /* 3dnav-1113: no model yet, the 2D art + a tag */
+  b.innerHTML='<div class="vmsg load">Loading the 3D model</div>';''', "3D soon")
+_sub('''    mv.addEventListener("pointerup",()=>mv.blur());''',
+     '''    mv.addEventListener("pointerup",()=>mv.blur());
+    {const L=dexOrder(), i=L.findIndex(x=>x.id===sel), nx=L.length>1?L[(i+vStep+L.length)%L.length]:null; /* 3dnav-1113: warm the next model's file */
+     if(nx?.glb)setTimeout(()=>glbURL(nx.glb).then(u=>{if(!/^blob:/.test(u))fetch(u,{priority:"low"}).catch(()=>{})}).catch(()=>{}),400)}''', "preload")
+_sub('''  if(t.closest?.("#vclose")||t.id==="viewer"){closeViewer();return}''',
+     '''  if(t.closest?.("#vprev")){stepViewer(-1);return}
+  if(t.closest?.("#vnext")){stepViewer(1);return}
+  if(t.closest?.("#vclose")||t.id==="viewer"){closeViewer();return}''', "vnav click")
+_sub('if(viewerOpen()){if(k==="ArrowRight"||k==="ArrowLeft"){cycleViewer(k==="ArrowRight"?1:-1);e.preventDefault()}',
+     'if(viewerOpen()){if(k==="ArrowRight"||k==="ArrowLeft"){if(!e.repeat)stepViewer(k==="ArrowRight"?1:-1);e.preventDefault()}',
+     "viewer keys")
+NAV_CSS = """<style>/* 3dnav-1113 (tools/bokidex/patch.py step 10) */
+.vstage{flex:1;min-height:0;position:relative}
+.vstage #vbody{position:absolute;inset:0}
+.vnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:52px;height:52px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);background:color-mix(in srgb,var(--panel) 58%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);display:grid;place-items:center;cursor:pointer;opacity:.82;transition:opacity .15s,background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.vnav[hidden]{display:none}
+.vnav.pv{left:14px}.vnav.nx{right:14px}
+.vnav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.vnav:hover{opacity:1;background:color-mix(in srgb,var(--panel) 85%,transparent)}
+.vnav:active{transform:translateY(-50%) scale(.94)}
+.vnav:focus-visible{outline:2px solid var(--accent);outline-offset:2px;opacity:1}
+.vcn{font:600 .72rem var(--mono);color:var(--mute);margin-left:.5em;white-space:nowrap;word-spacing:0;vertical-align:middle}
+.vsoon{position:absolute;inset:0;display:grid;place-items:center;padding:20px 72px}
+.vsoon .hero{width:min(100%,64vh);max-height:100%;aspect-ratio:1;background:none}
+.vtag{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font:700 .78rem var(--body);letter-spacing:.02em;color:var(--mute);border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:999px;padding:5px 14px;white-space:nowrap}
+@media (max-width:759px){.vnav{width:46px;height:46px}.vnav.pv{left:8px}.vnav.nx{right:8px}.vsoon{padding:16px 8px}}
+</style>
+"""
+if "3dnav-1113" not in s.split("</head>")[0]:
+    s = s.replace("</head>", NAV_CSS + "</head>", 1)
+
+BLURB_FN = r'''function blurbHTML(lore,sh){ /* detail 11-12; 11-13: the short line ends in "..." so it is plain there is more; More shows the rest */
+  if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;
+  if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;
+  const end=(sh.match(/[.!?\u2026]+$/)||[""])[0], cut=sh.slice(0,sh.length-end.length).trimEnd();
+  return`<p class="blurb">${esc(cut)}<span id="bldots">...</span><span class="bl-rest" id="blrest" hidden>${esc(end)} ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}'''
+BLURB_CLICK = r'''document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rm]");if(!b)return;const r=$("#blrest"),d=$("#bldots"),on=r.hidden;r.hidden=!on;if(d)d.hidden=on;b.textContent=on?"Less":"More";b.setAttribute("aria-expanded",String(on));fitDetail()}); /* detail 11-12 */'''
+# 9e. About blurb (owner 11-13): the short line always ends in "..." right after the cut (a closing . ! ? is dropped), then
+#     the More button; expanded, the dots go and the rest (with the closing mark put back) shows. Only on entries that
+#     have more text (the old rule: no "short", no button, no dots). Upgrades the 11-12 blurbHTML + its click handler.
+_OLD_FN = re.search(r'function blurbHTML\(lore,sh\)\{ /\* detail 11-12: the short line, the rest behind More \*/\n[^\n]*\n[^\n]*\n[^\n]*\n', s)
+if _OLD_FN:
+    s = s[:_OLD_FN.start()] + BLURB_FN + "\n" + s[_OLD_FN.end():]
+_OLD_CK = re.search(r'document\.addEventListener\("click",ev=>\{const b=ev\.target\.closest\("\[data-rm\]"\)[^\n]*', s)
+if _OLD_CK and "bldots" not in _OLD_CK.group(0):
+    s = s[:_OLD_CK.start()] + BLURB_CLICK + s[_OLD_CK.end():]
 
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")

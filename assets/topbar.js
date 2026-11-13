@@ -18,6 +18,8 @@
 
   var LINKS = [["Hunters", "/#hunters"], ["Boki", "/#boki"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
   var DEX_LINKS = LINKS; /* the same six on every page; the logo is the way home */
+  var DISCORD = "https://discord.gg/nbeBaU7xt"; /* same invite as site.js DISCORD_URL */
+  var DISCORD_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>';
 
   var isDex = /\/bokidex(\/|$)/.test(location.pathname) && !!document.getElementById("app");
   var user = null, cfgP = null, doc = document, root = doc.documentElement;
@@ -40,27 +42,38 @@
 
   /* ---------- CSS ---------- */
   var CSS = [
-    /* palette: site pages = the main page's dark palette; Bokidex = the page's own variables */
+    /* palette: the main page's dark palette everywhere (the Bokidex too, so its bar, menu and sign-in match the site) */
     ".tb-scope{--tb-bg:#0b1224;--tb-ink:#f3f6fb;--tb-mute:#aab6cc;--tb-line:rgba(255,255,255,.14);--tb-acc:#fff;--tb-acc-ink:#0a1222;--tb-fill:linear-gradient(180deg,#fff 0%,#e9eef6 100%);--tb-fill-ink:#0a1222;--tb-hover:rgba(255,255,255,.09);--tb-sh:rgba(0,0,0,.6);--tb-disp:\"Lilita\",\"Lilita One\",system-ui,sans-serif;--tb-body:\"Rubik\",system-ui,sans-serif}",
-    "html.tb-dex .tb-scope{--tb-bg:var(--panel);--tb-ink:var(--ink);--tb-mute:var(--mute);--tb-line:var(--line);--tb-acc:var(--accent);--tb-acc-ink:var(--bg);--tb-fill:var(--accent);--tb-fill-ink:var(--bg);--tb-hover:color-mix(in srgb,var(--ink) 8%,transparent);--tb-sh:var(--shadow,rgba(0,0,0,.35));--tb-disp:var(--display,\"Lilita One\"),system-ui,sans-serif;--tb-body:var(--body,\"Inter\"),system-ui,sans-serif}",
     ".tb-scope *{box-sizing:border-box}",
     ".tb-bar a,.tb-panel a{text-decoration:none}",
 
-    /* Bokidex bar (built here) */
-    ".tb-bar{position:fixed;inset:0 0 auto;z-index:35;height:calc(var(--tbh) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) clamp(12px,3vw,28px) 0;display:flex;align-items:center;gap:18px;background:color-mix(in srgb,var(--tb-bg) 90%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--tb-line);color:var(--tb-ink);font-family:var(--tb-body);transition:transform .28s cubic-bezier(.2,.8,.2,1)}",
-    "html.tb-dex{--tbh:52px;--tbo:var(--tbh)}",
+    /* Bokidex bar (built here). It is the main site's bar (style.css: .nav.scrolled, .nav .brand, .nav .links, .nav-cta,
+       .icon-btn, #nav-join .btn-sm, the 1000px and 720px steps) with tb- class names, so the Bokidex's own header/.brand/.btn
+       rules cannot reach it. Change one, change the other. */
+    ".tb-bar{position:fixed;inset:0 0 auto;z-index:35;height:calc(var(--tbh) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) clamp(20px,4vw,48px) 0;display:flex;align-items:center;justify-content:space-between;gap:20px;background:#080d18;border-bottom:1px solid rgba(255,255,255,.12);color:#f3f6fb;font:500 19px/1.5 var(--tb-body);transition:transform .28s cubic-bezier(.2,.8,.2,1)}",
+    "html.tb-dex{--tbh:72px;--tbo:var(--tbh)}",
+    "@media (max-width:720px){html.tb-dex{--tbh:64px}}",
     "html.tb-dex.tb-hide{--tbo:0px}",
     "html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}",
     "html.tb-dex header:not(.tb-bar),html.tb-dex .dbar{top:calc(env(safe-area-inset-top,0px) + var(--tbo))!important;transition:top .28s cubic-bezier(.2,.8,.2,1)}",
     "html.tb-dex .tb-bar.tb-hidden{transform:translateY(-100%)}",
-    ".tb-brand{display:flex;align-items:center;gap:9px;font-family:var(--tb-disp);font-size:21px;letter-spacing:.01em;color:var(--tb-ink);white-space:nowrap}",
-    ".tb-brand img{width:30px;height:30px;border-radius:8px;display:block}",
+    ".tb-brand{flex:1 1 0;display:flex;align-items:center;gap:11px;font:400 22px/1.5 var(--tb-disp);letter-spacing:.01em;color:#f3f6fb;white-space:nowrap;pointer-events:none}",
+    ".tb-brand>*{pointer-events:auto}",
+    ".tb-brand img{width:34px;height:34px;border-radius:9px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.16)}",
+    ".tb-cta{flex:1 1 0;display:flex;align-items:center;justify-content:flex-end;gap:10px}",
+    ".tb-ico{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff;transition:background .25s,color .25s}",
+    ".tb-ico svg{width:20px;height:20px}",
+    ".tb-join{display:inline-flex;align-items:center;justify-content:center;height:42px;padding:0 20px;border-radius:11px;background:#fff;color:#0a1222;font:400 18px/1 var(--tb-disp);letter-spacing:.02em;white-space:nowrap;box-shadow:0 10px 26px -16px rgba(0,0,0,.7);transition:background .25s,color .25s,transform .18s}",
+    ".tb-join:active,.tb-ico:active{transform:scale(.97)}",
+    ".tb-join:focus-visible,.tb-ico:focus-visible{outline:2px solid #fff;outline-offset:3px}",
+    "@media (hover:hover){.tb-join:hover{background:#7d5ff5;color:#fff}.tb-ico:hover{background:#fff;color:#0a1222}}",
 
-    /* links */
-    ".tb-links{display:flex;align-items:center;gap:clamp(2px,1vw,10px);margin:0 auto 0 8px}",
-    ".tb-links a{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--tb-mute);transition:background .15s,color .15s}",
-    ".tb-links a:hover,.tb-links a:focus-visible{background:var(--tb-hover);color:var(--tb-ink);outline:none}",
-    ".tb-links a[aria-current]{color:var(--tb-ink);box-shadow:inset 0 -2px 0 var(--tb-acc);border-radius:0;padding:0 10px}",
+    /* links (Bokidex bar): the site's centred row with the sliding underline */
+    ".tb-links{flex:none;display:flex;align-items:center;gap:clamp(12px,2.1vw,32px);font:600 15px/1.5 var(--tb-body);letter-spacing:.01em}",
+    ".tb-links a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:rgba(255,255,255,.8);transition:color .3s ease}",
+    ".tb-links a::after{content:\"\";position:absolute;left:0;right:0;bottom:9px;height:2px;border-radius:2px;background:currentColor;transform:scaleX(0);transition:transform .4s cubic-bezier(.22,.8,.24,1)}",
+    ".tb-links a:hover,.tb-links a:focus-visible,.tb-links a[aria-current]{color:#fff;outline:none}",
+    ".tb-links a:hover::after,.tb-links a:focus-visible::after,.tb-links a[aria-current]::after{transform:scaleX(1)}",
 
     /* site pages: our extras inside the existing header */
     "header.nav.tb-site .links{gap:clamp(12px,2.1vw,32px)}",
@@ -70,12 +83,11 @@
 
     /* account control */
     ".tb-acct{position:relative;display:flex;align-items:center;margin-left:auto}",
-    "header.nav .tb-acct{margin-left:0}",
+    "header.nav .tb-acct,.tb-cta .tb-acct{margin-left:0}",
     ".tb-sign,.tb-user,.tb-burger{font:700 15px/1 var(--tb-body);color:var(--tb-ink);cursor:pointer;-webkit-tap-highlight-color:transparent}",
     ".tb-sign{white-space:nowrap;height:40px;padding:0 18px;border-radius:11px;border:1px solid color-mix(in srgb,var(--tb-ink) 30%,transparent);background:var(--tb-hover);transition:border-color .15s,background .15s}",
     ".tb-sign:hover,.tb-sign:focus-visible{border-color:var(--tb-ink);outline:none}",
-    "html.tb-dex .tb-sign{background:var(--tb-fill);color:var(--tb-fill-ink);border-color:transparent}",
-    "html.tb-dex .tb-sign:hover{filter:brightness(1.08)}",
+    ".tb-cta .tb-sign{height:42px;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}",
     ".tb-user{position:relative;display:flex;align-items:center;gap:9px;height:40px;padding:0 12px 0 5px;border-radius:999px;border:1px solid var(--tb-line);background:var(--tb-hover)}",
     ".tb-user:hover,.tb-user[aria-expanded=true]{border-color:var(--tb-ink)}",
     ".tb-av{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tb-acc);color:var(--tb-acc-ink);font:400 16px/1 var(--tb-disp)}",
@@ -103,9 +115,11 @@
     ".tb-panel a::after{content:\"\\203A\";color:var(--tb-mute);font-size:22px}",
     ".tb-panel a[aria-current]{color:var(--tb-acc)}",
     "@media (max-width:1000px){header.nav.tb-site .tb-burger{display:block}header.nav.tb-site .tb-panel{display:flex}header.nav.tb-site .links{display:none!important}}",
-    "@media (max-width:759px){.tb-bar .tb-burger{display:block}.tb-bar .tb-panel{display:flex}.tb-bar .tb-links{display:none!important}.tb-brand span{font-size:19px}.tb-nm,.tb-user .tb-badge{display:none}.tb-user{padding:0 5px;gap:0;width:40px;justify-content:center}.tb-user.adm::after{content:\"\";position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:var(--tb-acc);border:2px solid var(--tb-bg)}header.nav.tb-site .nav-cta{gap:8px}header.nav.tb-site .nav-cta .btn-sm{padding:0 14px}.tb-bar{gap:10px}.tb-bar .tb-acct{margin-left:auto}}",
-    "@media (max-width:520px){header.nav.tb-site .nav-cta .js-discord{display:none!important}}",
-    "@media (max-width:420px){header.nav.tb-site .nav-cta .btn-sm{font-size:16px;padding:0 12px}.tb-sign{padding:0 13px}}",
+    "@media (max-width:1000px){.tb-bar .tb-burger{display:block}.tb-bar .tb-panel{display:flex}.tb-bar .tb-links{display:none!important}}",
+    "@media (max-width:759px){.tb-nm,.tb-user .tb-badge{display:none}.tb-user{padding:0 5px;gap:0;width:40px;justify-content:center}.tb-user.adm::after{content:\"\";position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:var(--tb-acc);border:2px solid var(--tb-bg)}header.nav.tb-site .nav-cta,.tb-cta{gap:8px}header.nav.tb-site .nav-cta .btn-sm{padding:0 14px}}",
+    "@media (max-width:720px){.tb-brand span{display:none}.tb-join,.tb-cta .tb-sign{height:36px;padding:0 14px;font-size:15px;border-radius:10px}.tb-bar .tb-burger{width:38px;height:36px;border-radius:10px}.tb-bar .tb-burger i{left:10px;right:10px}.tb-bar .tb-burger i:nth-child(1){top:11px}.tb-bar .tb-burger i:nth-child(2){top:17px}.tb-bar .tb-burger i:nth-child(3){top:23px}.tb-bar .tb-burger[aria-expanded=true] i{top:17px}}",
+    "@media (max-width:520px){header.nav.tb-site .nav-cta .js-discord,.tb-cta .tb-ico{display:none!important}}",
+    "@media (max-width:420px){header.nav.tb-site .nav-cta .btn-sm,.tb-join{font-size:16px;padding:0 12px}.tb-sign{padding:0 13px}}",
     "html.tb-site-on .nav-su{z-index:2}",
 
     /* sign-in modal */
@@ -121,15 +135,15 @@
     ".tb-card input{width:100%;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--tb-line);background:color-mix(in srgb,var(--tb-ink) 6%,transparent);color:var(--tb-ink);font:16px var(--tb-body)}",
     ".tb-card input:focus{outline:2px solid var(--tb-acc);outline-offset:1px}",
     ".tb-err{min-height:20px;margin:10px 0 0;color:#ff8f8f;font-size:13.5px}",
-    "html.tb-dex .tb-err{color:#c0392b}",
-    "@media (prefers-color-scheme:dark){html.tb-dex:not([data-theme=light]) .tb-err{color:#ff8f8f}}",
-    "html.tb-dex[data-theme=dark] .tb-err{color:#ff8f8f}",
     ".tb-foot{margin:14px 0 0;font-size:12.5px;color:var(--tb-mute);text-align:center}",
     ".tb-foot a{color:var(--tb-ink);text-decoration:underline;text-underline-offset:3px}",
     "@media (prefers-reduced-motion:reduce){.tb-bar,.tb-menu,.tb-panel,.tb-ov,.tb-card,header.nav.tb-site,html.tb-dex header,html.tb-dex .dbar{transition:none!important}}"
   ].join("\n");
 
-  function addCss() { var s = h("style", { id: "tb-css" }); s.textContent = CSS; doc.head.appendChild(s); }
+  /* the Bokidex does not load style.css, so it gets the site's two fonts here (same files, same family names) */
+  var DEX_FONTS = "@font-face{font-family:\"Lilita\";src:url(/assets/fonts/LilitaOne.woff2) format(\"woff2\");font-display:swap}" +
+    "@font-face{font-family:\"Rubik\";src:url(/assets/fonts/Rubik.woff2) format(\"woff2\");font-weight:300 900;font-display:swap}\n";
+  function addCss() { var s = h("style", { id: "tb-css" }); s.textContent = (isDex ? DEX_FONTS : "") + CSS; doc.head.appendChild(s); }
 
   /* ---------- state + rendering of the account control ---------- */
   var acct, menu, burger, panel, bar, panelOpen = false, menuOpen = false;
@@ -220,8 +234,7 @@
             if (r.ok && r.token) { done(r); } else err.textContent = "Google sign-in was not accepted.";
           }, function () { err.textContent = "Could not reach the sign-in service."; });
         } });
-        var dark = isDex ? matchMedia("(prefers-color-scheme: dark)").matches && root.getAttribute("data-theme") !== "light" || root.getAttribute("data-theme") === "dark" : true;
-        google.accounts.id.renderButton(gsi, { theme: dark ? "filled_black" : "outline", size: "large", shape: "pill", width: 280, text: "signin_with" });
+        google.accounts.id.renderButton(gsi, { theme: "filled_black", size: "large", shape: "pill", width: 280, text: "signin_with" });
       }
       if (window.google && google.accounts) draw();
       else { var s = h("script", { src: "https://accounts.google.com/gsi/client", async: "", defer: "" }); s.onload = draw; s.onerror = function () { if (gsi.parentNode) gsi.textContent = "Google sign-in did not load."; }; doc.head.appendChild(s); }
@@ -266,9 +279,16 @@
     if (isDex) {
       root.classList.add("tb-dex");
       bar = h("div", { class: "tb tb-bar tb-scope", id: "tb-root", role: "banner" });
-      bar.appendChild(h("a", { class: "tb-brand", href: "/", "aria-label": "Project Boki home" }, [h("img", { src: "/assets/img/brand-96.webp?v=2", alt: "", width: "30", height: "30" }), h("span", { text: "Project Boki" })]));
-      bar.appendChild(h("nav", { class: "tb-links", "aria-label": "Site" }, linkEls(DEX_LINKS, cur)));
-      buildBurger(DEX_LINKS, cur); bar.appendChild(acct); bar.appendChild(burger); bar.appendChild(panel);
+      bar.appendChild(h("a", { class: "tb-brand", href: "/", "aria-label": "Project Boki home" }, [h("img", { src: "/assets/img/brand-96.webp?v=2", alt: "", width: "34", height: "34" }), h("span", { text: "Project Boki" })]));
+      bar.appendChild(h("nav", { class: "tb-links", "aria-label": "Main" }, linkEls(DEX_LINKS, cur)));
+      buildBurger(DEX_LINKS, cur);
+      /* same right side as the site: Discord, then the beta button. The email pop-out lives in site.js (not loaded here),
+         so the button goes to the main page's sign-up (/#beta), like the inner pages do without JS. Sign in stays on
+         the Bokidex (admins use it for the review tools); the public pages hide it. */
+      var cta = h("div", { class: "tb-cta" }, [
+        h("a", { class: "tb-ico", href: DISCORD, target: "_blank", rel: "noopener", "aria-label": "Discord", html: DISCORD_SVG }),
+        acct, h("a", { class: "tb-join", href: "/#beta", id: "nav-join" , text: "Join the beta" }), burger]);
+      bar.appendChild(cta); bar.appendChild(panel);
       doc.body.insertBefore(bar, doc.body.firstChild);
     } else {
       bar = doc.getElementById("nav"); if (!bar) return;
@@ -286,7 +306,7 @@
     render(); loadMe();
     doc.addEventListener("click", function (e) { if (menuOpen && !acct.contains(e.target)) setMenu(false); if (panelOpen && !bar.contains(e.target)) setPanel(false); });
     doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (menuOpen) setMenu(false); if (panelOpen) { setPanel(false); burger.focus(); } } });
-    (function (mq) { mq.addEventListener && mq.addEventListener("change", function (m) { if (m.matches) setPanel(false); }); })(matchMedia(isDex ? "(min-width:760px)" : "(min-width:1001px)"));
+    (function (mq) { mq.addEventListener && mq.addEventListener("change", function (m) { if (m.matches) setPanel(false); }); })(matchMedia("(min-width:1001px)"));
     lastY = window.pageYOffset || 0; addEventListener("scroll", onScroll, { passive: true });
     var join = doc.getElementById("nav-join"); if (join) join.addEventListener("click", function () { show(); });
   }

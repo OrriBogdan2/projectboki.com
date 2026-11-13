@@ -352,7 +352,7 @@ function show(i,user){leaveLineup();cur=(i+all.length)%all.length;const x=all[cu
 window.__show=show;
 document.getElementById("prev").onclick=()=>show(cur-1,true);
 document.getElementById("next").onclick=()=>show(cur+1,true);
-addEventListener("keydown",e=>{if(e.key==="ArrowRight")show(cur+1,true);if(e.key==="ArrowLeft")show(cur-1,true)});
+addEventListener("keydown",e=>{if(e.target.closest&&e.target.closest("input,textarea,select"))return;if(e.key==="ArrowRight")show(cur+1,true);if(e.key==="ArrowLeft")show(cur-1,true)});
 function fromHash(){const h=location.hash.slice(1);if(h==="lineup"){showLineup(false);return}const i=all.findIndex(x=>x.id===h);show(i>=0?i:0,false)}
 
 

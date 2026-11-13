@@ -666,6 +666,22 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
   .minfo{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
 }
 </style>
+<style>/* 3dnav-1113 (tools/bokidex/patch.py step 10) */
+.vstage{flex:1;min-height:0;position:relative}
+.vstage #vbody{position:absolute;inset:0}
+.vnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:52px;height:52px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);background:color-mix(in srgb,var(--panel) 58%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);display:grid;place-items:center;cursor:pointer;opacity:.82;transition:opacity .15s,background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.vnav[hidden]{display:none}
+.vnav.pv{left:14px}.vnav.nx{right:14px}
+.vnav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.vnav:hover{opacity:1;background:color-mix(in srgb,var(--panel) 85%,transparent)}
+.vnav:active{transform:translateY(-50%) scale(.94)}
+.vnav:focus-visible{outline:2px solid var(--accent);outline-offset:2px;opacity:1}
+.vcn{font:600 .72rem var(--mono);color:var(--mute);margin-left:.5em;white-space:nowrap;word-spacing:0;vertical-align:middle}
+.vsoon{position:absolute;inset:0;display:grid;place-items:center;padding:20px 72px}
+.vsoon .hero{width:min(100%,64vh);max-height:100%;aspect-ratio:1;background:none}
+.vtag{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font:700 .78rem var(--body);letter-spacing:.02em;color:var(--mute);border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:999px;padding:5px 14px;white-space:nowrap}
+@media (max-width:759px){.vnav{width:46px;height:46px}.vnav.pv{left:8px}.vnav.nx{right:8px}.vsoon{padding:16px 8px}}
+</style>
 </head>
 <body>
 <div class="wrap" id="app" hidden>
@@ -704,7 +720,7 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 <div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Viewer">
   <div class="vbox">
     <div class="vhead"><span class="t" id="vtitle"></span><div class="vtabs" id="vtabs" role="tablist"></div><button class="btn" id="vclose" type="button">Close <kbd style="font:600 .68rem var(--mono);opacity:.7">Esc</kbd></button></div>
-    <div id="vbody"></div>
+    <div class="vstage"><div id="vbody"></div><button class="vnav pv" id="vprev" type="button" aria-label="Previous Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><button class="vnav nx" id="vnext" type="button" aria-label="Next Boki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button></div>
     <div class="vfoot" id="vfoot"></div>
   </div>
 </div>
@@ -966,10 +982,11 @@ const MTABS=[["about","About"],["abil","Abilities"],["evolve","Evolution"],["alt
 function altsHTML(v){const A=(v.alts||[]).filter(a=>a&&a.src);
   return A.length?panel("Alts",`<div class="gal alts">${A.map(a=>`<figure><img src="${esc(P("dex/"+a.src))}" alt="${esc(v.name)} ${esc(a.label||"alt")}" loading="lazy" data-zoom><figcaption>${esc(a.label||"Alt")}</figcaption></figure>`).join("")}</div>`):"";}
 const tabsFor=v=>MTABS.filter(([k])=>k==="abil"?(v.d?.abilities||[]).length:k==="stats"?!!statsHTML(v):k==="evolve"?!!(v.chain?.length>1):k==="alts"?!!(v.alts||[]).some(a=>a&&a.src):true);
-function blurbHTML(lore,sh){ /* detail 11-12: the short line, the rest behind More */
+function blurbHTML(lore,sh){ /* detail 11-12; 11-13: the short line ends in "..." so it is plain there is more; More shows the rest */
   if(!lore)return`<p class="blurb mut">No field notes yet.</p>`;
   if(!sh||!lore.startsWith(sh)||lore.length<sh.length+8)return`<p class="blurb">${esc(lore)}</p>`;
-  return`<p class="blurb">${esc(sh)}<span class="bl-rest" id="blrest" hidden> ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}
+  const end=(sh.match(/[.!?\u2026]+$/)||[""])[0], cut=sh.slice(0,sh.length-end.length).trimEnd();
+  return`<p class="blurb">${esc(cut)}<span id="bldots">...</span><span class="bl-rest" id="blrest" hidden>${esc(end)} ${esc(lore.slice(sh.length).trim())}</span> <button type="button" class="rm" data-rm aria-expanded="false" aria-controls="blrest">More</button></p>`}
 function tabBody(v,e,d){
   if(mtab==="abil")return abilitiesHTML(v);
   if(mtab==="stats")return statsHTML(v);
@@ -1049,7 +1066,7 @@ document.fonts?.ready?.then(()=>fitDetail());
     const r=sh.getBoundingClientRect();px=Math.max(-1,Math.min(1,((ev.clientX-r.left)/r.width-.5)*2));py=Math.max(-1,Math.min(1,((ev.clientY-r.top)/r.height-.5)*2));
     if(!raf)raf=requestAnimationFrame(()=>{raf=0;const m=sh.querySelector(".mart");if(m){m.style.setProperty("--px",px.toFixed(3));m.style.setProperty("--py",py.toFixed(3))}})},{passive:true});
 })();
-document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rm]");if(!b)return;const r=$("#blrest"),on=r.hidden;r.hidden=!on;b.textContent=on?"Less":"More";b.setAttribute("aria-expanded",String(on));fitDetail()}); /* detail 11-12 */
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rm]");if(!b)return;const r=$("#blrest"),d=$("#bldots"),on=r.hidden;r.hidden=!on;if(d)d.hidden=on;b.textContent=on?"Less":"More";b.setAttribute("aria-expanded",String(on));fitDetail()}); /* detail 11-12 */
 /* ---------- viewer ---------- */
 const _glbCache={};function glbURL(g){return _glbCache[g]||(_glbCache[g]=blobOf("dex/"+g).catch(x=>{delete _glbCache[g];throw x}))}
 function viewerTabs(e){const t=[];if(turnOf(e))t.push({k:"turn",label:"Turnaround"});if(e.glb)t.push({k:"3d",label:"3D"});return t}
@@ -1067,14 +1084,30 @@ function openViewer(k){
   vTab=k&&v.some(x=>x.k===k)?k:v[0].k; $("#viewer").hidden=false; document.body.style.overflow="hidden"; renderViewer(); $("#vclose").focus();
 }
 function closeViewer(){if(!viewerOpen())return;$("#viewer").hidden=true;$("#vbody").innerHTML="";document.body.style.overflow="";($("[data-v3d]")||$("#herobtn")||document.body).focus?.({preventScroll:true})}
+/* 3dnav-1113: previous / next Boki in dex order (all entries, wraps), the viewer stays open and in 3D */
+function dexOrder(){return D.slice().sort((a,b)=>a.num-b.num)}
+function stepViewer(d){
+  if(!viewerOpen()||!sel)return; const L=dexOrder(); if(L.length<2)return;
+  const i=L.findIndex(x=>x.id===sel); if(i<0)return;
+  vStep=d; const n=L[(i+d+L.length)%L.length]; document.activeElement?.blur?.(); go("#boki-"+n.id,true);
+}
+let vStep=1;
+function vSoon(e){
+  const h=heroOf(e), tag='<span class="vtag">3D soon</span>';
+  return `<div class="vsoon">${h?heroHTML(e,e.name):`<div class="hero sil" role="img" aria-label="Not yet discovered">${SIL}</div>`}${tag}</div>`;
+}
 function cycleViewer(d){const e=selView();if(!e)return;const v=viewerTabs(e);if(v.length<2)return;const i=v.findIndex(x=>x.k===vTab);vTab=v[(i+d+v.length)%v.length].k;renderViewer()}
 function renderViewer(){
   const e=selView(); if(!e){closeViewer();return}
   const v=viewerTabs(e);
-  $("#vtitle").textContent=`#${pad(e.num)} ${e.name}`;
+  {const L=dexOrder(), i=L.findIndex(x=>x.id===sel), n=L.length; if(vTab==="turn"&&!turnOf(e))vTab="3d"; /* 3dnav-1113 */
+   $("#vtitle").innerHTML=`#${pad(e.num)} ${esc(e.name)} <small class="vcn" aria-label="Boki ${i+1} of ${n}">${i+1} / ${n}</small>`;
+   if(n>1){const p=L[(i-1+n)%n], q=L[(i+1)%n];$("#vprev").setAttribute("aria-label","Previous Boki: "+(p.unknown?"unknown":p.name));$("#vnext").setAttribute("aria-label","Next Boki: "+(q.unknown?"unknown":q.name))}
+   document.querySelectorAll(".vnav").forEach(x=>x.hidden=n<2)}
   $("#vtabs").innerHTML=v.length<2?"":v.map(x=>`<button type="button" role="tab" data-vt="${x.k}" aria-selected="${x.k===vTab}">${x.label}</button>`).join("");
   const b=$("#vbody");
   if(vTab==="turn"){const src=turnOf(e);b.innerHTML=`<div class="tz" id="tz"><img src="${esc(P(src))}" alt="${esc(e.name)} turnaround"></div>`;$("#vfoot").innerHTML="";pan($("#tz"));return}
+  if(!e.glb){b.innerHTML=vSoon(e);$("#vfoot").innerHTML="";return} /* 3dnav-1113: no model yet, the 2D art + a tag */
   b.innerHTML='<div class="vmsg load">Loading the 3D model</div>';
   $("#vfoot").innerHTML="";
   const mine=sel+"/"+fi;
@@ -1085,6 +1118,8 @@ function renderViewer(){
     mv.addEventListener("load",()=>{try{for(const m of mv.model.materials){m.pbrMetallicRoughness.setMetallicFactor(0);m.pbrMetallicRoughness.setRoughnessFactor(0.8)}}catch{}});
     mv.addEventListener("error",()=>{b.innerHTML='<div class="vmsg">This model did not load.</div>'});
     mv.addEventListener("pointerup",()=>mv.blur());
+    {const L=dexOrder(), i=L.findIndex(x=>x.id===sel), nx=L.length>1?L[(i+vStep+L.length)%L.length]:null; /* 3dnav-1113: warm the next model's file */
+     if(nx?.glb)setTimeout(()=>glbURL(nx.glb).then(u=>{if(!/^blob:/.test(u))fetch(u,{priority:"low"}).catch(()=>{})}).catch(()=>{}),400)}
   }).catch(()=>{if(vTab==="3d")b.innerHTML='<div class="vmsg">The 3D viewer could not load. Check the connection and try again, or use the Turnaround view.</div>'});
 }
 function pan(el){
@@ -1130,6 +1165,8 @@ document.addEventListener("click",e=>{
   if(t.closest?.("[data-close]")||t.id==="detail"||t.classList?.contains("mwrap")){go("#dex");return}
   if(t.closest?.("[data-v3d]")){openViewer(t.closest("[data-v3d]").dataset.v3d);return}
   if(t.closest?.("#herobtn")&&!t.closest("#herobtn").disabled){openViewer();return}
+  if(t.closest?.("#vprev")){stepViewer(-1);return}
+  if(t.closest?.("#vnext")){stepViewer(1);return}
   if(t.closest?.("#vclose")||t.id==="viewer"){closeViewer();return}
   const vt=t.closest?.("[data-vt]");if(vt){vTab=vt.dataset.vt;renderViewer();return}
   if(t.closest?.("#surprise")){surprise();return}
@@ -1157,7 +1194,7 @@ document.addEventListener("keydown",e=>{
     if(f.length){const a=f[0],z=f[f.length-1];if(!dl.contains(el)){e.preventDefault();a.focus()}else if(e.shiftKey&&el===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&el===z){e.preventDefault();a.focus()}}}
   if(typing)return;
   if(!$("#zoom").hidden){if(k==="ArrowRight"||k==="ArrowLeft"){if(zoomList.length>1){zoomI=(zoomI+(k==="ArrowRight"?1:-1)+zoomList.length)%zoomList.length;$("#zoom-img").src=zoomList[zoomI]}e.preventDefault()}return}
-  if(viewerOpen()){if(k==="ArrowRight"||k==="ArrowLeft"){cycleViewer(k==="ArrowRight"?1:-1);e.preventDefault()}else if(k==="Tab"){}else if(k===" "||k==="Enter"){if(!el?.closest?.("#vbody,.vhead"))e.preventDefault()}return}
+  if(viewerOpen()){if(k==="ArrowRight"||k==="ArrowLeft"){if(!e.repeat)stepViewer(k==="ArrowRight"?1:-1);e.preventDefault()}else if(k==="Tab"){}else if(k===" "||k==="Enter"){if(!el?.closest?.("#vbody,.vhead"))e.preventDefault()}return}
   if(k==="1"){go(lastSel?"#boki-"+lastSel:"#dex");return}
   if(view==="dex"){
     const onBtn=el&&el!==document.body&&!el.classList?.contains("dcard")&&/^(BUTTON|A|SUMMARY)$/.test(el.tagName)&&!el.closest("#dgrid");

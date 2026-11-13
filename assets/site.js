@@ -286,8 +286,10 @@ if (pick) {
     return { el: b, img: b.firstChild, inc: b.children[1], d }; // inc: the picture that rides in while the stage slides
   }) : [];
   let peeksLive = false; // their art is only fetched once the Hunters are getting close
-  const setPeeks = (quiet) => peeksLive && peeks.forEach((p) => { // quiet: swap without the fade (the slide has already brought the new picture in)
-    const h = HUNTERS[(current + p.d + HUNTERS.length) % HUNTERS.length], u = src(h[0], 960);
+  // quiet: swap without the fade (the slide has already brought the new picture in). at: the Hunter they flank, which
+  // during fast browsing is the one the stage holds, not the newest pick still on its way
+  const setPeeks = (quiet, at = current) => peeksLive && peeks.forEach((p) => {
+    const h = HUNTERS[(at + p.d + HUNTERS.length) % HUNTERS.length], u = src(h[0], 960);
     p.el.setAttribute("aria-label", `${p.d < 0 ? "Previous" : "Next"} Hunter: ${h[1]}`);
     if (p.img.getAttribute("src") !== u) { if (!quiet) { p.img.style.opacity = "0"; p.img.onload = () => { p.img.style.opacity = ""; }; } p.img.src = u; }
   });
@@ -632,7 +634,7 @@ if (pick) {
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
     if (!byIdle && !fromScroll) { browsed = true; sec.classList.remove("hint"); }
     if (i === current) return;
-    const was = current, slide = slider && stageUp();
+    const slide = slider && stageUp();
     current = i; if (!slide) setPeeks(); // (when it slides, the edge previews change once it lands)
     if (pin && !fromScroll && scrollY > pin.start - innerHeight * 0.6 && scrollY < pin.start + pin.step * HUNTERS.length)
       { scrollTo({ top: pin.start + (i + 0.5) * pin.step, behavior: "instant" }); ys = scrollY; } // the page follows the pick, without replaying the Hunters between
@@ -644,7 +646,8 @@ if (pick) {
       const btn = pick.children[i];
       if (pick.scrollWidth > pick.clientWidth) pick.scrollTo({ left: btn.offsetLeft - (pick.clientWidth - btn.clientWidth) / 2, behavior: "smooth" });
     }
-    if (slide) { const n = HUNTERS.length; slider.go(i, (i - was + n) % n <= n / 2 ? 1 : -1); return; } // slides in from the side it sits on
+    if (slide) { slider.go(i); return; } // (it works out which side the new one comes in from)
+    if (slider) slider.held(i); // a cross-fade instead: the slide still needs to know who is on the stage
     art.classList.add("out");
     const next = new Image();
     next.sizes = art.sizes;
@@ -742,6 +745,11 @@ if (pick) {
     const lo = inc.firstChild, hi = inc.lastChild;
     hi.addEventListener("load", () => hi.classList.add("ok"));
     let mode = 0, tgt = -1, dir = 0, x = 0, rid = 0, token = 0, drag = null; // mode: 0 resting, 1 held, 2 moving, 3 settling in
+    // Fast browsing: a pick that comes in mid-slide never cuts. It waits in `want` (only the newest; older ones are dropped),
+    // the slide under way hurries to its end, and the next slide sets off from there. shown: the Hunter the frame holds.
+    let want = -1, shown = current, wait = false, chained = false, runTo = 0, runMs = 0, runThen = null, lastRest = -1e4;
+    const ahead = new Image(); // the queued pick's picture starts loading at once, so the next slide doesn't wait for it
+    const toward = (i) => { const n = HUNTERS.length; return (i - shown + n) % n <= n / 2 ? 1 : -1; }; // from the side it sits on
     const W = () => shotEl.offsetWidth + GAP;
     // The edge previews ride along: each one's picture moves out the same way the stage does while its next picture moves
     // in behind it, so all three windows shift together like one belt.
@@ -769,60 +777,88 @@ if (pick) {
       belt = peeksLive; beltTok++;
       if (belt) peeks.forEach((p) => { p.inc.src = src(HUNTERS[(i + p.d + HUNTERS.length) % HUNTERS.length][0], 960); p.inc.hidden = false; });
     };
-    const rest = () => { rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true; info.classList.remove("swap"); setPeeks(true); beltOff(); };
+    const rest = () => {
+      const onward = want >= 0 && want !== shown; // (another slide follows: the name stays hidden, so in-between names don't flash)
+      rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true;
+      info.classList.toggle("swap", onward); setPeeks(true, shown); beltOff(); lastRest = performance.now();
+      if (want >= 0) chain();
+    };
+    const chain = () => { // set off for the newest pick once the frame and the edge previews show the Hunter just landed on
+      const i = want; want = -1;
+      if (i === shown) return;
+      const my = ++rid, ready = [art, ...peeks.map((p) => p.img)].map((im) => (im.decode ? im.decode().catch(() => {}) : 0));
+      chained = true; // (pressing on: the next slide is a quick one)
+      Promise.race([Promise.all(ready), new Promise((r) => setTimeout(r, 120))]).then(() => { if (my === rid && mode === 0) slider.go(i); });
+    };
     const run = (to, ms, then) => {
-      mode = 2; const from = x, t0 = performance.now(), my = ++rid;
+      mode = 2; runTo = to; runMs = ms; runThen = then; const from = x, t0 = performance.now(), my = ++rid;
       const f = (now) => {
         if (my !== rid) return;
-        const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+        // (a frame's time can be a little before t0: unclamped, every slide began with a small jerk the wrong way)
+        const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
         place(from + (to - from) * e);
         if (k < 1) requestAnimationFrame(f); else then();
       };
       requestAnimationFrame(f);
     };
+    const hurry = () => { // a newer pick is waiting: the slide under way finishes in a blink instead of its full glide
+      if (mode === 2 && !wait && runThen === commit && runMs > 170) run(runTo, 70 + 100 * Math.abs(runTo - x) / W(), commit);
+    };
     const commit = () => { // landed: the frame's own picture takes the new Hunter under the incoming layer, then that layer steps aside
-      const i = tgt, id = HUNTERS[i][0], my = ++token;
-      mode = 3; label(i); info.classList.remove("swap"); setPeeks(true); // (the previews' own pictures are out of view right now)
+      const i = tgt, id = HUNTERS[i][0], my = ++token; shown = i;
+      mode = 3; label(i); if (want < 0 || want === i) info.classList.remove("swap"); setPeeks(true, i); // (the previews' own pictures are out of view right now)
       cw.style.translate = ""; x = 0; inc.style.translate = "0px 0";
       art.srcset = set(id); art.src = src(id, 1600);
       const done = () => { if (my === token) rest(); };
       (art.decode ? art.decode() : Promise.resolve()).then(done, done);
     };
-    const snap = (i) => { // asked for another Hunter mid-move (a held arrow key, a fast scroll): no slide, just show it
-      rest(); drag = null; root.classList.remove("h-drag");
+    const snap = (i) => { // the window changed size mid-move: no slide, just show it
+      want = -1; shown = i; rest(); drag = null; root.classList.remove("h-drag");
       const id = HUNTERS[i][0]; label(i); art.srcset = set(id); art.src = src(id, 1600);
     };
     slider = {
-      go(i, d) {
+      go(i) {
         if (mode === 1 && tgt === i) { run(-dir * W(), Math.max(160, Math.min(380, 420 * (1 - Math.abs(x) / W()))), commit); return; } // let go of a pull: carry on from where it is
-        if (mode !== 0) { snap(i); return; }
-        prep(i, d); place(0); mode = 2;
-        const my = ++rid, start = () => { if (my === rid && tgt === i) run(-d * W(), 440, commit); };
+        if (mode === 1) { drag = null; root.classList.remove("h-drag"); want = i; run(0, 140, rest); return; } // a key or click mid-pull: the pull springs back, then on
+        if (mode !== 0 && !wait) { want = i === tgt && runThen === commit ? -1 : i; if (want >= 0) { ahead.src = src(HUNTERS[i][0], 960); hurry(); } return; } // mid-slide: queue it (the one it's already heading for: nothing to add)
+        // at rest, or still waiting for the picture to arrive (nothing has moved yet, so it just takes the newer pick)
+        if (i === shown) { want = -1; rest(); return; } // back to the one on the stage after all: nothing moves
+        const d = toward(i), quick = chained || performance.now() - lastRest < 350; chained = false;
+        prep(i, d); place(0); mode = 2; wait = true;
+        const my = ++rid, start = () => { if (my === rid && tgt === i) { wait = false; run(-d * W(), quick ? 260 : 440, commit); } };
         // a far jump may not have its picture yet: give it a moment to arrive, then go regardless
         Promise.race([lo.decode ? lo.decode().catch(() => {}) : Promise.resolve(), new Promise((r) => setTimeout(r, 260))]).then(start);
       },
+      held(i) { if (mode === 0) shown = i; }, // shown by a cross-fade instead (the stage wasn't up yet)
+      busy: () => mode !== 0,
     };
     stage.addEventListener("dragstart", (e) => e.preventDefault());
     stage.addEventListener("pointerdown", (e) => {
-      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("button, a, .fig") || !stageUp() || mode !== 0) return;
-      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false, lx: e.clientX, lt: e.timeStamp, v: 0 };
+      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("button, a, .fig") || !stageUp()) return;
+      // late: it starts while the stage is still sliding. It can't take hold of the picture, but a flick still counts as a pick.
+      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false, lx: e.clientX, lt: e.timeStamp, v: 0, late: mode !== 0 };
     });
     addEventListener("pointermove", (e) => {
       if (!drag || e.pointerId !== drag.id) return;
       const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
       if (!drag.on) {
-        if (mode !== 0) { drag = null; return; }
+        if (drag.late || mode !== 0) { drag.late = true; return; }
         if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.2) return; // not a sideways pull (yet)
         drag.on = true; mode = 1; root.classList.add("h-drag");
       }
       const d = dx < 0 ? 1 : -1;
-      if (d !== dir || tgt < 0) prep(current + d < 0 ? HUNTERS.length - 1 : (current + d) % HUNTERS.length, d);
+      if (d !== dir || tgt < 0) prep((shown + d + HUNTERS.length) % HUNTERS.length, d);
       drag.v = (e.clientX - drag.lx) / Math.max(1, e.timeStamp - drag.lt); drag.lx = e.clientX; drag.lt = e.timeStamp;
       place(dx);
     });
     const end = (e) => {
       if (!drag || e.pointerId !== drag.id) return;
       const g = drag; drag = null;
+      if (g.late) { // a swipe made while the stage was moving: one more Hunter that way, queued behind the slide
+        const dx = e.clientX - g.x0;
+        if (e.type !== "pointercancel" && Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(e.clientY - g.y0) * 1.2) { stage._dragged = Date.now(); show(current + (dx < 0 ? 1 : -1)); }
+        return;
+      }
       if (!g.on) return;
       root.classList.remove("h-drag"); stage._dragged = Date.now();
       const far = Math.abs(x) > W() * 0.2 || (Math.abs(g.v) > 0.45 && Math.sign(g.v) === Math.sign(x));
@@ -858,7 +894,9 @@ if (pick) {
     new MutationObserver(() => idleArm()).observe(root, { attributes: true, attributeFilter: ["class"] }); // Abilities / full-size art opened or closed
   }
   $("h-prev").addEventListener("click", () => show(current - 1));
-  arrowKeys(document.getElementById("hunters"), pick, (d) => show(current + d));
+  // A held arrow key repeats ~30 times a second: a repeat that comes mid-slide is dropped, so it steps one Hunter at a time
+  const held = (e) => e.repeat && slider && slider.busy();
+  arrowKeys(document.getElementById("hunters"), pick, (d, e) => { if (!held(e)) show(current + d); });
   $("h-next").addEventListener("click", () => show(current + 1));
   if (calm) swipe(document.querySelector(".stage .shot"), (d) => show(current + d)); // (otherwise the slide below follows the finger itself)
   nudge(pick);
@@ -867,6 +905,7 @@ if (pick) {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (!d) return;
     e.preventDefault();
+    if (held(e)) return;
     const n = (current + d + HUNTERS.length) % HUNTERS.length;
     show(n);
     pick.children[n].focus({ preventScroll: true });
@@ -1024,7 +1063,7 @@ function arrowKeys(section, strip, go) {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (!d) return;
     e.preventDefault();
-    go(d);
+    go(d, e);
   });
 }
 
