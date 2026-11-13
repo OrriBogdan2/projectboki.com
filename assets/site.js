@@ -1191,6 +1191,8 @@ if (POSTHOG_KEY) {
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !ns.hidden) { set(false); nj.focus(); } });
     ns.addEventListener("focusout", (e) => { if (e.relatedTarget && !ns.contains(e.relatedTarget) && e.relatedTarget !== nj) set(false); });
     addEventListener("scroll", () => { if (!ns.hidden && document.activeElement !== ns.querySelector("input")) set(false); }, { passive: true });
+    // Other "Join the beta" / "Sign up" links on the inner pages open the same pop-out instead of leaving the page.
+    document.querySelectorAll('main a[href="/#beta"]').forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); nj.click(); }));
   }
 }
 
