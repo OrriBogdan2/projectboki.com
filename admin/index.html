@@ -218,7 +218,7 @@ const SECTIONS = [
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
 const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',signups:'signups'};
-const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',Coord:'var(--c-coord)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
+const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
 const st = loadState();   // {section, filters:{section:{...}}, theme}
@@ -576,7 +576,7 @@ VIEWS.agents = (a, el) => {
   <div id="tbl"></div>`;
   const fs = fstate('agents'); fs.tbl = fs.tbl || {sort:'start',dir:-1};
   table($('#tbl', el), {state: fs.tbl, rows: jobs, onRow: j => openAgent(j.id), searchKeys: j => `${j.title} ${j.label} ${j.id} ${j.summary} ${j.role} ${j.account} ${j.host} ${j.model}`,
-    filters: [{k:'status',label:'Status',get:j=>j.status,order:['running','done','partial','failed','blocked','skipped','redo','other']},{k:'account',label:'Account',get:j=>j.account,order:['Cory','GC','OrriB','Coord']},
+    filters: [{k:'status',label:'Status',get:j=>j.status,order:['running','done','partial','failed','blocked','skipped','redo','other']},{k:'account',label:'Account',get:j=>j.account,order:['Cory','GC','OrriB','ProjectBoki','Outlook 1','Outlook 2']},
       {k:'role',label:'Role',get:j=>j.role},{k:'area',label:'Area',get:j=>j.areas.length?j.areas:['none'],fmt:a=>AREA_LABEL[a]||a},{k:'host',label:'Host',get:j=>j.host},{k:'chore',label:'Kind',get:j=>j.chore?'rebase chore':'task'}],
     cols: [
       {k:'status',label:'Status',get:j=>j.status,render:j=>badge(j.status)},
@@ -701,7 +701,7 @@ VIEWS.usage = (u, el) => {
   el.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))" id="accs"></div>
   ${sectionH('Weekly usage, last 7 days', `snapshot ${esc(ago(u.snapshot_at))} · pacer ${esc(u.pacer_last||'—')} UTC`)}<div class="card"><div class="chart" id="uc"></div></div>
   <div class="grid cols2" style="margin-top:14px"><div class="card"><h3>Jobs per day (${u.jobs_per_day.length} days, ET)</h3><div class="chart" id="pd"></div></div><div class="card"><h3>Jobs per hour of day (ET)</h3><div class="chart" id="ph"></div></div></div>`;
-  $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic; return `<div class="card"><div class="row">${acct(a.label)}<span class="grow"></span><span class="small muted">${esc(a.lane||'')}</span></div>
+  $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic; return `<div class="card"><div class="row">${acct(a.label)}${a.coord?`<span class="small" style="margin-left:6px;padding:0 6px;border:1px solid var(--c-coord);border-radius:4px;color:var(--c-coord)">coord</span>`:""}<span class="grow"></span><span class="small muted">${esc(a.lane||'')}</span></div>
     <div class="kpi" style="margin-top:6px">${pct(a.pct)}<small>pace ${pct(a.pace_pct)}</small></div>${meter(a.pct, ACC[a.label])}
     <div class="sub">resets ${a.resets_at ? esc(tEST(a.resets_at)) : '—'}${a.fable_pct!=null?` · Fable ${pct(a.fable_pct)}`:''}</div>
     <div class="sub">${a.running} running · 24h: ${Object.entries(a.done_24h).filter(([k,v])=>v).map(([k,v])=>`${v} ${k}`).join(', ')||'none'} · spent ${a.spent_24h!=null?a.spent_24h+'%':'—'}</div>
