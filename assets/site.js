@@ -1392,7 +1392,7 @@ if (POSTHOG_KEY) {
     stage.addEventListener("pointerdown", (e) => { pt = e.pointerType; if (pt !== "mouse") load(); }, { passive: true });
     stage.addEventListener("click", (e) => {
       const shot = stage.querySelector(".shot");
-      if ((e.pointerType || pt) === "mouse" || e.target.closest("button, a, .fig")) return;
+      if (e.target.closest("button, a, .fig")) return; // mouse too (11-13 owner): a drag is already swallowed above
       if (shot && shot._swiped && Date.now() - shot._swiped < 500) return;
       open();
     });
