@@ -675,7 +675,7 @@
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Gemole is a hulking mole with a whole amethyst cavern on its back and claws of solid crystal.",
+   "desc": "Gemole rears up on its hind legs with two amethyst gauntlets the size of its own head.",
    "v": "h1794524624",
    "shot": false
   },
@@ -1735,7 +1735,7 @@
    "sil": "pharoheron"
   },
   {
-   "t": "ice",
+   "t": "steel",
    "sil": "glaciammoth"
   },
   {
