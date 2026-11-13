@@ -640,14 +640,14 @@
    "name": "Dreadnoyak",
    "types": [
     "ice",
-    "steel"
+    "dark"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Colossal icebreaker yak, ice-armour hull.",
-   "v": "h1794459317",
+   "desc": "Dreadnoyak is a colossal black yak with huge curled tusks of blue ice and a white crest that streams down its back like a pale flag.",
+   "v": "h1794589766",
    "shot": false
   },
   {
