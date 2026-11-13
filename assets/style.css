@@ -1482,3 +1482,11 @@ img.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
 /* Join button after the FAQ (11-13): sends readers who finish the FAQ back up to the sign-up */
 .faq-join { position: relative; text-align: center; margin: clamp(28px, 3vw, 44px) 0 0; }
 html.su-signed .faq-join { display: none; }
+
+/* ---------- First screen on phones (11-13): the picture starts below the top bar and keeps its top, so the Boki on
+   Sparkle's head is never cut or covered; the boots at the bottom fade out instead. ---------- */
+@media (max-width: 900px), (max-aspect-ratio: 5/4) {
+  .hero-media { --top: 64px; }
+  .hero-art { object-position: 62% 8%; }
+  .hero-media::before { height: 28px; }
+}
