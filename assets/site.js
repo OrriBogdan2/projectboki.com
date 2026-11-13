@@ -200,9 +200,9 @@ const HUNTERS = [
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
   ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
-  ["motley", "Motley", "The Void Jester", true, "Controller"],
-  ["gill", "Gill", "The Novice Mage", false, "Controller"],
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
+  ["gill", "Gill", "The Novice Mage", false, "Controller"],
+  ["motley", "Motley", "The Void Jester", true, "Controller"],
 ];
 
 const pick = document.getElementById("h-pick");
