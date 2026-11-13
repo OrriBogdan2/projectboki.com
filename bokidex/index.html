@@ -736,9 +736,9 @@ function fv(e,i){const f=e.forms&&e.forms[i||0];return f?Object.assign({},e,f,{_
 function resolve(id){if(!id)return null;if(byId[id])return{e:byId[id],i:0};if(formOf[id])return formOf[id];
   const a=aliases[id]||aliases[slugOf(id)];if(a&&byId[a]){const e=byId[a],i=(e.forms||[]).findIndex(f=>f.id===slugOf(id));return{e,i:Math.max(0,i)}}return null}
 /* Male/female looks (dex entry .sex_forms, .female {hero,full,turn,bg?} written by dex_art_sync). The entry's own art is the male look; the grid always shows it.
-   sexV(v) is the view of the female look when it is picked and exists: flagged _sexf (so no approved-gen overlay of the male hero applies), hero/turnaround swapped, no 3D (the model is the male look). */
+   sexV(v) is the view of the female look when it is picked and exists: flagged _sexf (so no approved-gen overlay of the male hero applies), hero/turnaround swapped, 3D = female.glb when there is one (else none: the model is the male look). */
 const femReady=v=>!!(v&&v.female&&(v.female.hero||(isAdmin&&v.female.turn)));
-function sexV(v){if(sx!=="f"||!femReady(v))return v;const f=v.female,o=Object.assign({},v,{_sexf:1,glb:null,has3d:false,heroGen:null});
+function sexV(v){if(sx!=="f"||!femReady(v))return v;const f=v.female,o=Object.assign({},v,{_sexf:1,glb:f.glb||null,has3d:!!f.glb,heroGen:null});
   if(f.hero){o.hero=f.hero;o.heroKind="art";o.heroDark=o.heroLight=null;if(f.bg)o.bg=f.bg}
   o.turnaround=f.turn||null;return o}
 const selView=()=>{const e=sel?byId[sel]:null;return e?sexV(fv(e,fi)):null};
