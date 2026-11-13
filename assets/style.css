@@ -1497,3 +1497,49 @@ html.su-signed .faq-join { display: none; }
   .hero-in .tag { display: none; }
   .hero-in .hero-cta { margin-top: 18px; }
 }
+
+/* ---------- Join the beta after the FAQ (11-13): the real end-of-page call to action, so it is a big button, not the standard one ---------- */
+.faq-join { margin: clamp(44px, 5vw, 72px) 0 0; }
+.faq-join .btn { height: 80px; padding: 0 60px; font-size: 30px; border-radius: 22px; box-shadow: inset 0 -2px 0 rgba(10,18,34,.12), 0 20px 44px -16px rgba(0,0,0,.85), 0 0 0 6px rgba(255,255,255,.07); }
+@media (max-width: 720px) { .faq-join { margin-top: 40px; } .faq-join .btn { width: min(100%, 340px); height: 68px; font-size: 24px; padding: 0 32px; } }
+
+/* ---------- Join block (11-13): the aurora art breathes. The section is taller, the dim lifts off the picture, and the text stack is
+   smaller and tighter in a column on the left. The art keeps its own shape on the right (no cover crop) and fades into the dark
+   on its left edge, so the skater and the stag are never under the text. On phones the art takes the top of the block and
+   the text sits under it. ---------- */
+.join { min-height: clamp(720px, 88svh, 900px); padding: clamp(56px, 8vh, 96px) 0; place-items: center start; text-align: left; }
+.join::after { background: linear-gradient(180deg, var(--bg) 0%, transparent 14%, transparent 86%, var(--bg) 100%); }
+.join-bg img { left: auto; right: 0; top: 4%; width: 70%; height: 92%; object-fit: cover; object-position: 100% 50%; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 11%); mask-image: linear-gradient(90deg, transparent 0, #000 11%); } /* its own shape, a little smaller than the block, so the skater starts right of the text column */
+.join-bg::after { background: linear-gradient(90deg, rgba(8,13,24,.5) 0%, rgba(8,13,24,.4) 36%, rgba(8,13,24,.14) 52%, rgba(8,13,24,.12) 100%); }
+.join > .wrap { display: grid; justify-items: start; }
+.join-q { font-size: clamp(18px, 1.6vw, 22px); margin-bottom: 4px; }
+.join h2 { max-width: 8.6ch; margin: 0 0 16px; font-size: clamp(46px, 4.8vw, 68px); line-height: .94; }
+.join .su-perk { justify-content: flex-start; }
+.join .su-perk.su-prize { margin: 0 0 20px; }
+.join .su-prize .perk { gap: 14px; }
+.join .su-perk.su-prize img.rare-egg { width: 96px; height: 96px; margin: -8px -4px; }
+.join .su-perk.su-prize .perk .perk-a { font-size: 19px; }
+.join .su-perk.su-prize .perk .rare { font-size: clamp(30px, 2.6vw, 38px); }
+.join .join-cta { flex-direction: column; align-items: stretch; width: min(400px, 100%); margin: 0; }
+@media (min-width: 721px) and (max-width: 1100px) {
+  .join { place-items: end center; text-align: left; }
+  .join-bg img { left: 0; right: auto; top: 0; width: 100%; height: 100%; object-position: 50% 0%; -webkit-mask-image: none; mask-image: none; }
+  .join-bg::after { background: linear-gradient(180deg, rgba(8,13,24,.22) 0%, rgba(8,13,24,.26) 42%, rgba(8,13,24,.84) 64%, rgba(8,13,24,.92) 100%); }
+}
+@media (max-width: 720px) {
+  .join { min-height: max(740px, calc(100svh - 64px)); padding: 0 0 28px; place-items: end center; text-align: center; }
+  .join::after { background: linear-gradient(180deg, var(--bg) 0%, transparent 8%, transparent 100%); }
+  .join-bg img { left: 0; right: auto; top: 0; width: 100%; height: 62%; object-position: 58% 30%; -webkit-mask-image: none; mask-image: none; }
+  .join-bg::after { background: linear-gradient(180deg, rgba(8,13,24,.2) 0%, rgba(8,13,24,.22) 36%, rgba(8,13,24,.9) 58%, #070b14 64%); }
+  .join > .wrap { display: block; padding-inline: 20px; }
+  .join-q { font-size: 17px; margin-bottom: 2px; }
+  .join h2 { max-width: none; font-size: clamp(38px, 10.4vw, 44px); margin-bottom: 12px; }
+  .join .su-perk { justify-content: center; }
+  .join .su-perk.su-prize { margin-bottom: 16px; }
+  .join .su-prize .perk { flex-direction: row; gap: 12px; }
+  .join .su-prize .perk .perk-t { align-items: flex-start; text-align: left; }
+  .join .su-perk.su-prize img.rare-egg { width: 76px; height: 76px; margin: -4px 0; }
+  .join .su-perk.su-prize .perk .perk-a { font-size: 17px; }
+  .join .su-perk.su-prize .perk .rare { font-size: 30px; }
+  .join .join-cta { width: 100%; margin-inline: 0; gap: 10px; }
+}
