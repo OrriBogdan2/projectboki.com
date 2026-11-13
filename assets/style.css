@@ -1484,9 +1484,10 @@ img.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
 html.su-signed .faq-join { display: none; }
 
 /* ---------- First screen on phones (11-13): the picture starts below the top bar and keeps its top, so the Boki on
-   Sparkle's head is never cut or covered; the boots at the bottom fade out instead. ---------- */
+   Sparkle's head is never cut or covered, and her legs and boots still show (11-13 owner). ---------- */
 @media (max-width: 900px), (max-aspect-ratio: 5/4) {
-  .hero-media { --top: 64px; }
-  .hero-art { object-position: 62% 8%; }
+  .hero-media { --top: 48px; --low: 56px; }
+  .hero-art { object-position: 62% 30%; }
   .hero-media::before { height: 28px; }
+  .hero-media::after { height: 12%; }
 }
