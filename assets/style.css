@@ -1491,3 +1491,9 @@ html.su-signed .faq-join { display: none; }
   .hero-media::before { height: 28px; }
   .hero-media::after { height: 12%; }
 }
+
+/* Phones (11-13 owner): no tagline on the first screen, so the picture gets the room and the logo sits lower. */
+@media (max-width: 900px), (max-aspect-ratio: 5/4) {
+  .hero-in .tag { display: none; }
+  .hero-in .hero-cta { margin-top: 18px; }
+}
