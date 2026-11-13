@@ -1440,19 +1440,3 @@ img.rare-egg.pop { animation: egg-pop .75s cubic-bezier(.3, 1.2, .5, 1) both; }
 .su-load img.rare-egg { flex: none; width: 36px; height: 36px; margin: 0; animation: su-shake .42s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(255,196,60,.7)); }
 .nav-su .sd-h img.rare-egg { display: none; }
 .sd-s .egg2 { display: inline-block; width: 30px; height: 30px; vertical-align: -9px; margin: 0 6px 0 -2px; }
-
-/* ---------- Abilities: the button sits under the Hunter's title, in reading order, and carries the kit's six slots
-   (LMB, passive, Shift, RMB, E, R) so it reads as "here is the kit", not a stray corner button. Phones: a full-width row under the title. ---------- */
-.h-keys { display: inline-flex; gap: 4px; margin-left: 4px; padding-left: 12px; border-left: 1px solid rgba(43,29,18,.28); }
-.h-keys b { display: grid; place-items: center; min-width: 30px; height: 26px; padding: 0 7px; border-radius: 7px; background: #2b1d12; color: #f2e8d2; font-family: "Rubik", system-ui, sans-serif; font-weight: 700; font-size: 12px; line-height: 1; letter-spacing: .02em; }
-.h-keys b:last-child { box-shadow: inset 0 0 0 2px #e8c77a; }
-.h-keys svg { width: 13px; height: 13px; }
-@media (min-width: 721px) { #hunters .h-more { position: static; margin-top: 16px; } }
-@media (min-width: 340px) and (max-width: 720px) {
-  #hunters .h-more { grid-column: 1 / -1; grid-row: 4; width: 100%; justify-content: space-between; margin-top: 12px; padding: 8px 10px 8px 14px; }
-  #hunters .h-more > svg { display: none; }
-  #hunters .h-more > span:first-of-type { margin-right: auto; }
-  .h-keys { gap: 3px; margin-left: 0; padding-left: 10px; }
-  .h-keys b { min-width: 24px; height: 24px; padding: 0 5px; font-size: 10px; border-radius: 6px; }
-}
-@media (max-width: 339px) { .h-keys { display: none; } }
