@@ -78,7 +78,7 @@
 <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/boki.json">
 <link rel="preload" as="image" crossorigin="anonymous" href="assets/img/wordmark-boki-1280.webp" imagesrcset="assets/img/wordmark-boki-640.webp 640w, assets/img/wordmark-boki-800.webp 800w, assets/img/wordmark-boki-1040.webp 1040w, assets/img/wordmark-boki-1280.webp 1280w, assets/img/wordmark-boki-1440.webp 1440w, assets/img/wordmark-boki-2000.webp 2000w" imagesizes="(max-width: 477px) 66vw, (max-width: 720px) 420px, (max-width: 900px) 46vw, (max-width: 1940px) 50vw, 960px">
 
-<link rel="stylesheet" href="assets/style.css?v=260">
+<link rel="stylesheet" href="assets/style.css?v=261">
 <script>
   // A refresh always starts at the top: no restored scroll, and a #section left in the address bar is dropped.
   // Links that arrive with a #section (from the press kit, say) still jump to it.
@@ -112,8 +112,8 @@
 <header class="nav" id="nav">
   <a class="brand" href="#top" aria-label="Project Boki home"><img src="assets/img/brand-96.webp?v=2" width="36" height="36" alt=""><span>Project Boki</span></a>
   <nav class="links" aria-label="Main">
-    <a href="#hunters">Hunters</a>
     <a href="#boki">Boki</a>
+    <a href="#hunters">Hunters</a>
     <a href="#faq">FAQ</a>
   </nav>
   <div class="nav-cta">
@@ -170,67 +170,7 @@
 </section>
 
 <section id="how" class="how" aria-label="How it works">
-  <div class="wrap"><header class="head" data-r="stagger"><h2>Every match is a heist.</h2><div class="sub wide">A <span class="nb">creature-raising</span> extraction game.</div></header></div>
-  <div class="how-stack" data-r="stagger">
-    <article class="step" style="--i:0">
-      <div class="step-card">
-        <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/drop-in.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="drop-in"><picture><source media="(max-width: 860px)" srcset="assets/img/lore/dropw-960.webp?v=9 960w, assets/img/lore/dropw-1600.webp?v=9 1600w" sizes="100vw"><img data-full="assets/img/lore/dropw-2400.webp?v=9" src="assets/img/lore/drop-1600.webp?v=9" srcset="assets/img/lore/drop-960.webp?v=9 960w, assets/img/lore/drop-1600.webp?v=9 1600w" sizes="440px" width="2400" height="1792" style="object-position: 50% 50%; --mp: 50% 50%" alt="Albert, Lace and Vex dive from the airship with their Boki" loading="lazy" decoding="async"></picture></div>
-        <div class="step-text">
-          <p class="step-n">01</p>
-          <h3>Drop in.</h3>
-          <p class="step-sub"><span>Three Hunters and their Boki.</span><span>20 to 40 players in every match.</span></p>
-        </div>
-      </div>
-    </article>
-    <article class="step" style="--i:1">
-      <div class="step-card">
-        <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/squad-up.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="squad-up"><img data-full="assets/img/lore/rivals-2400.webp?v=8" src="assets/img/lore/rivals-1600.webp?v=8" srcset="assets/img/lore/rivals-960.webp?v=8 960w, assets/img/lore/rivals-1600.webp?v=8 1600w, assets/img/lore/rivals-2400.webp?v=8 2400w" sizes="(max-width: 860px) 100vw, 440px" width="2576" height="1438" style="object-position: 50% 40%; --mp: 58% 50%" alt="Kael holds his blade to Vex's throat" loading="lazy" decoding="async"></div>
-        <div class="step-text">
-          <p class="step-n">02</p>
-          <h3>Claim the heart.</h3>
-          <p class="step-sub"><span>Fight the beast and steal its heart.</span><span>Find rare eggs and catch wild Boki.</span></p>
-        </div>
-      </div>
-    </article>
-    <article class="step" style="--i:2">
-      <div class="step-card">
-        <!-- Media slot: swap this image for a gameplay clip, e.g. <video src="assets/video/get-out.mp4" autoplay muted loop playsinline></video> -->
-        <div class="step-media" data-clip="get-out"><img data-full="assets/img/lore/vault-2400.webp?v=8" src="assets/img/lore/vault-1600.webp?v=8" srcset="assets/img/lore/vault-960.webp?v=8 960w, assets/img/lore/vault-1600.webp?v=8 1600w, assets/img/lore/vault-2400.webp?v=8 2400w" sizes="(max-width: 860px) 100vw, 440px" width="2576" height="1449" style="object-position: 30% 50%; --mp: 30% 50%" alt="Sable and her Boki, Lockatara, open a vault, its key-tipped tail in the lock and gold piled around them" loading="lazy" decoding="async"></div>
-        <div class="step-text">
-          <p class="step-n">03</p>
-          <h3>Get out.</h3>
-          <p class="step-sub"><span>Extract and keep everything.</span><span>Go down and you could lose your Boki.</span></p>
-        </div>
-      </div>
-    </article>
-  </div>
-</section>
-
-<section id="hunters" class="hunters">
-  <div class="wrap">
-    <header class="head" data-r="stagger">
-      <h2>Choose your Hunter.</h2>
-      <div class="sub">A <span class="nb">top-down</span> hero shooter with WASD controls.</div>
-    </header>
-    <div class="h-track" id="h-track"><div class="h-pin">
-    <div class="stage" data-r>
-      <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="bk-count h-count"><b id="h-n">01</b> / <span>13</span></div>
-      <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/ryzz-1600.webp?v=2026-11-13o-faces-r1903" srcset="assets/img/hunters/ryzz-960.webp?v=2026-11-13o-faces-r1903 960w, assets/img/hunters/ryzz-1600.webp?v=2026-11-13o-faces-r1903 1600w, assets/img/hunters/ryzz-2400.webp?v=2026-11-13o-faces-r1903 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Sparkle, the Storm Chaser" loading="lazy"><button class="h-expand" type="button" id="h-expand" aria-label="View full art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg></button></div>
-      <div class="info" aria-live="polite">
-        <div class="role" id="h-role">Skirmisher</div>
-        <h3 id="h-name">Sparkle</h3>
-        <div class="title" id="h-title">The Storm Chaser</div>
-        <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span></button>
-      </div>
-    </div>
-    <div class="pick-label" data-r><span class="swipe">Swipe for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-    <div class="pick" data-r id="h-pick" role="group" aria-label="Choose your Hunter"></div>
-    </div></div>
-  </div>
+  <div class="wrap"><header class="head" data-r="stagger"><h2>Every match is a heist.</h2><div class="sub wide">Drop in. Claim the heart. Get out.</div></header></div>
 </section>
 
 <section id="boki" class="boki">
@@ -254,6 +194,31 @@
       <h3 class="bk-dark-n">Over 200 Boki to find.</h3>
       <a class="bk-more" href="/bokidex/">Check out the Bokidex<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
+  </div>
+</section>
+
+<section id="hunters" class="hunters">
+  <div class="wrap">
+    <header class="head" data-r="stagger">
+      <h2>Choose your Hunter.</h2>
+      <div class="sub">A <span class="nb">top-down</span> hero shooter with WASD controls.</div>
+    </header>
+    <div class="h-track" id="h-track"><div class="h-pin">
+    <div class="stage" data-r>
+      <button class="bk-arrow prev h-arrow" type="button" id="h-prev" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="bk-arrow next h-arrow" type="button" id="h-next" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="bk-count h-count"><b id="h-n">01</b> / <span>13</span></div>
+      <div class="shot"><img data-zoom id="h-art" src="assets/img/hunters/ryzz-1600.webp?v=2026-11-13o-faces-r1903" srcset="assets/img/hunters/ryzz-960.webp?v=2026-11-13o-faces-r1903 960w, assets/img/hunters/ryzz-1600.webp?v=2026-11-13o-faces-r1903 1600w, assets/img/hunters/ryzz-2400.webp?v=2026-11-13o-faces-r1903 2400w" sizes="(max-width: 1280px) 100vw, 1240px" alt="Sparkle, the Storm Chaser" loading="lazy"><button class="h-expand" type="button" id="h-expand" aria-label="View full art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg></button></div>
+      <div class="info" aria-live="polite">
+        <div class="role" id="h-role" data-role="Skirmisher">Skirmisher</div>
+        <h3 id="h-name">Sparkle</h3>
+        <div class="title" id="h-title">The Storm Chaser</div>
+        <button class="h-more" type="button" id="h-more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/><path d="M15 8h-5M15 12h-5"/></svg><span>Abilities</span><span class="h-keys" aria-hidden="true"><b>LMB</b><b><svg viewBox="0 0 24 24"><path d="M12 3l9 9-9 9-9-9z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg></b><b>Shift</b><b>RMB</b><b>E</b><b>R</b></span></button>
+      </div>
+    </div>
+    <div class="pick-label" data-r><span class="swipe">Swipe for all 13 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+    <div class="pick" data-r id="h-pick" role="group" aria-label="Choose your Hunter"></div>
+    </div></div>
   </div>
 </section>
 
@@ -327,7 +292,7 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
 </svg>
 
-<script src="assets/site.js?v=247"></script>
+<script src="assets/site.js?v=248"></script>
 <script src="/assets/topbar.js?v=5" defer></script>
 </body>
 </html>

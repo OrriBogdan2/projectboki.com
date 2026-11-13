@@ -660,7 +660,7 @@ if (pick) {
       art.closest(".stage").dataset.h = id; // hook for per-Hunter CSS tweaks
       $("h-name").textContent = name;
       $("h-title").textContent = title;
-      $("h-role").textContent = role;
+      $("h-role").textContent = role; $("h-role").dataset.role = role;
       alignTitle();
       art.classList.remove("out");
     };
@@ -767,7 +767,7 @@ if (pick) {
     const label = (i) => {
       const [id, name, title, , role] = HUNTERS[i];
       art.alt = `${name}, ${title}`; stage.dataset.h = id;
-      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; alignTitle();
+      $("h-name").textContent = name; $("h-title").textContent = title; $("h-role").textContent = role; $("h-role").dataset.role = role; alignTitle();
     };
     const prep = (i, d) => {
       tgt = i; dir = d; const id = HUNTERS[i][0];
@@ -1346,7 +1346,7 @@ if (POSTHOG_KEY) {
     if (img.complete) img.classList.add("on");
     box.querySelector("h3").textContent = name;
     box.querySelector(".hm-title").textContent = title;
-    box.querySelector(".hm-role").textContent = role;
+    box.querySelector(".hm-role").textContent = role; box.querySelector(".hm-role").dataset.role = role;
     box.querySelector(".hm-style").textContent = "";
     clearTimeout(tour); kit = [];
     box.querySelector(".hm-bar").innerHTML = "";
