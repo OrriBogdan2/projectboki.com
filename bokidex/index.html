@@ -36,9 +36,9 @@ else if(c!=="light"&&c!=="dark"){try{h.setAttribute("data-theme",matchMedia("(pr
   --accent:#4c5fd5; --accent-soft:#e4e7fb; --hero-bg:#efe9dc; --sil:#cfc6b4; --sil-bg:#efe9dc; --shadow:rgba(60,40,10,.18);
   --hbase:linear-gradient(180deg,#fbf8f2,#ece5d6); --hglow:20%; --hshadow:drop-shadow(0 12px 16px rgba(60,40,10,.30));
   --scrim:rgba(247,243,236,.62); --cardsh:0 1px 2px rgba(60,40,10,.05),0 14px 32px -20px rgba(60,40,10,.32);
-  --ty-normal:#7d8594; --ty-fire:#e8552b; --ty-water:#2f7fe0; --ty-grass:#3fa050; --ty-spore:#a8689c; --ty-electric:#d9a50c; --ty-ice:#3fb5cf; --ty-rock:#8d7a55; --ty-psychic:#d6479a; --ty-flying:#6f8ee0; --ty-dragon:#5a4fd0; --ty-dark:#5a4a6e; --ty-poison:#9b45c4; --ty-bug:#82a014; --ty-steel:#6a8396; --ty-fairy:#e585b8; --ty-crystal:#25a89a; --ty-sound:#e0646f; --ty-wild:#7d8594;
+  --ty-normal:#7d8594; --ty-fire:#e8552b; --ty-water:#2f7fe0; --ty-grass:#3fa050; --ty-spore:#a8689c; --ty-electric:#d9a50c; --ty-ice:#3fb5cf; --ty-rock:#8d7a55; --ty-psychic:#d6479a; --ty-flying:#6f8ee0; --ty-dragon:#5a4fd0; --ty-ghost:#3fae96; --ty-dark:#4a4a9a; --ty-poison:#9b45c4; --ty-bug:#82a014; --ty-steel:#6a8396; --ty-fairy:#e585b8; --ty-crystal:#25a89a; --ty-sound:#e0646f; --ty-wild:#7d8594;
   /* hero glow colours: the projectboki.com Boki wall TYPE map (assets/site.js), keyed by Bokidex type */
-  --g-fire:#ff8a4c; --g-electric:#ffd84a; --g-ice:#9fe3ff; --g-dark:#a78bff; --g-crystal:#ff9df0; --g-poison:#a6ff3a; --g-water:#4fc3ff; --g-grass:#7dde6b; --g-sound:#ffb36b; --g-spore:#9ef0c0; --g-rock:#d2bf9f; --g-fairy:#d8d0ff; --g-bug:#ffcf5a; --g-steel:#e0a870; --g-dragon:#8fe8c8; --g-flying:#a8d4ff; --g-psychic:#b796ff; --g-normal:#f4e2c4;
+  --g-fire:#ff8a4c; --g-electric:#ffd84a; --g-ice:#9fe3ff; --g-ghost:#bcebdf; --g-dark:#ffb454; --g-crystal:#ff9df0; --g-poison:#a6ff3a; --g-water:#4fc3ff; --g-grass:#7dde6b; --g-sound:#ffb36b; --g-spore:#9ef0c0; --g-rock:#d2bf9f; --g-fairy:#d8d0ff; --g-bug:#ffcf5a; --g-steel:#e0a870; --g-dragon:#8fe8c8; --g-flying:#a8d4ff; --g-psychic:#b796ff; --g-normal:#f4e2c4;
   --display:"Lilita One","Baloo 2",ui-rounded,system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -48,7 +48,7 @@ else if(c!=="light"&&c!=="dark"){try{h.setAttribute("data-theme",matchMedia("(pr
   --accent:#8e9cff; --accent-soft:#242b4d; --hero-bg:#0c1427; --sil:#26314f; --sil-bg:#0c1427; --shadow:rgba(0,0,0,.55);
   --hbase:linear-gradient(180deg,#121a2d,#0b111f); --hglow:30%; --hshadow:drop-shadow(0 16px 22px rgba(0,0,0,.55));
   --scrim:rgba(4,7,16,.66); --cardsh:0 16px 36px -24px rgba(0,0,0,.8);
-  --ty-normal:#a9b0bd; --ty-fire:#ff8456; --ty-water:#5ca3ff; --ty-grass:#6cd07c; --ty-spore:#d08ec3; --ty-electric:#ffd84a; --ty-ice:#86e0f2; --ty-rock:#c0ad85; --ty-psychic:#ff7fc4; --ty-flying:#9db4ff; --ty-dragon:#8d83ff; --ty-dark:#9a86b8; --ty-poison:#c779f2; --ty-bug:#b4d23a; --ty-steel:#a5bccb; --ty-fairy:#ffa8d3; --ty-crystal:#55e0cf; --ty-sound:#ff8d96; --ty-wild:#a9b0bd}}
+  --ty-normal:#a9b0bd; --ty-fire:#ff8456; --ty-water:#5ca3ff; --ty-grass:#6cd07c; --ty-spore:#d08ec3; --ty-electric:#ffd84a; --ty-ice:#86e0f2; --ty-rock:#c0ad85; --ty-psychic:#ff7fc4; --ty-flying:#9db4ff; --ty-dragon:#8d83ff; --ty-ghost:#bcebdf; --ty-dark:#9a9aff; --ty-poison:#c779f2; --ty-bug:#b4d23a; --ty-steel:#a5bccb; --ty-fairy:#ffa8d3; --ty-crystal:#55e0cf; --ty-sound:#ff8d96; --ty-wild:#a9b0bd}}
 :root[data-theme="dark"]{
   color-scheme:dark;
   --bg:#0a1020; --panel:#111a30; --soft:#0c1427; --ink:#eaeefb; --mute:#8f9bb8; --line:#202b47; --tan:#d1ad7a;
@@ -56,7 +56,7 @@ else if(c!=="light"&&c!=="dark"){try{h.setAttribute("data-theme",matchMedia("(pr
   --accent:#8e9cff; --accent-soft:#242b4d; --hero-bg:#0c1427; --sil:#26314f; --sil-bg:#0c1427; --shadow:rgba(0,0,0,.55);
   --hbase:linear-gradient(180deg,#121a2d,#0b111f); --hglow:30%; --hshadow:drop-shadow(0 16px 22px rgba(0,0,0,.55));
   --scrim:rgba(4,7,16,.66); --cardsh:0 16px 36px -24px rgba(0,0,0,.8);
-  --ty-normal:#a9b0bd; --ty-fire:#ff8456; --ty-water:#5ca3ff; --ty-grass:#6cd07c; --ty-spore:#d08ec3; --ty-electric:#ffd84a; --ty-ice:#86e0f2; --ty-rock:#c0ad85; --ty-psychic:#ff7fc4; --ty-flying:#9db4ff; --ty-dragon:#8d83ff; --ty-dark:#9a86b8; --ty-poison:#c779f2; --ty-bug:#b4d23a; --ty-steel:#a5bccb; --ty-fairy:#ffa8d3; --ty-crystal:#55e0cf; --ty-sound:#ff8d96; --ty-wild:#a9b0bd}
+  --ty-normal:#a9b0bd; --ty-fire:#ff8456; --ty-water:#5ca3ff; --ty-grass:#6cd07c; --ty-spore:#d08ec3; --ty-electric:#ffd84a; --ty-ice:#86e0f2; --ty-rock:#c0ad85; --ty-psychic:#ff7fc4; --ty-flying:#9db4ff; --ty-dragon:#8d83ff; --ty-ghost:#bcebdf; --ty-dark:#9a9aff; --ty-poison:#c779f2; --ty-bug:#b4d23a; --ty-steel:#a5bccb; --ty-fairy:#ffa8d3; --ty-crystal:#55e0cf; --ty-sound:#ff8d96; --ty-wild:#a9b0bd}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
@@ -726,7 +726,7 @@ document.addEventListener("click",e=>{const t=e.target;
 const pad=n=>String(n).padStart(3,"0");
 const slugOf=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 let D=[], byId={}, formOf={}, META=null, fi=0, aliases={}, built=0, dexErr="", ovl={}, aspect={}, sel=null, tab="entry", view="dex", lastSel=null, gridKey="", vTab=null, zoomList=[], zoomI=0;
-const TYPES=["Normal","Fire","Water","Grass","Spore","Electric","Ice","Rock","Psychic","Flying","Dragon","Dark","Poison","Bug","Steel","Fairy","Crystal","Sound"];
+const TYPES=["Normal","Fire","Water","Grass","Spore","Electric","Ice","Rock","Psychic","Flying","Dragon","Dark","Ghost","Poison","Bug","Steel","Fairy","Crystal","Sound"];
 let tsel=new Set(), tmode="any", DEXM=null, mtab="about", sx="m", sxFor="";
 const SIL='<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="52" cy="66" rx="27" ry="19"/><circle cx="40" cy="36" r="16"/><path d="M27 27 22 8l15 9zM53 24 60 6 66 26z"/><path d="M76 62c14-2 20-14 14-26-1 10-6 16-16 17z"/><rect x="34" y="78" width="8" height="12" rx="3"/><rect x="62" y="78" width="8" height="12" rx="3"/></svg>';
 /* An entry can hold alternate final forms (entry.forms). Each form has its own id, name, art, glb and detail; the entry's own fields are the first form's.
