@@ -598,7 +598,7 @@ details.qk p{font-size:1rem;line-height:1.55;margin:10px 0 0}
 
 <!-- Shared top bar (site repo: tools/bokidex/patch.py + assets/topbar.js). -->
 <script>document.documentElement.classList.add("tb-dex")</script>
-<style>html.tb-dex{--tbh:52px;--tbo:var(--tbh)}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>
+<style>html.tb-dex{--tbh:72px;--tbo:var(--tbh)}@media (max-width:720px){html.tb-dex{--tbh:64px}}html.tb-dex.tb-hide{--tbo:0px}html.tb-dex body{padding-top:calc(var(--tbh) + env(safe-area-inset-top,0px))}</style>
 <!-- UI fixes 11-11 (site repo: tools/bokidex/patch.py) bx-fix-1111 -->
 <style>
 /* card badge: one fixed-height pill for every variant (N forms, male/female, both) */
@@ -1232,7 +1232,7 @@ async function ownerUnlock(k){
   },{passive:true});
 })();
 </script>
-<script src="/assets/topbar.js?v=4" defer></script>
+<script src="/assets/topbar.js?v=5" defer></script>
 <script>
 /* bx-fix-1111 (site repo: tools/bokidex/patch.py): a tap on a card's badge opens the female look, or the other form. */
 document.addEventListener("click",ev=>{
