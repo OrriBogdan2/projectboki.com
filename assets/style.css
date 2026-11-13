@@ -246,7 +246,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .bk-pick button[aria-pressed="true"] { opacity: 1; border-color: var(--g); box-shadow: 0 0 0 3px color-mix(in srgb, var(--g) 25%, transparent), 0 10px 30px -10px color-mix(in srgb, var(--g) 60%, transparent); }
 .bk-pick button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .band { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); padding: 20px 22px 20px 28px; border-radius: var(--r); border: 1px solid rgba(255,255,255,.1); background: linear-gradient(100deg, rgba(88,101,242,.22), rgba(226,92,255,.12) 55%, rgba(255,255,255,.03)); }
-.how { padding: calc(var(--sec) * .6) var(--pad) calc(var(--sec) * .8); }
+.how { padding: calc(var(--sec) * .6) var(--pad) calc(var(--sec) * .25); }
 /* The three steps sit side by side on one screen (one column on phones): a 4:3 picture, the step, two short lines */
 .how-stack { width: min(var(--max), 100%); margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 24px); }
 .step-card { position: relative; height: 100%; display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: var(--bg-2); }
@@ -1340,7 +1340,7 @@ html.lite .rare-egg .re-body, html.lite .rare-egg .re-glint { animation: none; }
 
 /* ---------- Page order (11-11): match cards, Hunters, then the Boki. The Boki section no longer follows the footage
    panel, so it carries its own solid background and its own top spacing. ---------- */
-.boki { position: relative; z-index: 2; background: var(--bg); padding-top: calc(var(--sec) * .9); }
+.boki { position: relative; z-index: 2; background: var(--bg); padding-top: calc(var(--sec) * .55); }
 
 /* ---------- "Over 200 Boki to find." now stands alone (the card wall above it is gone). A few tiles are Boki you can
    already meet, in colour among the silhouettes; the rows keep their height before the data arrives. ---------- */
