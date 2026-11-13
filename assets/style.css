@@ -1552,3 +1552,19 @@ html.su-signed .faq-join { display: none; }
     -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.6) 10%, #000 22%), linear-gradient(180deg, transparent 0, #000 13%, #000 87%, transparent 100%); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.6) 10%, #000 22%), linear-gradient(180deg, transparent 0, #000 13%, #000 87%, transparent 100%); mask-composite: intersect; }
   .join-bg { background: radial-gradient(55% 50% at 28% 30%, rgba(132,96,214,.14), transparent 70%), radial-gradient(40% 36% at 20% 72%, rgba(96,200,160,.06), transparent 70%), #070b14; }
 }
+
+/* ---------- Join block PC v2 (11-13, owner): picture runs full height with only a left fade (no closing in on black),
+   egg row moves under the buttons, more air around the text. ---------- */
+@media (min-width: 1101px) {
+  .join::after { background: linear-gradient(180deg, var(--bg) 0%, transparent 5%, transparent 95%, var(--bg) 100%); }
+  .join-bg img { top: 0; height: 100%; right: -9%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.6) 10%, #000 22%); -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.6) 10%, #000 22%); mask-composite: add; }
+  .join > .wrap > * { order: 1; }
+  .join > .wrap > .join-cta { order: 2; }
+  .join > .wrap > .su-prize { order: 3; }
+  .join h2 { margin-bottom: 30px; }
+  .join .join-cta { gap: 16px; }
+  .join .su-perk.su-prize { margin: 30px 0 0; }
+  .join .su-perk.su-prize img.rare-egg { width: 84px; height: 84px; }
+}
