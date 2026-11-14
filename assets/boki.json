@@ -710,6 +710,21 @@
    "shot": false
   },
   {
+   "id": "reapant",
+   "name": "Reapant",
+   "types": [
+    "bug",
+    "dark"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Reapant is a Shinobant grown into a dark, hooded knight with wings and a scythe for each arm.",
+   "v": "h1794333162",
+   "shot": false
+  },
+  {
    "id": "phonodrake",
    "name": "Phonodrake",
    "types": [
@@ -768,21 +783,6 @@
    "shot": false
   },
   {
-   "id": "reapant",
-   "name": "Reapant",
-   "types": [
-    "bug",
-    "dark"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Reapant is a Shinobant grown into a dark, hooded knight with wings and a scythe for each arm.",
-   "v": "h1794333162",
-   "shot": false
-  },
-  {
    "id": "chandelapi",
    "name": "Candelapi",
    "types": [
@@ -810,21 +810,6 @@
    "into": [],
    "desc": "Thundrich's body is a black thunderhead, topped with a crest of red quills that crackle with lightning.",
    "v": "h1794431350",
-   "shot": false
-  },
-  {
-   "id": "scarabit",
-   "name": "Scarabit",
-   "types": [
-    "psychic",
-    "fairy"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Scarabit is an Orbitle that opened its shell and never closed it, a dark scarab circled by slow rings and tiny drifting moons.",
-   "v": "h1794333164",
    "shot": false
   },
   {
@@ -916,6 +901,21 @@
    "shot": false
   },
   {
+   "id": "gravitank",
+   "name": "Gravidon",
+   "types": [
+    "psychic",
+    "bug"
+   ],
+   "stage": 2,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Small stones drift in a slow ring around Gravidon, caught by a pull much stronger than the one it had as a Gravadillo.",
+   "v": "h1794333143",
+   "shot": false
+  },
+  {
    "id": "cisternmander",
    "name": "Vatmander",
    "types": [
@@ -973,10 +973,6 @@
   {
    "t": "psychic",
    "sil": "gravadillo"
-  },
-  {
-   "t": "psychic",
-   "sil": "gravitank"
   },
   {
    "t": "fairy",
@@ -1455,15 +1451,19 @@
    "sil": "gramofrill"
   },
   {
-   "t": "psychic",
+   "t": "bug",
    "sil": "gravigrub"
   },
   {
-   "t": "psychic",
+   "t": "bug",
    "sil": "orbitle"
   },
   {
-   "t": "psychic",
+   "t": "bug",
+   "sil": "scarabit"
+  },
+  {
+   "t": "bug",
    "sil": "meteorab"
   },
   {
