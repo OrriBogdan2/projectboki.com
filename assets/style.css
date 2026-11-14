@@ -540,14 +540,19 @@ h1, h2, h3, .band p { text-wrap: balance; }
 html.lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
 /* Hunter details: the splash on one side, the kit on the other as an ability bar with one ability in focus */
-.hm { position: fixed; inset: 0; z-index: 79; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); background: rgba(4,7,14,.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transition: opacity .22s ease; --g: #9a7dff; }
-.hm.show { opacity: 1; }
+.hm { position: fixed; inset: 0; z-index: 79; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); --g: #9a7dff; }
+.hm.prep { visibility: hidden; } /* laid out to measure, shown once the art is decoded */
+.hm-bg { position: absolute; inset: 0; background: rgba(4,7,14,.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 html.hm-open { overflow: hidden; }
+/* body's overflow-x: hidden would make body the scroller once html is hidden, and the pinned Hunter stage would jump behind the panel */
+html:is(.hm-open, .lb-open) body { overflow-x: clip; }
+.stage.hm-src .shot { visibility: hidden; } /* the splash has lifted off into the details view */
 .hm-card { position: relative; width: min(1240px, 100%); height: min(720px, calc(100dvh - 2 * clamp(10px, 3vw, 40px))); display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.12);
-  background: #0f1626; box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); transform: translateY(14px) scale(.98); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
-.hm.show .hm-card { transform: none; }
+  background: #0f1626; box-shadow: 0 40px 100px -30px rgba(0,0,0,.9); }
 .hm-art { position: relative; min-height: 0; background: #070b14; cursor: zoom-in; touch-action: pan-y; }
 .hm-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: 0; transition: opacity .3s ease; }
+.hm-art img.fly { position: fixed; margin: 0; z-index: 1; } /* flying from the splash into the panel (site.js animates its box) */
+.hm-art .hm-ghost { position: absolute; inset: 0; }
 .hm-art img.on { opacity: 1; }
 .hm-txt { min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; justify-content: center; padding: 40px 40px 36px; scrollbar-width: thin; }
 .hm-role, .hm-kind { font-family: "Lilita"; letter-spacing: .08em; text-transform: uppercase; color: var(--g); }
@@ -600,7 +605,7 @@ html.hm-open { overflow: hidden; }
   .hm-an { font-size: 32px; }
   .hm-al { font-size: 17px; }
 }
-@media (prefers-reduced-motion: reduce) { .hm, .hm-card, .hm-art img { transition: none; } .hm-ab.sw > *, .hm-bar.auto button::after { animation: none !important; } .hm-bar.auto button[aria-pressed="true"]::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .hm-art img { transition: none; } .hm-ab.sw > *, .hm-bar.auto button::after { animation: none !important; } .hm-bar.auto button[aria-pressed="true"]::after { display: none; } }
 
 .head h2.h-crumble { background: none; color: #fff; }
 /* Boki heading: white melting into lavender */

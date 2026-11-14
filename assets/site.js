@@ -1125,7 +1125,8 @@ function arrowKeys(section, strip, go) {
   if (!ex) return;
   let box, at = 0, back = null, KIT = null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=3").then((r) => r.json()).catch(() => ({})));
+  let KITS = null; // hunters.json once it is in
+  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=3").then((r) => r.json()).catch(() => ({})).then((d) => (KITS = d)));
   // The kit shows as an ability bar: six slots, one in focus with its name and line. Left alone it steps through
   // them; the first hover, tap or number key hands it over for as long as the panel is open.
   const DWELL = 4200, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1148,7 +1149,7 @@ function arrowKeys(section, strip, go) {
     box = document.createElement("div");
     box.className = "hm"; box.hidden = true;
     box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Hunter details");
-    box.innerHTML = `<div class="hm-card"><div class="hm-art" title="View full art"><img alt="">
+    box.innerHTML = `<div class="hm-bg"></div><div class="hm-card"><div class="hm-art" title="View full art"><img alt=""><img class="hm-ghost on" alt="" aria-hidden="true" hidden>
       <button class="bk-arrow prev" type="button" aria-label="Previous Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="bk-arrow next" type="button" aria-label="Next Hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       <div class="hm-txt"><div class="hm-role"></div><h3></h3><div class="hm-title"></div><p class="hm-style"></p>
@@ -1156,7 +1157,7 @@ function arrowKeys(section, strip, go) {
         <div class="hm-ab" aria-live="polite"><div class="hm-kind"></div><div class="hm-an"></div><p class="hm-al"></p></div></div>
       <button class="lb-x" type="button" aria-label="Close">&times;</button></div>`;
     document.body.appendChild(box);
-    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+    box.addEventListener("click", (e) => { if (e.target === box || e.target.classList.contains("hm-bg")) close(); });
     box.querySelector(".lb-x").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
     box.querySelector(".next").addEventListener("click", () => fill(at + 1));
@@ -1173,53 +1174,152 @@ function arrowKeys(section, strip, go) {
       else if (/^[1-6]$/.test(e.key)) pickAb(+e.key - 1, true);
     });
   };
-  const fill = (i) => {
-    at = (i + HUNTERS.length) % HUNTERS.length;
-    const [id, name, title, , role] = HUNTERS[at], img = box.querySelector(".hm-art img");
-    img.classList.remove("on");
-    img.onload = () => img.classList.add("on");
-    img.srcset = `assets/img/hunters/${id}-960.webp?v=${ART_V} 960w, assets/img/hunters/${id}-1600.webp?v=${ART_V} 1600w`;
-    img.sizes = "(max-width: 1000px) 100vw, 760px";
-    img.src = `assets/img/hunters/${id}-1600.webp?v=${ART_V}`; img.alt = `${name}, ${title}`;
-    if (img.complete) img.classList.add("on");
+  // Opening and closing. The view grows out of the splash on the stage (the card starts clipped to the splash's box,
+  // the picture inside scaled to match it, and both open out together; the dimmed backdrop fades in under it) and
+  // shrinks back into it on close. Nothing shows until the art is decoded and the kit is in, so text never beats the
+  // art and the kit never pushes the layout. With no splash to grow from (closed on another Hunter, stage off screen)
+  // it fades and scales; with reduced motion it only fades.
+  const onStage = () => (stage && stage.dataset.h) || HUNTERS[0][0]; // the Hunter the stage shows (unset until the first pick)
+  const settle = (p, ms) => Promise.race([Promise.resolve(p).catch(() => {}), new Promise((r) => setTimeout(r, ms))]);
+  const ART = (id) => `assets/img/hunters/${id}-960.webp?v=${ART_V} 960w, assets/img/hunters/${id}-1600.webp?v=${ART_V} 1600w`;
+  const words = (i) => { // the text side for Hunter i (KITS: hunters.json once it is in)
+    const [id, name, title, , role] = HUNTERS[i], h = KITS && KITS[id];
     box.querySelector("h3").textContent = name;
     box.querySelector(".hm-title").textContent = title;
     box.querySelector(".hm-role").textContent = role; box.querySelector(".hm-role").dataset.role = role;
-    box.querySelector(".hm-style").textContent = "";
-    clearTimeout(tour); kit = [];
-    box.querySelector(".hm-bar").innerHTML = "";
+    box.querySelector(".hm-style").textContent = h ? h.style : "";
+    clearTimeout(tour); kit = h ? h.kit : [];
+    box.querySelector(".hm-bar").innerHTML = kit.map((k) =>
+      `<button type="button" class="k-${k.kind.toLowerCase()}" aria-pressed="false" aria-label="${esc(k.name)}, ${esc(k.kind)}">${slot(k)}</button>`).join("");
     box.querySelectorAll(".hm-kind, .hm-an, .hm-al").forEach((el) => { el.textContent = ""; });
+    box.style.setProperty("--g", (h && h.color) || "#9a7dff");
     box.querySelector(".hm-card").scrollTop = 0;
-    load().then((all) => {
-      const h = all[id]; if (!h || HUNTERS[at][0] !== id) return;
-      box.style.setProperty("--g", h.color || "#9a7dff");
-      box.querySelector(".hm-style").textContent = h.style;
-      kit = h.kit;
-      box.querySelector(".hm-bar").innerHTML = kit.map((k) =>
-        `<button type="button" class="k-${k.kind.toLowerCase()}" aria-pressed="false" aria-label="${esc(k.name)}, ${esc(k.kind)}">${slot(k)}</button>`).join("");
-      pickAb(0);
+    if (kit.length) pickAb(0);
+  };
+  let tok = 0, state = "closed", anims = [], phase = 0, ghostA = null;
+  // Fill the view for Hunter i. Resolves once the art is decoded and the kit is in (or ~0.7s has passed).
+  // While the view is up, the old picture stays on top (a copy of it, the "ghost") until the new one is decoded;
+  // then the text changes and the old picture fades off it in the same frame.
+  const fill = async (i) => {
+    at = (i + HUNTERS.length) % HUNTERS.length;
+    const my = ++tok, [id, name, title] = HUNTERS[at], live = !box.hidden && state !== "prep";
+    const img = box.querySelector(".hm-art img"), ghost = box.querySelector(".hm-ghost"), sa = document.getElementById("h-art");
+    if (live && (ghost.hidden || ghostA)) { // (a pick while the last one is still fading off: start from what shows now)
+      if (ghostA) { ghostA.cancel(); ghostA = null; ghost.hidden = true; }
+      ghost.src = img.currentSrc || img.src; await settle(ghost.decode(), 250);
+      if (my !== tok && ghost.hidden) return;
+      ghost.hidden = false;
+    }
+    if (!live) img.classList.remove("on");
+    img.onload = () => img.classList.add("on");
+    img.alt = `${name}, ${title}`; img.sizes = "(max-width: 1000px) 100vw, 760px";
+    if (!live && sa && onStage() === id && sa.complete && sa.naturalWidth && /\/hunters\//.test(sa.currentSrc)) {
+      img.removeAttribute("srcset"); img.src = sa.currentSrc; // the splash the user pressed: already loaded, as sharp or sharper
+    } else { img.srcset = ART(id); img.src = `assets/img/hunters/${id}-1600.webp?v=${ART_V}`; }
+    await Promise.all([settle(img.decode(), 700), settle(load(), 700)]);
+    if (my !== tok) return;
+    if (img.complete && img.naturalWidth && !img.classList.contains("on")) { // decoded: shown at once (the fade is only for art that lands late)
+      img.style.transition = "none"; img.classList.add("on"); void img.offsetWidth; img.style.transition = "";
+    }
+    words(at);
+    if (!KITS) load().then(() => { if (my === tok) words(at); }); // (a slow kit file: it fills in when it lands)
+    if (live) {
+      const ms = calm ? 0 : 200;
+      const a = (ghostA = ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: "ease-out", fill: "forwards" }));
+      a.onfinish = () => { if (ghostA !== a) return; ghost.hidden = true; a.cancel(); ghostA = null; };
+      if (ms) box.querySelector(".hm-txt").animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: ms, easing: "ease-out" });
+    }
+  };
+  // Where the view grows from: the splash on the stage, if it shows the same Hunter and is on screen. The picture
+  // itself flies (fixed, its box animated, so object-fit re-crops it smoothly from the splash's frame to the art
+  // panel's) while the card's window opens from the splash's box out to the whole card around it.
+  const from = () => {
+    const sa = document.getElementById("h-art");
+    if (!sa || !stage || onStage() !== HUNTERS[at][0]) return null;
+    const I = sa.getBoundingClientRect(), S = stage.getBoundingClientRect();
+    const W = { x: Math.max(I.left, S.left), y: Math.max(I.top, S.top), r: Math.min(I.right, S.right), b: Math.min(I.bottom, S.bottom) };
+    const seen = Math.max(0, Math.min(W.b, innerHeight) - Math.max(W.y, 0)) / Math.max(1, W.b - W.y);
+    if (W.r - W.x < 40 || W.b - W.y < 40 || seen < 0.35) return null;
+    const card = box.querySelector(".hm-card"), C = card.getBoundingClientRect(), A = box.querySelector(".hm-art").getBoundingClientRect();
+    const R = parseFloat(getComputedStyle(stage).borderTopLeftRadius) || 0, cs = getComputedStyle(card), cr = parseFloat(cs.borderTopLeftRadius) || 0;
+    const bw = parseFloat(cs.borderTopWidth) || 0, px = (v) => `${v.toFixed(1)}px`;
+    const rad = (v) => [v, v, v, v].map(px).join(" ");
+    return {
+      clip: `inset(${px(W.y - C.top)} ${px(C.right - W.r)} ${px(C.bottom - W.b)} ${px(W.x - C.left)} round ${px(R)})`,
+      clip1: `inset(0px 0px 0px 0px round ${px(cr)})`,
+      img: { left: px(I.left), top: px(I.top), width: px(I.width), height: px(I.height), borderRadius: rad(R) }, // (the stage's zoom: the window crops it, as the stage does)
+      // (the art panel's own corners: rounded where it meets the card's rounded corners)
+      img1: { left: px(A.left), top: px(A.top), width: px(A.width), height: px(A.height),
+        borderRadius: [Math.abs(A.left - C.left - bw) < 2 && Math.abs(A.top - C.top - bw) < 2 ? cr - bw : 0, Math.abs(C.right - bw - A.right) < 2 && Math.abs(A.top - C.top - bw) < 2 ? cr - bw : 0,
+          Math.abs(C.right - bw - A.right) < 2 && Math.abs(C.bottom - bw - A.bottom) < 2 ? cr - bw : 0, Math.abs(A.left - C.left - bw) < 2 && Math.abs(C.bottom - bw - A.bottom) < 2 ? cr - bw : 0].map((v) => px(Math.max(0, v))).join(" ") },
+    };
+  };
+  const motion = (opening) => {
+    const card = box.querySelector(".hm-card"), img = box.querySelector(".hm-art img"), o = { duration: calm ? 140 : opening ? 340 : 280, fill: "both", direction: opening ? "normal" : "reverse",
+      easing: opening ? "cubic-bezier(.32,.72,0,1)" : "cubic-bezier(.8,0,.6,1)" }; // (closing plays it backwards: this reads as an ease-in-out)
+    const out = [box.querySelector(".hm-bg").animate([{ opacity: 0 }, { opacity: 1 }], { ...o, easing: "linear" })];
+    const g = !calm && from();
+    if (calm) out.push(card.animate([{ opacity: 0 }, { opacity: 1 }], o));
+    else if (!g) out.push(card.animate([{ opacity: 0, transform: "scale(.96)" }, { opacity: 1, transform: "none" }], o));
+    else {
+      // Opening, the splash "lifts off" the stage instead of leaving a copy behind. Closing, the splash is back under the
+      // card from the start (hidden by it) and the picture and the card fade off it at the very end, so its name and shading return softly.
+      stage.classList.toggle("hm-src", opening);
+      img.classList.add("fly");
+      const fade = (el) => { // (closing: the card and the art panel's dark grounds go clear at the end too, over the splash)
+        const bg = getComputedStyle(el).backgroundColor, clear = bg.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
+        return [{ backgroundColor: clear }, { backgroundColor: bg, offset: 0.15 }, { backgroundColor: bg }];
+      };
+      out.push(card.animate([{ clipPath: g.clip }, { clipPath: g.clip1 }], o));
+      if (!opening) [card, box.querySelector(".hm-art")].forEach((el) => out.push(el.animate(fade(el), o)));
+      out.push(img.animate(opening ? [g.img, g.img1] : [{ ...g.img, opacity: 0 }, { opacity: 1, offset: 0.15 }, { ...g.img1, opacity: 1 }], o));
+      box.querySelectorAll(".hm-txt, .hm-card > .lb-x, .hm-art .bk-arrow").forEach((el) =>
+        out.push(el.animate([{ opacity: 0 }, { opacity: 0, offset: 0.3 }, { opacity: 1 }], { ...o, easing: "linear" })));
+    }
+    return out;
+  };
+  const settled = () => { // the running open or close has ended (and was not turned round on the way)
+    const my = ++phase;
+    Promise.all(anims.map((a) => a.finished.catch(() => {}))).then(() => {
+      if (my !== phase) return;
+      if (state === "closing") {
+        state = "closed"; box.hidden = true; document.documentElement.classList.remove("hm-open");
+        if (stage) stage.classList.remove("hm-src");
+      } else state = "open";
+      anims.forEach((a) => a.cancel()); anims = []; box.querySelector(".hm-art img").classList.remove("fly");
     });
   };
-  const open = () => {
+  const open = async () => {
+    if (state === "open" || state === "opening" || state === "prep") return;
+    if (state === "closing") { state = "opening"; anims.forEach((a) => a.reverse()); settled(); box.querySelector(".lb-x").focus({ preventScroll: true }); return; }
     if (!box) build();
-    back = document.activeElement; hands = false;
-    const cur = (stage && stage.dataset.h) || HUNTERS[0][0];
-    fill(Math.max(0, HUNTERS.findIndex((h) => h[0] === cur)));
-    box.hidden = false; document.documentElement.classList.add("hm-open");
-    requestAnimationFrame(() => box.classList.add("show"));
+    back = document.activeElement; hands = false; state = "prep";
+    const cur = onStage();
+    box.classList.add("prep"); box.hidden = false; // laid out (to measure) but not shown until the art is ready
+    await fill(Math.max(0, HUNTERS.findIndex((h) => h[0] === cur)));
+    if (state !== "prep") return;
+    state = "opening"; box.classList.remove("prep"); document.documentElement.classList.add("hm-open");
+    anims = motion(true); settled();
     box.querySelector(".lb-x").focus({ preventScroll: true });
     if (window.posthog && posthog.capture) posthog.capture("hunter_details", { hunter: HUNTERS[at][0] });
   };
   function close() {
-    box.classList.remove("show"); document.documentElement.classList.remove("hm-open"); clearTimeout(tour);
-    setTimeout(() => { box.hidden = true; }, 220);
+    if (state === "closed" || state === "closing") return;
+    clearTimeout(tour);
     if (back) back.focus({ preventScroll: true });
+    if (state === "prep") { state = "closed"; tok++; box.hidden = true; box.classList.remove("prep"); return; }
+    if (state === "opening") { state = "closing"; anims.forEach((a) => a.reverse()); settled(); return; }
+    state = "closing"; anims = motion(false); settled();
   }
   ex.setAttribute("aria-label", "Hunter details and full art");
   ex.addEventListener("click", (e) => { e.stopPropagation(); open(); });
   const more = document.getElementById("h-more"); // the scroll under the name: the way in
   if (more) { more.addEventListener("click", (e) => { e.stopPropagation(); open(); }); more.addEventListener("pointerenter", load, { once: true }); }
   ex.addEventListener("pointerenter", load, { once: true });
+  if (stage && "IntersectionObserver" in window) { // the kit file (12 KB) comes in as the stage nears, so the first open doesn't wait for it
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); load(); } }, { rootMargin: "300px" });
+    io.observe(stage);
+  }
   // Touch screens: a tap on the Hunter's picture opens the same full view (a sideways pull still slides to the next one)
   if (stage) {
     let pt = "";
