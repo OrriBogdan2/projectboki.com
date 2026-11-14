@@ -384,6 +384,31 @@ if "chiprows-1114" not in s and "</head>" in s:
     s = s.replace("</head>", '<style id="chiprows-1114">.mhead .mh{flex:0 0 100%;margin-bottom:0}'
         '.mhead .mtypes{flex:0 0 100%;flex-wrap:wrap}.mhead .chip,.mhead .lchip{white-space:nowrap}</style>\n</head>', 1)
 
+# 11. Light-mode glow, softened (owner default 11-10, bokidex-glow-1114). LIGHT ONLY: a faint type-colour tint on the art panel,
+#     a soft ground shadow under the creature, a smaller hover/focus glow. Dark mode is untouched (every rule is scoped to the
+#     light theme: data-theme="light", or no data-theme while the OS is not dark). Legendary gold borders/rings are not changed;
+#     only the big coloured hover glow on legendary cards is shrunk like the others. Pure CSS, inserted once before </head>.
+if "glow-1114" not in s and "</head>" in s:
+    _rules = (
+        "{--hglow:9%}"
+        " X .dcard .hero:not(.opq):not(.sil){background:radial-gradient(ellipse 44% 7% at 50% 89%,rgba(60,40,10,.13),transparent),"
+        "radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--g,var(--g-wild)) var(--hglow),transparent),transparent 62%),var(--hbase)}"
+        " X .dcard{--cardsh:0 1px 2px rgba(60,40,10,.05),0 10px 24px -18px rgba(60,40,10,.26)}"
+        "@media (hover:hover){"
+        " X .dcard:hover{border-color:color-mix(in srgb,var(--g,var(--ty)) 30%,var(--line));box-shadow:0 12px 26px -20px color-mix(in srgb,var(--g,var(--ty)) 28%,transparent)}"
+        " X .dcard.lg:not(.on):hover{border-color:var(--lt);box-shadow:0 0 0 1px color-mix(in srgb,var(--lt) 45%,transparent),0 12px 26px -20px color-mix(in srgb,var(--g,var(--ty)) 28%,transparent)}}"
+        " X .dcard:not(.lg:not(.on)):focus-visible{box-shadow:0 12px 26px -20px color-mix(in srgb,var(--g,var(--ty)) 28%,transparent)}"
+    )
+    def _scope(sel):  # first X is the :root selector itself (the --hglow var), later X are descendants
+        parts = _rules.split(" X ")
+        out = sel + parts[0]
+        for r in parts[1:]:
+            out += " " + sel + " " + r
+        return out
+    _css = _scope(':root[data-theme="light"]')
+    _css += "@media (prefers-color-scheme:light){" + _scope(':root:not([data-theme="dark"])') + "}"
+    s = s.replace("</head>", '<style id="glow-1114">' + _css + '</style>\n</head>', 1)
+
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
 else:
