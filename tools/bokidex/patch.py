@@ -377,6 +377,13 @@ if "lgOn" not in s:
         if _r.returncode == 0: s = open(_f, encoding="utf-8").read()
         else: print("WARN legend-tiers.diff did not apply (export changed?): " + (_r.stdout + _r.stderr)[:300], file=sys.stderr)
 
+# 9g. Detail header rows (owner 11-14): name on its own line, type chips always on the row BELOW the name, the legendary
+#     chip on its own row below the types, so no row ever runs long (Cindermaw had types beside the name, Enigmane had
+#     the legendary chip beside the types). Pure CSS, inserted once before </head>.
+if "chiprows-1114" not in s and "</head>" in s:
+    s = s.replace("</head>", '<style id="chiprows-1114">.mhead .mh{flex:0 0 100%;margin-bottom:0}'
+        '.mhead .mtypes{flex:0 0 100%;flex-wrap:wrap}.mhead .chip,.mhead .lchip{white-space:nowrap}</style>\n</head>', 1)
+
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
 else:
