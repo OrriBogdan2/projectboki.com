@@ -538,6 +538,8 @@ h1, h2, h3, .band p { text-wrap: balance; }
 .lb-x { all: unset; position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; font-size: 30px; line-height: 1; color: #fff; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); cursor: pointer; }
 .lb-x:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 html.lb-open { overflow: hidden; }
+.lb .bk-arrow { display: none; color: #fff; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); z-index: 1; }
+.lb.lb-nav .bk-arrow { display: grid; }
 @media (prefers-reduced-motion: reduce) { .lb, .lb img { transition: none; } }
 /* Hunter details: the splash on one side, the kit on the other as an ability bar with one ability in focus */
 .hm { position: fixed; inset: 0; z-index: 79; display: grid; place-items: center; padding: clamp(10px, 3vw, 40px); --g: #9a7dff; }

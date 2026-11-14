@@ -192,7 +192,7 @@ if (heroIn && !calm) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const ART_V = "2026-11-14x18"; // bump when a Hunter splash changes
+const ART_V = "2026-11-14x28"; // bump when a Hunter splash changes
 const HUNTERS = [
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
@@ -1089,18 +1089,24 @@ function arrowKeys(section, strip, go) {
     if (!img) return null;
     return img.dataset.full || (img.currentSrc || img.src).replace(/-(960|1280|1600)\.webp/, (m, w) => w === "1280" ? "-2560.webp" : "-2400.webp");
   };
-  let lb, pic, last;
+  let lb, pic, last, step = null; // step: set when the art came from the Hunter details view (arrows browse Hunters)
+  const go = (d) => { const r = step && step(d); if (r) { pic.src = r[0]; pic.alt = r[1]; } };
   const build = () => {
     lb = document.createElement("div");
     lb.className = "lb"; lb.hidden = true;
     lb.setAttribute("role", "dialog"); lb.setAttribute("aria-modal", "true"); lb.setAttribute("aria-label", "Full-size art");
-    lb.innerHTML = '<img alt=""><button class="lb-x" type="button" aria-label="Close">&times;</button>';
+    const arw = (c, l, d) => `<button class="bk-arrow ${c}" type="button" aria-label="${l}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+    lb.innerHTML = '<img alt=""><button class="lb-x" type="button" aria-label="Close">&times;</button>' + arw("prev", "Previous Hunter", "M15 5l-7 7 7 7") + arw("next", "Next Hunter", "M9 5l7 7-7 7");
     pic = lb.querySelector("img");
     document.body.appendChild(lb);
-    lb.addEventListener("click", close);
+    lb.querySelector(".prev").addEventListener("click", (e) => { e.stopPropagation(); go(-1); });
+    lb.querySelector(".next").addEventListener("click", (e) => { e.stopPropagation(); go(1); });
+    swipe(lb, (d) => go(d)); // phones: swipe for the next or previous Hunter
+    lb.addEventListener("click", () => { if (lb._swiped && Date.now() - lb._swiped < 500) return; close(); });
   };
-  const open = (src, alt) => {
+  const open = (src, alt, stepper) => {
     if (!lb) build();
+    step = stepper || null; lb.classList.toggle("lb-nav", !!step);
     last = document.activeElement;
     pic.src = src; pic.alt = alt || "";
     lb.hidden = false; document.documentElement.classList.add("lb-open");
@@ -1112,7 +1118,11 @@ function arrowKeys(section, strip, go) {
     setTimeout(() => { lb.hidden = true; pic.removeAttribute("src"); }, 220);
     if (last) last.focus({ preventScroll: true });
   }
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb && !lb.hidden) close(); });
+  document.addEventListener("keydown", (e) => {
+    if (!lb || lb.hidden) return;
+    if (e.key === "Escape") close();
+    else if (step && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { e.preventDefault(); go(e.key === "ArrowRight" ? 1 : -1); }
+  });
   const targets = ".step-media, .pk-grid a, .pk-key, .hm-art"; // the Hunter splash opens from its expand button (the details view), then its art
   document.addEventListener("click", (e) => {
     const t = e.target.closest(targets);
@@ -1121,7 +1131,7 @@ function arrowKeys(section, strip, go) {
     const src = full(t); if (!src) return;
     e.preventDefault();
     const img = t.matches("img") ? t : t.querySelector("img");
-    open(src, img && img.alt);
+    open(src, img && img.alt, t.matches(".hm-art") ? window.bokiHunterStep : null);
   });
 })();
 
@@ -1168,6 +1178,8 @@ function arrowKeys(section, strip, go) {
     box.querySelector(".lb-x").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
     box.querySelector(".next").addEventListener("click", () => fill(at + 1));
+    // the full-size art (tap the splash) browses too: step the details view and hand back the new full art
+    window.bokiHunterStep = (d) => { fill(at + d); const [id, name, title] = HUNTERS[at]; return [`assets/img/hunters/${id}-2400.webp?v=${ART_V}`, `${name}, ${title}`]; };
     // phones: swipe anywhere on the card (the art or the kit) for the next or previous Hunter
     swipe(box.querySelector(".hm-card"), (d) => { box.querySelector(".hm-art")._swiped = Date.now(); fill(at + d); });
     const bar = box.querySelector(".hm-bar"); bar.style.setProperty("--dwell", DWELL + "ms");
