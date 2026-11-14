@@ -282,9 +282,9 @@
       bar.appendChild(h("a", { class: "tb-brand", href: "/", "aria-label": "Project Boki home" }, [h("img", { src: "/assets/img/brand-96.webp?v=2", alt: "", width: "34", height: "34" }), h("span", { text: "Project Boki" })]));
       bar.appendChild(h("nav", { class: "tb-links", "aria-label": "Main" }, linkEls(DEX_LINKS, cur)));
       buildBurger(DEX_LINKS, cur);
-      /* same right side as the site: Discord, then the beta button. The email pop-out lives in site.js (not loaded here),
-         so the button goes to the main page's sign-up (/#beta), like the inner pages do without JS. Sign in stays on
-         the Bokidex (admins use it for the review tools); the public pages hide it. */
+      /* same right side as the site: Discord, then the beta button. The email pop-out under it is added by assets/signup.js
+         (the dex loads it after this file); without JS the button goes to the main page's sign-up (/#beta), like the inner
+         pages do. Sign in stays on the Bokidex (admins use it for the review tools); the public pages hide it. */
       var cta = h("div", { class: "tb-cta" }, [
         h("a", { class: "tb-ico", href: DISCORD, target: "_blank", rel: "noopener", "aria-label": "Discord", html: DISCORD_SVG }),
         acct, h("a", { class: "tb-join", href: "/#beta", id: "nav-join" , text: "Join the beta" }), burger]);
