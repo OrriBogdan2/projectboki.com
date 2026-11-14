@@ -452,7 +452,6 @@
    "id": "lanternmit",
    "name": "Lanternmit",
    "types": [
-    "water",
     "fire"
    ],
    "stage": 2,
@@ -482,7 +481,6 @@
    "id": "terrarimit",
    "name": "Terrarimit",
    "types": [
-    "water",
     "grass"
    ],
    "stage": 2,
@@ -769,6 +767,21 @@
    "shot": false
   },
   {
+   "id": "chandelotl",
+   "name": "Crystalotl",
+   "types": [
+    "crystal",
+    "fairy"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Crystalotl has grown long and serpent-like, with a hood of clear glass that chimes softly as it moves.",
+   "v": "h1794333130",
+   "shot": false
+  },
+  {
    "id": "maulangler",
    "name": "Maulangler",
    "types": [
@@ -810,21 +823,6 @@
    "into": [],
    "desc": "Thundrich's body is a black thunderhead, topped with a crest of red quills that crackle with lightning.",
    "v": "h1794431350",
-   "shot": false
-  },
-  {
-   "id": "chandelotl",
-   "name": "Crystalotl",
-   "types": [
-    "crystal",
-    "fairy"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Crystalotl has grown long and serpent-like, with a hood of clear glass that chimes softly as it moves.",
-   "v": "h1794333130",
    "shot": false
   },
   {
@@ -1419,15 +1417,15 @@
    "sil": "gilabacus"
   },
   {
-   "t": "water",
+   "t": "crystal",
    "sil": "olmlet"
   },
   {
-   "t": "water",
+   "t": "crystal",
    "sil": "glazolm"
   },
   {
-   "t": "water",
+   "t": "crystal",
    "sil": "kintsuwyrm"
   },
   {
