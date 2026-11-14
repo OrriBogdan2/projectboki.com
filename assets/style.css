@@ -1593,8 +1593,18 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
 @media (max-width: 720px) {
   /* nearly the full width (the neighbours stay as thin slivers at the edges) and as tall as the screen allows with the name and the strip still on it */
   #hunters .stage { width: calc(100vw - 44px); margin-inline: calc((100% - 100vw + 44px) / 2); }
-  #hunters .shot img { aspect-ratio: auto; height: clamp(260px, calc(100svh - 330px), 70svh); object-position: var(--fx, 50%) 50%; }
-  #hunters .stage .h-arrow { top: calc(clamp(260px, calc(100svh - 330px), 70svh) / 2); }
+  /* (11-14 follow-up: "really zoomed in now ... a bit zoomed out but still big") a near-square frame, about 1:1.05 of the stage
+     width (344x328 at 390): still ~1.9x the old 16:9 height, but ~60% of the scene's width shows instead of ~38% */
+  #hunters .stage { --sh: clamp(220px, min(calc((100vw - 44px) / 1.05), calc(100svh - 300px)), 70svh); }
+  #hunters .shot img { aspect-ratio: auto; height: var(--sh); object-position: var(--fx, 50%) 50%; }
+  #hunters .stage .h-arrow { top: calc(var(--sh) / 2); }
+  /* the portrait strip at full strength: the picked one full, the rest only a touch back (was .72 / .55 and desaturated) */
+  .pick button { opacity: .9; filter: none; }
+  .pick:has(button[aria-pressed="true"]) button:not([aria-pressed="true"]):not(:hover) { opacity: .86; }
+  /* iOS Safari draws the page under the status bar above the fixed nav: once scrolled, the nav's ground runs up behind
+     the status bar and is solid, so headings scroll out of sight under it instead of showing over and through it */
+  .nav.scrolled, html.lite .nav.scrolled { background: #080d18 !important; }
+  .nav::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 160px; background: inherit; pointer-events: none; }
   #hunters .info { padding-top: 12px; padding-bottom: 14px; }
   /* lite mode paints arrow backgrounds; here the arrow is a wide invisible tap area, so paint only its round face */
   html.lite .bk-arrow { background-color: transparent; }
@@ -1604,7 +1614,7 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
   #hunters .shot img { aspect-ratio: auto; height: clamp(360px, calc(100svh - 380px), 62svh); object-position: var(--fx, 50%) 50%; }
 }
 @media (max-width: 1000px) { /* details: the art keeps over half the screen, the kit scrolls up under it */
-  .hm-card { overflow-y: auto; overscroll-behavior: contain; }
+  .hm-card { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y pinch-zoom; } /* (a sideways swipe anywhere on it changes Hunter: site.js) */
   .hm-art { flex: 1 0 58svh; }
   .hm-txt { max-height: none; overflow: visible; }
   .hm-art img { object-position: var(--fx, 50%) 30%; }

@@ -232,6 +232,7 @@ if (pick) {
   // Picking one by click, arrow or key moves the page to that Hunter's spot, so scrolling carries on from there.
   const track = $("h-track"), pinEl = track && track.querySelector(".h-pin"), sec = document.getElementById("hunters");
   const wide = matchMedia("(min-width: 1024px) and (min-height: 640px) and (hover: hover) and (pointer: fine)");
+  const narrow = matchMedia("(max-width: 720px)"); // phones (the same break as the CSS)
   let pin = null, fromScroll = false;
   const docTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
   // The Hunters scene: the stage holds in place (sticky) for a stretch. "broken into pieces." arrives over it, breaks while
@@ -369,7 +370,9 @@ if (pick) {
       shot.style.setProperty("--zr", (0.12 * (1 - r)).toFixed(4)); // and the art settles from close up
       const o = sm(clamp((q - 0.62) / 0.26)); // 3) then the name, the count and the arrows
       late.forEach((el) => { el.style.transition = "none"; el.style.opacity = o.toFixed(3); el.style.translate = `0 ${(16 * (1 - o)).toFixed(1)}px`; });
-      [[plab, 0.7], [pick, 0.76]].forEach(([el, s]) => { if (!el) return; const p = sm(clamp((q - s) / 0.24)); // then the picker
+      // then the picker. Phones: it is in by the time the art has opened, so a small scroll back up (or a thumb resting
+      // short of the end) never leaves the strip half faded under a fully shown Hunter (11-14 "the portraits look dimmed")
+      [[plab, 0.7], [pick, 0.76]].forEach(([el, s]) => { if (!el) return; const p = narrow.matches ? sm(clamp((q - s + 0.3) / 0.2)) : sm(clamp((q - s) / 0.24));
         el.style.transition = "none"; el.style.opacity = p.toFixed(3); el.style.translate = `0 ${(22 * (1 - p)).toFixed(1)}px`; });
     }
     const on = q > 0.8;
@@ -670,6 +673,8 @@ if (pick) {
     };
     next.decode ? next.decode().then(swap, swap) : (next.onload = swap);
   }
+
+  window.bokiShowHunter = (i) => show(i); // the details view keeps the stage on the Hunter it shows, so closing it lands there
 
   // Big letters have a wider side bearing than small ones, so line the title up with the name's ink, not its box.
   const ink = (el, ch, mid) => { // px from the text origin to the first painted column of ch
@@ -1161,7 +1166,8 @@ function arrowKeys(section, strip, go) {
     box.querySelector(".lb-x").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", () => fill(at - 1));
     box.querySelector(".next").addEventListener("click", () => fill(at + 1));
-    swipe(box.querySelector(".hm-art"), (d) => fill(at + d)); // phones: swipe the art for the next Hunter
+    // phones: swipe anywhere on the card (the art or the kit) for the next or previous Hunter
+    swipe(box.querySelector(".hm-card"), (d) => { box.querySelector(".hm-art")._swiped = Date.now(); fill(at + d); });
     const bar = box.querySelector(".hm-bar"); bar.style.setProperty("--dwell", DWELL + "ms");
     const slotAt = (e) => { const b = e.target.closest("button"); return b ? [...bar.children].indexOf(b) : -1; };
     bar.addEventListener("click", (e) => { const i = slotAt(e); if (i >= 0) pickAb(i, true); });
@@ -1197,11 +1203,35 @@ function arrowKeys(section, strip, go) {
     if (kit.length) pickAb(0);
   };
   let tok = 0, state = "closed", anims = [], phase = 0, ghostA = null;
+  // While the view is up the page behind holds still. html's overflow: hidden is not enough on iOS Safari (a drag on the
+  // backdrop, or the card's kit hitting its end, still scrolls the page), so touch drags are stopped here unless they
+  // scroll something inside the view that still has room that way. scrollY never changes, so nothing jumps on close.
+  const lock = (() => {
+    let on = false, ly = 0, sy = 0;
+    const start = (e) => { ly = e.touches[0].clientY; };
+    const move = (e) => {
+      if (e.touches.length > 1) return; // pinch zoom stays yours
+      const y = e.touches[0].clientY, dy = y - ly; ly = y;
+      for (let el = e.target; el && el !== box && el.nodeType === 1; el = el.parentElement) {
+        if (el.scrollHeight <= el.clientHeight + 1 || !/auto|scroll/.test(getComputedStyle(el).overflowY)) continue;
+        if (dy > 0 ? el.scrollTop > 0 : dy < 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : true) return; // it scrolls: let it
+        break;
+      }
+      if (e.cancelable) e.preventDefault();
+    };
+    return (v) => {
+      if (v === on) return; on = v;
+      if (v) { sy = scrollY; addEventListener("touchstart", start, { passive: true }); addEventListener("touchmove", move, { passive: false }); return; }
+      removeEventListener("touchstart", start); removeEventListener("touchmove", move);
+      if (Math.abs(scrollY - sy) > 1) scrollTo({ top: sy, behavior: "instant" }); // (in case anything got through: back to the exact spot)
+    };
+  })();
   // Fill the view for Hunter i. Resolves once the art is decoded and the kit is in (or ~0.7s has passed).
   // While the view is up, the old picture stays on top (a copy of it, the "ghost") until the new one is decoded;
   // then the text changes and the old picture fades off it in the same frame.
   const fill = async (i) => {
     at = (i + HUNTERS.length) % HUNTERS.length;
+    if (!box.hidden && state !== "prep" && window.bokiShowHunter) window.bokiShowHunter(at); // the stage behind follows
     const my = ++tok, [id, name, title] = HUNTERS[at], live = !box.hidden && state !== "prep";
     const img = box.querySelector(".hm-art img"), ghost = box.querySelector(".hm-ghost"), sa = document.getElementById("h-art");
     if (live && (ghost.hidden || ghostA)) { // (a pick while the last one is still fading off: start from what shows now)
@@ -1283,7 +1313,7 @@ function arrowKeys(section, strip, go) {
     Promise.all(anims.map((a) => a.finished.catch(() => {}))).then(() => {
       if (my !== phase) return;
       if (state === "closing") {
-        state = "closed"; box.hidden = true; document.documentElement.classList.remove("hm-open");
+        state = "closed"; box.hidden = true; document.documentElement.classList.remove("hm-open"); lock(false);
         if (stage) stage.classList.remove("hm-src");
       } else state = "open";
       anims.forEach((a) => a.cancel()); anims = []; box.querySelector(".hm-art img").classList.remove("fly");
@@ -1298,7 +1328,7 @@ function arrowKeys(section, strip, go) {
     box.classList.add("prep"); box.hidden = false; // laid out (to measure) but not shown until the art is ready
     await fill(Math.max(0, HUNTERS.findIndex((h) => h[0] === cur)));
     if (state !== "prep") return;
-    state = "opening"; box.classList.remove("prep"); document.documentElement.classList.add("hm-open");
+    state = "opening"; box.classList.remove("prep"); document.documentElement.classList.add("hm-open"); lock(true);
     anims = motion(true); settled();
     box.querySelector(".lb-x").focus({ preventScroll: true });
     if (window.posthog && posthog.capture) posthog.capture("hunter_details", { hunter: HUNTERS[at][0] });
