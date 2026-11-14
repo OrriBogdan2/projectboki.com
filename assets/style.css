@@ -1619,3 +1619,28 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
   .hm-txt { max-height: none; overflow: visible; }
   .hm-art img { object-position: var(--fx, 50%) 30%; }
 }
+
+/* ---------- Hunters 11-14 (owner: "bigger art, optimize desktop and phone"): wider stage, slimmer side peeks, a smaller
+   portrait row, and the text as one name bar along the bottom of the art (no vignette) ---------- */
+#hunters .stage::after { display: none; }
+@media (min-width: 1001px) {
+  #hunters .wrap { width: min(1760px, 100% - 2 * var(--pad)); }
+  #hunters .stage { max-width: calc((100svh - 215px) * 1.792); }
+  #hunters .pick { grid-template-columns: repeat(13, 64px); justify-content: center; gap: 9px; margin-top: 12px; }
+  #hunters .pick-label + .pick { margin-top: 12px; }
+}
+@media (min-width: 721px) {
+  #hunters .info { left: 0; right: 0; width: auto; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 16px; row-gap: 2px; padding: 70px 220px 22px 40px; background: linear-gradient(to top, rgba(8,13,24,.9), rgba(8,13,24,.55) 55%, transparent); }
+  #hunters .info h3 { order: 1; font-size: 48px; }
+  #hunters .info .title { order: 2; margin: 0; font-size: 18px; }
+  #hunters .info .role { order: 3; margin: 0; font-size: 16px; }
+  #hunters .h-more { bottom: 22px; }
+}
+@media (max-width: 720px) {
+  /* the name sits on the bottom of the art instead of a panel under it, so the frame grows a little and nothing else moves down */
+  #hunters .stage { --sh: clamp(240px, min(calc((100vw - 44px) / .94), calc(100svh - 250px)), 74svh); }
+  #hunters .info { grid-area: shot; align-self: end; padding: 56px 14px 14px 16px; background: linear-gradient(to top, rgba(8,13,24,.92), rgba(8,13,24,.6) 50%, transparent); }
+  #hunters .info .role { margin-bottom: 3px; font-size: 12px; }
+  #hunters .info h3 { font-size: 34px; }
+  #hunters .info .title { margin-top: 3px; font-size: 13px; }
+}

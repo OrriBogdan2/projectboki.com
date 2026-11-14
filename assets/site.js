@@ -302,12 +302,14 @@ if (pick) {
     if (!peeks.length) return;
     const left = pinEl.getBoundingClientRect().left, vw = document.documentElement.clientWidth, gap = vw <= 720 ? 8 : 16, cap = 230;
     const L = left + stage.offsetLeft, R = L + stage.offsetWidth;
+    // both neighbours get the same width (the narrower side's room), so one can't be a slim sliver while the other has an arrow
+    const even = Math.min(cap, L - gap, vw - R - gap);
     peeks.forEach((p) => {
-      const room = (p.d < 0 ? L : vw - R) - gap, w = Math.max(0, Math.min(cap, room)), s = p.el.style;
-      p.el.hidden = room < (vw <= 720 ? 12 : 18); // (phones: the stage nearly fills the width, the neighbours are thin slivers)
+      const room = (p.d < 0 ? L : vw - R) - gap, w = Math.max(0, even), s = p.el.style;
+      p.el.hidden = even < (vw <= 720 ? 12 : 18); // (phones: the stage nearly fills the width, the neighbours are thin slivers)
       s.top = stage.offsetTop + "px"; s.height = stage.offsetHeight + "px"; s.width = w + "px";
       s.left = (p.d < 0 ? stage.offsetLeft - gap - w : stage.offsetLeft + stage.offsetWidth + gap) + "px";
-      p.el.classList.toggle("edge", room <= cap); p.el.classList.toggle("slim", w < 96);
+      p.el.classList.toggle("edge", w >= room - 1); // flat outer side only when it reaches the screen edge p.el.classList.toggle("slim", w < 96);
     });
     sec.classList.toggle("peeks", peeks.every((p) => !p.el.hidden && !p.el.classList.contains("slim"))); // room for their own arrows: the small ones on the art step aside
   };
