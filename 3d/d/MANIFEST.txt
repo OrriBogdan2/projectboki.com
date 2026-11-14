@@ -1,9 +1,9 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit 67e31b45427754648dce33ffb16354c5ee1b6034
-built 2026-11-13T21:50Z
-h_vex b8e48288b78b732a4b07f977fb026e8d498a8ca3 art/wardens/vex/vex.glb afb2ce451f5 2026-11-13
-h_breaker bb8eb10ff593f7949508ac48023f6b8c25953f2f art/wardens/breaker/breaker.glb 81122abdb6b 2026-11-11
+commit 195166f4d8ca44ecf185a6e8163bc3af081469a4
+built 2026-11-14T02:50Z
+h_vex d0f119de579323bf98f26d3852a65f687bf99780 art/wardens/vex/vex.glb cdce263163d 2026-11-13
+h_breaker 7c954ab18ec911d127f854a5d6cacc8d25358f9c art/wardens/breaker/breaker.glb f2cff86f1ef 2026-11-13
 h_claire a14f93bc437bf3ddaed1721975fc91d00ccd6db0 art/wardens/claire/claire.glb b6b6892ccb3 2026-11-13
 h_kael c7bc60fa3f7a6c2525b2af08b5e1045ffe4f4b55 art/wardens/kael/kael.glb afb2ce451f5 2026-11-13
 h_cinder c302b036abd65cf2a81bfe5057b488688bc348dd art/wardens/cinder/cinder.glb 59fe5865b87 2026-11-13
