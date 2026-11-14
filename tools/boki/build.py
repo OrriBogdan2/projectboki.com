@@ -87,9 +87,14 @@ revealed = []
 try: was = {r["id"]: r["v"] for r in json.load(open(f"{SITE}/assets/boki.json"))["revealed"]}
 except Exception: was = {}
 for e in picked:
-    s = shots.get(e["id"]); v = f"s{s['created']}" if s else f"h{e.get('heroAt') or 0}"
+    # dex-front-sync-1114: key hero art on the export's content-hash file name, not heroAt. Art swaps that replace
+    # img/hero/<id>.webp without bumping heroAt (Chandelapi, Druzemole, Mycroll on 11-13/14) left the wall on the old art.
+    s = shots.get(e["id"]); v = f"s{s['created']}" if s else f"h{files[hero(e)].split('.')[0][:12]}"
     out = [f"{SITE}/assets/img/boki-front/{e['id']}-{w}.webp" for w in (480, 960)]
-    if not (was.get(e["id"]) == v and all(os.path.exists(o) for o in out)):   # art is only rebuilt when its source changed
+    # one-time move from the old h<heroAt> key: keep that art (no re-encode churn) - only safe once the wall matches the dex,
+    # which ../meshy/dex-front-sync-1114/apply.sh checks (front_drift.py prints 0) before it runs this
+    legacy = not s and re.fullmatch(r"h\d+", str(was.get(e["id"], ""))) is not None
+    if not ((was.get(e["id"]) == v or legacy) and all(os.path.exists(o) for o in out)):   # art is only rebuilt when its source changed
         img = square(cut(blob(s["images"][0]))) if s else square(Image.open(io.BytesIO(blob(hero(e)))).convert("RGBA"))
         for w, o in zip((480, 960), out):
             img.resize((w, w), Image.LANCZOS).save(o, "WEBP", quality=84, method=6, alpha_quality=90)
