@@ -1,0 +1,122 @@
+--- a/bokidex/index.html
++++ b/bokidex/index.html
+@@ -696,6 +696,31 @@
+ .vsoon .hero{width:min(100%,64vh);max-height:100%;aspect-ratio:1;background:none}
+ .vtag{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font:700 .78rem var(--body);letter-spacing:.02em;color:var(--mute);border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:999px;padding:5px 14px;white-space:nowrap}
+ @media (max-width:759px){.vnav{width:46px;height:46px}.vnav.pv{left:8px}.vnav.nx{right:8px}.vsoon{padding:16px 8px}}
++/* legendary tiers (owner 11-13: "some marking ... to distinguish the legendary types ... a slightly outline on them and a badge"):
++   a thin tier-coloured outline and a small corner badge on the card, a chip next to the types in the detail head,
++   and a Legendary group (plus one option per tier) at the front of the type filter strip. Light theme colours are dark enough
++   for white badge text (WCAG AA); the dark theme uses lighter tones with dark text. */
++:root{--lt-minor:#1f72b3;--lt-major:#9a6800;--lt-apex:#6a3fd0;--lt-blight:#a32a34;--lt-charm:#c2357d;--lt-fg:#fff}
++@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lt-minor:#6db8ff;--lt-major:#ffc94a;--lt-apex:#b49aff;--lt-blight:#ff7a80;--lt-charm:#ff8cc4;--lt-fg:#0a1020}}
++:root[data-theme="dark"]{--lt-minor:#6db8ff;--lt-major:#ffc94a;--lt-apex:#b49aff;--lt-blight:#ff7a80;--lt-charm:#ff8cc4;--lt-fg:#0a1020}
++/* owner 11-14: no words on cards; one legendary border on every legendary card, the tier name only in the detail ("Minor Legendary") */
++.dcard.lg{--lt:var(--lt-major)}
++.dcard.lg:not(.on){border:2px solid var(--lt);box-shadow:0 0 0 1px color-mix(in srgb,var(--lt) 35%,transparent),0 0 18px -6px color-mix(in srgb,var(--lt) 70%,transparent),var(--cardsh)}
++@media (hover:hover){.dcard.lg:not(.on):hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--lt) 45%,transparent),0 26px 60px -24px color-mix(in srgb,var(--g,var(--ty)) 55%,transparent)}}
++.lbadge{position:absolute;top:20px;right:22px;z-index:1;display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 8px 0 6px;box-sizing:border-box;border-radius:999px;
++  background:var(--lt);color:var(--lt-fg);font:700 .6rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
++.lbadge svg,.lchip svg{width:10px;height:10px;flex:none;fill:currentColor}
++/* tier badge and the forms/sex pill share one row (stacking them put the badge over the face) */
++.cbd{position:absolute;top:20px;right:22px;z-index:1;display:flex;gap:4px;align-items:center}.cbd>.lbadge,.dcard .cbd>.fbadge{position:relative;top:auto;right:auto}
++@media (max-width:759px){.lbadge{top:15px;right:16px;height:18px;padding:0 7px 0 5px;font-size:.56rem}.cbd{top:15px;right:16px}}
++@media (max-width:429px){.cbd .lbadge{font-size:0;gap:0;width:18px;padding:0;justify-content:center}} /* phones: next to the forms pill the badge is the star only, so the number stays readable */
++.lchip{display:inline-flex;align-items:center;gap:6px;font:700 .72rem var(--body);letter-spacing:.09em;text-transform:uppercase;border-radius:999px;padding:5px 13px 5px 10px;
++  color:var(--lt);border:1px solid color-mix(in srgb,var(--lt) 55%,transparent);background:color-mix(in srgb,var(--lt) 10%,var(--panel))}
++.mhead .lchip{font-size:.82rem;padding:6px 15px 6px 11px}
++@media (max-width:759px){.mhead .lchip{font-size:.76rem}}
++.tf .lgbtn::before{width:9px;height:9px;border-radius:0;background:var(--ty);-webkit-mask:var(--lgstar) center/contain no-repeat;mask:var(--lgstar) center/contain no-repeat}
++.tf .tsep{flex:none;width:1px;align-self:stretch;margin:3px 4px;background:var(--line)}
++:root{--lgstar:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5l2.6 7.9 7.9 2.6-7.9 2.6L12 22.5l-2.6-7.9L1.5 12l7.9-2.6z'/%3E%3C/svg%3E")}
+ </style>
+ </head>
+ <body>
+@@ -723,7 +748,7 @@
+     </div>
+     <p class="hint" id="hint" hidden><kbd>←</kbd> <kbd>→</kbd> previous or next · <kbd>↑</kbd> <kbd>↓</kbd> browse · <kbd>Enter</kbd> open · <kbd>F</kbd> other form · <kbd>R</kbd> random · <kbd>Esc</kbd> close · <kbd>/</kbd> search</p>
+     <div class="tmeta"><span class="tlbl">Types</span><span class="tacts"><button class="tlink" id="tmode" type="button" hidden></button><button class="tlink" id="tclear" type="button" hidden>Clear</button></span></div>
+-    <div class="tf" id="tchips" role="group" aria-label="Filter by type"></div>
++    <div class="tf" id="tchips" role="group" aria-label="Filter by type or legendary tier"></div>
+   </div>
+   <div id="dgrid" role="list"><div class="empty" style="grid-column:1/-1">Loading the Bokidex…</div></div>
+   <div id="detail" role="dialog" aria-modal="true" aria-label="Entry"></div>
+@@ -758,6 +783,13 @@
+ const slugOf=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+ let D=[], byId={}, formOf={}, META=null, fi=0, aliases={}, built=0, dexErr="", ovl={}, aspect={}, sel=null, tab="entry", view="dex", lastSel=null, gridKey="", vTab=null, zoomList=[], zoomI=0;
+ const TYPES=["Normal","Fire","Water","Grass","Spore","Electric","Ice","Rock","Psychic","Flying","Dragon","Dark","Ghost","Poison","Bug","Steel","Fairy","Crystal","Sound"];
++let lgOn=false, lgt=new Set(); /* legendary filter (dex-legend-badges-1113) */
++const LTIERS=[["minor","Minor Legendary"],["major","Major Legendary"],["apex","Apex Legendary"],["blight","Blight Legendary"],["charm","Charm Legendary"]], LTN=Object.fromEntries(LTIERS);
++/* the tier follows the types: an entry the page hides (unknown) shows neither */
++const tierOf=e=>!e||e.unknown?"":(LTN[(e._e||e).legendaryTier]?(e._e||e).legendaryTier:"");
++const LSTAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.6 7.9 7.9 2.6-7.9 2.6L12 22.5l-2.6-7.9L1.5 12l7.9-2.6z"/></svg>';
++const lbadgeHTML=e=>{const t=tierOf(e);return t?`<span class="lbadge" title="${LTN[t]} legendary">${LSTAR}${LTN[t]}</span>`:""};
++const lchipHTML=e=>{const t=tierOf(e);return t?`<span class="lchip" style="--lt:var(--lt-${t})">${LSTAR}${LTN[t]}</span>`:""};
+ let tsel=new Set(), tmode="any", DEXM=null, mtab="about", sx="m", sxFor="";
+ const SIL='<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="52" cy="66" rx="27" ry="19"/><circle cx="40" cy="36" r="16"/><path d="M27 27 22 8l15 9zM53 24 60 6 66 26z"/><path d="M76 62c14-2 20-14 14-26-1 10-6 16-16 17z"/><rect x="34" y="78" width="8" height="12" rx="3"/><rect x="62" y="78" width="8" height="12" rx="3"/></svg>';
+ /* An entry can hold alternate final forms (entry.forms). Each form has its own id, name, art, glb and detail; the entry's own fields are the first form's.
+@@ -830,8 +862,12 @@
+ function renderTChips(){
+   const have=new Set(D.flatMap(anyTypes)), list=[...TYPES.filter(t=>have.has(t)),...[...have].filter(t=>!TYPES.includes(t)).sort()];
+   const cnt={};D.forEach(e=>anyTypes(e).forEach(t=>cnt[t]=(cnt[t]||0)+1));
+-  $("#tchips").innerHTML=list.map(t=>`<button type="button" class="tbtn" data-type="${esc(t)}" aria-pressed="${tsel.has(t)}" style="--ty:var(--ty-${slugOf(t)})">${esc(t)} <small>${cnt[t]||0}</small></button>`).join("");
+-  $("#tclear").hidden=!tsel.size; $("#tmode").hidden=tsel.size<2; $("#tmode").textContent=tmode==="any"?"Match any":"Match all";
++  const lgN=D.filter(tierOf).length, lcnt={};D.forEach(e=>{const t=tierOf(e);if(t)lcnt[t]=(lcnt[t]||0)+1});
++  const lgH=!lgN?"":`<button type="button" class="tbtn lgbtn" data-lg="all" aria-pressed="${lgOn}" aria-expanded="${lgOn}" title="All legendary Boki" style="--ty:var(--tan)">Legendary <small>${lgN}</small></button>`
++    +(lgOn?LTIERS.filter(([k])=>lcnt[k]).map(([k,n])=>`<button type="button" class="tbtn" data-lg="${k}" aria-pressed="${lgt.has(k)}" title="${n}" style="--ty:var(--lt-${k})">${n} <small>${lcnt[k]}</small></button>`).join(""):"")
++    +'<i class="tsep" aria-hidden="true"></i>';
++  $("#tchips").innerHTML=lgH+list.map(t=>`<button type="button" class="tbtn" data-type="${esc(t)}" aria-pressed="${tsel.has(t)}" style="--ty:var(--ty-${slugOf(t)})">${esc(t)} <small>${cnt[t]||0}</small></button>`).join("");
++  $("#tclear").hidden=!tsel.size&&!lgOn; $("#tmode").hidden=tsel.size<2; $("#tmode").textContent=tmode==="any"?"Match any":"Match all";
+   $("#tmode").title=tmode==="any"?"Showing Boki with any selected type. Click to require all.":"Showing Boki with every selected type. Click to match any.";
+ }
+ async function loadDex(){
+@@ -845,7 +881,8 @@
+ function filtered(){
+   const q=$("#q").value.trim().toLowerCase().replace(/^#/,""), s=$("#sort").value, ts=[...tsel];
+   const tOK=!ts.length?()=>true:tmode==="all"?e=>(e.forms||[e]).some(f=>ts.every(t=>(f.types||[]).includes(t))):e=>{const a=anyTypes(e);return ts.some(t=>a.includes(t))};
+-  let L=D.filter(e=>tOK(e)&&(!q||(/^\d+$/.test(q)?String(e.num).startsWith(q.replace(/^0+/,""))||pad(e.num).startsWith(q):(!e.unknown&&(e.forms||[e]).some(f=>f.name.toLowerCase().includes(q))))));
++  const lOK=!lgOn?()=>true:e=>{const t=tierOf(e);return!!t&&(!lgt.size||lgt.has(t))};
++  let L=D.filter(e=>tOK(e)&&lOK(e)&&(!q||(/^\d+$/.test(q)?String(e.num).startsWith(q.replace(/^0+/,""))||pad(e.num).startsWith(q):(!e.unknown&&(e.forms||[e]).some(f=>f.name.toLowerCase().includes(q))))));
+   const key=e=>e.unknown?"~"+pad(e.num):e.name.toLowerCase();
+   L=L.slice().sort(s==="n-"?(a,b)=>b.num-a.num:s==="a+"?(a,b)=>key(a)<key(b)?-1:1:s==="a-"?(a,b)=>key(a)<key(b)?1:-1:s==="t+"?(a,b)=>(!!typesOf(b)[0]-!!typesOf(a)[0])||(typesOf(a)[0]||"").localeCompare(typesOf(b)[0]||"")||(typesOf(a)[1]||"").localeCompare(typesOf(b)[1]||"")||a.num-b.num:(a,b)=>a.num-b.num);
+   if(s==="a-")L.sort((a,b)=>(a.unknown-b.unknown)||(key(a)<key(b)?1:-1));
+@@ -863,14 +900,15 @@
+ function cardLabel(e){ // site fix 11-11: one clean spoken label per card (number, name, types, forms) instead of name twice
+   if(e.unknown)return`#${pad(e.num)}, not yet discovered`;
+   const n=e.forms?e.forms.length:0;
+-  return[`#${pad(e.num)} ${e.name}`,typesOf(e).join(" and "),n?n+" forms":"",e.sex_forms?"male and female looks":""].filter(Boolean).join(", ");
++  return[`#${pad(e.num)} ${e.name}`,typesOf(e).join(" and "),tierOf(e)?LTN[tierOf(e)]:"",n?n+" forms":"",e.sex_forms?"male and female looks":""].filter(Boolean).join(", ");
+ }
+ function cardHTML(e){
+   const un=e.unknown, dim=noArt(e)&&!un?" dim":"";
+-  return`<a class="dcard${un?" unk dim":dim}" role="listitem" aria-label="${esc(cardLabel(e))}" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${fbadgeHTML(e)}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
++  const lt=tierOf(e);
++  return`<a class="dcard${un?" unk dim":dim}${lt?" lg":""}" role="listitem" aria-label="${esc(cardLabel(e))}" href="#boki-${esc(e.id)}" data-go data-id="${esc(e.id)}" style="${pTy(e)}">${heroHTML(e)}<div class="dn">#${pad(e.num)}</div>${fbadgeHTML(e)}<div class="dnm">${un?"???":esc(e.name)}</div><div class="tlines">${tline(e)||'<span class="tl none">Undiscovered</span>'}</div></a>`;
+ }
+ function renderGrid(){
+-  const L=filtered(), key=[$("#q").value,[...tsel].join(),tmode,$("#sort").value,curTheme(),D.length,Object.keys(ovl).map(k=>k+(ovl[k].hero?.src||"")).join(),Object.keys(aspect).length].join("|");
++  const L=filtered(), key=[$("#q").value,[...tsel].join(),tmode,lgOn+[...lgt].join(),$("#sort").value,curTheme(),D.length,Object.keys(ovl).map(k=>k+(ovl[k].hero?.src||"")).join(),Object.keys(aspect).length].join("|");
+   $("#dcount").textContent=D.length?`${L.length} of ${D.length}`:"";
+   {const rn=$("#rdn");if(rn)rn.textContent=D.length?String(D.length):"···";}
+   if(key===gridKey)return; gridKey=key;
+@@ -1063,7 +1101,7 @@
+     <div class="minfo" tabindex="0">
+      <div class="mfit">
+      <div class="mkick">${kick}</div>
+-     <div class="mhead"><h2 class="mh">${un?"???":esc(v.name)}</h2><div class="chips mtypes">${chips(v)}</div></div>
++     <div class="mhead"><h2 class="mh">${un?"???":esc(v.name)}</h2><div class="chips mtypes">${chips(v)}</div>${un?"":lchipHTML(v)}</div>
+      <div class="mline" aria-hidden="true"></div>
+      
+      ${tabs}${body}
+@@ -1184,9 +1222,10 @@
+   const t=e.target, a=t.closest?.("[data-go]");
+   if(a&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&a.getAttribute("href")){e.preventDefault();go(a.getAttribute("href"),a.closest(".mnav,.dtabs,.ftog")?true:false);return}
+   const th=t.closest?.("[data-theme-toggle]");if(th){setTheme(curTheme()==="dark"?"light":"dark",true);return}
++  const lb=t.closest?.("#tchips [data-lg]");if(lb){const k=lb.dataset.lg;if(k==="all"){lgOn=!lgOn;lgt.clear()}else lgt.has(k)?lgt.delete(k):lgt.add(k);filtChange();$(`#tchips [data-lg="${k==="all"||lgOn?k:"all"}"]`)?.focus({preventScroll:true});return}
+   const tb=t.closest?.("[data-type]");if(tb){const k=tb.dataset.type;tsel.has(k)?tsel.delete(k):tsel.add(k);filtChange();return}
+   if(t.closest?.("#tmode")){tmode=tmode==="any"?"all":"any";filtChange();return}
+-  if(t.closest?.("#tclear")){tsel.clear();filtChange();return}
++  if(t.closest?.("#tclear")){tsel.clear();lgOn=false;lgt.clear();filtChange();return}
+   const mt=t.closest?.("[data-mtab]");if(mt){mtab=mt.dataset.mtab;renderDetail();return}
+   const sb=t.closest?.("[data-sx]");if(sb){const k=sb.dataset.sx;if(k!==sx){sx=k;renderDetail();$(`#detail [data-sx="${k}"]`)?.focus({preventScroll:true})}return}
+   if(t.closest?.("[data-close]")||t.id==="detail"||t.classList?.contains("mwrap")){go("#dex");return}

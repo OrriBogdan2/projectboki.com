@@ -365,6 +365,18 @@ _OLD_CK = re.search(r'document\.addEventListener\("click",ev=>\{const b=ev\.targ
 if _OLD_CK and "bldots" not in _OLD_CK.group(0):
     s = s[:_OLD_CK.start()] + BLURB_CLICK + s[_OLD_CK.end():]
 
+# 9f. Legendary tiers (owner 11-13/11-14): one gold border on every legendary card (no words on cards), the tier named
+#     in full in the detail chip + filter ("Minor Legendary", never bare Minor/Major). The export rebuilds this page from
+#     the rating room, so the code lives here as a diff (legend-tiers.diff, base = plain export output); applied once.
+if "lgOn" not in s:
+    import subprocess, tempfile
+    _d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "legend-tiers.diff")
+    with tempfile.TemporaryDirectory() as _t:
+        _f = os.path.join(_t, "index.html"); open(_f, "w", encoding="utf-8").write(s)
+        _r = subprocess.run(["patch", "-s", "--no-backup-if-mismatch", "-r", "-", _f, _d], capture_output=True, text=True)
+        if _r.returncode == 0: s = open(_f, encoding="utf-8").read()
+        else: print("WARN legend-tiers.diff did not apply (export changed?): " + (_r.stdout + _r.stderr)[:300], file=sys.stderr)
+
 if s != before:
     open(P, "w", encoding="utf-8").write(s); print("bokidex/index.html patched")
 else:
