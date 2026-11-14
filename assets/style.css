@@ -1573,3 +1573,39 @@ html.su-signed .faq-join { display: none; }
   .join .su-perk.su-prize { margin: 104px 0 0; }
   .join .su-perk.su-prize img.rare-egg { width: 84px; height: 84px; }
 }
+
+/* ---------- Hunters on phones and portrait tablets (owner 11-14: "on phone the splash art isn't big enough") ----------
+   The splash is cropped from the wide art (CSS only, the same hi-res file) to a tall frame that fills most of the screen,
+   each Hunter framed on their face by --fx (the horizontal object-position; the full height of the art always shows). */
+img:is([src*="/hunters/ryzz-"], [srcset*="/hunters/ryzz-"]) { --fx: 23%; }
+img:is([src*="/hunters/tarek-"], [srcset*="/hunters/tarek-"]) { --fx: 60%; }
+img:is([src*="/hunters/lisette-"], [srcset*="/hunters/lisette-"]) { --fx: 61%; }
+img:is([src*="/hunters/vex-"], [srcset*="/hunters/vex-"]) { --fx: 66%; }
+img:is([src*="/hunters/kael-"], [srcset*="/hunters/kael-"]) { --fx: 72%; }
+img:is([src*="/hunters/pip-"], [srcset*="/hunters/pip-"]) { --fx: 47%; }
+img:is([src*="/hunters/breaker-"], [srcset*="/hunters/breaker-"]) { --fx: 53%; }
+img:is([src*="/hunters/sable-"], [srcset*="/hunters/sable-"]) { --fx: 42%; }
+img:is([src*="/hunters/cinder-"], [srcset*="/hunters/cinder-"]) { --fx: 53%; }
+img:is([src*="/hunters/claire-"], [srcset*="/hunters/claire-"]) { --fx: 21%; }
+img:is([src*="/hunters/grimble-"], [srcset*="/hunters/grimble-"]) { --fx: 53%; }
+img:is([src*="/hunters/gill-"], [srcset*="/hunters/gill-"]) { --fx: 23%; }
+img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
+@media (max-width: 720px) {
+  /* nearly the full width (the neighbours stay as thin slivers at the edges) and as tall as the screen allows with the name and the strip still on it */
+  #hunters .stage { width: calc(100vw - 44px); margin-inline: calc((100% - 100vw + 44px) / 2); }
+  #hunters .shot img { aspect-ratio: auto; height: clamp(260px, calc(100svh - 330px), 70svh); object-position: var(--fx, 50%) 50%; }
+  #hunters .stage .h-arrow { top: calc(clamp(260px, calc(100svh - 330px), 70svh) / 2); }
+  #hunters .info { padding-top: 12px; padding-bottom: 14px; }
+  /* lite mode paints arrow backgrounds; here the arrow is a wide invisible tap area, so paint only its round face */
+  html.lite .bk-arrow { background-color: transparent; }
+  html.lite .bk-arrow::before { background-color: rgba(12,17,32,.86); }
+}
+@media (min-width: 721px) and (max-width: 1000px) and (orientation: portrait) {
+  #hunters .shot img { aspect-ratio: auto; height: clamp(360px, calc(100svh - 380px), 62svh); object-position: var(--fx, 50%) 50%; }
+}
+@media (max-width: 1000px) { /* details: the art keeps over half the screen, the kit scrolls up under it */
+  .hm-card { overflow-y: auto; overscroll-behavior: contain; }
+  .hm-art { flex: 1 0 58svh; }
+  .hm-txt { max-height: none; overflow: visible; }
+  .hm-art img { object-position: var(--fx, 50%) 30%; }
+}

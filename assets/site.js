@@ -303,7 +303,7 @@ if (pick) {
     const L = left + stage.offsetLeft, R = L + stage.offsetWidth;
     peeks.forEach((p) => {
       const room = (p.d < 0 ? L : vw - R) - gap, w = Math.max(0, Math.min(cap, room)), s = p.el.style;
-      p.el.hidden = room < 18;
+      p.el.hidden = room < (vw <= 720 ? 12 : 18); // (phones: the stage nearly fills the width, the neighbours are thin slivers)
       s.top = stage.offsetTop + "px"; s.height = stage.offsetHeight + "px"; s.width = w + "px";
       s.left = (p.d < 0 ? stage.offsetLeft - gap - w : stage.offsetLeft + stage.offsetWidth + gap) + "px";
       p.el.classList.toggle("edge", room <= cap); p.el.classList.toggle("slim", w < 96);
@@ -1212,7 +1212,7 @@ function arrowKeys(section, strip, go) {
     }
     if (!live) img.classList.remove("on");
     img.onload = () => img.classList.add("on");
-    img.alt = `${name}, ${title}`; img.sizes = "(max-width: 1000px) 100vw, 760px";
+    img.alt = `${name}, ${title}`; img.sizes = "(max-width: 720px) 240vw, (max-width: 1000px) and (orientation: portrait) 150vw, (max-width: 1000px) 100vw, 760px";
     if (!live && sa && onStage() === id && sa.complete && sa.naturalWidth && /\/hunters\//.test(sa.currentSrc)) {
       img.removeAttribute("srcset"); img.src = sa.currentSrc; // the splash the user pressed: already loaded, as sharp or sharper
     } else { img.srcset = ART(id); img.src = `assets/img/hunters/${id}-1600.webp?v=${ART_V}`; }
