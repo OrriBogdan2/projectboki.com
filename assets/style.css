@@ -1672,9 +1672,3 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
   #hunters .info .role { font-size: clamp(8.5px, 2.75vw, 11px); }
   #hunters .h-more { bottom: calc(13px + clamp(26px, 9vw, 38px)); }
 }
-/* 11-15 owner: "hunter screen should lock your phone ~1s so you can't scroll past it": native version, no timer.
-   A fast flick stops on the Hunter card (scroll-snap-stop) and the page settles it centred when you end near it. */
-@media (max-width: 720px) {
-  html { scroll-snap-type: y proximity; }
-  #hunters .stage { scroll-snap-align: center; scroll-snap-stop: always; }
-}
