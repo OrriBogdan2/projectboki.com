@@ -1802,3 +1802,35 @@ document.addEventListener("pointerdown", (e) => {
   egg.classList.remove("pop"); void egg.getBoundingClientRect(); egg.classList.add("pop"); // restart if it is pressed again mid-hop
 });
 document.addEventListener("animationend", (e) => { if (e.animationName === "egg-pop" || e.animationName === "egg-lit") e.target.classList.remove("pop"); });
+
+/* 11-15 owner: "hold the hunter screen for like .5s" (scroll-snap felt buggy, reverted). Phones only: when the Hunter
+   card comes fully into view, the screen centres on it and scrolling is held for 500 ms, once per pass (re-arms after
+   it leaves view). No snapping anywhere else. */
+(() => {
+  const sec = document.getElementById("hunters"), st = sec && sec.querySelector(".stage");
+  if (!st || !("IntersectionObserver" in window)) return;
+  const mq = matchMedia("(max-width: 720px)"), html = document.documentElement;
+  let armed = true, holding = false;
+  const block = (e) => { if (holding && e.cancelable) e.preventDefault(); };
+  addEventListener("touchmove", block, { passive: false });
+  addEventListener("wheel", block, { passive: false });
+  const hold = () => {
+    armed = false; holding = true;
+    const box = (sec.getBoundingClientRect().height <= innerHeight ? sec : st).getBoundingClientRect();
+    const y = Math.round(scrollY + box.top + box.height / 2 - innerHeight / 2);
+    const prevO = html.style.overflow, prevB = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto"; html.style.overflow = "hidden";
+    scrollTo(0, y);
+    const t0 = performance.now();
+    const pin = () => {
+      if (performance.now() - t0 < 500) { if (Math.abs(scrollY - y) > 1) scrollTo(0, y); requestAnimationFrame(pin); }
+      else { html.style.overflow = prevO; html.style.scrollBehavior = prevB; holding = false; }
+    };
+    requestAnimationFrame(pin);
+  };
+  new IntersectionObserver((es) => es.forEach((e) => {
+    if (!mq.matches) return;
+    if (e.intersectionRatio >= 0.9) { if (armed) hold(); }
+    else if (e.intersectionRatio < 0.2) armed = true;
+  }), { threshold: [0, 0.2, 0.9] }).observe(st);
+})();
