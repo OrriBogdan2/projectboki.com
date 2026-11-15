@@ -194,19 +194,19 @@ if (heroIn && !calm) {
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const ART_V = "2026-11-15a50"; // bump when a Hunter splash changes
 const HUNTERS = [
-  ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
-  ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
-  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
+  ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
+  ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
+  ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
+  ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
+  ["sable", "Sable", "The Silver Thief", true, "Duelist"],
   ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
-  ["sable", "Sable", "The Silver Thief", true, "Duelist"],
-  ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
-  ["gill", "Gill", "The Novice Mage", false, "Controller"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
+  ["gill", "Gill", "The Novice Mage", false, "Controller"],
 ];
 
 const pick = document.getElementById("h-pick");
