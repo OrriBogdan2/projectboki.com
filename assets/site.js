@@ -193,21 +193,21 @@ if (heroIn && !calm) {
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
 const ART_V = "2026-11-15b29"; // bump when a Hunter splash changes
-// order 11-15 owner: no 3 girls in a row; Sable after Neve, then Gill, Motley (spread the purples)
+// order 11-15 owner (r2): Kael Lace Albert = kingsguard trio (Cinder is not kingsguard); Sable last so Gill splits the purples (Motley/Sable)
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
   ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
-  ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
   ["pip", "Meeko", "The Dawnfox", true, "Support"],
-  ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
   ["claire", "Neve", "The Snowglide", true, "Controller"],
-  ["sable", "Sable", "The Silver Thief", true, "Duelist"],
-  ["gill", "Gill", "The Novice Mage", false, "Controller"],
+  ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
+  ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
+  ["gill", "Gill", "The Novice Mage", false, "Controller"],
+  ["sable", "Sable", "The Silver Thief", true, "Duelist"],
 ];
 
 const pick = document.getElementById("h-pick");
