@@ -185,7 +185,11 @@
     if (window.BKXOwner) { try { window.BKXOwner.signOut(); } catch (e) {} }
     user = null; render(); announce();
   }
-  function announce() { try { doc.dispatchEvent(new CustomEvent("boki-auth", { detail: { user: user } })); } catch (e) {} }
+  /* 11-15 owner: refresh flashed Sign in -> name (the bar rendered signed-out until /me answered). Paint the last known
+     user at once; /me still confirms or clears it. Only display fields are cached, never the token. */
+  function meCache(u) { try { if (u === undefined) { var c = tok() && localStorage.getItem("boki_me"); return c ? JSON.parse(c) : null; }
+    if (u) localStorage.setItem("boki_me", JSON.stringify({ display: u.display, email: u.email, role: u.role })); else localStorage.removeItem("boki_me"); } catch (e) { return null; } }
+  function announce() { meCache(user); try { doc.dispatchEvent(new CustomEvent("boki-auth", { detail: { user: user } })); } catch (e) {} }
 
   function loadMe() {
     if (!tok()) { render(); announce(); return Promise.resolve(); }
@@ -303,7 +307,7 @@
       bar.appendChild(panel);
       /* the beta popup is positioned against .nav-cta: keep it on top of our menu */
     }
-    render(); loadMe();
+    user = meCache() || null; render(); loadMe();
     doc.addEventListener("click", function (e) { if (menuOpen && !acct.contains(e.target)) setMenu(false); if (panelOpen && !bar.contains(e.target)) setPanel(false); });
     doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (menuOpen) setMenu(false); if (panelOpen) { setPanel(false); burger.focus(); } } });
     (function (mq) { mq.addEventListener && mq.addEventListener("change", function (m) { if (m.matches) setPanel(false); }); })(matchMedia("(min-width:1001px)"));
