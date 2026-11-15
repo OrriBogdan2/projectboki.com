@@ -1,3 +1,4 @@
+/* EDIT ME, THEN RUN tools/minify/run.sh: pages load assets/signup.min.js, built from this file (the Bokidex loads this one directly). */
 /* Email sign-up and analytics (PostHog), shared by every page that has a "Join the beta" button:
    the main page, Devlog, Press kit and Privacy (loaded after site.js) and the Bokidex (loaded with data-lazy, after topbar.js).
    Moved here unchanged from site.js so the Bokidex signs up exactly the way the site does: same form, same PostHog events

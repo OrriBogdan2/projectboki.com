@@ -1,3 +1,4 @@
+// EDIT ME, THEN RUN tools/minify/run.sh: pages load assets/site.min.js, built from this file (site-perf-1115).
 // Weak computers: watch the frame rate for the first ~90s. If the page keeps stalling, switch to a lighter look (no
 // frosted-glass blurs, a still portrait wall, a still Bubblisk, fewer glows) and remember it for this visit.
 // ?lite forces it on, ?full forces it off.
