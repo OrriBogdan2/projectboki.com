@@ -1,0 +1,7 @@
+{
+  "name": "boki-site-minify",
+  "private": true,
+  "description": "Builds the .min files the pages load from the readable sources (site-perf-1115). Run ./run.sh",
+  "type": "module",
+  "devDependencies": { "esbuild": "0.28.2", "lightningcss": "1.33.0" }
+}

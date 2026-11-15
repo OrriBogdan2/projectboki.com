@@ -1,4 +1,4 @@
-@font-face { font-family: "Lilita"; src: url("fonts/LilitaOne.woff2") format("woff2"), url("fonts/LilitaOne-Regular.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "Lilita"; src: url("fonts/LilitaOne.woff2") format("woff2"), url("fonts/LilitaOne-Regular.ttf") format("truetype"); font-display: swap; }
 @font-face { font-family: "Rubik"; src: url("fonts/Rubik.woff2") format("woff2"), url("fonts/Rubik.ttf") format("truetype"); font-weight: 300 900; font-display: swap; }
 
 :root {
@@ -130,17 +130,17 @@ section { position: relative; }
 .eyebrow { margin-bottom: 14px; font-size: 14px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
 
 /* film grain over everything, very faint */
-body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none; background: url("img/grain.png"); opacity: .05; mix-blend-mode: overlay; }
+body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none; background: url("img/grain.webp"); opacity: .05; mix-blend-mode: overlay; }
 
 /* ---------- motion ---------- */
 /* Hero waits for the font, then rises in. Nothing is hidden without JS. */
-.js .hero-in > * { opacity: 0; transform: translateY(22px); }
-.ready .hero-in > * { opacity: 1; transform: none; transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1); }
+/* site-perf-1115: the hero is never blank (filmstrip + LCP); it starts dimmed, not hidden, and settles in. */
+.js .hero-in > * { opacity: .35; transform: translateY(14px); }
+.ready .hero-in > * { opacity: 1; transform: none; transition: opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1); }
 .ready .hero-in > :nth-child(2) { transition-delay: .08s; }
 .ready .hero-in > :nth-child(3) { transition-delay: .18s; }
 .ready .hero-in > :nth-child(4) { transition-delay: .28s; }
-.js .hero-media { opacity: 0; }
-.ready .hero-media { opacity: 1; transition: opacity 1.4s ease; }
+/* (site-perf-1115) the hero art shows at once: no blank first frames on phones while the font comes in */
 
 .js [data-r] { opacity: 0; transform: translateY(44px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
 .js [data-r].in { opacity: 1; transform: none; }
@@ -177,6 +177,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-even
 .shot { touch-action: pan-y; } /* let horizontal swipes reach the hero switcher on touch screens */
 .shot img { width: 100%; aspect-ratio: 2000 / 1116; object-fit: cover; transition: opacity .22s ease, transform .5s ease; }
 .shot img.out { opacity: 0; transform: scale(1.015); }
+.shot-c img.sharp-fx { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; } /* Carousel C: the sharp file fades in over the 960 one */
 .info { position: absolute; left: 0; bottom: 0; z-index: 1; width: min(560px, 100%); padding: 0 40px 36px; }
 /* No dark film over the art: just a soft shadow behind the name (bottom left) and a light vignette at the edges */
 .stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 48% 60% at 0% 100%, rgba(8,13,24,.72), rgba(8,13,24,.25) 55%, transparent 75%), radial-gradient(ellipse 75% 85% at 50% 45%, transparent 60%, rgba(8,13,24,.4) 100%); }
@@ -339,7 +340,7 @@ h1, h2, h3, .band p { text-wrap: balance; }
   radial-gradient(ellipse 55% 70% at 50% 45%, rgba(170,110,255,.22), transparent 70%),
   radial-gradient(ellipse 80% 70% at 50% 50%, #1c1430, #0d0a18 75%); }
 .join-bg::before { content: ""; position: absolute; inset: -50%; background-image: linear-gradient(rgba(170,140,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(170,140,255,.11) 1px, transparent 1px); background-size: 56px 56px; transform: perspective(700px) rotateX(58deg) translateY(18%); -webkit-mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000, transparent 75%); animation: grid-drift 18s linear infinite; will-change: transform; }
-.join-bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 0 30%, rgba(8,13,24,.0) 30%), url("img/grain.png"); opacity: .06; }
+.join-bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 0 30%, rgba(8,13,24,.0) 30%), url("img/grain.webp"); opacity: .06; }
 @keyframes grid-drift { from { transform: perspective(700px) rotateX(58deg) translateY(18%); } to { transform: perspective(700px) rotateX(58deg) translateY(calc(18% + 56px)); } } /* moves the layer, not its pixels: no repaint each frame */
 @media (prefers-reduced-motion: reduce) { .join-bg::before { animation: none; } }
 .join-q { font-family: "Lilita"; font-size: clamp(20px, 2.2vw, 30px); color: var(--ink-2); }
@@ -1677,5 +1678,5 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
 /* 11-15 owner (signed in): refresh flashed the top-right (Join the beta / account) as topbar.js added the account
    button + menu and Discord appeared, shifting it twice. Keep that group invisible until topbar.js has built it
    (html.tb-site-on, same frame as the account paint), then show it whole; 1.5 s fallback if the script never runs. */
-@keyframes tb-cta-wait { to { visibility: visible; } }
-html:not(.tb-site-on) #nav .nav-cta { visibility: hidden; animation: tb-cta-wait 0s 1.5s forwards; }
+/* hidden until the bar is up, or 1.5 s (the page's head script adds .tb-late): a class, not an animation of visibility (site-perf-1115) */
+html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }

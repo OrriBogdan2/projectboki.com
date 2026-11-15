@@ -90,13 +90,13 @@ for e in picked:
     # dex-front-sync-1114: key hero art on the export's content-hash file name, not heroAt. Art swaps that replace
     # img/hero/<id>.webp without bumping heroAt (Chandelapi, Druzemole, Mycroll on 11-13/14) left the wall on the old art.
     s = shots.get(e["id"]); v = f"s{s['created']}" if s else f"h{files[hero(e)].split('.')[0][:12]}"
-    out = [f"{SITE}/assets/img/boki-front/{e['id']}-{w}.webp" for w in (480, 960)]
+    out = [f"{SITE}/assets/img/boki-front/{e['id']}-{w}.webp" for w in (240, 480, 960)]  # 240: the wall tiles (55-74 px wide), site-perf-1115
     # one-time move from the old h<heroAt> key: keep that art (no re-encode churn) - only safe once the wall matches the dex,
     # which ../meshy/dex-front-sync-1114/apply.sh checks (front_drift.py prints 0) before it runs this
     legacy = not s and re.fullmatch(r"h\d+", str(was.get(e["id"], ""))) is not None
     if not ((was.get(e["id"]) == v or legacy) and all(os.path.exists(o) for o in out)):   # art is only rebuilt when its source changed
         img = square(cut(blob(s["images"][0]))) if s else square(Image.open(io.BytesIO(blob(hero(e)))).convert("RGBA"))
-        for w, o in zip((480, 960), out):
+        for w, o in zip((240, 480, 960), out):
             img.resize((w, w), Image.LANCZOS).save(o, "WEBP", quality=84, method=6, alpha_quality=90)
     prev, nxt = [p for p in e.get("prev") or [] if p in by_id], [n for n in e.get("next") or [] if n in by_id]
     revealed.append({
@@ -125,7 +125,7 @@ while sils or eggs:   # mostly silhouettes, an egg every third tile
     if eggs: mixed.append(eggs.pop(0))
 
 # nothing hidden stays findable
-keep = {f"{i}-{w}.webp" for i in shown for w in (480, 960)}
+keep = {f"{i}-{w}.webp" for i in shown for w in (240, 480, 960)}
 for f in glob.glob(f"{SITE}/assets/img/boki-front/*.webp"):
     if os.path.basename(f) not in keep: os.remove(f)
 keep = {f"{h['sil']}-240.webp" for h in mixed if h["sil"]}

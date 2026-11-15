@@ -220,25 +220,71 @@ if (pick) {
   // Browsing shows the mid-size (960) file, which every Hunter has warmed up in idle time after load. The sharp file is
   // fetched only once the stage has rested on one Hunter for a moment, and a newer pick drops it, so spamming through
   // the roster never piles up big downloads: at most one sharp picture is ever on its way.
-  let sharpT = 0, sharpIm = null;
-  const dull = () => { clearTimeout(sharpT); if (sharpIm) { sharpIm.removeAttribute("srcset"); sharpIm.removeAttribute("src"); sharpIm = null; } };
+  let sharpT = 0, sharpIm = null, fx = null;
+  const unfx = () => { if (fx) { fx.remove(); fx = null; } };
+  const dull = () => { clearTimeout(sharpT); unfx(); if (sharpIm) { sharpIm.removeAttribute("srcset"); sharpIm.removeAttribute("src"); sharpIm = null; } };
+  // Carousel C (owner 11-15): once the shown Hunter's sharp file is in, the next and previous Hunters' sharp files load at
+  // low priority (never on Save-Data or 2g), so landing on a neighbour goes sharp at once. Older neighbour loads still on
+  // their way are dropped. The 960 -> sharp change is a short cross-fade (a layer over the art), not a pop.
+  const slowNet = () => { const c = navigator.connection; return !!(c && (c.saveData || /2g/.test(c.effectiveType || ""))); };
+  const near = new Map(); // Hunter id -> Image (a neighbour's sharp file)
+  const prefetch = (i) => {
+    if (slowNet()) return;
+    const n = HUNTERS.length, want = new Set([-1, 1].map((d) => HUNTERS[(i + d + n) % n][0]));
+    near.forEach((im, id) => { if (!want.has(id)) { if (!im.complete) im.removeAttribute("srcset"); near.delete(id); } });
+    want.forEach((id) => {
+      if (near.has(id) || art.getAttribute("srcset") === set(id)) return;
+      const im = new Image(); im.decoding = "async"; if ("fetchPriority" in im) im.fetchPriority = "low";
+      im.sizes = art.sizes; im.srcset = set(id); near.set(id, im);
+    });
+  };
+  const fadeSharp = (id) => { // the sharp file is decoded: fade it in over the 960 one, then the art itself takes it
+    if (!art.parentNode || matchMedia("(prefers-reduced-motion: reduce)").matches) { art.srcset = set(id); return; }
+    unfx(); const f = fx = art.cloneNode(false);
+    f.removeAttribute("id"); f.removeAttribute("data-zoom"); f.removeAttribute("loading"); f.className = "sharp-fx"; f.alt = ""; f.setAttribute("aria-hidden", "true");
+    f.srcset = set(id); art.after(f);
+    const done = () => { if (fx === f) unfx(); };
+    (f.decode ? f.decode() : Promise.resolve()).then(() => {
+      if (fx !== f) return;
+      requestAnimationFrame(() => { f.style.opacity = "1"; });
+      setTimeout(() => { if (fx !== f) return; art.srcset = set(id); (art.decode ? art.decode() : Promise.resolve()).then(done, done); }, 240);
+    }, done);
+  };
   const sharpen = (i, ms = 250) => {
     dull(); const id = HUNTERS[i][0];
-    if (art.getAttribute("srcset") === set(id)) return; // already sharp
+    if (art.getAttribute("srcset") === set(id)) { prefetch(i); return; } // already sharp
+    const pre = near.get(id); if (pre && pre.complete && pre.naturalWidth) ms = Math.min(ms, 60); // (prefetched: no need to wait)
     sharpT = setTimeout(() => {
       const im = sharpIm = new Image(); im.decoding = "async"; im.sizes = art.sizes; im.srcset = set(id);
-      const ok = () => { if (sharpIm !== im) return; sharpIm = null; if (current === i && !(slider && slider.busy())) art.srcset = set(id); };
+      const ok = () => { if (sharpIm !== im) return; sharpIm = null; if (current === i && !(slider && slider.busy())) { fadeSharp(id); prefetch(i); } };
       im.decode ? im.decode().then(ok, () => { if (sharpIm === im) sharpIm = null; }) : (im.onload = ok);
     }, ms);
   };
   const plain = (id) => { art.removeAttribute("srcset"); art.src = src(id, 960); }; // the stage on the mid-size file (sharpen follows)
+  // The carousel's own downloads (portraits, edge previews, the idle warm-up and the first sharp file) start after page
+  // load, as soon as the visitor scrolls, taps or presses a key, or the stage comes near the screen; a visit that never
+  // leaves the first screen does not pay for them (site-perf-1115). Anyone who moves gets them long before they arrive.
+  const whenNear = (() => {
+    const q = [], evs = ["scroll", "wheel", "pointerdown", "touchstart", "keydown"]; let go = false, io = null;
+    const fire = () => { if (go) return; go = true; evs.forEach((e) => removeEventListener(e, fire, true)); if (io) io.disconnect(); q.splice(0).forEach((f) => f()); };
+    const arm = () => {
+      evs.forEach((e) => addEventListener(e, fire, { capture: true, passive: true }));
+      const el = document.querySelector("#hunters .stage");
+      if (el && "IntersectionObserver" in window) { io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) fire(); }, { rootMargin: "0px 0px 20% 0px" }); io.observe(el); }
+      else fire();
+    };
+    if (document.readyState === "complete") arm(); else addEventListener("load", arm, { once: true });
+    return (f) => (go ? f() : q.push(f));
+  })();
+  whenNear(() => sharpen(current, 0));
 
   HUNTERS.forEach(([id, name, title], i) => {
     const b = document.createElement("button");
     b.type = "button";
     b.setAttribute("aria-label", `${name}, ${title}`);
     b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-    b.innerHTML = `<img src="${src(id, "face-192")}" alt=""><span>${name}</span>`; b.style.setProperty("--i", i);
+    b.innerHTML = `<img alt="" width="192" height="192"><span>${name}</span>`; b.style.setProperty("--i", i);
+    whenNear(() => { b.firstChild.src = src(id, "face-192"); });
     b.addEventListener("click", () => show(i));
     b.addEventListener("pointerenter", () => { new Image().src = src(id, 960); }, { once: true });
     pick.appendChild(b);
@@ -334,10 +380,10 @@ if (pick) {
     });
     sec.classList.toggle("peeks", peeks.every((p) => !p.el.hidden && !p.el.classList.contains("slim"))); // room for their own arrows: the small ones on the art step aside
   };
-  setPeeks();
+  whenNear(() => setPeeks());
   // After load, in idle time, every Hunter's mid-size file warms up, two at a time and at low priority, nearest first, so
   // a click or swipe always has its picture ready and fast browsing never starts a pile of downloads at once.
-  addEventListener("load", () => {
+  whenNear(() => {
     const n = HUNTERS.length, order = [], keep = [];
     for (let k = 1; k <= n / 2; k++) order.push((current + k) % n, (current - k + n) % n);
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
@@ -347,7 +393,7 @@ if (pick) {
       im.onload = im.onerror = () => idle(next); im.src = src(HUNTERS[i][0], 960);
     };
     idle(() => { next(); next(); }, { timeout: 3000 });
-  }, { once: true });
+  });
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -988,7 +1034,7 @@ if (bw) fetch("assets/boki.json").then((r) => r.json()).then((data) => {
       if (b) {
         const k = shown++;
         t.type = "button"; t.className = "bk-sil known"; t.style.setProperty("--g", TYPE[b.types[0]] || "#9a7dff");
-        t.innerHTML = `<img src="${pic(b, 480)}" alt="" loading="lazy" width="480" height="480">`;
+        t.innerHTML = `<img src="${pic(b, 240)}" alt="" loading="lazy" width="240" height="240">`; // tiles are 55-74 px: 240 covers 3x screens (site-perf-1115)
         t.setAttribute("aria-label", `${b.name}, ${b.types.join(" and ")} type`);
         t.addEventListener("click", () => openCard(k));
       } else {
