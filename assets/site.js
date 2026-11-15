@@ -192,7 +192,7 @@ if (heroIn && !calm) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const ART_V = "2026-11-15a50"; // bump when a Hunter splash changes
+const ART_V = "2026-11-15b12"; // bump when a Hunter splash changes
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
