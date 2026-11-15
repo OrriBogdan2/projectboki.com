@@ -192,7 +192,7 @@ if (heroIn && !calm) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const ART_V = "2026-11-15t59"; // bump when a Hunter splash changes
+const ART_V = "2026-11-15w31"; // bump when a Hunter splash changes
 // order 11-15 owner (r3: Grimble before Cinder): Kael Lace Albert = kingsguard trio (Cinder is not kingsguard); Sable last so Gill splits the purples (Motley/Sable)
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
