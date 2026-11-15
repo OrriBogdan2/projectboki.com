@@ -1588,7 +1588,7 @@ img:is([src*="/hunters/tarek-"], [srcset*="/hunters/tarek-"]) { --fx: 10%; }
 img:is([src*="/hunters/lisette-"], [srcset*="/hunters/lisette-"]) { --fx: 61%; }
 img:is([src*="/hunters/vex-"], [srcset*="/hunters/vex-"]) { --fx: 66%; }
 img:is([src*="/hunters/kael-"], [srcset*="/hunters/kael-"]) { --fx: 72%; }
-img:is([src*="/hunters/pip-"], [srcset*="/hunters/pip-"]) { --fx: 47%; }
+img:is([src*="/hunters/pip-"], [srcset*="/hunters/pip-"]) { --fx: 62%; }
 img:is([src*="/hunters/breaker-"], [srcset*="/hunters/breaker-"]) { --fx: 53%; }
 img:is([src*="/hunters/sable-"], [srcset*="/hunters/sable-"]) { --fx: 42%; }
 img:is([src*="/hunters/cinder-"], [srcset*="/hunters/cinder-"]) { --fx: 53%; }
