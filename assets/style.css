@@ -1640,7 +1640,8 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
 }
 @media (max-width: 720px) {
   /* the name sits on the bottom of the art instead of a panel under it, so the frame grows a little and nothing else moves down */
-  #hunters .stage { --sh: clamp(240px, min(calc((100vw - 44px) / .94), calc(100svh - 250px)), 74svh); }
+  /* 11-15 owner: "why is it zoomed in ... vex looks worse if you cant see her arm": a 5:4 frame, ~70% of the art's width (was ~52%) */
+  #hunters .stage { --sh: clamp(220px, min(calc((100vw - 44px) / 1.25), calc(100svh - 250px)), 74svh); }
   #hunters .info { grid-area: shot; align-self: end; padding: 56px 14px 14px 16px; background: linear-gradient(to top, rgba(8,13,24,.92), rgba(8,13,24,.6) 50%, transparent); }
   #hunters .info .role { margin-bottom: 3px; font-size: 12px; }
   #hunters .info h3 { font-size: 34px; }
