@@ -1646,3 +1646,5 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
   #hunters .info h3 { font-size: 34px; }
   #hunters .info .title { margin-top: 3px; font-size: 13px; }
 }
+/* 11-15: Boki wall leads the section, pillars follow */
+.bk-dark.bk-first { margin-top: 0; margin-bottom: clamp(64px, 9vw, 140px); }
