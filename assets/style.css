@@ -1584,7 +1584,7 @@ html.su-signed .faq-join { display: none; }
    The splash is cropped from the wide art (CSS only, the same hi-res file) to a tall frame that fills most of the screen,
    each Hunter framed on their face by --fx (the horizontal object-position; the full height of the art always shows). */
 img:is([src*="/hunters/ryzz-"], [srcset*="/hunters/ryzz-"]) { --fx: 23%; }
-img:is([src*="/hunters/tarek-"], [srcset*="/hunters/tarek-"]) { --fx: 60%; }
+img:is([src*="/hunters/tarek-"], [srcset*="/hunters/tarek-"]) { --fx: 10%; }
 img:is([src*="/hunters/lisette-"], [srcset*="/hunters/lisette-"]) { --fx: 61%; }
 img:is([src*="/hunters/vex-"], [srcset*="/hunters/vex-"]) { --fx: 66%; }
 img:is([src*="/hunters/kael-"], [srcset*="/hunters/kael-"]) { --fx: 72%; }
