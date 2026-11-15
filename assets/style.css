@@ -1651,5 +1651,14 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
   #hunters .info h3 { font-size: 34px; }
   #hunters .info .title { margin-top: 3px; font-size: 13px; }
 }
+/* 11-15 owner: "match the name : title etc on phone to how it is on pc": one bar like desktop (Name, Title, Role on one
+   baseline, wrapping only when long), Abilities on the right, a shorter shade so less of the art is covered */
+@media (max-width: 720px) {
+  #hunters .info { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 9px; row-gap: 1px; padding: 34px 128px 13px 16px; }
+  #hunters .info h3 { order: 1; font-size: 30px; }
+  #hunters .info .title { order: 2; margin: 0; font-size: 12px; }
+  #hunters .info .role { order: 3; margin: 0; font-size: 11px; }
+  #hunters .h-more { position: absolute; right: 12px; bottom: 12px; margin: 0; }
+}
 /* 11-15: Boki wall leads the section, pillars follow */
 .bk-dark.bk-first { margin-top: 0; margin-bottom: clamp(64px, 9vw, 140px); }
