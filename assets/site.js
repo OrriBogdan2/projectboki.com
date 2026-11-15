@@ -192,19 +192,19 @@ if (heroIn && !calm) {
 
 /* ---------- Hunters: pick a Mask ---------- */
 // [id, name, title, has an up-to-date in-game model, role (from the kit's role line in the game)]
-const ART_V = "2026-11-15b12"; // bump when a Hunter splash changes
+const ART_V = "2026-11-15b14"; // bump when a Hunter splash changes
 const HUNTERS = [
   ["vex", "Vex", "The Hired Gun", true, "Gunslinger"],
   ["tarek", "Tenzo", "The Stone Seer", true, "Brawler"],
-  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["ryzz", "Sparkle", "The Storm Chaser", true, "Skirmisher"],
+  ["kael", "Kael", "The Unbroken", true, "Bruiser"],
   ["lisette", "Lace", "The Red Stitch", true, "Marksman"],
   ["cinder", "Cinder", "The Ashen Kiss", true, "Initiator"],
   ["sable", "Sable", "The Silver Thief", true, "Duelist"],
-  ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["breaker", "Albert", "The Barnacle Knight", true, "Tank"],
-  ["claire", "Neve", "The Snowglide", true, "Controller"],
   ["grimble", "Grimble", "The Scrap King", true, "Initiator"],
+  ["claire", "Neve", "The Snowglide", true, "Controller"],
+  ["pip", "Meeko", "The Dawnfox", true, "Support"],
   ["motley", "Motley", "The Void Jester", true, "Controller"],
   ["gill", "Gill", "The Novice Mage", false, "Controller"],
 ];
