@@ -1,7 +1,7 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit 24a9d4bd01cefe4f223e8fd1191a1b53a2f29c37
-built 2026-11-15T11:00Z
+commit ace561dba72c7956996dd443b8e00be087d8971d
+built 2026-11-15T13:10Z
 h_vex d0f119de579323bf98f26d3852a65f687bf99780 art/wardens/vex/vex.glb cdce263163d 2026-11-13
 h_breaker b02f17c64f91fa1a6e32afd6e8bec1209c156e49 art/wardens/breaker/breaker.glb 44beee26589 2026-11-15
 h_claire 8ddc86b40e9845195ceeabcf93c34fb99b574833 art/wardens/claire/claire.glb 3279b19805a 2026-11-14
@@ -11,7 +11,7 @@ h_tarek 0da9218debd7700365563d13037255e00821ca23 art/wardens/tarek/tarek.glb 7cf
 h_ryzz 14c2e6f8514db8828ee2aeaa0ca9ff570e3e9b90 art/wardens/ryzz/ryzz.glb bfae359ad9d 2026-11-15
 h_dredge a2d94a5f47e16613d2b5a03320b9e1ccadff54c9 art/wardens/dredge/dredge.glb 3279b19805a 2026-11-14
 h_pip 398e8d8ee4a6b08a7ef890d28ae3090dadfcfa88 art/wardens/pip/pip.glb 21a14a0c082 2026-11-14
-h_sable d7755e820bda950a25f8f083484195f87a316675 art/wardens/sable/sable.glb 9c7651d982e 2026-11-14
+h_sable a21d7be3ad16e3319d0f2354c7c7846656a73a0e art/wardens/sable/sable.glb deccdd6a165 2026-11-15
 h_hem cfe5e6152d725b0705b2b3e4bbe1791b2d2a88b3 art/wardens/hem/hem.glb 44e141092da 2026-11-13
 h_ostra 577bad5e14dffb1ecdb53b7e5065880c8d506b38 art/wardens/ostra/ostra.glb 86289076060 2026-11-14
 b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
