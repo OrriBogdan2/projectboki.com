@@ -216,16 +216,31 @@ if (pick) {
   const $ = (id) => document.getElementById(id);
   const src = (id, w) => `assets/img/hunters/${id}-${w}.webp?v=${ART_V}`;
   const set = (id) => `${src(id, 960)} 960w, ${src(id, 1600)} 1600w, ${src(id, 2400)} 2400w`;
-  let current = 0;
+  let current = 0, slider = null; // slider: the sideways slide between Hunters (set up further down); without it the art cross-fades
+  // Browsing shows the mid-size (960) file, which every Hunter has warmed up in idle time after load. The sharp file is
+  // fetched only once the stage has rested on one Hunter for a moment, and a newer pick drops it, so spamming through
+  // the roster never piles up big downloads: at most one sharp picture is ever on its way.
+  let sharpT = 0, sharpIm = null;
+  const dull = () => { clearTimeout(sharpT); if (sharpIm) { sharpIm.removeAttribute("srcset"); sharpIm.removeAttribute("src"); sharpIm = null; } };
+  const sharpen = (i, ms = 250) => {
+    dull(); const id = HUNTERS[i][0];
+    if (art.getAttribute("srcset") === set(id)) return; // already sharp
+    sharpT = setTimeout(() => {
+      const im = sharpIm = new Image(); im.decoding = "async"; im.sizes = art.sizes; im.srcset = set(id);
+      const ok = () => { if (sharpIm !== im) return; sharpIm = null; if (current === i && !(slider && slider.busy())) art.srcset = set(id); };
+      im.decode ? im.decode().then(ok, () => { if (sharpIm === im) sharpIm = null; }) : (im.onload = ok);
+    }, ms);
+  };
+  const plain = (id) => { art.removeAttribute("srcset"); art.src = src(id, 960); }; // the stage on the mid-size file (sharpen follows)
 
   HUNTERS.forEach(([id, name, title], i) => {
     const b = document.createElement("button");
     b.type = "button";
     b.setAttribute("aria-label", `${name}, ${title}`);
     b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-    b.innerHTML = `<img src="${src(id, "face-192")}" alt="" loading="lazy"><span>${name}</span>`; b.style.setProperty("--i", i);
+    b.innerHTML = `<img src="${src(id, "face-192")}" alt=""><span>${name}</span>`; b.style.setProperty("--i", i);
     b.addEventListener("click", () => show(i));
-    b.addEventListener("pointerenter", () => { const im = new Image(); im.srcset = set(id); im.sizes = art.sizes; }, { once: true });
+    b.addEventListener("pointerenter", () => { new Image().src = src(id, 960); }, { once: true });
     pick.appendChild(b);
   });
 
@@ -286,12 +301,12 @@ if (pick) {
   // row to move along, which one picture with two small arrows did not. On phones they are slivers at the screen edges.
   const peeks = stage && pinEl ? [-1, 1].map((d) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "h-peek " + (d < 0 ? "prev" : "next");
-    b.innerHTML = `<img alt="" decoding="async" loading="lazy"><img class="pk2" alt="" decoding="async" hidden><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
+    b.innerHTML = `<img alt="" decoding="async"><img class="pk2" alt="" decoding="async" hidden><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d < 0 ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`;
     b.addEventListener("click", () => show(current + d));
     pinEl.appendChild(b);
     return { el: b, img: b.firstChild, inc: b.children[1], d }; // inc: the picture that rides in while the stage slides
   }) : [];
-  let peeksLive = false; // their art is only fetched once the Hunters are getting close
+  const peeksLive = true; // (their art loads with the page: the carousel is ready before you reach it)
   // quiet: swap without the fade (the slide has already brought the new picture in). at: the Hunter they flank, which
   // during fast browsing is the one the stage holds, not the newest pick still on its way
   const setPeeks = (quiet, at = current) => peeksLive && peeks.forEach((p) => {
@@ -310,14 +325,29 @@ if (pick) {
       p.el.hidden = even < (vw <= 720 ? 12 : 18); // (phones: the stage nearly fills the width, the neighbours are thin slivers)
       s.top = stage.offsetTop + "px"; s.height = stage.offsetHeight + "px"; s.width = w + "px";
       s.left = (p.d < 0 ? stage.offsetLeft - gap - w : stage.offsetLeft + stage.offsetWidth + gap) + "px";
+      // Each preview is a window onto its own row of full-size cards, spaced exactly like the stage's (one stage width plus
+      // the gap), so during a slide all three windows move the same pixels at the same pace. At rest it shows the middle
+      // of the neighbour's card, the same crop as before.
+      const card = Math.max(w, Math.min(stage.offsetHeight * 2000 / 1116, shot.offsetWidth));
+      [p.img, p.inc].forEach((im) => { im.style.width = card + "px"; im.style.left = ((w - card) / 2).toFixed(1) + "px"; });
       p.el.classList.toggle("edge", w >= room - 1); // flat outer side only when it reaches the screen edge p.el.classList.toggle("slim", w < 96);
     });
     sec.classList.toggle("peeks", peeks.every((p) => !p.el.hidden && !p.el.classList.contains("slim"))); // room for their own arrows: the small ones on the art step aside
   };
-  if (peeks.length && "IntersectionObserver" in window) {
-    const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { peeksLive = true; setPeeks(); near.disconnect(); } }, { rootMargin: "1400px 0px" });
-    near.observe(sec);
-  } else { peeksLive = true; setPeeks(); }
+  setPeeks();
+  // After load, in idle time, every Hunter's mid-size file warms up, two at a time and at low priority, nearest first, so
+  // a click or swipe always has its picture ready and fast browsing never starts a pile of downloads at once.
+  addEventListener("load", () => {
+    const n = HUNTERS.length, order = [], keep = [];
+    for (let k = 1; k <= n / 2; k++) order.push((current + k) % n, (current - k + n) % n);
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+    const next = () => {
+      const i = order.shift(); if (i === undefined) return;
+      const im = new Image(); im.decoding = "async"; if ("fetchPriority" in im) im.fetchPriority = "low"; keep.push(im);
+      im.onload = im.onerror = () => idle(next); im.src = src(HUNTERS[i][0], 960);
+    };
+    idle(() => { next(); next(); }, { timeout: 3000 });
+  }, { once: true });
   const paintScene = (q) => {
     if (q === lastQ) return;
     lastQ = q;
@@ -638,7 +668,6 @@ if (pick) {
     }
   }
 
-  let slider = null; // the sideways slide between Hunters (set up further down); without it the art cross-fades
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
@@ -661,11 +690,10 @@ if (pick) {
     art.classList.add("out");
     const next = new Image();
     next.sizes = art.sizes;
-    next.srcset = set(id);
+    next.src = src(id, 960);
     const swap = () => {
       if (current !== i) return;
-      art.srcset = set(id);
-      art.src = src(id, 1600);
+      plain(id); sharpen(i);
       art.alt = `${name}, ${title}`;
       art.closest(".stage").dataset.h = id; // hook for per-Hunter CSS tweaks
       $("h-name").textContent = name;
@@ -769,9 +797,10 @@ if (pick) {
     // The edge previews ride along: each one's picture moves out the same way the stage does while its next picture moves
     // in behind it, so all three windows shift together like one belt.
     let belt = false, beltTok = 0;
-    const place = (dx) => {
-      x = dx; cw.style.translate = `${dx.toFixed(1)}px 0`; inc.style.translate = `${(dx + dir * W()).toFixed(1)}px 0`;
-      if (belt) { const f = dx / W(); peeks.forEach((p) => { p.img.style.translate = `${(f * 100).toFixed(2)}% 0`; p.inc.style.translate = `${((f + dir) * 100).toFixed(2)}% 0`; }); }
+    const place = (dx) => { // every layer moves the same pixels: the stage and each preview's row of cards (laid out in layPeeks)
+      const w = W(), a = dx.toFixed(1) + "px 0", b = (dx + dir * w).toFixed(1) + "px 0";
+      x = dx; cw.style.translate = a; inc.style.translate = b;
+      if (belt) peeks.forEach((p) => { p.img.style.translate = a; p.inc.style.translate = b; });
     };
     const beltOff = () => { // once each preview's own picture is ready again, it takes over and the riding picture steps aside
       if (!belt) return;
@@ -786,8 +815,8 @@ if (pick) {
     };
     const prep = (i, d) => {
       tgt = i; dir = d; const id = HUNTERS[i][0];
-      hi.classList.remove("ok"); hi.removeAttribute("srcset"); hi.removeAttribute("src");
-      lo.src = src(id, 960); hi.sizes = art.sizes; hi.srcset = set(id);
+      dull(); hi.classList.remove("ok"); hi.removeAttribute("srcset"); hi.removeAttribute("src"); // (moving: the 960 file only)
+      lo.src = src(id, 960);
       inc.hidden = false; info.classList.add("swap");
       belt = peeksLive; beltTok++;
       if (belt) peeks.forEach((p) => { p.inc.src = src(HUNTERS[(i + p.d + HUNTERS.length) % HUNTERS.length][0], 960); p.inc.hidden = false; });
@@ -796,7 +825,7 @@ if (pick) {
       const onward = want >= 0 && want !== shown; // (another slide follows: the name stays hidden, so in-between names don't flash)
       rid++; token++; mode = 0; tgt = -1; x = 0; cw.style.translate = ""; inc.style.translate = ""; inc.hidden = true;
       info.classList.toggle("swap", onward); setPeeks(true, shown); beltOff(); lastRest = performance.now();
-      if (want >= 0) chain();
+      if (want >= 0) chain(); else sharpen(shown);
     };
     const chain = () => { // set off for the newest pick once the frame and the edge previews show the Hunter just landed on
       const i = want; want = -1;
@@ -823,13 +852,13 @@ if (pick) {
       const i = tgt, id = HUNTERS[i][0], my = ++token; shown = i;
       mode = 3; label(i); if (want < 0 || want === i) info.classList.remove("swap"); setPeeks(true, i); // (the previews' own pictures are out of view right now)
       cw.style.translate = ""; x = 0; inc.style.translate = "0px 0";
-      art.srcset = set(id); art.src = src(id, 1600);
+      plain(id);
       const done = () => { if (my === token) rest(); };
       (art.decode ? art.decode() : Promise.resolve()).then(done, done);
     };
     const snap = (i) => { // the window changed size mid-move: no slide, just show it
       want = -1; shown = i; rest(); drag = null; root.classList.remove("h-drag");
-      const id = HUNTERS[i][0]; label(i); art.srcset = set(id); art.src = src(id, 1600);
+      label(i); plain(HUNTERS[i][0]); sharpen(i);
     };
     slider = {
       go(i) {
@@ -898,7 +927,7 @@ if (pick) {
       clearTimeout(timer); clearTimeout(still); pick.classList.remove("idle");
       if (!ok()) { if (on && vis && sceneOn) still = setTimeout(() => idleArm(), 1500); return; } // (resting on a button: look again shortly)
       void pick.offsetWidth; pick.classList.add("idle"); // restart the line with the timer
-      const n = HUNTERS[(current + 1) % HUNTERS.length], pre = new Image(); pre.sizes = art.sizes; pre.srcset = set(n[0]); // the next splash is ready when its turn comes
+      const n = HUNTERS[(current + 1) % HUNTERS.length], pre = new Image(); pre.src = src(n[0], 960); // the next splash is ready when its turn comes
       timer = setTimeout(() => { if (ok()) { byIdle = true; show(current + 1); byIdle = false; } idleArm(); }, DWELL);
     };
     new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (!vis) on = true; idleArm(); }, { threshold: 0.6 }).observe(stageEl);

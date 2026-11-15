@@ -1252,7 +1252,9 @@ html.su-signed .bk-cta { display: none; } /* already in: no second "Join the bet
 @media (min-width: 901px) and (min-aspect-ratio: 501/400) and (min-height: 681px) { .hero { padding-bottom: clamp(56px, 9vh, 96px); } }
 
 /* Hunters: the edge previews carry a second picture that rides in while the stage slides (site.js) */
-.h-peek .pk2 { position: absolute; left: 0; top: 0; }
+/* Each picture is a full-size card (width and left set in site.js) seen through the narrow window, so the previews move
+   with the stage pixel for pixel: one belt. */
+.h-peek img { position: absolute; left: 0; top: 0; max-width: none; }
 .h-peek img[hidden] { display: none; }
 
 /* ---------- Review pass (11-11) ---------- */
