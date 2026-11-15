@@ -731,17 +731,20 @@ if (pick) {
   // Sideways scrolling browses the Hunters: a trackpad swipe left or right, or Shift + wheel. One Hunter per swipe.
   // Up and down scrolling is left alone, so it carries on down the page.
   {
-    let acc = 0, lastX = 0, used = false;
+    let acc = 0, lastX = 0, used = false, sgn = 0, low = Infinity, usedAt = 0;
     sec.addEventListener("wheel", (e) => {
       const dx = e.deltaX || (e.shiftKey ? e.deltaY : 0);
       if (!dx || Math.abs(dx) < Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
       if (!stageUp()) return; // only once the stage is up
       e.preventDefault(); // and not the browser's back/forward swipe
-      const now = performance.now();
-      if (now - lastX > 220) { acc = 0; used = false; } // a new swipe
-      lastX = now; if (used) return;
-      acc += dx * (e.deltaMode === 1 ? 32 : 1);
-      if (Math.abs(acc) > 40) { used = true; show(current + Math.sign(acc)); }
+      const now = performance.now(), v = dx * (e.deltaMode === 1 ? 32 : 1), a = Math.abs(v), d = Math.sign(v);
+      // a new swipe: a pause, a turn, or (inside a flung swipe's coasting tail, which only ever fades) the fingers
+      // pushing again, so the speed climbs back up from its low. Without that a fling held the slider for seconds.
+      if (now - lastX > 220 || d !== sgn) { acc = 0; used = false; low = Infinity; }
+      else if (used) { low = Math.min(low, a); if (now - usedAt > 200 && a > low * 2.5 && a > low + 10) { acc = 0; used = false; low = Infinity; } }
+      sgn = d; lastX = now; if (used) return;
+      acc += v;
+      if (Math.abs(acc) > 40) { used = true; usedAt = now; low = Infinity; show(current + Math.sign(acc)); }
     }, { passive: false });
   }
   // The Hunters slide. The picture follows your finger or mouse: pull sideways and the next Hunter comes in from that side,
