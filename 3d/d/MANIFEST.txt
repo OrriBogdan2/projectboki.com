@@ -1,18 +1,18 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit 6f7e0ae217e1c8593b12e62f691586acdf0a3478
-built 2026-11-15T23:50Z
-h_vex 60e2b625ec7996e15acb961dcfd270cf306c8324 art/wardens/vex/vex.glb e3038a48668 2026-11-15
+commit 5bfa1ad6451a2f368d9fdbb3c9b01a98b9daa12a
+built 2026-11-16T06:10Z
+h_vex 2ebc214dfbc857ef0fcdafdf8f83dabe05feabd4 art/wardens/vex/vex.glb 2cea0558976 2026-11-15
 h_breaker 4333e3925401f00bfd1f68acb3c69132f66fe19f art/wardens/breaker/breaker.glb e3038a48668 2026-11-15
 h_claire 5f81a3d4ed7ec35e2b078837d1f513bcb7d9e4e5 art/wardens/claire/claire.glb e3038a48668 2026-11-15
 h_kael 90f3b27f3075d129c1c82d5d7d57116da316b138 art/wardens/kael/kael.glb e3038a48668 2026-11-15
-h_cinder 397f61350710fd5c8fa80c83cf2c35dd03649130 art/wardens/cinder/cinder.glb e3038a48668 2026-11-15
+h_cinder eeab169ab8663bedafb6c37e4cf1cb672db00da9 art/wardens/cinder/cinder.glb 2cea0558976 2026-11-15
 h_tarek 9ba8e1e651968b474aa1cf0cd80ccfb54142022f art/wardens/tarek/tarek.glb e3038a48668 2026-11-15
 h_ryzz 7387b64a881304cee4e6522e7f5964d5b7edde63 art/wardens/ryzz/ryzz.glb e3038a48668 2026-11-15
 h_dredge cdb679da15618488673699c6e4063e6e8bc9789d art/wardens/dredge/dredge.glb e3038a48668 2026-11-15
 h_pip a456d11fea6d0ace207be94b30fbe278ffedde4b art/wardens/pip/pip.glb e3038a48668 2026-11-15
 h_sable 368c3e00789dd707524400c77bf52c066860ebb4 art/wardens/sable/sable.glb e3038a48668 2026-11-15
-h_hem bcd2f8bc141a125ec3e10470c1343b82dabff973 art/wardens/hem/hem.glb e3038a48668 2026-11-15
+h_hem 6deba6dbe172494ba8853a0c2a70f46f302a7a96 art/wardens/hem/hem.glb 2cea0558976 2026-11-15
 h_ostra 91bbee7ba3b6134f7c98ec3ad8f850cd8067200f art/wardens/ostra/ostra.glb e3038a48668 2026-11-15
 b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
 b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
