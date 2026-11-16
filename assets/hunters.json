@@ -1,7 +1,7 @@
 {
  "lisette": {
   "color": "#e8483e",
-  "style": "Time each bow draw, pin foes to walls with Pin Downs, and watch hurt rivals through cover.",
+  "style": "Time each draw, Pin Down foes against walls, and spot hurt rivals through cover.",
   "kit": [
    {
     "key": "LMB",
@@ -85,7 +85,7 @@
  },
  "breaker": {
   "color": "#8fd0ff",
-  "style": "Block with your aegis, then knock foes into walls with your hammer to stun them.",
+  "style": "Block with your aegis, then hammer foes into walls to stun them.",
   "kit": [
    {
     "key": "LMB",
@@ -337,7 +337,7 @@
  },
  "motley": {
   "color": "#7fe0d0",
-  "style": "Stuns from range, drops a growing bomb on the stunned, and trades places to set it up.",
+  "style": "Stun from range, drop a growing bomb on the stunned, swap places to set it up.",
   "kit": [
    {
     "key": "LMB",
@@ -505,7 +505,7 @@
  },
  "gill": {
   "color": "#3f8fe0",
-  "style": "Throw whatever vial comes out of the bag, stack different effects to Beach your foes, then spin up a waterspout.",
+  "style": "Throw random vials, stack effects to Beach your foes, then spin up a waterspout.",
   "kit": [
    {
     "key": "LMB",

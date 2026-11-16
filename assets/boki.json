@@ -127,7 +127,7 @@
   },
   {
    "id": "fawngus",
-   "name": "Fawnshroom",
+   "name": "Fawngus",
    "types": [
     "spore"
    ],
@@ -137,7 +137,7 @@
    "into": [
     null
    ],
-   "desc": "Fawnshroom is a fawn whose big floppy ears are dappled mushroom caps.",
+   "desc": "Fawngus is a fawn whose big floppy ears are dappled mushroom caps.",
    "v": "h1bcbde3c4925",
    "shot": false
   },
@@ -434,7 +434,7 @@
   },
   {
    "id": "oarlet",
-   "name": "Oarlet",
+   "name": "Oarpup",
    "types": [
     "water"
    ],
@@ -444,7 +444,7 @@
    "into": [
     null
    ],
-   "desc": "Oarlet is an otter pup with a little paddle for a tail.",
+   "desc": "Oarpup is an otter pup with a little paddle for a tail.",
    "v": "hb752589dff52",
    "shot": false
   },
@@ -493,7 +493,7 @@
   },
   {
    "id": "cairnback",
-   "name": "Cairnback",
+   "name": "Cairnhorn",
    "types": [
     "rock",
     "ghost"
@@ -533,7 +533,7 @@
    "fromHidden": false,
    "into": [],
    "desc": "A little sky serpent: a moray eel's long body with a swift's swept wings, crackling with static. Hatched from Stormcoil's egg.",
-   "v": "h92b1166847de",
+   "v": "h4ff1dcde4882",
    "shot": false
   },
   {
@@ -867,7 +867,7 @@
    "fromHidden": true,
    "into": [],
    "desc": "An albatross with patched ship sails for wings; grab the rigging under it and it carries you across the gap. Easygoing, fearless, a wanderer; restless when it has not seen the sea.",
-   "v": "h6ff012c77a5a",
+   "v": "h1f578ee07dad",
    "shot": false
   },
   {
@@ -941,7 +941,7 @@
    "fromHidden": true,
    "into": [],
    "desc": "Lanceron is a tall heron with wings of ice feathers and a beak as long as a lance.",
-   "v": "h8aca9de535c8",
+   "v": "h65d0ba8d21b5",
    "shot": false
   },
   {
