@@ -1700,7 +1700,7 @@ html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }
    boots stay clear of the fade, and the fade lands on the page colour instead of the old green-black. */
 @media (max-width: 900px), (max-aspect-ratio: 5/4) {
   .hero-media { --top: 0px; --low: 40px; background: var(--bg); }
-  .hero-art { object-position: 94% 50%; }
+  .hero-art { object-position: 74% 50%; /* 11-16: 94% cut Sparkle's face in half on phones; 74% keeps her whole face and Tenzo's hand */ }
   .hero-media::before { height: 84px; background: linear-gradient(180deg, rgba(8,18,42,.62), rgba(8,18,42,0)); }
   .hero-media::after { height: 13%; background: linear-gradient(180deg, rgba(8,13,24,0), var(--bg)); }
 }
