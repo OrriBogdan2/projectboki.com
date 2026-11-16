@@ -1391,8 +1391,11 @@ function arrowKeys(section, strip, go) {
       stage.classList.toggle("hm-src", opening);
       img.classList.add("fly");
       const fade = (el) => { // (closing: the card and the art panel's dark grounds go clear at the end too, over the splash)
-        const bg = getComputedStyle(el).backgroundColor, clear = bg.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
-        return [{ backgroundColor: clear }, { backgroundColor: bg, offset: 0.15 }, { backgroundColor: bg }];
+        const cs = getComputedStyle(el), bg = cs.backgroundColor, clear = bg.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
+        if (el !== card) return [{ backgroundColor: clear }, { backgroundColor: bg, offset: 0.15 }, { backgroundColor: bg }];
+        // (the card's 1px border and drop shadow go clear with its ground, or they stay up as a faint outline over the splash)
+        const bc = cs.borderTopColor, bclear = bc.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
+        return [{ backgroundColor: clear, borderColor: bclear, boxShadow: "0 0 0 0 rgba(0,0,0,0)" }, { backgroundColor: bg, borderColor: bc, boxShadow: cs.boxShadow, offset: 0.15 }, { backgroundColor: bg, borderColor: bc, boxShadow: cs.boxShadow }];
       };
       out.push(card.animate([{ clipPath: g.clip }, { clipPath: g.clip1 }], o));
       if (!opening) [card, box.querySelector(".hm-art")].forEach((el) => out.push(el.animate(fade(el), o)));
