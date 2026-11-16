@@ -1691,8 +1691,8 @@ html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }
   .hero-art { object-position: 100% 50%; }
   .hero-media::after { background:
     linear-gradient(180deg, rgba(8,18,42,.55) 0%, rgba(8,18,42,0) 17%),
-    linear-gradient(90deg, rgba(8,18,42,.7) 0%, rgba(8,18,42,.62) 22%, rgba(8,18,42,.3) 36%, rgba(8,18,42,0) 48%),
-    linear-gradient(0deg, rgba(8,13,24,.7) 0%, rgba(8,13,24,0) 22%); }
+    linear-gradient(90deg, rgba(8,18,42,.34) 0%, rgba(8,18,42,.26) 22%, rgba(8,18,42,.1) 36%, rgba(8,18,42,0) 46%),
+    linear-gradient(0deg, rgba(8,13,24,.3) 0%, rgba(8,13,24,0) 14%); } /* 11-16: shade roughly halved so the dragon bottom-left reads (tagline gone; sign-up has its own backing) */
   .tag { text-shadow: 0 2px 14px rgba(6,14,36,.85), 0 0 2px rgba(6,14,36,.6); }
   .hero-su .su-row { background: rgba(8,16,38,.66); }
 }
