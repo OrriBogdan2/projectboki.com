@@ -1681,3 +1681,32 @@ img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
    (html.tb-site-on, same frame as the account paint), then show it whole; 1.5 s fallback if the script never runs. */
 /* hidden until the bar is up, or 1.5 s (the page's head script adds .tb-late): a class, not an animation of visibility (site-perf-1115) */
 html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }
+
+/* ---------- First screen fit for the Skylands airship picture (11-16 owner: "new background to fit better").
+   The cast (Sparkle, Neve, Tenzo) lives in the right half of the picture, so the picture is pinned to its right edge:
+   whatever the window crops is sky and floating isles on the left, never Tenzo. The old night-dark wash is a navy
+   that fades out before Sparkle, so the bright sky stays bright and the logo and sign-up stay readable. ---------- */
+.lockup .wordmark, .wm-half img { filter: drop-shadow(0 4px 12px rgba(6,14,36,.5)); } /* the old 40 px black glow was clipped by the logo's box into a dark rectangle on the sky */
+@media (min-width: 901px) and (min-aspect-ratio: 501/400) {
+  .hero-art { object-position: 100% 50%; }
+  .hero-media::after { background:
+    linear-gradient(180deg, rgba(8,18,42,.55) 0%, rgba(8,18,42,0) 17%),
+    linear-gradient(90deg, rgba(8,18,42,.7) 0%, rgba(8,18,42,.62) 22%, rgba(8,18,42,.3) 36%, rgba(8,18,42,0) 48%),
+    linear-gradient(0deg, rgba(8,13,24,.7) 0%, rgba(8,13,24,0) 22%); }
+  .tag { text-shadow: 0 2px 14px rgba(6,14,36,.85), 0 0 2px rgba(6,14,36,.6); }
+  .hero-su .su-row { background: rgba(8,16,38,.66); }
+}
+/* phones and tall windows: the picture runs up under the top bar (a soft navy fade keeps the bar readable), Tenzo's
+   boots stay clear of the fade, and the fade lands on the page colour instead of the old green-black. */
+@media (max-width: 900px), (max-aspect-ratio: 5/4) {
+  .hero-media { --top: 0px; --low: 40px; background: var(--bg); }
+  .hero-art { object-position: 94% 50%; }
+  .hero-media::before { height: 84px; background: linear-gradient(180deg, rgba(8,18,42,.62), rgba(8,18,42,0)); }
+  .hero-media::after { height: 13%; background: linear-gradient(180deg, rgba(8,13,24,0), var(--bg)); }
+}
+/* squarer windows (1.25 to 16:9): the picture is as tall as the window and pinned right, so Sparkle's left edge sits at
+   100vw - 0.89 x height. The logo column stops before it, so no text ever lands on a hunter. */
+@media (min-width: 901px) and (min-aspect-ratio: 501/400) and (max-aspect-ratio: 16/9) {
+  .hero-in { width: clamp(270px, calc(100vw - 89svh - 3vw - 28px), min(33vw, 640px)); margin-left: 3vw; }
+  .lockup { --wm: clamp(270px, calc(100vw - 89svh - 3vw - 28px), min(33vw, 640px)); }
+}
