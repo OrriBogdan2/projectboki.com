@@ -693,6 +693,21 @@
    "shot": false
   },
   {
+   "id": "chandelapi",
+   "name": "Candelapi",
+   "types": [
+    "dark",
+    "fire"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Candelapi wears a whole chandelier of antlers and black candles, and on moonless nights it lights the meadow so nobody is scared of the dark.",
+   "v": "h97f34806c1bf",
+   "shot": false
+  },
+  {
    "id": "voltalon",
    "name": "Voltalon",
    "types": [
@@ -782,35 +797,6 @@
    "shot": false
   },
   {
-   "id": "maulangler",
-   "name": "Maulangler",
-   "types": [
-    "dark"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
-   "v": "h84b1ceb300f2",
-   "shot": false
-  },
-  {
-   "id": "chandelapi",
-   "name": "Candelapi",
-   "types": [
-    "ghost",
-    "fire"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Candelapi is a tall wax okapi crowned with a chandelier of antlers and purple candles, bright enough to light a meadow.",
-   "v": "ha9da57e38dc1",
-   "shot": false
-  },
-  {
    "id": "thunderstrich",
    "name": "Thundrich",
    "types": [
@@ -896,6 +882,21 @@
    "into": [],
    "desc": "Vaultara is a huge tuatara whose shell has become a round vault door.",
    "v": "h3880824f23af",
+   "shot": false
+  },
+  {
+   "id": "sloggoth",
+   "name": "Sloggoth",
+   "types": [
+    "ghost",
+    "psychic"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Sloggoth is a great grinning heap of ink with far too many eyes and curls of paper stuck to its sides.",
+   "v": "hb1b8b0d24bc1",
    "shot": false
   },
   {
@@ -1013,11 +1014,11 @@
    "sil": "furnacowary"
   },
   {
-   "t": "ghost",
+   "t": "dark",
    "sil": "wickapi"
   },
   {
-   "t": "ghost",
+   "t": "dark",
    "sil": "snuffapi"
   },
   {
@@ -1345,10 +1346,6 @@
    "sil": "slog"
   },
   {
-   "t": "ghost",
-   "sil": "sloggoth"
-  },
-  {
    "t": "poison",
    "sil": "bullpole"
   },
@@ -1479,6 +1476,10 @@
   {
    "t": "dark",
    "sil": "snapler"
+  },
+  {
+   "t": "dark",
+   "sil": "maulangler"
   },
   {
    "t": "normal",
