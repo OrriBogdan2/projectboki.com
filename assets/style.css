@@ -1587,19 +1587,19 @@ html.su-signed .faq-join { display: none; }
 /* ---------- Hunters on phones and portrait tablets (owner 11-14: "on phone the splash art isn't big enough") ----------
    The splash is cropped from the wide art (CSS only, the same hi-res file) to a tall frame that fills most of the screen,
    each Hunter framed on their face by --fx (the horizontal object-position; the full height of the art always shows). */
-img:is([src*="/hunters/ryzz-"], [srcset*="/hunters/ryzz-"]) { --fx: 23%; }
-img:is([src*="/hunters/tarek-"], [srcset*="/hunters/tarek-"]) { --fx: 10%; }
-img:is([src*="/hunters/lisette-"], [srcset*="/hunters/lisette-"]) { --fx: 61%; }
-img:is([src*="/hunters/vex-"], [srcset*="/hunters/vex-"]) { --fx: 66%; }
-img:is([src*="/hunters/kael-"], [srcset*="/hunters/kael-"]) { --fx: 72%; }
-img:is([src*="/hunters/pip-"], [srcset*="/hunters/pip-"]) { --fx: 62%; }
-img:is([src*="/hunters/breaker-"], [srcset*="/hunters/breaker-"]) { --fx: 53%; }
-img:is([src*="/hunters/sable-"], [srcset*="/hunters/sable-"]) { --fx: 42%; }
-img:is([src*="/hunters/cinder-"], [srcset*="/hunters/cinder-"]) { --fx: 53%; }
-img:is([src*="/hunters/claire-"], [srcset*="/hunters/claire-"]) { --fx: 21%; }
-img:is([src*="/hunters/grimble-"], [srcset*="/hunters/grimble-"]) { --fx: 53%; }
-img:is([src*="/hunters/gill-"], [srcset*="/hunters/gill-"]) { --fx: 23%; }
-img:is([src*="/hunters/motley-"], [srcset*="/hunters/motley-"]) { --fx: 47%; }
+img:is([src*="/hunters/h/ryzz-"], [srcset*="/hunters/h/ryzz-"]) { --fx: 23%; }
+img:is([src*="/hunters/h/tarek-"], [srcset*="/hunters/h/tarek-"]) { --fx: 10%; }
+img:is([src*="/hunters/h/lisette-"], [srcset*="/hunters/h/lisette-"]) { --fx: 61%; }
+img:is([src*="/hunters/h/vex-"], [srcset*="/hunters/h/vex-"]) { --fx: 66%; }
+img:is([src*="/hunters/h/kael-"], [srcset*="/hunters/h/kael-"]) { --fx: 72%; }
+img:is([src*="/hunters/h/pip-"], [srcset*="/hunters/h/pip-"]) { --fx: 62%; }
+img:is([src*="/hunters/h/breaker-"], [srcset*="/hunters/h/breaker-"]) { --fx: 53%; }
+img:is([src*="/hunters/h/sable-"], [srcset*="/hunters/h/sable-"]) { --fx: 42%; }
+img:is([src*="/hunters/h/cinder-"], [srcset*="/hunters/h/cinder-"]) { --fx: 53%; }
+img:is([src*="/hunters/h/claire-"], [srcset*="/hunters/h/claire-"]) { --fx: 21%; }
+img:is([src*="/hunters/h/grimble-"], [srcset*="/hunters/h/grimble-"]) { --fx: 53%; }
+img:is([src*="/hunters/h/gill-"], [srcset*="/hunters/h/gill-"]) { --fx: 23%; }
+img:is([src*="/hunters/h/motley-"], [srcset*="/hunters/h/motley-"]) { --fx: 47%; }
 @media (max-width: 720px) {
   /* nearly the full width (the neighbours stay as thin slivers at the edges) and as tall as the screen allows with the name and the strip still on it */
   #hunters .stage { width: calc(100vw - 44px); margin-inline: calc((100% - 100vw + 44px) / 2); }

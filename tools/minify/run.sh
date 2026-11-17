@@ -6,4 +6,5 @@ set -e
 cd "$(dirname "$0")"
 command -v node >/dev/null 2>&1 || PATH=/home/boki/tools/node-v24.22.3-linux-x64/bin:$PATH
 [ -d node_modules/esbuild ] && [ -d node_modules/lightningcss ] || npm install --silent --no-audit --no-fund >/dev/null
+python3 ../hunters/hashart.py "$@"   # content-hash names for Hunter art (CDN ignores ?v=), before the JS is minified
 exec node minify.mjs "$@"
