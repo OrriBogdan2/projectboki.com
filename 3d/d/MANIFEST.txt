@@ -1,7 +1,7 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit d39f69a3576aabac10b980251aa624b99781c8a2
-built 2026-11-17T17:10Z
+commit 7549f156764b0273ab11d12f985ee119c185cd19
+built 2026-11-17T18:20Z
 h_vex be6e428d81231333a43a8fba6ae790bf6956c72b art/wardens/vex/vex.glb 5149267aa61 2026-11-17
 h_breaker 51d98ac8c51324c47444bbe9470d16f6c94688d9 art/wardens/breaker/breaker.glb 183ab833c30 2026-11-16
 h_claire db2cc2cee50b389c15d1f95905349035ee257566 art/wardens/claire/claire.glb 04f635350ed 2026-11-17
@@ -9,7 +9,7 @@ h_kael abf8eee5fb5c53974ad4e40dd4d59539c625b658 art/wardens/kael/kael.glb 3604bf
 h_cinder 21dccbd25d1d6ffc7e4197d302e1cb82546ed14b art/wardens/cinder/cinder.glb 04f635350ed 2026-11-17
 h_tarek c9428b5c5ca21db3c7dd40869c4d573c52b4a7fa art/wardens/tarek/tarek.glb 81d49c6041f 2026-11-17
 h_ryzz 6b981b35d2d177cfe072941ab0ad429d23baf127 art/wardens/ryzz/ryzz.glb d5f0d0ee42f 2026-11-17
-h_dredge a0b05de3f5c7168b2636ab83a3d6c3654cf9644e art/wardens/dredge/dredge.glb 4917f669b69 2026-11-17
+h_dredge baa3f653f0e7e2327b902dfb0e34e2145fa1c171 art/wardens/dredge/dredge.glb 57d96c1f7c1 2026-11-17
 h_pip 5fb9eb18758b100ce1bdb7df2c5985a87da47881 art/wardens/pip/pip.glb 183ab833c30 2026-11-16
 h_sable fd11fa7789ad835c9b01bdfa6de4561f363a6af9 art/wardens/sable/sable.glb d5f0d0ee42f 2026-11-17
 h_hem dbacdb49b1d826e813cdd830108fead67cb59124 art/wardens/hem/hem.glb 04f635350ed 2026-11-17
