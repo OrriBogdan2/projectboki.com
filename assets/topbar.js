@@ -121,6 +121,8 @@
     "@media (max-width:520px){header.nav.tb-site .nav-cta .js-discord,.tb-cta .tb-ico{display:none!important}}",
     "@media (max-width:420px){header.nav.tb-site .nav-cta .btn-sm,.tb-join{font-size:16px;padding:0 12px}.tb-sign{padding:0 13px}}",
     "html.tb-site-on .nav-su{z-index:2}",
+    /* 11-17 owner: signed in, a "Join the beta" button flashed over the bar while scrolling. Signed-in people never see a join-beta button in the bar (class set by render() and by the page head script) */
+    "html.tb-in #nav-join,html.tb-in #nav-su,html.tb-in .tb-join,html.tb-in .faq-join{display:none!important}",
 
     /* sign-in modal */
     ".tb-ov{position:fixed;inset:0;z-index:1500;display:grid;place-items:center;padding:16px;background:rgba(5,8,16,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .2s;font-family:var(--tb-body)}",
@@ -162,6 +164,7 @@
 
   function render() {
     acct.textContent = ""; menu = null;
+    root.classList.toggle("tb-in", !!user);
     var admin = isAdminRole(user);
     if (!user) { var b = h("button", { class: "tb-sign", type: "button", text: "Sign in", "aria-haspopup": "dialog" }); b.onclick = function () { openModal(); }; acct.appendChild(b); return; }
     var name = user.display || user.email || "Signed in";
