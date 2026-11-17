@@ -188,7 +188,7 @@ addEventListener("keydown",e=>{if(e.key==="ArrowLeft")pick(cur-1);if(e.key==="Ar
 // Lineup: every hunter side by side at TRUE scale (no per-model fit) on one ground plane, so heights compare. Uses this page's own v95 models.
 const lineBtn=$("lineup"), lineBtnH=$("lineupH");
 // Listed heights (coord/heights.json, owner 11-16). Accurate-height lineup scales each model so its standing height = listed height.
-const HEIGHTS={albert:[1.98,"6'6\""],malgrave:[1.91,"6'3\""],kael:[1.88,"6'2\""],grimble:[1.73,"6'1\" (stands 5'8\")"],motley:[1.83,"6'0\""],tenzo:[1.80,"5'11\""],sparkle:[1.65,"5'5\""],vex:[1.73,"5'8\""],cinder:[1.68,"5'6\""],lace:[1.68,"5'6\""],sable:[1.65,"5'5\""],neve:[1.60,"5'3\""],meeko:[1.22,"4'0\""]};
+const HEIGHTS={albert:[2.18,"7'2\""],malgrave:[1.91,"6'3\""],kael:[1.88,"6'2\""],grimble:[1.73,"6'1\" (stands 5'8\")"],motley:[1.83,"6'0\""],tenzo:[1.80,"5'11\""],sparkle:[1.65,"5'5\""],vex:[1.73,"5'8\""],cinder:[1.68,"5'6\""],lace:[1.68,"5'6\""],sable:[1.65,"5'5\""],neve:[1.60,"5'3\""],meeko:[1.22,"4'0\""],gil:[1.60,"5'3\""]};
 const HALIAS={breaker:"albert",mossy:"albert",hem:"lace",lisette:"lace",ravel:"lace",ostra:"motley",ryzz:"sparkle",pip:"meeko",dredge:"grimble",claire:"neve",nivi:"neve",tarek:"tenzo"};
 function listedHeight(h){const ws=(String(h.name||"")+" "+String(h.id||"")+" "+String(h.model||"")).toLowerCase().split(/[^a-z]+/);
   for(const w of ws){const k=HEIGHTS[w]?w:HALIAS[w]; if(k&&HEIGHTS[k])return HEIGHTS[k]} return null}
@@ -202,6 +202,17 @@ function worldBox(root){root.updateMatrixWorld(true);const box=new THREE.Box3();
   root.traverse(o=>{if(!o.isMesh||!o.visible)return;if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld))}
     else{if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld))}});
   if(box.isEmpty())box.setFromObject(root);return box}
+// Stature = top of the head on the body's centre line. Weapons and back props (Albert's banners, Kael's swords)
+// stick out above or beside the head, so scaling the full box to the listed height shrank those hunters.
+const PROPRX=/sword|spear|bow|blunde|gun|weapon|sun|cloud|banner|part\d/i;
+function statureFrac(root){root.updateMatrixWorld(true);const ys=[],xs=[],zs=[];let lo=Infinity,hi=-Infinity;const v=new THREE.Vector3();
+  root.traverse(o=>{if(!o.isMesh||!o.visible||!o.geometry.attributes.position)return;const P=o.geometry.attributes.position,prop=PROPRX.test(o.name||"");
+    const st=Math.max(1,Math.floor(P.count/40000));for(let k=0;k<P.count;k+=st){v.fromBufferAttribute(P,k).applyMatrix4(o.matrixWorld);
+      lo=Math.min(lo,v.y);hi=Math.max(hi,v.y);if(!prop){xs.push(v.x);ys.push(v.y);zs.push(v.z)}}});
+  const H=hi-lo;if(!(H>0)||xs.length<100)return 1;const med=a=>{const b=Float64Array.from(a).sort();return b[b.length>>1]};
+  const cx=med(xs),cz=med(zs),col=[];for(let k=0;k<ys.length;k++)if(Math.abs(xs[k]-cx)<0.032*H&&Math.abs(zs[k]-cz)<0.065*H)col.push(ys[k]);
+  if(col.length<50)return 1;const c=Float64Array.from(col).sort(),top=c[Math.min(c.length-1,Math.floor(c.length*0.999))];
+  return Math.min(1,Math.max(0.5,(top-lo)/H))}
 async function buildLineup(kind){
   const acc=kind==="acc", lineGroup=LM[kind].grp;
   const hs=rows.filter(h=>h.model); let n=0;
@@ -211,13 +222,14 @@ async function buildLineup(kind){
   const gap=0.35, rs=[]; let u=0;
   gs.forEach((g,i)=>{if(!g)return;
     let box=worldBox(g.scene), size=box.getSize(new THREE.Vector3()); const lh=acc?listedHeight(hs[i]):null;
-    if(lh&&size.y>0){g.scene.scale.multiplyScalar(lh[0]/size.y); box=worldBox(g.scene); size=box.getSize(new THREE.Vector3())}
+    const fr=acc?statureFrac(g.scene):1;
+    if(lh&&size.y>0){g.scene.scale.multiplyScalar(lh[0]/(size.y*fr)); box=worldBox(g.scene); size=box.getSize(new THREE.Vector3())}
     const w=Math.max(size.x,0.5);
-    rs.push({h:hs[i],g,box,size,lh,u:u+w/2,c:box.getCenter(new THREE.Vector3())}); u+=w+gap});
+    rs.push({h:hs[i],g,box,size,lh,st:size.y*fr,u:u+w/2,c:box.getCenter(new THREE.Vector3())}); u+=w+gap});
   const total=u-gap, W=total+1.2, D=4; let hMax=0;
   rs.forEach(r=>{ // first hunter on the viewer's left: the camera sits on +Z, where -X is to the left
     const X=r.u-total/2; r.g.scene.position.x=X-r.c.x; r.g.scene.position.y-=r.box.min.y; lineGroup.add(r.g.scene); hMax=Math.max(hMax,r.size.y);
-    lineLabel("<b>"+esc(r.h.name)+"</b><span>"+(acc?(r.lh?esc(r.lh[1])+" · ":"height TBD · "):"")+r.size.y.toFixed(2)+" m</span>",new THREE.Vector3(X,0,0),false,kind)});
+    lineLabel("<b>"+esc(r.h.name)+"</b><span>"+(acc?(r.lh?esc(r.lh[1])+" · ":"height TBD · "):"")+(acc?r.st:r.size.y).toFixed(2)+" m</span>",new THREE.Vector3(X,0,0),false,kind)});
   const plane=new THREE.Mesh(new THREE.PlaneGeometry(W,D).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:cssVar("--panel","#1d1a29"),transparent:true,opacity:0.55,depthWrite:false,toneMapped:false}));
   plane.position.y=-0.005; lineGroup.add(plane);
   const g1=[]; for(let k=Math.ceil(-W/2);k<=W/2;k++)g1.push(k,0,-D/2,k,0,D/2); for(let k=-D/2;k<=D/2;k++)g1.push(-W/2,0,k,W/2,0,k);
