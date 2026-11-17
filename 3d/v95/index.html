@@ -188,7 +188,7 @@ addEventListener("keydown",e=>{if(e.key==="ArrowLeft")pick(cur-1);if(e.key==="Ar
 // Lineup: every hunter side by side at TRUE scale (no per-model fit) on one ground plane, so heights compare. Uses this page's own v95 models.
 const lineBtn=$("lineup"), lineBtnH=$("lineupH");
 // Listed heights (coord/heights.json, owner 11-16). Accurate-height lineup scales each model so its standing height = listed height.
-const HEIGHTS={albert:[2.18,"7'2\""],malgrave:[1.91,"6'3\""],kael:[1.88,"6'2\""],grimble:[1.73,"6'1\" (stands 5'8\")"],motley:[1.83,"6'0\""],tenzo:[1.80,"5'11\""],sparkle:[1.65,"5'5\""],vex:[1.73,"5'8\""],cinder:[1.68,"5'6\""],lace:[1.68,"5'6\""],sable:[1.65,"5'5\""],neve:[1.60,"5'3\""],meeko:[1.22,"4'0\""],gil:[1.60,"5'3\""]};
+const HEIGHTS={albert:[2.18,"7'2\""],malgrave:[1.91,"6'3\""],kael:[1.93,"6'4\""],grimble:[1.73,"6'1\" (stands 5'8\")"],motley:[1.83,"6'0\""],tenzo:[1.80,"5'11\""],sparkle:[1.65,"5'5\""],vex:[1.7,"5'7\""],cinder:[1.73,"5'8\""],lace:[1.68,"5'6\""],sable:[1.65,"5'5\""],neve:[1.60,"5'3\""],meeko:[1.32,"4'4\""],gil:[1.60,"5'3\""]};
 const HALIAS={breaker:"albert",mossy:"albert",hem:"lace",lisette:"lace",ravel:"lace",ostra:"motley",ryzz:"sparkle",pip:"meeko",dredge:"grimble",claire:"neve",nivi:"neve",tarek:"tenzo"};
 function listedHeight(h){const ws=(String(h.name||"")+" "+String(h.id||"")+" "+String(h.model||"")).toLowerCase().split(/[^a-z]+/);
   for(const w of ws){const k=HEIGHTS[w]?w:HALIAS[w]; if(k&&HEIGHTS[k])return HEIGHTS[k]} return null}
