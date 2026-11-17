@@ -1721,3 +1721,8 @@ html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }
   #hunters .h-peek i { display: none; }
   #hunters .h-arrow { touch-action: pan-y pinch-zoom; }
 }
+
+/* 11-17 scroll stop at "Choose your Hunter": proximity snap (JS switches .h-snap off while you leave the spot, so it can never pull you back) */
+html.h-snap { scroll-snap-type: y proximity; }
+.h-track { position: relative; }
+.h-snapmark { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; scroll-snap-align: start; scroll-snap-stop: always; }

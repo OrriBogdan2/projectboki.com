@@ -553,56 +553,100 @@ if (pick) {
   // 11-17 owner: "the scroll feels weird going to Choose your Hunter". Scrolling here is plain native scrolling: no wheel catching,
   // no self-playing arrival glide, no phone hold, no one-swipe-one-Hunter glide. The scene only follows the scroll position.
 
-  // 11-17 owner (phone): "too easy to scroll past the hero selector, then it's impossible to do the heroes". Phones only, and only
-  // the coasting after a hard flick: when that flick carries the page across the spot where the Hunters stage is fully open (art,
-  // name and the strip all on screen) it stops there, coming from above or below. The stage is pinned, so nothing on screen moves.
-  // That is all: a finger that stays on the glass is never caught, a slow drag is never caught, and once it has stopped here the
-  // page is yours (the next swipe scrolls on, a tap or a sideways swipe browses). It arms again once you have left by half a screen.
-  if (touchy && !calm) {
-    const hold = { touching: false, armed: true, y0: 0, vy: 0, py: scrollY, pt: 0, jump: 0, re: 0, tm: 0 };
-    let last = scrollY; // where the previous scroll event left the page
-    const spot = () => Math.round(scn.s0 + scn.lead) + 2;
-    const root = document.documentElement;
+  // 11-17 owner: "right now i can fast scroll past the hunters - it should always stop you for a moment". Every device: when scrolling
+  // (wheel or trackpad, a touch fling, the keys) carries the page across the spot where the Hunters stage is fully open (art, name and
+  // strip all on screen) it stops exactly there and holds ~0.75 s, coming from above or below, however hard the flick. Then it is yours:
+  // the next scroll goes on as normal, and the held-back trackpad coasting is dropped so it can't carry you straight past. The hold
+  // never lasts longer than 0.75 s. It arms again once you have left by half a screen. Reduced motion: the stop without the hold.
+  // Sideways swipes, the hero arrows and the strip are never touched. CSS scroll-snap (proximity, only while armed) does the gentle
+  // case: a slow scroll that ends near the spot settles on it.
+  {
+    const HOLD = calm ? 0 : 750, root = document.documentElement;
+    const hold = { touching: false, armed: true, y0: 0, vy: 0, py: scrollY, pt: 0, jump: 0, re: 0, tm: 0, until: 0, tail: 0, tdx: 0, tdy: 0, tx: 0, ty: 0 };
+    let last = scrollY, marker = null; // where the previous scroll event left the page
+    const spot = () => scn ? Math.round(scn.s0 + scn.lead) + 2 : Math.round(docTop(sec));
+    const holding = () => performance.now() < hold.until;
     const release = () => { root.style.overflow = ""; document.body.style.overflow = ""; };
+    const snapOn = (on) => root.classList.toggle("h-snap", on);
+    const place = () => { // the CSS snap marker: a 1px mark whose snap position is the spot (html's scroll-padding-top is allowed for)
+      if (!track) return;
+      if (!marker) { marker = document.createElement("i"); marker.className = "h-snapmark"; marker.setAttribute("aria-hidden", "true"); track.appendChild(marker); }
+      const pad = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
+      marker.style.top = Math.max(0, spot() + pad - docTop(track)) + "px";
+    };
     const stopAt = (to) => {
-      hold.armed = false; cancelAnimationFrame(hold.re); clearTimeout(hold.tm);
+      hold.armed = false; snapOn(false); cancelAnimationFrame(hold.re); clearTimeout(hold.tm);
+      hold.until = performance.now() + HOLD; hold.tail = 0;
       root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // kills the coasting; body stays visible so the sticky stage keeps working
       scrollTo({ top: to, behavior: "instant" });
-      hold.tm = setTimeout(release, 200);
+      hold.tm = setTimeout(release, Math.max(HOLD, 200));
     };
     document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"], .h-skip')) hold.jump = performance.now(); }, true);
     addEventListener("hashchange", () => { hold.jump = performance.now(); });
+    // wheel / trackpad: decide before the page moves, so even a 3000px burst lands exactly on the spot
+    let lastW = 0, lastP = 1e9;
+    addEventListener("wheel", (e) => {
+      if (e.ctrlKey || e.defaultPrevented) return;
+      const now = performance.now(), dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+      const mag = Math.abs(dy), gap = now - lastW; lastW = now;
+      if (Math.abs(e.deltaX) > Math.abs(dy) || !dy) return; // sideways: never ours
+      if (holding()) { e.preventDefault(); hold.tail = now; lastP = mag; return; }
+      if (hold.tail) { // the held-back coasting: drop it until a fresh push (a pause, or the steps getting bigger again)
+        // (a trackpad's coasting only ever gets smaller; a mouse wheel keeps the same step; and it is dropped for 0.6 s at most)
+        const fading = mag < lastP - 0.5 || (mag <= lastP + 0.5 && mag < 30);
+        if (gap > 120 || !fading || now - hold.tail > 600) hold.tail = 0; else { e.preventDefault(); lastP = mag; return; }
+      }
+      if (!hold.armed || performance.now() - hold.jump < 1500) return;
+      const s = spot(), y = scrollY, to = y + dy;
+      if ((y < s - 1 && to >= s) || (y > s + 1 && to <= s)) {
+        e.preventDefault(); stopAt(s); hold.tail = now; lastP = mag;
+      }
+    }, { passive: false });
+    // keys: Space / PageDown / arrows / Home / End scroll natively and smoothly; hold the page at the spot while they would cross it
+    addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      const t = e.target; if (t && t.closest && t.closest("input, textarea, select, [contenteditable]")) return;
+      if (holding() && /^( |PageDown|PageUp|ArrowDown|ArrowUp|End|Home)$/.test(e.key)) e.preventDefault();
+    });
+    // touch: after a hard flick lifts, the coasting is killed at the spot (nothing moves: the stage is pinned); a finger that stays on
+    // the glass is never caught. A vertical drag during the hold is swallowed; a sideways one is left alone.
     addEventListener("touchstart", (e) => {
-      hold.touching = true; clearTimeout(hold.tm); cancelAnimationFrame(hold.re); release(); hold.y0 = scrollY; hold.vy = 0; hold.pt = performance.now(); hold.py = scrollY;
+      hold.touching = true; cancelAnimationFrame(hold.re); hold.y0 = scrollY; hold.vy = 0; hold.pt = performance.now(); hold.py = scrollY;
+      const t = e.touches[0]; hold.tx = t.clientX; hold.ty = t.clientY;
+      if (!holding()) { clearTimeout(hold.tm); release(); }
     }, { passive: true });
-    addEventListener("touchmove", () => {
+    addEventListener("touchmove", (e) => {
+      if (holding()) { const t = e.touches[0]; if (e.cancelable && Math.abs(t.clientY - hold.ty) > Math.abs(t.clientX - hold.tx)) e.preventDefault(); return; }
       const now = performance.now(), dt = now - hold.pt; if (dt < 8) return;
       hold.vy = hold.vy * 0.5 + 0.5 * (scrollY - hold.py) / dt; hold.py = scrollY; hold.pt = now; // px per ms the page is moving
-    }, { passive: true });
+    }, { passive: false });
     const lift = () => {
       hold.touching = false;
-      if (!scn || !hold.armed) return;
+      if (!hold.armed) return;
       const y = scrollY, s = spot(), up = hold.y0 < s - 8 && y > s - 8, down = hold.y0 > s + 8 && y < s + 8; // (at the spot itself counts: the coasting is about to carry on)
       // a hard flick that crossed the spot under the finger itself: bring it back to the spot (a short glide, not a jump)
       if ((up || down) && Math.abs(hold.vy) > 0.9 && Math.abs(y - s) < innerHeight * 0.9 && Math.sign(hold.vy) === (up ? 1 : -1)) {
-        hold.armed = false; root.style.overflow = "hidden"; document.body.style.overflow = "visible";
+        hold.armed = false; snapOn(false); hold.until = performance.now() + HOLD + 260; clearTimeout(hold.tm);
+        root.style.overflow = "hidden"; document.body.style.overflow = "visible";
         const from = y, d = s - y, t0 = performance.now(), f = (now) => {
           const k = Math.min(1, (now - t0) / 260), e = 1 - Math.pow(1 - k, 3);
           scrollTo({ top: Math.round(from + d * e), behavior: "instant" });
-          if (k < 1) hold.re = requestAnimationFrame(f); else release();
+          if (k < 1) hold.re = requestAnimationFrame(f); else hold.tm = setTimeout(release, HOLD);
         };
         hold.re = requestAnimationFrame(f);
       }
     };
     addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", () => { hold.touching = false; }, { passive: true });
+    // anything else that moves the page across the spot (keys, a drag of the scrollbar, a coasting touch): catch it as it lands
     addEventListener("scroll", () => {
       const y = scrollY, prev = last; last = y;
-      if (!scn || auto || hold.touching) return;
+      if (auto || hold.touching) return;
       const s = spot();
-      if (!hold.armed) { if (Math.abs(y - s) > innerHeight * 0.5) hold.armed = true; return; }
+      if (!hold.armed) { if (Math.abs(y - s) > innerHeight * 0.5) { hold.armed = true; snapOn(true); } return; }
       if (performance.now() - hold.jump < 1500 || Math.abs(y - prev) > innerHeight * 1.5) return; // a link, "Skip Hunters" or a long jump
       if ((prev < s && y >= s) || (prev > s && y <= s)) stopAt(s);
     }, { passive: true });
+    addEventListener("resize", place); addEventListener("load", place); place(); snapOn(true);
   }
 
   function show(i) {
