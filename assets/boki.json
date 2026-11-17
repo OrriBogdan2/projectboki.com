@@ -1,5 +1,5 @@
 {
- "total": 271,
+ "total": 277,
  "revealed": [
   {
    "id": "pinguin",
@@ -693,21 +693,6 @@
    "shot": false
   },
   {
-   "id": "chandelapi",
-   "name": "Candelapi",
-   "types": [
-    "dark",
-    "fire"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Candelapi wears a whole chandelier of antlers and black candles, and on moonless nights it lights the meadow so nobody is scared of the dark.",
-   "v": "h97f34806c1bf",
-   "shot": false
-  },
-  {
    "id": "voltalon",
    "name": "Voltalon",
    "types": [
@@ -735,6 +720,20 @@
    "into": [],
    "desc": "Reapant is a Shinobant grown into a dark, hooded knight with wings and a scythe for each arm.",
    "v": "hb74fc74f99bc",
+   "shot": false
+  },
+  {
+   "id": "maulangler",
+   "name": "Maulangler",
+   "types": [
+    "dark"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
+   "v": "ha1aa37def55d",
    "shot": false
   },
   {
@@ -779,6 +778,20 @@
    "into": [],
    "desc": "Eclipsowl is a great dark owl that walks on four legs and wears a bright crescent on its brow.",
    "v": "hc48132d0c452",
+   "shot": false
+  },
+  {
+   "id": "chandelapi",
+   "name": "Veilorn",
+   "types": [
+    "ghost"
+   ],
+   "stage": 3,
+   "from": null,
+   "fromHidden": true,
+   "into": [],
+   "desc": "Veilorn is a tall black antelope with lyre-curved horns and a sheer pale veil streaming from them down past its flanks like a train.",
+   "v": "h8b180b9e59ac",
    "shot": false
   },
   {
@@ -882,21 +895,6 @@
    "into": [],
    "desc": "Vaultara is a huge tuatara whose shell has become a round vault door.",
    "v": "hdc9ca66a5631",
-   "shot": false
-  },
-  {
-   "id": "sloggoth",
-   "name": "Sloggoth",
-   "types": [
-    "ghost",
-    "psychic"
-   ],
-   "stage": 3,
-   "from": null,
-   "fromHidden": true,
-   "into": [],
-   "desc": "Sloggoth is a great grinning heap of ink with far too many eyes and curls of paper stuck to its sides.",
-   "v": "h2e9f0f244d23",
    "shot": false
   },
   {
@@ -1014,11 +1012,11 @@
    "sil": "furnacowary"
   },
   {
-   "t": "dark",
+   "t": "ghost",
    "sil": "wickapi"
   },
   {
-   "t": "dark",
+   "t": "ghost",
    "sil": "snuffapi"
   },
   {
@@ -1346,6 +1344,10 @@
    "sil": "slog"
   },
   {
+   "t": "ghost",
+   "sil": "sloggoth"
+  },
+  {
    "t": "poison",
    "sil": "bullpole"
   },
@@ -1476,10 +1478,6 @@
   {
    "t": "dark",
    "sil": "snapler"
-  },
-  {
-   "t": "dark",
-   "sil": "maulangler"
   },
   {
    "t": "normal",
@@ -1796,6 +1794,30 @@
   {
    "t": "bug",
    "sil": "palloth"
+  },
+  {
+   "t": "ghost",
+   "sil": "maskit"
+  },
+  {
+   "t": "ghost",
+   "sil": "guisel"
+  },
+  {
+   "t": "ghost",
+   "sil": "myriface"
+  },
+  {
+   "t": "dark",
+   "sil": "qilet"
+  },
+  {
+   "t": "dark",
+   "sil": "duskirin"
+  },
+  {
+   "t": "dark",
+   "sil": "umbrakirin"
   }
  ]
 }
