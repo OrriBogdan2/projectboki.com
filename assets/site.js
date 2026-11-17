@@ -583,6 +583,55 @@ if (pick) {
     };
     document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"], .h-skip')) hold.jump = performance.now(); }, true);
     addEventListener("hashchange", () => { hold.jump = performance.now(); });
+    // 11-17 owner: "one scroll to go to the choose your hunter -> hunter page ... first scroll does that". From the top screen,
+    // the first scroll down of any kind (wheel or trackpad, a swipe up on a phone, Space / PageDown / Arrow Down) glides the
+    // page straight to the Hunters spot (~0.85 s), then holds there like the stop above so trackpad or touch coasting can't
+    // carry past it. Only from the top screen and only downwards: scrolling back up is plain native scrolling, and it arms
+    // again once you are back at the top. Sideways swipes are never touched. Reduced motion: an instant jump.
+    {
+      const hj = { armed: true, busy: false, tx: 0, ty: 0, first: false, bt: 0 };
+      const atTop = () => scrollY < innerHeight * 0.35;
+      const go = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        if (hj.busy) return;
+        const s = spot(), from = scrollY, d = s - from, dur = calm ? 0 : 850;
+        if (d < 8) return;
+        hj.busy = true; hj.armed = false; hold.glide = true; hold.armed = false; snapOn(false); cancelAnimationFrame(hold.re); clearTimeout(hold.tm);
+        const t0 = performance.now(); hold.until = t0 + dur + HOLD; hold.tail = 0; hold.jump = t0;
+        root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // kills native coasting while the glide runs
+        clearTimeout(hj.bt); hj.bt = setTimeout(() => { hj.busy = false; }, dur + HOLD + 50);
+        const done = () => { hold.glide = false; last = scrollY; hold.armed = false; snapOn(false); scrollTo({ top: spot(), behavior: "instant" }); hold.tm = setTimeout(release, Math.max(HOLD, 200)); }; // landed: the stop is spent, the next scroll is yours
+        if (!dur) { scrollTo({ top: s, behavior: "instant" }); done(); return; }
+        const f = (now) => {
+          const k = Math.min(1, (now - t0) / dur), ez = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+          scrollTo({ top: Math.round(from + (spot() - from) * ez), behavior: "instant" });
+          if (k < 1) hold.re = requestAnimationFrame(f); else done();
+        };
+        hold.re = requestAnimationFrame(f);
+      };
+      addEventListener("scroll", () => { if (!hj.busy && !hj.armed && scrollY < innerHeight * 0.12) hj.armed = true; }, { passive: true });
+      addEventListener("wheel", (e) => {
+        if (e.ctrlKey || e.defaultPrevented) return;
+        if (hj.busy) { e.preventDefault(); return; }
+        if (!hj.armed || !atTop() || e.deltaY <= 0 || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        go(e);
+      }, { passive: false });
+      addEventListener("keydown", (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        const t = e.target; if (t && t.closest && t.closest("input, textarea, select, button, [contenteditable]")) return;
+        if (hj.busy && /^( |PageDown|PageUp|ArrowDown|ArrowUp|End|Home)$/.test(e.key)) { e.preventDefault(); return; }
+        if (hj.armed && atTop() && /^( |PageDown|ArrowDown)$/.test(e.key)) go(e);
+      });
+      addEventListener("touchstart", (e) => { const t = e.touches[0]; hj.tx = t.clientX; hj.ty = t.clientY; hj.first = true; }, { passive: true });
+      addEventListener("touchmove", (e) => {
+        if (hj.busy) { if (e.cancelable) e.preventDefault(); return; }
+        if (!hj.first) return;
+        const t = e.touches[0], dx = t.clientX - hj.tx, dy = hj.ty - t.clientY; // dy > 0: finger moving up = page going down
+        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return; // wait for a direction
+        hj.first = false;
+        if (hj.armed && atTop() && dy > 0 && dy >= Math.abs(dx)) go(e);
+      }, { passive: false });
+    }
     // wheel / trackpad: decide before the page moves, so even a 3000px burst lands exactly on the spot
     let lastW = 0, lastP = 1e9;
     addEventListener("wheel", (e) => {
@@ -640,7 +689,7 @@ if (pick) {
     // anything else that moves the page across the spot (keys, a drag of the scrollbar, a coasting touch): catch it as it lands
     addEventListener("scroll", () => {
       const y = scrollY, prev = last; last = y;
-      if (auto || hold.touching) return;
+      if (auto || hold.touching || hold.glide) return; // the first-scroll glide owns the page until it lands
       const s = spot();
       if (!hold.armed) { if (Math.abs(y - s) > innerHeight * 0.5) { hold.armed = true; snapOn(true); } return; }
       if (performance.now() - hold.jump < 1500 || Math.abs(y - prev) > innerHeight * 1.5) return; // a link, "Skip Hunters" or a long jump
