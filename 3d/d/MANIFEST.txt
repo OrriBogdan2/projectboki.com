@@ -1,10 +1,10 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit 76c9eef4844db6ac1d193321baa46d331ddfef29
-built 2026-11-17T19:30Z
+commit 86eaebd16376fdd59fdf7785c0b06e1229a1dc91
+built 2026-11-17T19:40Z
 h_vex be6e428d81231333a43a8fba6ae790bf6956c72b art/wardens/vex/vex.glb 5149267aa61 2026-11-17
-h_breaker 51d98ac8c51324c47444bbe9470d16f6c94688d9 art/wardens/breaker/breaker.glb 183ab833c30 2026-11-16
-h_claire db2cc2cee50b389c15d1f95905349035ee257566 art/wardens/claire/claire.glb 04f635350ed 2026-11-17
+h_breaker 73e4f2abe585d5e50d15ea638c2ceaf8f9e036cd art/wardens/breaker/breaker.glb 28d0f88bc3b 2026-11-17
+h_claire d16bb7eaac79ef089fc87bed4b6cfb951c743f6b art/wardens/claire/claire.glb 5cd36e3a8c6 2026-11-17
 h_kael abf8eee5fb5c53974ad4e40dd4d59539c625b658 art/wardens/kael/kael.glb 3604bf0284e 2026-11-17
 h_cinder 21dccbd25d1d6ffc7e4197d302e1cb82546ed14b art/wardens/cinder/cinder.glb 04f635350ed 2026-11-17
 h_tarek c9428b5c5ca21db3c7dd40869c4d573c52b4a7fa art/wardens/tarek/tarek.glb 81d49c6041f 2026-11-17
