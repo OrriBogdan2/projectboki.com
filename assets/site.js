@@ -553,6 +553,58 @@ if (pick) {
   // 11-17 owner: "the scroll feels weird going to Choose your Hunter". Scrolling here is plain native scrolling: no wheel catching,
   // no self-playing arrival glide, no phone hold, no one-swipe-one-Hunter glide. The scene only follows the scroll position.
 
+  // 11-17 owner (phone): "too easy to scroll past the hero selector, then it's impossible to do the heroes". Phones only, and only
+  // the coasting after a hard flick: when that flick carries the page across the spot where the Hunters stage is fully open (art,
+  // name and the strip all on screen) it stops there, coming from above or below. The stage is pinned, so nothing on screen moves.
+  // That is all: a finger that stays on the glass is never caught, a slow drag is never caught, and once it has stopped here the
+  // page is yours (the next swipe scrolls on, a tap or a sideways swipe browses). It arms again once you have left by half a screen.
+  if (touchy && !calm) {
+    const hold = { touching: false, armed: true, y0: 0, vy: 0, py: scrollY, pt: 0, jump: 0, re: 0, tm: 0 };
+    let last = scrollY; // where the previous scroll event left the page
+    const spot = () => Math.round(scn.s0 + scn.lead) + 2;
+    const root = document.documentElement;
+    const release = () => { root.style.overflow = ""; document.body.style.overflow = ""; };
+    const stopAt = (to) => {
+      hold.armed = false; cancelAnimationFrame(hold.re); clearTimeout(hold.tm);
+      root.style.overflow = "hidden"; document.body.style.overflow = "visible"; // kills the coasting; body stays visible so the sticky stage keeps working
+      scrollTo({ top: to, behavior: "instant" });
+      hold.tm = setTimeout(release, 200);
+    };
+    document.addEventListener("click", (e) => { if (e.target.closest('a[href*="#"], .h-skip')) hold.jump = performance.now(); }, true);
+    addEventListener("hashchange", () => { hold.jump = performance.now(); });
+    addEventListener("touchstart", (e) => {
+      hold.touching = true; clearTimeout(hold.tm); cancelAnimationFrame(hold.re); release(); hold.y0 = scrollY; hold.vy = 0; hold.pt = performance.now(); hold.py = scrollY;
+    }, { passive: true });
+    addEventListener("touchmove", () => {
+      const now = performance.now(), dt = now - hold.pt; if (dt < 8) return;
+      hold.vy = hold.vy * 0.5 + 0.5 * (scrollY - hold.py) / dt; hold.py = scrollY; hold.pt = now; // px per ms the page is moving
+    }, { passive: true });
+    const lift = () => {
+      hold.touching = false;
+      if (!scn || !hold.armed) return;
+      const y = scrollY, s = spot(), up = hold.y0 < s - 8 && y > s - 8, down = hold.y0 > s + 8 && y < s + 8; // (at the spot itself counts: the coasting is about to carry on)
+      // a hard flick that crossed the spot under the finger itself: bring it back to the spot (a short glide, not a jump)
+      if ((up || down) && Math.abs(hold.vy) > 0.9 && Math.abs(y - s) < innerHeight * 0.9 && Math.sign(hold.vy) === (up ? 1 : -1)) {
+        hold.armed = false; root.style.overflow = "hidden"; document.body.style.overflow = "visible";
+        const from = y, d = s - y, t0 = performance.now(), f = (now) => {
+          const k = Math.min(1, (now - t0) / 260), e = 1 - Math.pow(1 - k, 3);
+          scrollTo({ top: Math.round(from + d * e), behavior: "instant" });
+          if (k < 1) hold.re = requestAnimationFrame(f); else release();
+        };
+        hold.re = requestAnimationFrame(f);
+      }
+    };
+    addEventListener("touchend", lift, { passive: true }); addEventListener("touchcancel", () => { hold.touching = false; }, { passive: true });
+    addEventListener("scroll", () => {
+      const y = scrollY, prev = last; last = y;
+      if (!scn || auto || hold.touching) return;
+      const s = spot();
+      if (!hold.armed) { if (Math.abs(y - s) > innerHeight * 0.5) hold.armed = true; return; }
+      if (performance.now() - hold.jump < 1500 || Math.abs(y - prev) > innerHeight * 1.5) return; // a link, "Skip Hunters" or a long jump
+      if ((prev < s && y >= s) || (prev > s && y <= s)) stopAt(s);
+    }, { passive: true });
+  }
+
   function show(i) {
     i = (i + HUNTERS.length) % HUNTERS.length;
     if (!byIdle && !fromScroll && idleArm) idleArm(true); // a pick of your own: the idle tour stops
@@ -763,7 +815,7 @@ if (pick) {
     };
     stage.addEventListener("dragstart", (e) => e.preventDefault());
     stage.addEventListener("pointerdown", (e) => {
-      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("button, a, .fig") || !stageUp()) return;
+      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("button:not(.h-arrow), a, .fig") || !stageUp()) return;
       // late: it starts while the stage is still sliding. It can't take hold of the picture, but a flick still counts as a pick.
       drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false, lx: e.clientX, lt: e.timeStamp, v: 0, late: mode !== 0 };
     });
