@@ -29,7 +29,7 @@ header p{margin:4px 0 0;color:var(--muted);max-width:68ch}
 .nav button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
 .lbl{position:absolute;left:0;top:0;display:none;pointer-events:none;text-align:center;font-size:13px;line-height:1.15;white-space:nowrap;text-shadow:0 0 4px var(--stage2)}
 .lbl b{display:block;font-family:var(--display);font-weight:800}
-.stage.lineup .lbl{display:block}
+.stage.lineup .lbl{display:block}.stage.lineup:not(.acc) .lbl.m-acc,.stage.lineup.acc .lbl.m-true{display:none}
 .stage.lineup #mv{height:min(46vh,430px);min-height:300px}
 .stage.lineup .cap{display:none}
 .stage.dense .lbl:not(.rule) span{display:none}
@@ -79,7 +79,7 @@ footer{color:var(--muted);font-size:13px}
   <div class="stage">
     <canvas id="mv" aria-label="3D model viewer"></canvas>
     <div class="load" id="load"></div>
-    <div class="nav"><button id="prev" aria-label="Previous hunter">&larr;</button><button id="next" aria-label="Next hunter">&rarr;</button><button id="lineup" type="button" aria-pressed="false" title="All 12 hunters side by side at true scale">Lineup</button><button id="spin" aria-pressed="false">Spin</button></div>
+    <div class="nav"><button id="prev" aria-label="Previous hunter">&larr;</button><button id="next" aria-label="Next hunter">&rarr;</button><button id="lineup" type="button" aria-pressed="false" title="All hunters side by side at model scale">Lineup</button><button id="lineupH" type="button" aria-pressed="false" title="All hunters side by side at their listed heights">Accurate height</button><button id="spin" aria-pressed="false">Spin</button></div>
     <div class="cap"><span class="nm" id="nm"></span><span class="sc" id="capsc"></span></div>
   </div>
 
@@ -186,69 +186,82 @@ function pick(i){ if(!rows.length)return; leaveLineup();
 $("prev").onclick=()=>pick(cur-1); $("next").onclick=()=>pick(cur+1);
 addEventListener("keydown",e=>{if(e.key==="ArrowLeft")pick(cur-1);if(e.key==="ArrowRight")pick(cur+1)});
 // Lineup: every hunter side by side at TRUE scale (no per-model fit) on one ground plane, so heights compare. Uses this page's own v95 models.
-const lineBtn=$("lineup"), lineGroup=new THREE.Group(); lineGroup.visible=false; scene.add(lineGroup);
-let lineP=null, lineInfo=null; const lineLbls=[];
+const lineBtn=$("lineup"), lineBtnH=$("lineupH");
+// Listed heights (coord/heights.json, owner 11-16). Accurate-height lineup scales each model so its standing height = listed height.
+const HEIGHTS={albert:[1.98,"6'6\""],malgrave:[1.91,"6'3\""],kael:[1.88,"6'2\""],grimble:[1.73,"6'1\" (stands 5'8\")"],motley:[1.83,"6'0\""],tenzo:[1.80,"5'11\""],sparkle:[1.65,"5'5\""],vex:[1.73,"5'8\""],cinder:[1.68,"5'6\""],lace:[1.68,"5'6\""],sable:[1.65,"5'5\""],neve:[1.60,"5'3\""],meeko:[1.22,"4'0\""]};
+const HALIAS={breaker:"albert",mossy:"albert",hem:"lace",lisette:"lace",ravel:"lace",ostra:"motley",ryzz:"sparkle",pip:"meeko",dredge:"grimble",claire:"neve",nivi:"neve",tarek:"tenzo"};
+function listedHeight(h){const ws=(String(h.name||"")+" "+String(h.id||"")+" "+String(h.model||"")).toLowerCase().split(/[^a-z]+/);
+  for(const w of ws){const k=HEIGHTS[w]?w:HALIAS[w]; if(k&&HEIGHTS[k])return HEIGHTS[k]} return null}
+const LM={true:{grp:new THREE.Group(),P:null,info:null},acc:{grp:new THREE.Group(),P:null,info:null}};
+Object.values(LM).forEach(m=>{m.grp.visible=false;scene.add(m.grp)});
+let lineKind="true"; const lineLbls=[];
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function cssVar(v,d){try{return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||d}catch(e){return d}}
-function lineLabel(html,p,rule){const el=document.createElement("div");el.className="lbl"+(rule?" rule":"");el.innerHTML=html;stageEl.appendChild(el);lineLbls.push({el,p,rule})}
+function lineLabel(html,p,rule,kind){const el=document.createElement("div");el.className="lbl m-"+kind+(rule?" rule":"");el.innerHTML=html;stageEl.appendChild(el);lineLbls.push({el,p,rule,kind})}
 function worldBox(root){root.updateMatrixWorld(true);const box=new THREE.Box3();
   root.traverse(o=>{if(!o.isMesh||!o.visible)return;if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld))}
     else{if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld))}});
   if(box.isEmpty())box.setFromObject(root);return box}
-async function buildLineup(){
+async function buildLineup(kind){
+  const acc=kind==="acc", lineGroup=LM[kind].grp;
   const hs=rows.filter(h=>h.model); let n=0;
   const gs=await Promise.all(hs.map(async h=>{try{const buf=await getGlb(h);const g=await new Promise((res,rej)=>loader.parse(buf,"",res,rej));
     if(lineMode)load.textContent="Loading lineup "+(++n)+"/"+hs.length+"…";return g}catch(e){return null}}));
   if(!gs.some(g=>g))throw new Error("no models");
   const gap=0.35, rs=[]; let u=0;
   gs.forEach((g,i)=>{if(!g)return;
-    const box=worldBox(g.scene), size=box.getSize(new THREE.Vector3()), w=Math.max(size.x,0.5);
-    rs.push({h:hs[i],g,box,size,u:u+w/2,c:box.getCenter(new THREE.Vector3())}); u+=w+gap});
+    let box=worldBox(g.scene), size=box.getSize(new THREE.Vector3()); const lh=acc?listedHeight(hs[i]):null;
+    if(lh&&size.y>0){g.scene.scale.multiplyScalar(lh[0]/size.y); box=worldBox(g.scene); size=box.getSize(new THREE.Vector3())}
+    const w=Math.max(size.x,0.5);
+    rs.push({h:hs[i],g,box,size,lh,u:u+w/2,c:box.getCenter(new THREE.Vector3())}); u+=w+gap});
   const total=u-gap, W=total+1.2, D=4; let hMax=0;
   rs.forEach(r=>{ // first hunter on the viewer's left: the camera sits on +Z, where -X is to the left
     const X=r.u-total/2; r.g.scene.position.x=X-r.c.x; r.g.scene.position.y-=r.box.min.y; lineGroup.add(r.g.scene); hMax=Math.max(hMax,r.size.y);
-    lineLabel("<b>"+esc(r.h.name)+"</b><span>"+r.size.y.toFixed(2)+" m</span>",new THREE.Vector3(X,0,0))});
+    lineLabel("<b>"+esc(r.h.name)+"</b><span>"+(acc?(r.lh?esc(r.lh[1])+" · ":"height TBD · "):"")+r.size.y.toFixed(2)+" m</span>",new THREE.Vector3(X,0,0),false,kind)});
   const plane=new THREE.Mesh(new THREE.PlaneGeometry(W,D).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:cssVar("--panel","#1d1a29"),transparent:true,opacity:0.55,depthWrite:false,toneMapped:false}));
   plane.position.y=-0.005; lineGroup.add(plane);
   const g1=[]; for(let k=Math.ceil(-W/2);k<=W/2;k++)g1.push(k,0,-D/2,k,0,D/2); for(let k=-D/2;k<=D/2;k++)g1.push(-W/2,0,k,W/2,0,k);
   lineGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position",new THREE.Float32BufferAttribute(g1,3)),new THREE.LineBasicMaterial({color:cssVar("--muted","#9d96b8"),transparent:true,opacity:0.3,toneMapped:false})));
   const g2=[]; [1,2].forEach(y=>g2.push(-W/2,y,0,W/2,y,0));
   lineGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position",new THREE.Float32BufferAttribute(g2,3)),new THREE.LineBasicMaterial({color:cssVar("--accent","#ffb347"),transparent:true,opacity:0.45,depthTest:false,toneMapped:false})));
-  [1,2].forEach(y=>lineLabel(y+" m",new THREE.Vector3(W/2,y,0),true));
-  lineInfo={W,hMax}}
+  [1,2].forEach(y=>lineLabel(y+" m",new THREE.Vector3(W/2,y,0),true,kind));
+  LM[kind].info={W,hMax}}
 function fitLineup(){
-  const {W,hMax}=lineInfo, hh=Math.max(hMax,2.2)+0.4;
+  const {W,hMax}=LM[lineKind].info, hh=Math.max(hMax,2.2)+0.4;
   const vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
   const d=Math.max((hh/2)/Math.tan(vf),(W/2)/Math.tan(hf))*1.05+1;
   controls.target.set(0,hh/2-0.3,0);
   camera.position.copy(controls.target).addScaledVector(new THREE.Vector3(0,0.08,1).normalize(),d);
   camera.near=0.05; camera.far=d*10; camera.updateProjectionMatrix(); controls.minDistance=0.8; controls.maxDistance=d*2; controls.update()}
 function placeLabels(){const w=canvas.clientWidth,h=canvas.clientHeight,v=new THREE.Vector3(); let prev=null, gap=1e9;
-  lineLbls.forEach(l=>{v.copy(l.p).project(camera); l.el.style.visibility=v.z<1?"visible":"hidden";
+  lineLbls.forEach(l=>{if(l.kind!==lineKind)return;v.copy(l.p).project(camera); l.el.style.visibility=v.z<1?"visible":"hidden";
     const px=(v.x*0.5+0.5)*w, py=(-v.y*0.5+0.5)*h;
     l.el.style.transform="translate("+px+"px,"+py+"px) translate("+(l.rule?"-100%,-50%":"-50%,6px")+")";
     if(!l.rule){if(prev!==null)gap=Math.min(gap,Math.abs(px-prev));prev=px}});
   stageEl.classList.toggle("dense",gap<64)}
 function leaveLineup(){if(!lineMode)return;
-  lineMode=false; lineGroup.visible=false; stageEl.classList.remove("lineup","dense"); resize(); lineBtn.setAttribute("aria-pressed","false"); if(model)model.visible=true}
-async function showLineup(user){
-  lineMode=true; ++token; if(model){scene.remove(model);model=null}
-  lineBtn.setAttribute("aria-pressed","true"); [...$("chips").children].forEach(b=>b.setAttribute("aria-pressed","false"));
-  canvas.setAttribute("aria-label","Lineup of all the hunters at true scale");
-  if(user){try{history.replaceState(null,"","#lineup")}catch(e){location.hash="lineup"}
+  lineMode=false; Object.values(LM).forEach(m=>m.grp.visible=false); stageEl.classList.remove("lineup","dense","acc"); resize(); lineBtn.setAttribute("aria-pressed","false"); lineBtnH.setAttribute("aria-pressed","false"); if(model)model.visible=true}
+async function showLineup(user,kind){kind=kind||"true";
+  lineMode=true; lineKind=kind; ++token; if(model){scene.remove(model);model=null}
+  Object.entries(LM).forEach(([k,m])=>m.grp.visible=false);
+  lineBtn.setAttribute("aria-pressed",String(kind==="true")); lineBtnH.setAttribute("aria-pressed",String(kind==="acc")); [...$("chips").children].forEach(b=>b.setAttribute("aria-pressed","false"));
+  canvas.setAttribute("aria-label",kind==="acc"?"Lineup of all the hunters at their listed heights":"Lineup of all the hunters at model scale");
+  const hs="#"+(kind==="acc"?"heights":"lineup");
+  if(user){try{history.replaceState(null,"",hs)}catch(e){location.hash=hs.slice(1)}
     stageEl.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest"})}
   load.textContent="Loading lineup…";
-  try{if(!lineP)lineP=buildLineup(); await lineP}
-  catch(e){lineP=null; if(lineMode)load.textContent="The lineup did not load ("+(e.message||e)+")."; return}
-  if(!lineMode)return;
-  lineGroup.visible=true; stageEl.classList.add("lineup"); resize(); fitLineup(); load.textContent=""}
-lineBtn.onclick=()=>lineMode?(location.hash==="#lineup"&&history.replaceState(null,"",location.pathname+location.search),pick(cur)):showLineup(true);
+  try{if(!LM[kind].P)LM[kind].P=buildLineup(kind); await LM[kind].P}
+  catch(e){LM[kind].P=null; if(lineMode)load.textContent="The lineup did not load ("+(e.message||e)+")."; return}
+  if(!lineMode||lineKind!==kind)return;
+  LM[kind].grp.visible=true; stageEl.classList.add("lineup"); stageEl.classList.toggle("acc",kind==="acc"); resize(); fitLineup(); load.textContent=""}
+function lineToggle(kind){if(lineMode&&lineKind===kind){if(location.hash)history.replaceState(null,"",location.pathname+location.search);pick(cur)}else showLineup(true,kind)}
+lineBtn.onclick=()=>lineToggle("true"); lineBtnH.onclick=()=>lineToggle("acc");
 
 function start(d){rows=d.hunters; $("asof").textContent="Updated "+d.asof+".";
   rows.forEach((h,i)=>{const b=document.createElement("button");b.className="chip";b.type="button";
     const n=document.createElement("b");n.textContent=h.name;const s=document.createElement("span");s.className="sc "+cls(h.score);s.textContent=h.score;
     b.append(n,s);b.onclick=()=>pick(i);$("chips").appendChild(b)});
-  $("lock").hidden=true; $("app").hidden=false; resize(); if(location.hash==="#lineup")showLineup(false);else pick(0)}
+  $("lock").hidden=true; $("app").hidden=false; resize(); if(location.hash==="#lineup")showLineup(false,"true");else if(location.hash==="#heights")showLineup(false,"acc");else pick(0)}
 async function unlock(pw,remember){KEY=await deriveKey(pw);
   const d=JSON.parse(new TextDecoder().decode(await decFetch("d/manifest.bin",true)));
   try{if(remember)localStorage.setItem("bmr",pw)}catch(e){}
