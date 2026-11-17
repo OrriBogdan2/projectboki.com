@@ -1390,18 +1390,21 @@ function arrowKeys(section, strip, go) {
       // card from the start (hidden by it) and the picture and the card fade off it at the very end, so its name and shading return softly.
       stage.classList.toggle("hm-src", opening);
       img.classList.add("fly");
-      const fade = (el) => { // (closing: the card and the art panel's dark grounds go clear at the end too, over the splash)
+      const fade = (el) => { // (closing: the card and the art panel's dark grounds, and the card's 1px border + shadow, are gone at once, while the card
+        // still covers the whole panel: left opaque to the end they show as a dark square over the splash where the text column was)
         const cs = getComputedStyle(el), bg = cs.backgroundColor, clear = bg.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
-        if (el !== card) return [{ backgroundColor: clear }, { backgroundColor: bg, offset: 0.15 }, { backgroundColor: bg }];
-        // (the card's 1px border and drop shadow go clear with its ground, or they stay up as a faint outline over the splash)
-        const bc = cs.borderTopColor, bclear = bc.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
-        return [{ backgroundColor: clear, borderColor: bclear, boxShadow: "0 0 0 0 rgba(0,0,0,0)" }, { backgroundColor: bg, borderColor: bc, boxShadow: cs.boxShadow, offset: 0.15 }, { backgroundColor: bg, borderColor: bc, boxShadow: cs.boxShadow }];
+        const on = { backgroundColor: bg }, off = { backgroundColor: clear };
+        if (el === card) {
+          const bc = cs.borderTopColor, bclear = bc.replace(/rgba?\(([^,]+),([^,]+),([^,)]+).*/, "rgba($1,$2,$3,0)");
+          Object.assign(on, { borderColor: bc, boxShadow: cs.boxShadow }); Object.assign(off, { borderColor: bclear, boxShadow: "0 0 0 0 rgba(0,0,0,0)" });
+        }
+        return [{ ...off }, { ...off }]; // (clear from the first frame of the close: the dim backdrop under it is dark already, so nothing pops, and no panel-shaped box is left)
       };
       out.push(card.animate([{ clipPath: g.clip }, { clipPath: g.clip1 }], o));
       if (!opening) [card, box.querySelector(".hm-art")].forEach((el) => out.push(el.animate(fade(el), o)));
       out.push(img.animate(opening ? [g.img, g.img1] : [{ ...g.img, opacity: 0 }, { opacity: 1, offset: 0.15 }, { ...g.img1, opacity: 1 }], o));
       box.querySelectorAll(".hm-txt, .hm-card > .lb-x, .hm-art .bk-arrow").forEach((el) =>
-        out.push(el.animate([{ opacity: 0 }, { opacity: 0, offset: 0.3 }, { opacity: 1 }], { ...o, easing: "linear" })));
+        out.push(el.animate([{ opacity: 0 }, { opacity: 0, offset: opening ? 0.3 : 0.8 }, { opacity: 1 }], { ...o, easing: "linear" }))); // (closing, reversed: the text is gone as the card ground goes, not left floating over the splash)
     }
     return out;
   };
