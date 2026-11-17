@@ -43,6 +43,7 @@ svg{display:block}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
 .muted{color:var(--muted)}.ink2{color:var(--ink2)}.small{font-size:12px}.num{font-variant-numeric:tabular-nums}
 .right{text-align:right}.nowrap{white-space:nowrap}.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ulane{margin-top:4px;line-height:1.35}.ureset{margin-top:10px}.ucount{font-weight:650;font-size:14px;letter-spacing:.02em}.ukv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:13px}.ukv dt{color:var(--muted)}.ukv dd{margin:0;min-width:0}.uj-done{color:var(--good)}.uj-failed{color:var(--crit)}.uj-blocked{color:var(--serious)}
 .row{display:flex;gap:8px;align-items:center}.row.wrap{flex-wrap:wrap}.grow{flex:1;min-width:0}
 h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}h1{font-size:20px}h2{font-size:15px}h3{font-size:13px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
 
@@ -255,6 +256,9 @@ function ago(e){ if(!e) return '—'; const s = now()-e; if (s<0) return 'in '+d
 function dur(s){ s=Math.max(0,Math.round(s)); if(s<60) return s+'s'; if(s<3600) return Math.round(s/60)+'m'; if(s<86400) return (s/3600).toFixed(s<36000?1:0)+'h'; return (s/86400).toFixed(1)+'d'; }
 function money(v, d=2){ return v==null ? '—' : '$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 function pct(v){ return v==null ? '—' : Math.round(v)+'%'; }
+function resetIn(e){ if (!e) return 'Reset time unknown'; let m = Math.max(0, Math.floor((e*1000 - Date.now())/60000)); if (!m) return 'Resetting now';
+  const D = Math.floor(m/1440), H = Math.floor(m%1440/60), M = m%60, u = (n, w) => `${n}\u00a0${w}${n===1?'':'S'}`;
+  return 'Reset in ' + [u(D,'DAY'), u(H,'HOUR'), u(M,'MINUTE')].join(', '); }
 function bytes(b){ if(b==null) return '—'; const u=['B','KB','MB','GB','TB']; let i=0; while(b>=1024&&i<4){b/=1024;i++;} return b.toFixed(i>2?1:0)+' '+u[i]; }
 function badge(s, text){ return `<span class="badge s-${esc(s)}">${esc(text||s)}</span>`; }
 function acct(a){ return `<span class="acct"><i style="background:${ACC[a]||ACC.acct}"></i>${esc(a)}</span>`; }
@@ -701,11 +705,18 @@ VIEWS.usage = (u, el) => {
   el.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))" id="accs"></div>
   ${sectionH('Weekly usage, last 7 days', `snapshot ${esc(ago(u.snapshot_at))} · pacer ${esc(u.pacer_last||'—')} UTC`)}<div class="card"><div class="chart" id="uc"></div></div>
   <div class="grid cols2" style="margin-top:14px"><div class="card"><h3>Jobs per day (${u.jobs_per_day.length} days, ET)</h3><div class="chart" id="pd"></div></div><div class="card"><h3>Jobs per hour of day (ET)</h3><div class="chart" id="ph"></div></div></div>`;
-  $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic; return `<div class="card"><div class="row">${acct(a.label)}${a.coord?`<span class="small" style="margin-left:6px;padding:0 6px;border:1px solid var(--c-coord);border-radius:4px;color:var(--c-coord)">coord</span>`:""}<span class="grow"></span><span class="small muted">${esc(a.lane||'')}</span></div>
-    <div class="kpi" style="margin-top:6px">${pct(a.pct)}<small>pace ${pct(a.pace_pct)}</small></div>${meter(a.pct, ACC[a.label])}
-    <div class="sub">resets ${a.resets_at ? esc(tEST(a.resets_at)) : '—'}${a.fable_pct!=null?` · Fable ${pct(a.fable_pct)}`:''}</div>
-    <div class="sub">${a.running} running · 24h: ${Object.entries(a.done_24h).filter(([k,v])=>v).map(([k,v])=>`${v} ${k}`).join(', ')||'none'} · spent ${a.spent_24h!=null?a.spent_24h+'%':'—'}</div>
-    ${b ? `<div class="sub ${b.flag?'':'muted'}">${b.rate_h>=0?'+':''}${b.rate_h}%/h → 90% in ${b.to90_h}h (${b.reset_h}h to reset)${b.flag?' '+badge('warning',b.flag):''}</div>` : ''}</div>`; }).join('');
+  $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic, d = a.done_24h || {};
+    const jobs = ['done','partial','failed','skipped','blocked'].filter(k => d[k]).map(k => `<span class="uj-${k}">${d[k]} ${k}</span>`).join(' · ') || 'none';
+    return `<div class="card ucard"><div class="row">${acct(a.label)}${a.coord?`<span class="small" style="margin-left:6px;padding:0 6px;border:1px solid var(--c-coord);border-radius:4px;color:var(--c-coord)">coord</span>`:""}</div>
+    ${a.lane ? `<div class="small muted ulane">${esc(a.lane)}</div>` : ''}
+    <div class="kpi" style="margin-top:8px">${pct(a.pct)}<small>pace ${pct(a.pace_pct)}</small></div>${meter(a.pct, ACC[a.label])}
+    <div class="ureset"><div class="ucount num" data-reset="${a.resets_at || ''}">${resetIn(a.resets_at)}</div>${a.resets_at ? `<div class="small muted">${esc(tEST(a.resets_at))}</div>` : ''}</div>
+    <dl class="ukv">${a.fable_pct != null ? `<dt>Fable</dt><dd>${pct(a.fable_pct)}</dd>` : ''}
+      <dt>Running</dt><dd>${a.running}</dd>
+      <dt>Last 24h</dt><dd>${jobs}</dd>
+      <dt>Spent 24h</dt><dd>${a.spent_24h != null ? a.spent_24h + '%' : '—'}</dd>
+      ${b ? `<dt>Burn</dt><dd>${b.rate_h >= 0 ? '+' : ''}${b.rate_h}%/h · 90% in ${b.to90_h}h${b.flag ? ' ' + badge('warning', b.flag) : ''}</dd>` : ''}</dl></div>`; }).join('');
+  if (!window._resetTick) window._resetTick = setInterval(() => document.querySelectorAll('[data-reset]').forEach(n => { n.textContent = resetIn(+n.dataset.reset); }), 30000);
   lineChart($('#uc', el), u.series.map(s => ({label:s.label, color:ACC[s.label]||ACC.acct, pts:s.pts, resets:s.resets})), {x0:u.x0, x1:u.x1, yMax:100, hold:90, h:200});
   const keys = [{k:'done',label:'done',color:'var(--good)'},{k:'partial',label:'partial',color:'var(--c-yellow)'},{k:'skipped',label:'skipped',color:'var(--muted)'},{k:'failed',label:'failed',color:'var(--crit)'},{k:'blocked',label:'blocked',color:'var(--serious)'}];
   stackedBars($('#pd', el), u.jobs_per_day.map(d => ({label: d.day.slice(5), title: d.day, parts: d})), keys, {h:160});
