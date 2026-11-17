@@ -637,7 +637,7 @@ if (pick) {
     };
     addEventListener("scroll", () => {
       const y = scrollY;
-      if (!auto && !arrived && scn && prev < scn.gate && y >= scn.gate && y - prev < innerHeight * 1.5 && y < scn.s0 + scn.lead) play(y); // a scroll down across the gate, not a jump
+      if (!touchy && !auto && !arrived && scn && prev < scn.gate && y >= scn.gate && y - prev < innerHeight * 1.5 && y < scn.s0 + scn.lead) play(y); // a scroll down across the gate, not a jump
       prev = y;
     }, { passive: true });
   }
@@ -672,7 +672,8 @@ if (pick) {
       if (held) { if (Math.abs(y - target) > 2) scrollTo({ top: target, behavior: "instant" }); prevY = scrollY; prevT = now; return; } // leftover momentum can't move it
       if (scn && coarse.matches && now - jump > 1500) {
         const c = Math.round(scn.s0 + scn.lead) + 2, v = (y - prevY) / Math.max(8, now - prevT); // px per ms
-        if (!arrived && prevY < c && y >= c && v > 1.2 && y - prevY < innerHeight * 1.5) hold(c); // the first fast pass down over the first Hunter: stop on it (not a jump)
+        // 11-17: the phone snap-hold below is off (owner: "scrolling down on phone jumps"); phones scroll natively into the Hunters
+        if (false && !arrived && prevY < c && y >= c && v > 1.2 && y - prevY < innerHeight * 1.5) hold(c); // the first fast pass down over the first Hunter: stop on it (not a jump)
       }
       prevY = y; prevT = now;
     }, { passive: true });
@@ -1886,7 +1887,7 @@ document.addEventListener("pointerdown", (e) => {
 document.addEventListener("animationend", (e) => { if (e.animationName === "egg-pop" || e.animationName === "egg-lit") e.target.classList.remove("pop"); });
 
 /* 11-15 owner: "hold the hunter screen for like .5s" (scroll-snap felt buggy, reverted). Phones only: when the Hunter
-   card comes fully into view, the screen centres on it and scrolling is held for 500 ms, once per pass (re-arms after
+   card comes fully into view, scrolling is held where it is for 500 ms (11-17: no longer re-centres, that read as a jump), once per pass (re-arms after
    it leaves view). No snapping anywhere else. */
 (() => {
   const sec = document.getElementById("hunters"), st = sec && sec.querySelector(".stage");
@@ -1898,8 +1899,7 @@ document.addEventListener("animationend", (e) => { if (e.animationName === "egg-
   addEventListener("wheel", block, { passive: false });
   const hold = () => {
     armed = false; holding = true;
-    const box = (sec.getBoundingClientRect().height <= innerHeight ? sec : st).getBoundingClientRect();
-    const y = Math.round(scrollY + box.top + box.height / 2 - innerHeight / 2);
+    const y = Math.round(scrollY); // 11-17 owner "scrolling down on phone jumps": hold where it is, no re-centring jump
     const prevO = html.style.overflow, prevB = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto"; html.style.overflow = "hidden";
     scrollTo(0, y);

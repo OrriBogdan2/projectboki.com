@@ -1710,3 +1710,5 @@ html:not(.tb-site-on):not(.tb-late) #nav .nav-cta { visibility: hidden; }
   .hero-in { width: clamp(270px, calc(100vw - 89svh - 3vw - 28px), min(33vw, 640px)); margin-left: 3vw; }
   .lockup { --wm: clamp(270px, calc(100vw - 89svh - 3vw - 28px), min(33vw, 640px)); }
 }
+/* 11-17 owner: phones get their own crop of the hero (hero-sky-p-*: the dragon, Sparkle and the arena island), so it sits near centre */
+@media (max-width: 900px), (max-aspect-ratio: 5/4) { .hero-art { object-position: 45% 50%; } }
