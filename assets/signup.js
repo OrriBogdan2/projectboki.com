@@ -198,6 +198,8 @@ if (POSTHOG_KEY) {
       f.value = url.replace("https://", "");
     });
   });
+  // Campaign tags from the landing URL (kept in memory only), so a sign-up can be traced to its link.
+  const utm = {}; try { const q = new URLSearchParams(location.search); ["utm_source", "utm_medium", "utm_campaign"].forEach((k) => { const v = (q.get(k) || "").slice(0, 80); if (v) utm[k] = v; }); } catch (e) {}
   forms.forEach((form) => {
     if (form.id !== "nav-su") form.hidden = false;
     form.addEventListener("submit", (e) => {
@@ -208,7 +210,7 @@ if (POSTHOG_KEY) {
       const who = { email, ref_code: myRef }; if (refBy) who.referred_by = refBy;
       vt = mkTok(); claimed = false; signed = true;
       posthog.identify(email, who);
-      posthog.capture("email_signup", { ...who, where: form.id, verify_token: vt });
+      posthog.capture("email_signup", { ...who, ...utm, where: form.id, verify_token: vt });
       // Backup copy for the admin list (store only, never mails). Fire-and-forget: PostHog above stays the source of truth.
       try { fetch("https://87-99-130-182.sslip.io/api/signup", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ email, source: form.id }) }).catch(() => {}); } catch (e) {}
       try { localStorage.setItem("boki-signed", "1"); localStorage.setItem("boki-vt", vt); localStorage.removeItem("boki-claimed"); } catch (e) {}

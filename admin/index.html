@@ -140,6 +140,7 @@ td .ell{max-width:420px}td .cell{display:contents}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin:6px 0 2px}.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
 .spark{width:100%;height:28px}
 .hbar{display:grid;grid-template-columns:90px 1fr 48px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}.hbar .bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}.hbar .bar i{display:block;height:100%}
+.wide .hbar{grid-template-columns:150px 1fr 48px}
 
 @media (max-width:899px){
   #app{grid-template-columns:1fr}nav.side{display:none}
@@ -215,10 +216,11 @@ const SECTIONS = [
   ['usage','Usage','M21 12a9 9 0 1 1-9-9M12 3v9h9'],
   ['backlog','Backlog','M4 6h16M4 12h16M4 18h10'],
   ['alerts','Alerts','M12 3l10 18H2zM12 10v4M12 17.5h.01'],
+  ['site','Site','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'],
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6'],
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
-const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',signups:'signups'};
+const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
 const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
@@ -468,7 +470,7 @@ function stackedBars(el, items, keys, o={}){
   items.forEach((it,i) => { let acc = 0; const x = m.l + i*bw + gap/2, w = bw - gap;
     keys.forEach(k => { const v = it.parts[k.k]||0; if (!v) return; const y1 = Y(acc), y0 = Y(acc+v); acc += v;
       g += `<rect x="${x}" y="${y0}" width="${w}" height="${Math.max(0, y1-y0-1)}" fill="${k.color}" rx="${acc===v?0:0}" data-i="${i}" data-k="${k.k}"/>`; });
-    if (items.length <= 16 || i % Math.ceil(items.length/12) === 0) g += `<text x="${x+w/2}" y="${H-5}" text-anchor="middle">${esc(it.label)}</text>`; });
+    if (items.length <= 16 || i % Math.ceil(items.length/(innerWidth < 600 ? 6 : 12)) === 0) g += `<text x="${x+w/2}" y="${H-5}" text-anchor="middle">${esc(it.label)}</text>`; });
   g += `<line class="axis" x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}"/>`;
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${g}</svg><div class="legend">${keys.map(k => `<span><i style="background:${k.color}"></i>${esc(k.label)}</span>`).join('')}</div>`;
   el.querySelectorAll('rect').forEach(r => { r.onmousemove = ev => { const it = items[+r.dataset.i]; const tot = keys.reduce((s,k)=>s+(it.parts[k.k]||0),0); showTip(ev, `<b>${esc(it.title||it.label)}</b> · ${tot} total<br>${keys.filter(k=>it.parts[k.k]).map(k=>`${esc(k.label)} ${it.parts[k.k]}`).join(' · ')}`); }; r.onmouseleave = hideTip; });
@@ -492,7 +494,7 @@ function groupBars(el, items, keys, o={}){
   let g = `<g class="grid">`; for (let v=0; v<=max; v+=steps) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l-5}" y="${Y(v)+4}" text-anchor="end">${v}</text>`; g += '</g>';
   items.forEach((it,i) => { const x = m.l + i*bw + gap/2;
     keys.forEach((k,j) => { const v = it.parts[k.k]||0; const y = Y(v); g += `<rect x="${x+j*sw}" y="${Math.min(y, H-m.b-1)}" width="${Math.max(1,sw-1)}" height="${Math.max(1, H-m.b-y)}" fill="${k.color}" opacity="${it.faint&&k.faint?.45:1}" data-i="${i}"/>`; });
-    if (items.length <= 16 || i % Math.ceil(items.length/12) === 0) g += `<text x="${x+(bw-gap)/2}" y="${H-5}" text-anchor="middle">${esc(it.label)}</text>`; });
+    if (items.length <= 16 || i % Math.ceil(items.length/(innerWidth < 600 ? 6 : 12)) === 0) g += `<text x="${x+(bw-gap)/2}" y="${H-5}" text-anchor="middle">${esc(it.label)}</text>`; });
   g += `<line class="axis" x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}"/>`;
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${g}</svg><div class="legend">${keys.map(k => `<span><i style="background:${k.color}"></i>${esc(k.label)}</span>`).join('')}</div>`;
   el.querySelectorAll('rect').forEach(r => { r.onmousemove = ev => { const it = items[+r.dataset.i]; showTip(ev, `<b>${esc(it.title||it.label)}</b><br>${keys.map(k=>`${esc(k.label)} ${it.parts[k.k]||0}`).join(' · ')}${it.note?'<br>'+esc(it.note):''}`); }; r.onmouseleave = hideTip; });
@@ -804,13 +806,85 @@ VIEWS.alerts = (a, el) => {
 };
 
 // ---------- signups
+const SU_DAY = 86400, etDay = e => new Intl.DateTimeFormat('en-CA',{timeZone:ET}).format(new Date(e*1000));   // YYYY-MM-DD in ET
+function csvCell(v){ v = String(v ?? ''); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }   // quoted, and a leading = + - @ is neutralised (spreadsheet formula injection)
+function signupsCsv(rows){
+  const head = ['email','source','date_et','verified','referred_by','ref_code','utm_source','utm_campaign','came_from','country','device','internal'];
+  return [head.join(',')].concat(rows.map(r => [r.email, r.source, tEST(r.created), r.verified?'yes':'no', r.referred_by, r.ref_code, r.utm_source, r.utm_campaign, r.ref_domain, r.country, r.device, r.internal?'yes':'no'].map(csvCell).join(','))).join('\r\n') + '\r\n';
+}
+function downloadText(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+function cameFrom(r){ return r.utm_source || (r.ref_domain && r.ref_domain !== '$direct' ? r.ref_domain : '') || (r.ref_domain === '$direct' ? 'direct' : ''); }
+function signupStats(all, withInternal){
+  const rows = withInternal ? all : all.filter(r => !r.internal);
+  const ver = rows.filter(r => r.verified).length, t = now();
+  const days = []; for (let i = 29; i >= 0; i--) days.push(etDay(t - i*SU_DAY));
+  const per = Object.fromEntries(days.map(d => [d, {v:0, u:0}]));
+  rows.forEach(r => { const d = per[etDay(r.created)]; if (d) (r.verified ? d.v++ : d.u++); });
+  const last7 = rows.filter(r => r.created >= t - 7*SU_DAY).length, prev7 = rows.filter(r => r.created >= t - 14*SU_DAY && r.created < t - 7*SU_DAY).length;
+  const tally = f => { const m = {}; rows.forEach(r => { const k = f(r) || 'unknown'; m[k] = (m[k]||0) + 1; }); return Object.entries(m).sort((a,b) => b[1]-a[1]); };
+  // referral leaderboard: referred_by holds the referrer's ref_code; ref_code -> email comes from the referrer's own row
+  const owner = {}; all.forEach(r => { if (r.ref_code) owner[r.ref_code] = r.email; });
+  const lb = {}; rows.forEach(r => { if (!r.referred_by) return; const e = lb[r.referred_by] = lb[r.referred_by] || {code:r.referred_by, n:0, v:0}; e.n++; if (r.verified) e.v++; });
+  const board = Object.values(lb).sort((a,b) => b.n - a.n || b.v - a.v).map(e => ({...e, who: owner[e.code] || ''}));
+  return {rows, ver, days, per, last7, prev7, bySource: tally(r => r.source), byCame: tally(cameFrom), byCountry: tally(r => r.country), board, hidden: all.length - rows.length};
+}
 VIEWS.signups = (s, el) => {
-  const rows = s.rows || s.last || [], ph = s.posthog;
-  const note = ph && ph !== 'ok' ? `<div class="small" style="margin-top:8px;color:var(--crit)">${ph === 'no key' ? 'PostHog not connected (no API key on the server): showing only signups stored since the backup path went live.' : 'PostHog lookup failed (' + esc(ph) + '): showing only locally stored signups.'}</div>` : '';
-  el.innerHTML = `<div class="grid tiles"><div class="card"><h3>Waitlist</h3><div class="kpi">${s.count}</div><div class="sub">${s.enabled?'signups open':'signups closed'} · the only place an email is shown</div>${note}</div></div>
-  ${sectionH('All signups', 'newest first')}<div id="tbl"></div>`;
-  const fs = fstate('signups'); fs.tbl = fs.tbl || {sort:'created',dir:-1};
-  table($('#tbl', el), {state: fs.tbl, rows, filters:[{k:'source',label:'Source',get:r=>r.source||''}], cols: [{k:'email',label:'Email',get:r=>r.email,lead:true,render:r=>`<span class="mono">${esc(r.email)}</span>`},{k:'source',label:'Source',get:r=>r.source||''},{k:'created',label:'Date (EST)',get:r=>r.created,num:true,render:r=>esc(tEST(r.created))},{k:'verified',label:'Verified',get:r=>r.verified?1:0,render:r=>r.verified?'yes':'no'},{k:'referred_by',label:'Referred by',get:r=>r.referred_by||'',render:r=>r.referred_by?`<span class="mono">${esc(r.referred_by)}</span>`:'<span class="muted">-</span>'}]});
+  const all = s.rows || s.last || [], ph = s.posthog, fs = fstate('signups');
+  const note = ph && ph !== 'ok' ? `<div class="small" style="margin-bottom:12px;color:var(--crit)">${ph === 'no key' ? 'PostHog not connected (no API key on the server): showing only signups stored since the backup path went live.' : 'PostHog lookup failed (' + esc(ph) + '): showing only locally stored signups.'}</div>` : '';
+  const x = signupStats(all, !!fs.internal), n = x.rows.length, rate = n ? Math.round(x.ver / n * 100) : 0;
+  const delta = x.last7 - x.prev7, refd = x.rows.filter(r => r.referred_by).length;
+  el.innerHTML = `${note}<div class="grid tiles">
+    <div class="card"><h3>Waitlist</h3><div class="kpi">${n}</div><div class="sub">${s.enabled?'signups open':'signups closed'}${x.hidden ? ` · ${x.hidden} internal/test hidden` : ''}</div></div>
+    <div class="card"><h3>Verified</h3><div class="kpi">${x.ver}<small>${rate}% of ${n}</small></div><div class="sub">clicked the link in the welcome email</div></div>
+    <div class="card"><h3>Last 7 days</h3><div class="kpi">${x.last7}<small>${delta>0?'+':''}${delta} vs the 7 before</small></div><div class="sub">${x.prev7} the week before</div></div>
+    <div class="card"><h3>Referred</h3><div class="kpi">${refd}<small>${n ? Math.round(refd/n*100) : 0}%</small></div><div class="sub">joined through an invite link</div></div></div>
+  ${sectionH('Signups per day', 'last 30 days, ET')}<div class="card"><div id="su-days"></div></div>
+  <div class="grid cols3" style="margin-top:14px">
+    <div class="card"><h3>Form</h3>${hbars(x.bySource.slice(0,8).map(([k,v]) => ({label:k, v})))||'<div class="muted">none</div>'}</div>
+    <div class="card"><h3>Came from</h3>${hbars(x.byCame.slice(0,8).map(([k,v]) => ({label:k, v}))) || '<div class="muted">none</div>'}<div class="small muted" style="margin-top:6px">UTM source if the link had one, else the site they came from. UTM tags are recorded from now on.</div></div>
+    <div class="card"><h3>Referral leaderboard</h3>${x.board.length ? `<div class="list">${x.board.slice(0,8).map(b => `<div class="row"><span class="mono ell">${esc(b.who || b.code)}</span><span class="grow"></span><span class="num">${b.n} <span class="muted small">(${b.v} verified)</span></span></div>`).join('')}</div>` : '<div class="muted">No referred signups yet.</div>'}</div></div>
+  ${sectionH('All signups', 'newest first · the only place an email is shown')}
+  <div class="toolbar"><button class="chip ${fs.internal?'on':''}" id="su-int" title="Our own and test addresses">Show internal/test${x.hidden ? `<span class="n">${x.hidden}</span>` : ''}</button><button class="chip" id="su-csv">Download CSV</button></div><div id="tbl"></div>`;
+  stackedBars($('#su-days', el), x.days.map(d => ({label: d.slice(5).replace('-','/'), title: d, parts: {v: x.per[d].v, u: x.per[d].u}})), [{k:'v',label:'Verified',color:'var(--good)'},{k:'u',label:'Not verified yet',color:'var(--c-cory)'}], {h:150});
+  $('#su-int', el).onclick = () => { fs.internal = !fs.internal; saveState(); render(); };
+  $('#su-csv', el).onclick = () => downloadText('boki-signups-' + etDay(now()) + '.csv', signupsCsv(x.rows), 'text/csv');
+  fs.tbl = fs.tbl || {sort:'created',dir:-1};
+  table($('#tbl', el), {state: fs.tbl, rows: x.rows, filters:[{k:'source',label:'Form',get:r=>r.source||''},{k:'verified',label:'Status',get:r=>r.verified?'verified':'not verified'}], cols: [
+    {k:'email',label:'Email',get:r=>r.email,lead:true,render:r=>`<span class="mono">${esc(r.email)}</span>${r.internal?' <span class="badge s-skipped">internal</span>':''}`},
+    {k:'source',label:'Form',get:r=>r.source||''},
+    {k:'created',label:'Date (ET)',get:r=>r.created,num:true,render:r=>esc(tEST(r.created))},
+    {k:'verified',label:'Verified',get:r=>r.verified?1:0,render:r=>r.verified?'yes':'no'},
+    {k:'came',label:'Came from',get:r=>cameFrom(r),render:r=>esc(cameFrom(r)) || '<span class="muted">-</span>'},
+    {k:'country',label:'Country',get:r=>r.country||'',render:r=>esc(r.country||'') || '<span class="muted">-</span>'},
+    {k:'referred_by',label:'Referred by',get:r=>r.referred_by||'',render:r=>r.referred_by?`<span class="mono">${esc(r.referred_by)}</span>`:'<span class="muted">-</span>'}]});
+};
+
+// ---------- site traffic (PostHog, 30 days; the server caches it for 5 minutes)
+VIEWS.site = (t, el) => {
+  if (t.status !== 'ok') { el.innerHTML = `<div class="card"><h3>Site traffic</h3><div class="muted">${t.status === 'no key' ? 'PostHog is not connected on the server (no API key).' : 'PostHog lookup failed (' + esc(t.status || 'no data') + '). Try again in a minute.'}</div></div>`; return; }
+  const T = t.totals, F = t.funnel, dayLabel = d => fmtD.format(new Date(d + 'T12:00:00Z'));
+  const conv = (a, b) => b ? (a / b * 100).toFixed(1).replace(/\.0$/, '') + '%' : '-';
+  const maxV = Math.max(1, F.visitors);
+  const step = (label, v, color) => `<div class="hbar" style="grid-template-columns:90px 1fr 110px"><span>${label}</span><div class="bar"><i style="width:${Math.max(1, v / maxV * 100)}%;background:${color}"></i></div><span class="num right">${v} <span class="muted small">${conv(v, maxV)}</span></span></div>`;
+  const ref = [{label:'Direct / none', v:t.direct_views, color:'var(--muted)'}].concat(t.referrers.map(r => ({label:r.domain, v:r.views}))).concat(t.self_views ? [{label:'Our own site', v:t.self_views, color:'var(--muted)'}] : []);
+  el.innerHTML = `<div class="grid tiles">
+    <div class="card"><h3>Visitors, 7 days</h3><div class="kpi">${T.visitors_7d}</div><div class="sub">${T.views_7d} pageviews</div></div>
+    <div class="card"><h3>Visitors, 30 days</h3><div class="kpi">${T.visitors_30d}</div><div class="sub">${T.views_30d} pageviews</div></div>
+    <div class="card"><h3>Visit to signup</h3><div class="kpi">${conv(F.signups, F.visitors)}</div><div class="sub">${F.signups} signups from ${F.visitors} visitors</div></div>
+    <div class="card"><h3>Signup to verified</h3><div class="kpi">${conv(F.verified, F.signups)}</div><div class="sub">${F.verified} of ${F.signups} clicked the email link</div></div></div>
+  ${sectionH('Visitors and pageviews per day', 'last 30 days, UTC days')}<div class="card"><div id="tr-days"></div>
+    <div class="small muted" style="margin-top:6px">Visitors is an upper bound: before cookie consent a returning person can count twice.</div></div>
+  <div class="grid cols2" style="margin-top:14px">
+    <div class="card"><h3>Funnel, 30 days</h3>${step('Visitors', F.visitors, 'var(--c-cory)')}${step('Signed up', F.signups, 'var(--c-coord)')}${step('Verified', F.verified, 'var(--good)')}<div class="small muted" style="margin-top:6px">Signups exclude internal/test addresses.</div></div>
+    <div class="card wide"><h3>Top pages</h3>${hbars(t.pages.slice(0,8).map(p => ({label:p.path, v:p.views}))) || '<div class="muted">none</div>'}</div>
+    <div class="card wide"><h3>Where visitors come from</h3>${hbars(ref.slice(0,10))}</div>
+    <div class="card"><h3>Campaign links (UTM)</h3>${t.utm.length ? `<div class="list">${t.utm.map(u => `<div class="row"><span class="ell">${esc([u.source,u.medium,u.campaign].filter(Boolean).join(' / '))}</span><span class="grow"></span><span class="num">${u.views} views</span></div>`).join('')}</div>` : '<div class="muted">No tagged links seen yet. Add ?utm_source=NAME&amp;utm_campaign=NAME to any link you post and it shows up here and on each signup.</div>'}</div>
+    <div class="card"><h3>Devices</h3>${hbars(t.devices.map(d => ({label:d.name, v:d.visitors})))}</div>
+    <div class="card"><h3>Countries</h3>${hbars(t.countries.map(c => ({label:c.name, v:c.visitors})))}</div></div>
+  <div class="small muted" style="margin-top:12px">Updated ${esc(ago(t.generated))} · PostHog, cached 5 min</div>`;
+  const by = Object.fromEntries(t.daily.map(d => [d.day, d])), span = [];   // a full 30-day axis, zero days included
+  for (let i = 29; i >= 0; i--) span.push(new Date(Date.now() - i*86400000).toISOString().slice(0,10));
+  groupBars($('#tr-days', el), span.map(day => ({label: day.slice(5).replace('-','/'), title: dayLabel(day), parts: {vis:(by[day]||{}).visitors||0, views:(by[day]||{}).views||0}})), [{k:'vis',label:'Visitors',color:'var(--c-cory)'},{k:'views',label:'Pageviews',color:'var(--c-gc)'}], {h:170});
 };
 
 boot();
