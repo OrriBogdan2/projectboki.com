@@ -16,8 +16,8 @@
     if (qa && /^https?:\/\/(127\.0\.0\.1|localhost)[:/]/.test(location.href) && /\/api$/.test(qa)) API = qa;
   } catch (e) {}
 
-  var LINKS = [["Hunters", "/#hunters"], ["Boki", "/#boki"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
-  var DEX_LINKS = LINKS; /* the same six on every page; the logo is the way home */
+  var LINKS = [["Hunters", "/#hunters"], ["FAQ", "/#faq"], ["Bokidex", "/bokidex/"], ["Devlog", "/devlog.html"], ["Press", "/presskit.html"]];
+  var DEX_LINKS = LINKS; /* the same five on every page; the logo is the way home */
   var DISCORD = "https://discord.gg/nbeBaU7xt"; /* same invite as site.js DISCORD_URL */
   var DISCORD_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a20 20 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4-2 1 1.3 2.1a20 20 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>';
 
