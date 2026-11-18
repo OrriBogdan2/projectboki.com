@@ -723,17 +723,18 @@
    "shot": false
   },
   {
-   "id": "maulangler",
-   "name": "Maulangler",
+   "id": "umbrakirin",
+   "name": "Umbrakirin",
    "types": [
-    "dark"
+    "dark",
+    "dragon"
    ],
    "stage": 3,
    "from": null,
    "fromHidden": true,
    "into": [],
-   "desc": "Maulangler has left the mud behind and walks about on stubby legs, a huge dark angler with a glowing purple mouth.",
-   "v": "ha1aa37def55d",
+   "desc": "Umbrakirin is a long-maned dark kirin armoured in jade-black scales, with one tall pale horn, whiskers like thin cords and clouds of mist at its hooves.",
+   "v": "hef98baccce31",
    "shot": false
   },
   {
@@ -1020,6 +1021,18 @@
    "sil": "snuffapi"
   },
   {
+   "t": "ghost",
+   "sil": "maskit"
+  },
+  {
+   "t": "ghost",
+   "sil": "guisel"
+  },
+  {
+   "t": "ghost",
+   "sil": "myriface"
+  },
+  {
    "t": "ice",
    "sil": "coolatee"
   },
@@ -1092,10 +1105,6 @@
    "sil": "rimink"
   },
   {
-   "t": "dark",
-   "sil": "umbrink"
-  },
-  {
    "t": "fairy",
    "sil": "lunink"
   },
@@ -1106,6 +1115,10 @@
   {
    "t": "dragon",
    "sil": "wyrmink"
+  },
+  {
+   "t": "dark",
+   "sil": "umbrink"
   },
   {
    "t": "normal",
@@ -1308,6 +1321,14 @@
    "sil": "ribbonwyrm"
   },
   {
+   "t": "dark",
+   "sil": "qilet"
+  },
+  {
+   "t": "dark",
+   "sil": "duskirin"
+  },
+  {
    "t": "water",
    "sil": "jarmit"
   },
@@ -1417,15 +1438,15 @@
   },
   {
    "t": "crystal",
-   "sil": "olmlet"
-  },
-  {
-   "t": "crystal",
    "sil": "glazolm"
   },
   {
    "t": "crystal",
    "sil": "kintsuwyrm"
+  },
+  {
+   "t": "crystal",
+   "sil": "olmlet"
   },
   {
    "t": "rock",
@@ -1478,6 +1499,10 @@
   {
    "t": "dark",
    "sil": "snapler"
+  },
+  {
+   "t": "dark",
+   "sil": "maulangler"
   },
   {
    "t": "normal",
@@ -1540,12 +1565,12 @@
    "sil": "pebblamb"
   },
   {
-   "t": "crystal",
-   "sil": "grouting"
-  },
-  {
    "t": "rock",
    "sil": "tesselamb"
+  },
+  {
+   "t": "crystal",
+   "sil": "grouting"
   },
   {
    "t": "dark",
@@ -1609,15 +1634,15 @@
   },
   {
    "t": "steel",
+   "sil": "tiltster3"
+  },
+  {
+   "t": "steel",
    "sil": "pinster"
   },
   {
    "t": "steel",
    "sil": "tiltster"
-  },
-  {
-   "t": "steel",
-   "sil": "tiltster3"
   },
   {
    "t": "electric",
@@ -1794,30 +1819,6 @@
   {
    "t": "bug",
    "sil": "palloth"
-  },
-  {
-   "t": "ghost",
-   "sil": "maskit"
-  },
-  {
-   "t": "ghost",
-   "sil": "guisel"
-  },
-  {
-   "t": "ghost",
-   "sil": "myriface"
-  },
-  {
-   "t": "dark",
-   "sil": "qilet"
-  },
-  {
-   "t": "dark",
-   "sil": "duskirin"
-  },
-  {
-   "t": "dark",
-   "sil": "umbrakirin"
   }
  ]
 }
