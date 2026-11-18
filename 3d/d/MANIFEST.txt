@@ -1,12 +1,12 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit a87d90dacaff471f664662e37d0b7018021dea0e
-built 2026-11-18T01:20Z
+commit e11b1bca5d10c8957f86f5924d2f463752efed84
+built 2026-11-18T05:10Z
 h_vex fb87daa0f055fa78677e1b5ee26ada7cf51c8b51 art/wardens/vex/vex.glb 19c5ea6f784 2026-11-17
 h_breaker 73e4f2abe585d5e50d15ea638c2ceaf8f9e036cd art/wardens/breaker/breaker.glb 28d0f88bc3b 2026-11-17
 h_claire d16bb7eaac79ef089fc87bed4b6cfb951c743f6b art/wardens/claire/claire.glb 5cd36e3a8c6 2026-11-17
 h_kael 546be618247b0d7154d35d75910856d8b350dd86 art/wardens/kael/kael.glb 640ef997be0 2026-11-17
-h_cinder 5f37877f10573e254aed582aa406b9be45ff4716 art/wardens/cinder/cinder.glb f42cda03b84 2026-11-17
+h_cinder 1f629f093e8a6f2d0f688e72a589e864791e6e8b art/wardens/cinder/cinder.glb e9ed681b398 2026-11-18
 h_tarek c9428b5c5ca21db3c7dd40869c4d573c52b4a7fa art/wardens/tarek/tarek.glb 81d49c6041f 2026-11-17
 h_ryzz 6b981b35d2d177cfe072941ab0ad429d23baf127 art/wardens/ryzz/ryzz.glb d5f0d0ee42f 2026-11-17
 h_dredge 8a03d9acc89594a807bc71fee87a99735d6df583 art/wardens/dredge/dredge.glb 65a567fd4d3 2026-11-18
