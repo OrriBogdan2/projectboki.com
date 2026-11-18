@@ -502,25 +502,35 @@ function groupBars(el, items, keys, o={}){
 function tile(href, title, kpi, sub, extra=''){ return `<a class="card click" href="${href}" style="display:block;color:inherit;text-decoration:none"><h3>${title}</h3><div class="kpi">${kpi}</div><div class="sub">${sub}</div>${extra}</a>`; }
 function sectionH(title, right=''){ return `<div class="section-h"><h2>${title}</h2><span class="small muted">${right}</span></div>`; }
 
+// real mc-chain state: running since X for Y h, or last finished with merged/skipped counts (never mixed)
+function gateTile(g, src){
+  if (!g) return ['—', notconn(src)];
+  if (g.unknown) return ['—', `gate state not collected yet (restart the collector) · last report ${esc(ago(g.last_run))}`];
+  const lf = g.last_finished, fin = lf ? `last finished run (started ${esc(ago(lf.at))}): ${lf.merged} merged, ${lf.skipped} skipped${lf.new_red!=null?', '+lf.new_red+' NEW-RED':''}` : 'no finished run recorded';
+  if (g.running) return [`${dot(g.stuck?'serious':'good')} running<small>${dur(g.running_h*3600)}${g.stuck?' · too long':''}</small>`,
+    `since ${esc(tEST(g.since))}${g.full?' · full suite':''}${g.so_far?` · ${g.so_far.merged} merged, ${g.so_far.skipped} skipped so far`:''} · ${fin}`];
+  return [`idle<small>${lf ? esc(ago(lf.at)) : ''}</small>`, fin];
+}
 VIEWS.home = (o, el) => {
   const h = o.health || {}, r = o.running || {}, lp = o.last_patch, g = o.gate, sp = o.spend || {};
   const lvl = h.level || 'warning';
-  const due = g && g.next_due ? (g.next_due - now()) : null;
+  const a24 = o.agents24, gt = gateTile(g, o.sources && o.sources.gate), mgp = o.merge_gap;
   el.innerHTML = srcLine(o.sources) + `
   <div class="grid tiles">
-    ${tile('#alerts', 'Fleet health', `${dot(lvl)} ${esc({good:'OK',warning:'Watch',serious:'Attention',critical:'Critical'}[lvl]||lvl)}`, esc(h.summary||'').replace(/; areas.*/,''), h.alerts ? `<div class="sub">${h.alerts} alert${h.alerts>1?'s':''}</div>` : '')}
-    ${tile('#agents', 'Agents running', `${r.count ?? '—'}<small>${o.done_24h ?? 0} done in 24h</small>`, Object.entries(r.by_account||{}).filter(([k,v])=>v).map(([k,v]) => `${acct(k)} ${v}`).join(' &nbsp; ') || 'none running', (r.top||[]).slice(0,3).map(j => `<div class="small ell ink2" style="margin-top:4px"><span class="muted">${esc(j.role)}</span> · ${esc(j.title)}</div>`).join(''))}
+    ${tile('#alerts', 'Fleet health', `${dot(lvl)} ${esc({good:'OK',warning:'Watch',serious:'Attention',critical:'Critical'}[lvl]||lvl)}`, esc(h.summary||'').replace(/; areas.*/,''), h.alerts ? `<div class="sub">${h.alerts} problem${h.alerts>1?'s':''}${h.need_action?` · <b>${h.need_action} need action</b>`:''}</div>${(h.top||[]).map(x=>`<div class="small ell ink2" style="margin-top:3px" title="${esc(x)}">${esc(x)}</div>`).join('')}` : '')}
+    ${tile('#agents', 'Agents running', `${r.count ?? '—'}<small>${a24 ? a24.done : (o.done_24h ?? 0)} done in 24h</small>`, Object.entries(r.by_account||{}).filter(([k,v])=>v).map(([k,v]) => `${acct(k)} ${v}`).join(' &nbsp; ') || 'none running', (a24 ? `<div class="small" style="margin-top:4px">${a24.fail_pct!=null?`failure rate ${a24.fail_pct}% (${a24.failed} of ${a24.total}) · ${a24.partial} partial${a24.blocked?' · '+a24.blocked+' blocked':''}`:'no finished jobs'} · ${a24.stalled ? `<b style="color:var(--serious)">${a24.stalled} stalled (running &gt; ${a24.stall_after_h} h)</b>` : '0 stalled'}</div>` : '') + (r.top||[]).slice(0,3).map(j => `<div class="small ell ink2" style="margin-top:4px"><span class="muted">${esc(j.role)}</span> · ${esc(j.title)}</div>`).join(''))}
     ${tile('#patches', 'Last patch', lp ? esc(lp.tag) : '—', lp ? `${esc(tDay(lp.published))} ${fmtT.format(new Date(lp.published*1000))} ET · ${esc(lp.note||'')}` : notconn(o.sources && o.sources.releases))}
-    ${tile('#patches', 'Next merge gate', g && g.next_due ? `${due>0?'in '+dur(due):'due now'}<small>${fmtT.format(new Date(g.next_due*1000))} ET${g.next_full?' · full suite':''}</small>` : '—', g ? `last run ${esc(ago(g.last_run))}${g.headline?' · '+esc(g.headline.split(';')[0]):''}` : notconn(o.sources && o.sources.gate))}
-    ${tile('#money', 'Spend', `${money(sp.today,0)}<small>today</small>`, `${money(sp.month,0)} this month · ${money(sp.hr)}/h · RunPod balance ${money(sp.runpod_balance,0)} · estimate`)}
-    ${tile('#backlog', 'Backlog', `${o.backlog ?? '—'}<small>items</small>`, o.merge && o.merge.unmerged ? `${o.merge.unmerged.n} READY branches not merged yet · ${esc(o.merge.verdict.text.split(':')[0])}${o.merge.verdict.red_flag?' · nothing merged in 24 h':''}` : `${o.ready_total ?? '—'} READY branches waiting for the gate`)}
+    ${tile('#patches', 'Merge gate', gt[0], gt[1])}
+    ${mgp ? tile('#backlog', 'Merge gap', `${mgp.today}<small>waiting to merge</small>`, `${mgp.yesterday!=null?`yesterday ${mgp.yesterday} · `:''}${mgp.change_day!=null?`${mgp.change_day>0?'+':''}${Math.round(mgp.change_day)}/day, ${esc(mgp.trend)}`:''}${mgp.days_to_zero!=null?` · ~${mgp.days_to_zero} days to zero`:''}`, `<div class="small muted" style="margin-top:4px">last 8 days: ${(mgp.series||[]).map(x=>x.n).join(' → ')}</div>`) : ''}
+    ${tile('#money', 'Spend', `${money(sp.today,0)}<small>today</small>`, `${money(sp.month,0)} this month · ${money(sp.hr)}/h · RunPod balance ${money(sp.runpod_balance,0)}${sp.runway && sp.runway.runpod && sp.runway.runpod.level ? ` · <b style="color:var(--${sp.runway.runpod.level==='critical'?'crit':'serious'})">runs out ${esc(sp.runway.runpod.out_text)}</b>` : ''}`)}
+    ${tile('#backlog', 'Backlog', `${o.backlog ?? '—'}<small>items</small>`, o.merge && o.merge.unmerged ? `${o.merge.unmerged.n} READY branches not merged yet · ${esc(o.merge.verdict.text.split(':')[0])}${o.merge.verdict.red_flag?' · nothing merged in 24 h':''}` : 'merge gap: see the Merge gap tile')}
   </div>
   ${sectionH('Servers', `collected ${esc(ago(o.collected_at))}`)}
   <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(165px,1fr))">${(o.servers||[]).map(s => `<a class="card click" href="#servers" style="color:inherit;padding:10px 12px"><div class="row"><span class="dot ${s.online?'good':'critical'}"></span><b class="ell" title="${esc(s.name)}">${esc(s.name)}</b><span class="muted small" style="margin-left:auto">${esc({cpu:'cpu',gpu:'gpu','owner-gpu':'owner'}[s.kind]||s.kind||'')}</span></div>
     <div class="small ink2" style="margin-top:4px">${s.online ? (s.kind==='owner-gpu' ? (s.job ? 'busy: '+esc(s.job) : 'idle') : `load ${s.load!=null?s.load.toFixed(1):'—'}/${s.cpus??'—'} · disk ${pct(s.disk)}${s.gpu!=null?' · gpu '+s.gpu+'%':''}${s.running?' · '+s.running+' jobs':''}`) : 'offline'}</div></a>`).join('')}</div>
   <div class="grid cols2" style="margin-top:14px">
     <div class="card"><h3>Needs you</h3>${(o.needs_you && o.needs_you.items && o.needs_you.items.length) ? `<div class="list">${o.needs_you.items.slice(0,5).map(i => `<div class="small">${esc(i)}</div>`).join('')}</div><div class="small muted" style="margin-top:8px"><a href="#alerts">all alerts</a> · ${esc(o.needs_you.heading||'')}</div>` : '<div class="muted small">Nothing waiting on you.</div>'}</div>
-    <div class="card"><h3>Usage this week</h3>${(o.usage||[]).map(u => `<div class="row" style="margin-top:6px"><span style="width:112px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${acct(u.label)}</span><div class="grow">${meter(u.pct, ACC[u.label])}</div><span class="num small" style="width:42px;flex:none;text-align:right">${pct(u.pct)}</span><span class="small muted" style="width:72px;flex:none;text-align:right;white-space:nowrap">pace ${pct(u.pace_pct)}</span></div>`).join('')}<div class="small muted" style="margin-top:8px"><a href="#usage">charts and resets</a></div></div>
+    <div class="card"><h3>Usage this week</h3>${(o.usage||[]).map(u => `<div class="row" style="margin-top:6px"><span style="width:112px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${acct(u.label)}</span><div class="grow">${meter(u.pct, ACC[u.label])}</div><span class="num small" style="width:42px;flex:none;text-align:right">${pct(u.pct)}</span><span class="small muted" style="width:72px;flex:none;text-align:right;white-space:nowrap">should be ${pct(u.pace_pct)}</span></div>`).join('')}<div class="small muted" style="margin-top:8px"><a href="#usage">charts and resets</a></div></div>
   </div>
   ${sectionH('Live activity')}
   <div class="card"><div class="list feed">${(o.feed||[]).slice(0,30).map(f => `<div data-id="${esc(f.id||'')}" data-kind="${f.kind}"><span class="t">${esc(tShort(f.t))}</span><span class="ell">${f.status?badge(f.status)+' ':''}<span class="muted">${esc(f.kind)}</span> · ${esc(f.text)}</span></div>`).join('') || '<div class="muted">no activity</div>'}</div></div>`;
@@ -529,10 +539,10 @@ VIEWS.home = (o, el) => {
 
 // ---------- patches
 VIEWS.patches = (p, el) => {
-  const g = p.gate; const due = g && g.next_due ? g.next_due - now() : null;
+  const g = p.gate, gs = p.gate_state, gt = gateTile(gs || (g ? {unknown:true,last_run:g.last_run} : null), p.sources && p.sources.gate), mgp = p.merge_gap;
   el.innerHTML = srcLine(p.sources) + `
   <div class="grid tiles">
-    <div class="card"><h3>Next merge gate</h3><div class="kpi">${g && g.next_due ? (due>0?'in '+dur(due):'due now') : '—'}</div><div class="sub">${g && g.next_due ? `${esc(tEST(g.next_due))}${g.next_full?' · full suite':''} · cron every 2h at :30 UTC` : notconn(p.sources && p.sources.gate)}</div></div>
+    <div class="card"><h3>Merge gate now</h3><div class="kpi">${gt[0]}</div><div class="sub">${gt[1]}</div></div>
     <div class="card"><h3>Last gate run</h3><div class="kpi">${g && g.last_run ? esc(ago(g.last_run)) : '—'}</div><div class="sub">${g ? `${esc(g.headline||'no headline')}` : ''}</div></div>
     <div class="card"><h3>Gate report</h3><div class="kpi">${g ? g.merged.length : '—'}<small>merged</small></div><div class="sub">${g ? `${g.skipped.length} skipped (conflicts) · report ${esc(ago(g.report_at))} · candidate ${esc(g.candidate_branch||'—')}` : ''}</div></div>
     <div class="card"><h3>Release dry-run</h3><div class="kpi">${g && g.release_dryrun ? (g.release_dryrun.ok ? badge('done','exports pass') : badge('failed','exports failing')) : '—'}</div><div class="sub">${g && g.release_dryrun ? `${g.release_dryrun.rows.map(r=>`${esc(r[0])} ${esc(r[1])}: ${esc(r[2])}`).join(' · ')} · ${esc(ago(g.release_dryrun.at))}` : ''}</div></div>
@@ -540,7 +550,7 @@ VIEWS.patches = (p, el) => {
   ${sectionH('Releases', `GitHub releases · commits from the local clone (fetched ${esc(ago(p.main_fetched))})`)}
   <div id="rel"></div>
   ${sectionH('Merged pull requests')}<div id="prs"></div>
-  ${sectionH('READY queue', `${p.ready_total ?? '—'} READY lines in EXT_TO_MAIN.md · newest first`)}<div id="ready"></div>
+  ${sectionH('READY queue', `${mgp ? `${mgp.today} waiting to merge (merge gap, ${mgp.yesterday} yesterday)` : 'merge gap not available'} · the lines below are the latest ${p.ready.length} in EXT_TO_MAIN.md, newest first`)}<div id="ready"></div>
   ${sectionH('main (first-parent log)')}<div id="main"></div>`;
   const fs = fstate('patches');
   table($('#rel', el), {state: fs.rel = fs.rel || {sort:'published',dir:-1}, rows: p.releases, onRow: r => openRelease(r, p),
@@ -574,7 +584,7 @@ VIEWS.agents = (a, el) => {
   el.innerHTML = `
   <div class="grid tiles">
     <div class="card"><h3>Running now</h3><div class="kpi">${running.length}</div><div class="sub">${Object.entries(running.reduce((m,j)=>(m[j.account]=(m[j.account]||0)+1,m),{})).map(([k,v])=>`${acct(k)} ${v}`).join(' &nbsp; ') || 'idle'}</div></div>
-    <div class="card"><h3>Finished in 24 h</h3><div class="kpi">${jobs.filter(j=>!j.running && t-j.finished<=86400).length}</div><div class="sub">${['done','partial','failed','blocked','skipped'].map(s => { const n = jobs.filter(j=>!j.running && j.status===s && t-j.finished<=86400).length; return n ? badge(s, `${n} ${s}`) : ''; }).join(' ')}</div></div>
+    <div class="card"><h3>Finished in 24 h</h3><div class="kpi">${a.last24 ? a.last24.total : jobs.filter(j=>!j.running && t-j.finished<=86400).length}${a.last24 && a.last24.fail_pct!=null ? `<small>${a.last24.fail_pct}% failed</small>` : ''}</div><div class="sub">${['done','partial','failed','blocked','skipped'].map(s => { const n = a.last24 ? a.last24[s] : jobs.filter(j=>!j.running && j.status===s && t-j.finished<=86400).length; return n ? badge(s, `${n} ${s}`) : ''; }).join(' ')}${a.last24 ? `<div class="small muted" style="margin-top:4px">${a.last24.unclean_pct}% not cleanly done · ${a.last24.stalled ? `<b style="color:var(--serious)">${a.last24.stalled} stalled (running &gt; ${a.last24.stall_after_h} h)</b>` : '0 stalled'}</div>` : ''}</div></div>
     <div class="card"><h3>Last ${a.days} days</h3><div class="kpi">${jobs.length}<small>jobs</small></div><div class="sub">${Object.entries(c).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`${k} ${v}`).join(' · ')}</div></div>
     <div class="card"><h3>Median duration</h3><div class="kpi">${(() => { const d = jobs.filter(j=>!j.running && !j.chore).map(j=>j.duration_s).sort((x,y)=>x-y); return d.length ? dur(d[Math.floor(d.length/2)]) : '—'; })()}</div><div class="sub">finished, excluding rebase chores</div></div>
   </div>
@@ -676,14 +686,14 @@ VIEWS.servers = (s, el) => {
 VIEWS.money = (m, el) => {
   const b = m.burn, t = m.today, mo = m.month;
   const parts = [['RunPod','runpod','var(--c-gc)'],['Hetzner','hetzner','var(--c-cory)'],['Claude','claude','var(--c-coord)'],['Other','other','var(--muted)']];
-  el.innerHTML = srcLine(m.sources) + `<div class="small muted" style="margin-bottom:10px">All figures are estimates: RunPod from its live spend rate, Hetzner from server prices × hours, Claude from the fixed monthly figure in <span class="mono">${esc(m.costs_file.path)}</span> (${m.costs_file.state==='edited'?'edited '+esc(m.costs_file.edited):'defaults, not edited yet'}).</div>
+  el.innerHTML = srcLine(m.sources) + `<div class="small muted" style="margin-bottom:10px">RunPod today is measured from the spend history, RunPod month is the billed total, Hetzner is server prices × hours, Claude is the billed subscription total (Max plans) from the monthly figure in <span class="mono">${esc(m.costs_file.path)}</span> (${m.costs_file.state==='edited'?'edited '+esc(m.costs_file.edited):'defaults, not edited yet'}).</div>
   <div class="grid tiles">
     <div class="card"><h3>Burn rate</h3><div class="kpi">${money(b.hr)}<small>/ hour</small></div><div class="sub">${money(b.day)} / day · ${money(b.month,0)} / month</div></div>
-    <div class="card"><h3>Today</h3><div class="kpi">${money(t.runpod+t.hetzner+t.claude,0)}</div><div class="sub">RunPod ${money(t.runpod)} · Hetzner ${money(t.hetzner)} · Claude ${money(t.claude)}</div></div>
-    <div class="card"><h3>This month</h3><div class="kpi">${money(mo.runpod+mo.hetzner+mo.claude+mo.other,0)}</div><div class="sub">RunPod ${money(mo.runpod,0)} · Hetzner ${money(mo.hetzner,0)} · Claude ${money(mo.claude,0)}</div></div>
-    <div class="card"><h3>RunPod balance</h3><div class="kpi">${money(m.runpod.balance)}</div><div class="sub">${m.runpod.spend_hr!=null ? `${money(m.runpod.spend_hr)}/h → ${m.runpod.balance && m.runpod.spend_hr ? dur(m.runpod.balance/m.runpod.spend_hr*3600)+' left' : ''} · limit ${money(m.runpod.spend_limit,0)}` : notconn(m.sources.runpod)}</div></div>
-    <div class="card"><h3>Meshy credits</h3><div class="kpi">${m.meshy ? m.meshy.balance.toLocaleString() : '—'}</div><div class="sub">${m.meshy ? `${m.meshy.monthly} monthly + ${m.meshy.permanent} permanent · resets ${esc(tDay(m.meshy.monthly_resets_at))}` : notconn(m.sources.meshy)}</div></div>
-    <div class="card"><h3>Agent token cost</h3><div class="kpi">${m.claude.agent_cost_usd_14d!=null ? money(m.claude.agent_cost_usd_14d,0) : '—'}</div><div class="sub">${m.claude.agent_cost_usd_14d!=null ? `${m.claude.agent_cost_jobs} jobs reported cost_usd in 14 d` : 'jobs do not report cost_usd (subscription accounts)'}</div></div>
+    <div class="card"><h3>Today</h3><div class="kpi">${money(t.runpod+t.hetzner+t.claude,0)}</div><div class="sub">RunPod ${money(t.runpod)}${t.runpod_since?` (measured since ${esc(t.runpod_since)})`:''} · Hetzner ${money(t.hetzner)} · Claude ${money(t.claude)}</div></div>
+    <div class="card"><h3>This month</h3><div class="kpi">${money(mo.runpod+mo.hetzner+mo.claude+mo.other,0)}</div><div class="sub">RunPod ${money(mo.runpod,0)} (${mo.runpod_basis==='billing'?'billed':'measured'}${mo.runpod_since?' since '+esc(mo.runpod_since):''}) · Hetzner ${money(mo.hetzner,0)} · Claude ${money(mo.claude,0)}</div></div>
+    <div class="card"><h3>RunPod balance</h3><div class="kpi">${money(m.runpod.balance)}</div><div class="sub">${m.runway && m.runway.runpod && m.runway.runpod.level ? `<b style="color:var(--${m.runway.runpod.level==='critical'?'crit':'serious'})">${m.runway.runpod.level==='critical'?'under 24 h':'under 48 h'}: runs out ${esc(m.runway.runpod.out_text)}</b><br>` : ''}${m.runpod.spend_hr!=null ? `${money(m.runpod.spend_hr)}/h → ${m.runpod.balance && m.runpod.spend_hr ? dur(m.runpod.balance/m.runpod.spend_hr*3600)+' left' : ''} · limit ${money(m.runpod.spend_limit,0)}` : notconn(m.sources.runpod)}</div></div>
+    <div class="card"><h3>Meshy credits</h3><div class="kpi">${m.meshy ? m.meshy.balance.toLocaleString() : '—'}</div><div class="sub">${m.runway && m.runway.meshy && m.runway.meshy.level ? `<b style="color:var(--${m.runway.meshy.level==='critical'?'crit':'serious'})">${m.runway.meshy.level==='critical'?'almost out':'running low'}</b><br>` : ''}${m.meshy ? `${m.meshy.monthly} monthly + ${m.meshy.permanent} permanent · resets ${esc(tDay(m.meshy.monthly_resets_at))}` : notconn(m.sources.meshy)}</div></div>
+    <div class="card"><h3>${esc(m.claude.agent_cost_label || 'API-priced value (subscriptions, not billed)')}</h3><div class="kpi">${m.claude.agent_cost_usd_14d!=null ? money(m.claude.agent_cost_usd_14d,0) : '—'}</div><div class="sub">${m.claude.agent_cost_usd_14d!=null ? `${m.claude.agent_cost_jobs} jobs reported cost_usd in 14 d` : 'jobs do not report cost_usd (subscription accounts)'}</div></div>
   </div>
   <div class="grid cols2" style="margin-top:14px">
     <div class="card"><h3>Burn by source ($/h)</h3>${hbars(parts.map(([l,k,c])=>({label:l,v:b.parts_hr[k]||0,fmt:money(b.parts_hr[k]||0),color:c})))}</div>
@@ -705,13 +715,14 @@ VIEWS.money = (m, el) => {
 // ---------- usage
 VIEWS.usage = (u, el) => {
   el.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))" id="accs"></div>
-  ${sectionH('Weekly usage, last 7 days', `snapshot ${esc(ago(u.snapshot_at))} · pacer ${esc(u.pacer_last||'—')} UTC`)}<div class="card"><div class="chart" id="uc"></div></div>
+  ${sectionH('Weekly usage, last 7 days', `snapshot ${esc(ago(u.snapshot_at))} · pacer ${u.pacer_last_t ? esc(tEST(u.pacer_last_t))+' ET' : esc(u.pacer_last||'—')}`)}<div class="card"><div class="chart" id="uc"></div></div>
   <div class="grid cols2" style="margin-top:14px"><div class="card"><h3>Jobs per day (${u.jobs_per_day.length} days, ET)</h3><div class="chart" id="pd"></div></div><div class="card"><h3>Jobs per hour of day (ET)</h3><div class="chart" id="ph"></div></div></div>`;
   $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic, d = a.done_24h || {};
     const jobs = ['done','partial','failed','skipped','blocked'].filter(k => d[k]).map(k => `<span class="uj-${k}">${d[k]} ${k}</span>`).join(' · ') || 'none';
     return `<div class="card ucard"><div class="row">${acct(a.label)}${a.coord?`<span class="small" style="margin-left:6px;padding:0 6px;border:1px solid var(--c-coord);border-radius:4px;color:var(--c-coord)">coord</span>`:""}</div>
     ${a.lane ? `<div class="small muted ulane">${esc(a.lane)}</div>` : ''}
-    <div class="kpi" style="margin-top:8px">${pct(a.pct)}<small>pace ${pct(a.pace_pct)}</small></div>${meter(a.pct, ACC[a.label])}
+    <div class="kpi" style="margin-top:8px">${pct(a.pct)}<small>should be at ${pct(a.pace_pct)} by now</small></div>${meter(a.pct, ACC[a.label])}
+    ${a.pace_gap != null ? `<div class="small" style="color:var(--${a.pace_gap < -5 ? 'serious' : 'muted'})">${Math.abs(Math.round(a.pace_gap))} point${Math.abs(Math.round(a.pace_gap))===1?'':'s'} ${a.pace_gap < 0 ? 'behind' : 'ahead of'} pace</div>` : ''}
     <div class="ureset"><div class="ucount num" data-reset="${a.resets_at || ''}">${resetIn(a.resets_at)}</div>${a.resets_at ? `<div class="small muted">${esc(tEST(a.resets_at))}</div>` : ''}</div>
     <dl class="ukv">${a.fable_pct != null ? `<dt>Fable</dt><dd>${pct(a.fable_pct)}</dd>` : ''}
       <dt>Running</dt><dd>${a.running}</dd>
@@ -747,7 +758,7 @@ function mtRender(t, el){
     <div class="small muted" style="margin-top:4px">READY branches are finished work waiting for the merge gate. Updated ${esc(ago(t.at))}.</div></div>
   <div class="grid tiles">
     <div class="card"><h3>Waiting to merge</h3><div class="kpi">${u.n}<small>READY branches</small></div><div class="sub">oldest since ${esc(u.oldest_t ? fmtWd.format(new Date(u.oldest_t*1000+43200000))+' '+tDay(u.oldest_t+43200) : '—')}${lanesTxt ? ' · '+esc(lanesTxt) : ''}</div></div>
-    <div class="card"><h3>In vs out, per day</h3><div class="kpi">${Math.round(r.ready_day)}<small>new READY</small> ${Math.round(r.merged_day)}<small>merged</small></div><div class="sub">7-day average · waiting count ${r.change_day>=0?'+':''}${Math.round(r.change_day)}/day</div></div>
+    <div class="card"><h3>In vs out, per day</h3><div class="kpi">${Math.round(r.ready_day)}<small>new READY</small> ${Math.round(r.merged_day)}<small>merged</small></div><div class="sub">7-day average · ${r.closed_day!=null ? Math.round(r.closed_day)+' closed or retired without merging · ' : ''}waiting count ${r.change_day>=0?'+':''}${Math.round(r.change_day)}/day</div></div>
     <div class="card"><h3>Merged, last 24 h</h3><div class="kpi">${t.merged_24h}<small>branches</small></div><div class="sub">last merge ${esc(ago(t.last_merge ? t.last_merge.t : t.last_merge_t))}</div></div>
     <div class="card"><h3>Backlog</h3><div class="kpi">${bl.queued}<small>tasks queued</small></div><div class="sub">${bl.oldest ? 'oldest: '+esc(bl.oldest.label)+', waiting '+esc(dur(now()-bl.oldest.since)) : bl.oldest_since ? 'oldest waiting '+esc(dur(now()-bl.oldest_since)) : ''}</div></div>
   </div>
@@ -799,7 +810,7 @@ VIEWS.alerts = (a, el) => {
   const ny = a.needs_you || {items:[]};
   el.innerHTML = srcLine(a.sources) + `<div class="grid cols2">
     <div class="card"><h3>Needs you</h3><div class="small muted" style="margin-bottom:6px">${esc(ny.heading||'NEEDS_YOU.md')} · updated ${esc(ago(ny.updated))}</div><div class="list">${ny.items.map((i,n)=>`<div><b>${n+1}.</b> ${esc(i)}</div>`).join('')||'<div class="muted">nothing waiting on you</div>'}</div></div>
-    <div class="card"><h3>Fleet watch</h3><div class="small muted" style="margin-bottom:6px">${esc(a.fleet_summary||'not connected')} · ${esc(ago(a.fleet_at))}</div><div class="list">${a.fleet.map(f=>`<div class="row">${dot(f.level)}<span>${esc(f.text)}</span></div>`).join('')||'<div class="muted">no fleet alerts</div>'}</div>
+    <div class="card"><h3>Fleet watch</h3><div class="small muted" style="margin-bottom:6px">${esc(a.fleet_summary||'not connected')} · ${esc(ago(a.fleet_at))}${a.counts ? ` · <b>${a.counts.problems} problem${a.counts.problems===1?'':'s'}, ${a.counts.need_action} need action</b>` : ''}</div><div class="list">${a.fleet.map(f=>`<div class="row">${dot(f.level)}<span>${esc(f.text)}</span></div>`).join('')||'<div class="muted">no fleet alerts</div>'}</div>
       <h3 style="margin-top:14px">System checks</h3><div class="list">${a.system.map(f=>`<div class="row">${dot(f.level)}<span>${esc(f.text)}</span></div>`).join('')||'<div class="muted">all checks pass</div>'}</div></div>
   </div>
   ${sectionH('Alert log', 'coord/ALERTS.md, newest first')}<div class="card"><div class="list">${a.log.map(l=>`<div class="row small"><span class="t" style="width:110px">${esc(l.t?tShort(l.t):'')}</span><span>${esc(l.text)}</span></div>`).join('')||'<div class="muted">empty</div>'}</div></div>`;
