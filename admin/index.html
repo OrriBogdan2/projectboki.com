@@ -221,7 +221,7 @@ const SECTIONS = [
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
 const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
-const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
+const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)',corybogdan:'var(--c-cory)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
 const st = loadState();   // {section, filters:{section:{...}}, theme}
@@ -263,7 +263,7 @@ function resetIn(e){ if (!e) return 'Reset time unknown'; let m = Math.max(0, Ma
   return 'Reset in ' + [u(D,'DAY'), u(H,'HOUR'), u(M,'MINUTE')].join(', '); }
 function bytes(b){ if(b==null) return '—'; const u=['B','KB','MB','GB','TB']; let i=0; while(b>=1024&&i<4){b/=1024;i++;} return b.toFixed(i>2?1:0)+' '+u[i]; }
 function badge(s, text){ return `<span class="badge s-${esc(s)}">${esc(text||s)}</span>`; }
-function acct(a){ return `<span class="acct"><i style="background:${ACC[a]||ACC.acct}"></i>${esc(a)}</span>`; }
+function acct(a){ return `<span class="acct" style="white-space:nowrap"><i style="background:${ACC[a]||ACC.acct}"></i>${esc(a==='corybogdan'?'Cory':a)}</span>`; }
 function dot(level){ return `<span class="dot ${esc(level)}"></span>`; }
 function notconn(src, what){ return `<span class="notconn" title="${esc(src && src.err || '')}">● ${esc(what||'not connected')}${src && src.err ? ': '+esc(src.err.slice(0,80)) : ''}</span>`; }
 function srcLine(sources){ if(!sources) return ''; const bad = Object.entries(sources).filter(([k,v])=>!v.ok); return bad.length ? `<div class="small" style="margin-bottom:10px">${bad.map(([k,v])=>notconn(v,k)).join(' &nbsp; ')}</div>` : ''; }
@@ -520,7 +520,7 @@ VIEWS.home = (o, el) => {
     <div class="small ink2" style="margin-top:4px">${s.online ? (s.kind==='owner-gpu' ? (s.job ? 'busy: '+esc(s.job) : 'idle') : `load ${s.load!=null?s.load.toFixed(1):'—'}/${s.cpus??'—'} · disk ${pct(s.disk)}${s.gpu!=null?' · gpu '+s.gpu+'%':''}${s.running?' · '+s.running+' jobs':''}`) : 'offline'}</div></a>`).join('')}</div>
   <div class="grid cols2" style="margin-top:14px">
     <div class="card"><h3>Needs you</h3>${(o.needs_you && o.needs_you.items && o.needs_you.items.length) ? `<div class="list">${o.needs_you.items.slice(0,5).map(i => `<div class="small">${esc(i)}</div>`).join('')}</div><div class="small muted" style="margin-top:8px"><a href="#alerts">all alerts</a> · ${esc(o.needs_you.heading||'')}</div>` : '<div class="muted small">Nothing waiting on you.</div>'}</div>
-    <div class="card"><h3>Usage this week</h3>${(o.usage||[]).map(u => `<div class="row" style="margin-top:6px"><span style="width:52px">${acct(u.label)}</span><div class="grow">${meter(u.pct, ACC[u.label])}</div><span class="num small" style="width:38px;text-align:right">${pct(u.pct)}</span><span class="small muted" style="width:72px;text-align:right">pace ${pct(u.pace_pct)}</span></div>`).join('')}<div class="small muted" style="margin-top:8px"><a href="#usage">charts and resets</a></div></div>
+    <div class="card"><h3>Usage this week</h3>${(o.usage||[]).map(u => `<div class="row" style="margin-top:6px"><span style="width:112px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${acct(u.label)}</span><div class="grow">${meter(u.pct, ACC[u.label])}</div><span class="num small" style="width:42px;flex:none;text-align:right">${pct(u.pct)}</span><span class="small muted" style="width:72px;flex:none;text-align:right;white-space:nowrap">pace ${pct(u.pace_pct)}</span></div>`).join('')}<div class="small muted" style="margin-top:8px"><a href="#usage">charts and resets</a></div></div>
   </div>
   ${sectionH('Live activity')}
   <div class="card"><div class="list feed">${(o.feed||[]).slice(0,30).map(f => `<div data-id="${esc(f.id||'')}" data-kind="${f.kind}"><span class="t">${esc(tShort(f.t))}</span><span class="ell">${f.status?badge(f.status)+' ':''}<span class="muted">${esc(f.kind)}</span> · ${esc(f.text)}</span></div>`).join('') || '<div class="muted">no activity</div>'}</div></div>`;
