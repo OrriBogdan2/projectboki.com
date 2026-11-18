@@ -101,7 +101,7 @@
  },
  "vex": {
   "style": "Daze an enemy with Coin Blast, then shoot them while it lasts.",
-  "lmb": "Fire a full-auto rifle. Dazed enemies take 76% more.",
+  "lmb": "Fire a full-auto gatling. Dazed enemies take 76% more.",
   "passive": "Knock down a Hunter to get Slipstep back.",
   "dash": "Tap to skid, hold to slide. You can shoot the whole time.",
   "rmb": "Fire a charge that Dazes the first enemy it hits.",
