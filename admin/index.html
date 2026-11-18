@@ -805,10 +805,12 @@ VIEWS.alerts = (a, el) => {
 
 // ---------- signups
 VIEWS.signups = (s, el) => {
-  el.innerHTML = `<div class="grid tiles"><div class="card"><h3>Waitlist</h3><div class="kpi">${s.count}</div><div class="sub">${s.enabled?'signups open':'signups closed'} · the only place an email is shown</div></div></div>
-  ${sectionH('Latest signups')}<div id="tbl"></div>`;
+  const rows = s.rows || s.last || [], ph = s.posthog;
+  const note = ph && ph !== 'ok' ? `<div class="small" style="margin-top:8px;color:var(--crit)">${ph === 'no key' ? 'PostHog not connected (no API key on the server): showing only signups stored since the backup path went live.' : 'PostHog lookup failed (' + esc(ph) + '): showing only locally stored signups.'}</div>` : '';
+  el.innerHTML = `<div class="grid tiles"><div class="card"><h3>Waitlist</h3><div class="kpi">${s.count}</div><div class="sub">${s.enabled?'signups open':'signups closed'} · the only place an email is shown</div>${note}</div></div>
+  ${sectionH('All signups', 'newest first')}<div id="tbl"></div>`;
   const fs = fstate('signups'); fs.tbl = fs.tbl || {sort:'created',dir:-1};
-  table($('#tbl', el), {state: fs.tbl, rows: s.last, filters:[{k:'source',label:'Source',get:r=>r.source||''}], cols: [{k:'email',label:'Email',get:r=>r.email,lead:true,render:r=>`<span class="mono">${esc(r.email)}</span>`},{k:'source',label:'Source',get:r=>r.source||''},{k:'created',label:'When (ET)',get:r=>r.created,num:true,render:r=>esc(tEST(r.created))}]});
+  table($('#tbl', el), {state: fs.tbl, rows, filters:[{k:'source',label:'Source',get:r=>r.source||''}], cols: [{k:'email',label:'Email',get:r=>r.email,lead:true,render:r=>`<span class="mono">${esc(r.email)}</span>`},{k:'source',label:'Source',get:r=>r.source||''},{k:'created',label:'Date (EST)',get:r=>r.created,num:true,render:r=>esc(tEST(r.created))},{k:'verified',label:'Verified',get:r=>r.verified?1:0,render:r=>r.verified?'yes':'no'},{k:'referred_by',label:'Referred by',get:r=>r.referred_by||'',render:r=>r.referred_by?`<span class="mono">${esc(r.referred_by)}</span>`:'<span class="muted">-</span>'}]});
 };
 
 boot();

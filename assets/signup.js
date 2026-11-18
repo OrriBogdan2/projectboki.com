@@ -209,6 +209,8 @@ if (POSTHOG_KEY) {
       vt = mkTok(); claimed = false; signed = true;
       posthog.identify(email, who);
       posthog.capture("email_signup", { ...who, where: form.id, verify_token: vt });
+      // Backup copy for the admin list (store only, never mails). Fire-and-forget: PostHog above stays the source of truth.
+      try { fetch("https://87-99-130-182.sslip.io/api/signup", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ email, source: form.id }) }).catch(() => {}); } catch (e) {}
       try { localStorage.setItem("boki-signed", "1"); localStorage.setItem("boki-vt", vt); localStorage.removeItem("boki-claimed"); } catch (e) {}
       saving(form);
     });
