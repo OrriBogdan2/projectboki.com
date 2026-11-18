@@ -809,8 +809,8 @@ VIEWS.alerts = (a, el) => {
 const SU_DAY = 86400, etDay = e => new Intl.DateTimeFormat('en-CA',{timeZone:ET}).format(new Date(e*1000));   // YYYY-MM-DD in ET
 function csvCell(v){ v = String(v ?? ''); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }   // quoted, and a leading = + - @ is neutralised (spreadsheet formula injection)
 function signupsCsv(rows){
-  const head = ['email','source','date_et','verified','referred_by','ref_code','utm_source','utm_campaign','came_from','country','device','internal'];
-  return [head.join(',')].concat(rows.map(r => [r.email, r.source, tEST(r.created), r.verified?'yes':'no', r.referred_by, r.ref_code, r.utm_source, r.utm_campaign, r.ref_domain, r.country, r.device, r.internal?'yes':'no'].map(csvCell).join(','))).join('\r\n') + '\r\n';
+  const head = ['email','source','date_et','verified','referred_by','referred_by_email','ref_code','utm_source','utm_campaign','came_from','country','device','internal'];
+  return [head.join(',')].concat(rows.map(r => [r.email, r.source, tEST(r.created), r.verified?'yes':'no', r.referred_by, (signupsCsv.owner||{})[r.referred_by]||'', r.ref_code, r.utm_source, r.utm_campaign, r.ref_domain, r.country, r.device, r.internal?'yes':'no'].map(csvCell).join(','))).join('\r\n') + '\r\n';
 }
 function downloadText(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 function cameFrom(r){ return r.utm_source || (r.ref_domain && r.ref_domain !== '$direct' ? r.ref_domain : '') || (r.ref_domain === '$direct' ? 'direct' : ''); }
@@ -824,9 +824,9 @@ function signupStats(all, withInternal){
   const tally = f => { const m = {}; rows.forEach(r => { const k = f(r) || 'unknown'; m[k] = (m[k]||0) + 1; }); return Object.entries(m).sort((a,b) => b[1]-a[1]); };
   // referral leaderboard: referred_by holds the referrer's ref_code; ref_code -> email comes from the referrer's own row
   const owner = {}; all.forEach(r => { if (r.ref_code) owner[r.ref_code] = r.email; });
-  const lb = {}; rows.forEach(r => { if (!r.referred_by) return; const e = lb[r.referred_by] = lb[r.referred_by] || {code:r.referred_by, n:0, v:0}; e.n++; if (r.verified) e.v++; });
+  const lb = {}; rows.forEach(r => { if (!r.referred_by) return; const e = lb[r.referred_by] = lb[r.referred_by] || {code:r.referred_by, n:0, v:0, kids:[]}; e.n++; if (r.verified) e.v++; e.kids.push(r); });
   const board = Object.values(lb).sort((a,b) => b.n - a.n || b.v - a.v).map(e => ({...e, who: owner[e.code] || ''}));
-  return {rows, ver, days, per, last7, prev7, bySource: tally(r => r.source), byCame: tally(cameFrom), byCountry: tally(r => r.country), board, hidden: all.length - rows.length};
+  return {rows, ver, days, per, last7, prev7, bySource: tally(r => r.source), byCame: tally(cameFrom), byCountry: tally(r => r.country), board, owner, hidden: all.length - rows.length};
 }
 VIEWS.signups = (s, el) => {
   const all = s.rows || s.last || [], ph = s.posthog, fs = fstate('signups');
@@ -842,12 +842,12 @@ VIEWS.signups = (s, el) => {
   <div class="grid cols3" style="margin-top:14px">
     <div class="card"><h3>Form</h3>${hbars(x.bySource.slice(0,8).map(([k,v]) => ({label:k, v})))||'<div class="muted">none</div>'}</div>
     <div class="card"><h3>Came from</h3>${hbars(x.byCame.slice(0,8).map(([k,v]) => ({label:k, v}))) || '<div class="muted">none</div>'}<div class="small muted" style="margin-top:6px">UTM source if the link had one, else the site they came from. UTM tags are recorded from now on.</div></div>
-    <div class="card"><h3>Referral leaderboard</h3>${x.board.length ? `<div class="list">${x.board.slice(0,8).map(b => `<div class="row"><span class="mono ell">${esc(b.who || b.code)}</span><span class="grow"></span><span class="num">${b.n} <span class="muted small">(${b.v} verified)</span></span></div>`).join('')}</div>` : '<div class="muted">No referred signups yet.</div>'}</div></div>
+    <div class="card"><h3>Who referred who</h3>${x.board.length ? `<div class="list">${x.board.slice(0,20).map(b => `<div class="row"><span class="mono ell">${esc(b.who || b.code)}</span><span class="grow"></span><span class="num">${b.n} <span class="muted small">(${b.v} verified)</span></span></div><div class="small muted" style="margin:-4px 0 8px 12px">${b.kids.map(k => `<div class="mono ell">→ ${esc(k.email)}${k.verified ? ' ✓' : ''}</div>`).join('')}</div>`).join('')}</div>` : '<div class="muted">No referred signups yet.</div>'}</div></div>
   ${sectionH('All signups', 'newest first · the only place an email is shown')}
   <div class="toolbar"><button class="chip ${fs.internal?'on':''}" id="su-int" title="Our own and test addresses">Show internal/test${x.hidden ? `<span class="n">${x.hidden}</span>` : ''}</button><button class="chip" id="su-csv">Download CSV</button></div><div id="tbl"></div>`;
   stackedBars($('#su-days', el), x.days.map(d => ({label: d.slice(5).replace('-','/'), title: d, parts: {v: x.per[d].v, u: x.per[d].u}})), [{k:'v',label:'Verified',color:'var(--good)'},{k:'u',label:'Not verified yet',color:'var(--c-cory)'}], {h:150});
   $('#su-int', el).onclick = () => { fs.internal = !fs.internal; saveState(); render(); };
-  $('#su-csv', el).onclick = () => downloadText('boki-signups-' + etDay(now()) + '.csv', signupsCsv(x.rows), 'text/csv');
+  $('#su-csv', el).onclick = () => { signupsCsv.owner = x.owner; downloadText('boki-signups-' + etDay(now()) + '.csv', signupsCsv(x.rows), 'text/csv'); }
   fs.tbl = fs.tbl || {sort:'created',dir:-1};
   table($('#tbl', el), {state: fs.tbl, rows: x.rows, filters:[{k:'source',label:'Form',get:r=>r.source||''},{k:'verified',label:'Status',get:r=>r.verified?'verified':'not verified'}], cols: [
     {k:'email',label:'Email',get:r=>r.email,lead:true,render:r=>`<span class="mono">${esc(r.email)}</span>${r.internal?' <span class="badge s-skipped">internal</span>':''}`},
@@ -856,7 +856,8 @@ VIEWS.signups = (s, el) => {
     {k:'verified',label:'Verified',get:r=>r.verified?1:0,render:r=>r.verified?'yes':'no'},
     {k:'came',label:'Came from',get:r=>cameFrom(r),render:r=>esc(cameFrom(r)) || '<span class="muted">-</span>'},
     {k:'country',label:'Country',get:r=>r.country||'',render:r=>esc(r.country||'') || '<span class="muted">-</span>'},
-    {k:'referred_by',label:'Referred by',get:r=>r.referred_by||'',render:r=>r.referred_by?`<span class="mono">${esc(r.referred_by)}</span>`:'<span class="muted">-</span>'}]});
+    {k:'referred_by',label:'Referred by',get:r=>r.referred_by?(x.owner[r.referred_by]||r.referred_by):'',render:r=>r.referred_by?`<span class="mono">${esc(x.owner[r.referred_by]||r.referred_by)}</span>`:'<span class="muted">-</span>'},
+    {k:'brought',label:'Brought in',get:r=>{const b=r.ref_code&&x.board.find(e=>e.code===r.ref_code); return b?b.n:0;},num:true,render:r=>{const b=r.ref_code&&x.board.find(e=>e.code===r.ref_code); return b?`<span title="${esc(b.kids.map(k=>k.email).join(', '))}">${b.n}</span>`:'<span class="muted">0</span>';}}]});
 };
 
 // ---------- site traffic (PostHog, 30 days; the server caches it for 5 minutes)
