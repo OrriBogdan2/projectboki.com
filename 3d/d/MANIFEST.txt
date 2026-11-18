@@ -1,7 +1,7 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit e11b1bca5d10c8957f86f5924d2f463752efed84
-built 2026-11-18T05:10Z
+commit 4ed17ebf420bad749c28ffdf5b03dc7dcb0695a3
+built 2026-11-18T05:20Z
 h_vex fb87daa0f055fa78677e1b5ee26ada7cf51c8b51 art/wardens/vex/vex.glb 19c5ea6f784 2026-11-17
 h_breaker 73e4f2abe585d5e50d15ea638c2ceaf8f9e036cd art/wardens/breaker/breaker.glb 28d0f88bc3b 2026-11-17
 h_claire d16bb7eaac79ef089fc87bed4b6cfb951c743f6b art/wardens/claire/claire.glb 5cd36e3a8c6 2026-11-17
@@ -13,7 +13,7 @@ h_dredge 8a03d9acc89594a807bc71fee87a99735d6df583 art/wardens/dredge/dredge.glb 
 h_pip 25978c749335ca8e11a832aacb8cc6d9726d3861 art/wardens/pip/pip.glb d5c89fdd660 2026-11-17
 h_sable fd11fa7789ad835c9b01bdfa6de4561f363a6af9 art/wardens/sable/sable.glb d5f0d0ee42f 2026-11-17
 h_hem add555c3b6f19bb2c1abd1e2d30f8d756089b94d art/wardens/hem/hem.glb e5f13f6492e 2026-11-17
-h_ostra 09ec955c9aceaf7c02e21a636e43a65c973987e7 art/wardens/ostra/ostra.glb 9f581737fc5 2026-11-17
+h_ostra 514a15fabfc09e325f96d41d95f556b4fd62c93f art/wardens/ostra/ostra.glb ab87554c8e4 2026-11-18
 b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
 b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
 b_cairnback sha256:0959fad3084d43f0219ee10da162c49e4a5d27f3 snapshot
