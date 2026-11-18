@@ -1206,7 +1206,7 @@ function arrowKeys(section, strip, go) {
   let box, at = 0, back = null, KIT = null;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   let KITS = null; // hunters.json once it is in
-  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=3").then((r) => r.json()).catch(() => ({})).then((d) => (KITS = d)));
+  const load = () => KIT || (KIT = fetch("assets/hunters.json?v=4").then((r) => r.json()).catch(() => ({})).then((d) => (KITS = d)));
   // The kit shows as an ability bar: six slots, one in focus with its name and line. Left alone it steps through
   // them; the first hover, tap or number key hands it over for as long as the panel is open.
   const DWELL = 4200, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;

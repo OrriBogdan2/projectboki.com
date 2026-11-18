@@ -1,78 +1,111 @@
 {
- "_": "Short kit lines for Hunters whose game file has no clip.lines yet. Used only where the game has none. Written from each card's text.",
+ "_": "Our kit lines and style line per Hunter (website copy, owner 11-18). build.py uses these first; the game's clip line or card text only fills a gap.",
  "lisette": {
-  "lmb": "Draw and loose. Let go on the flash for a faster draw.",
-  "dash": "Roll, then walk through rocks and walls.",
-  "rmb": "A heavy arrow that pins foes to walls.",
-  "e": "Rain a wall of arrows that slows and burns.",
-  "x": "Three big piercing arrows, no draw needed."
+  "style": "Time your draws and pin enemies to walls from range.",
+  "lmb": "Hold to draw, release to shoot. Release on the flash to draw faster.",
+  "passive": "See enemies under half health through cover.",
+  "dash": "Roll, then walk through rocks and trees for 2.8s.",
+  "rmb": "Fire a heavy arrow that knocks back. Stuns enemies it drives into a wall.",
+  "e": "Rain arrows in an arc. They slow and cut healing.",
+  "x": "Fire 3 piercing arrows with no draw."
  },
  "breaker": {
-  "lmb": "Throw your hammer and call it back, or spin and slam.",
-  "passive": "Knock a foe into a wall or another foe to stun it.",
-  "dash": "A short dash that ends in a spinning smash.",
-  "rmb": "Raise your aegis and block shots from the front.",
-  "e": "Call down a healing zone that ends in a burst.",
-  "x": "Slam the ground and throw every foe in a lane up."
+  "style": "Block with your shield and knock enemies into walls.",
+  "lmb": "Tap to throw your hammer, tap again to call it back. Hold to charge a slam.",
+  "passive": "Knock an enemy into a wall or another enemy to stun them.",
+  "dash": "Dash and spin your hammer around you.",
+  "rmb": "Hold to raise your shield and block shots from the front.",
+  "e": "Heal allies around your hammer for 4s.",
+  "x": "Slam the ground and launch enemies in a 16m lane."
  },
  "tarek": {
-  "lmb": "Throw a boulder, or punch every rock in a lane.",
-  "passive": "Punch your own rocks for a shield.",
-  "dash": "Hop from rock to rock, up to three times.",
-  "rmb": "Slam the ground ahead. The centre stuns.",
-  "e": "Raise three rocks to climb, hide behind or punch.",
-  "x": "Raise a long ridge of rocks, even over the abyss."
+  "style": "Raise rocks for cover, then punch them at enemies.",
+  "lmb": "Tap to throw a boulder. Hold to punch enemies back and launch your rocks.",
+  "passive": "Punch your rocks to gain a shield. Stacks 4 times.",
+  "dash": "Hop toward the cursor, up to 3 times.",
+  "rmb": "Slam the ground ahead. Stuns enemies at the centre.",
+  "e": "Raise 3 rocks that block shots. Climb them or punch them.",
+  "x": "Raise a 21m ridge of rocks. It can bridge the abyss."
  },
  "grimble": {
-  "lmb": "Seven slugs in a tight fan. Hits from behind hurt more.",
-  "passive": "Knocks and assists stack extra health.",
-  "dash": "A low lunge, or a pounce in the air.",
-  "rmb": "Reach through rock, grab a foe and reel them in, stunned.",
-  "e": "Slam your fist down for a long stun.",
-  "x": "Two waves of brass slugs that block healing."
+  "style": "Pull an enemy to you and finish them up close.",
+  "lmb": "Fire 7 slugs in a tight group. Hits from behind deal 50% more.",
+  "passive": "Gain 2.5% health per knock or assist, up to 10 times.",
+  "dash": "Lunge a short way. 3 charges.",
+  "rmb": "Reach through rocks, grab the first enemy and pull them to you, stunned.",
+  "e": "Slam your fist down and stun enemies in front for 1.1s.",
+  "x": "Charge up, then fire 2 waves of slugs that block healing."
  },
  "kael": {
-  "passive": "Fill Rage to Enrage: more damage, faster cooldowns."
+  "style": "Stay close and finish hurt enemies.",
+  "lmb": "Swing wide slashes. Hold to throw a ranged wave.",
+  "passive": "Deal damage to fill Rage. At full, deal 15% more for 6s.",
+  "dash": "Dash through enemies. The end hits twice as hard. 2 charges.",
+  "rmb": "Tap to slam a lane ahead. Hold to lunge at the first enemy.",
+  "e": "Hook an enemy or wall. Press again to pull yourself in.",
+  "x": "Block all damage for 0.65s, then cleave and heal from the hit."
  },
  "ryzz": {
-  "lmb": "Finger bolts to full range. Each adds Static.",
-  "passive": "A fourth Static calls down a sky bolt.",
-  "dash": "Zap, or charge a long lane and streak through.",
-  "rmb": "Throw a copper rod that knocks back and stuns on walls.",
-  "e": "Drop a circle. Lightning drags everyone inside.",
-  "x": "Launch up, then strike down anywhere in a wide ring."
+  "style": "Stack 4 Static on one enemy, then Wirerun through them.",
+  "lmb": "Shoot bolts from your fingers. Each hit adds 1 Static.",
+  "passive": "Wirerun through an enemy with 4 Static for a big hit and a reset.",
+  "dash": "Hold to aim a lane, release to dash down it as lightning.",
+  "rmb": "Throw a rod that knocks enemies back. Stuns them against walls.",
+  "e": "Mark a circle. Lightning strikes it and drags enemies toward or away from you.",
+  "x": "Jump up, then strike down at the cursor and knock enemies back."
  },
  "motley": {
-  "lmb": "Orbs through walls. Wait longer for a bigger one.",
-  "passive": "Fill Swell and everything you do grows.",
-  "dash": "Lob a lantern and swap places with everyone it lands on.",
-  "rmb": "Shards that stun, longer the further they flew.",
-  "e": "A bomb that grows until you pop it.",
-  "x": "Open a well that stuns and draws everything in."
+  "style": "Stun from range, then swap places to set up your bomb.",
+  "lmb": "Shoot orbs through walls. Wait between shots for a bigger one.",
+  "passive": "Deal damage to fill Swell. At full, your abilities get stronger for 9s.",
+  "dash": "Throw a lantern and swap places with everyone near it.",
+  "rmb": "Fire shards that stun the first enemy hit. Longer flight, longer stun.",
+  "e": "Drop a bomb that grows for 6.5s. Press again to pop it.",
+  "x": "Open a well that stuns enemies and pulls them in for 3.5s."
  },
  "claire": {
-  "lmb": "A barrage of darts that curve onto your target.",
-  "passive": "Chill a foe enough and they Shatter.",
-  "dash": "Skate where you move. Your darts fly straight.",
-  "rmb": "An ice spear that slows, then bursts.",
-  "e": "Slide an ice wall forward, then freeze it.",
-  "x": "Seal yourself in ice, then crack out and stun everyone near."
+  "style": "Slow enemies with ice and block them off with your wall.",
+  "lmb": "Hold to fire darts that curve toward the enemy nearest your cursor.",
+  "passive": "Hit an enemy with 8 darts to Shatter them for area damage.",
+  "dash": "Hold to skate. Your darts hit twice as hard while skating.",
+  "rmb": "Throw a spear that slows an area, then bursts after 1.8s.",
+  "e": "Slide an ice wall that blocks shots. Press again to stop it.",
+  "x": "Freeze yourself and take no damage. After 3.3s, stun enemies around you."
  },
  "pip": {
-  "passive": "Run into downed teammates to carry them."
+  "style": "Heal your team and carry downed teammates to safety.",
+  "lmb": "Throw embers. Each hit stacks Kindle for more ember damage, up to 5.",
+  "passive": "Run into a downed teammate to carry them. Carry up to 2.",
+  "dash": "Hop a short way. In the air, glide about 10m.",
+  "rmb": "Stick a seed on an enemy. If they stay near you for 2s, it roots them.",
+  "e": "Heal teammates in a ring around you. Press again to throw it.",
+  "x": "Tether a teammate and heal them for 5s. Revives them if downed."
  },
  "sable": {
-  "lmb": "Bolts from alternating hands that land at the cursor.",
-  "passive": "Every hit on the same foe adds a Mark: +10% damage.",
-  "dash": "Cartwheel. Your next shot hits big.",
-  "rmb": "A bola that slows, and stuns two foes it ties.",
-  "e": "Throw a dagger, then blink to it.",
-  "x": "Blades fly at every foe in a ring around you."
+  "style": "Stick to one enemy and stack Marks on them.",
+  "lmb": "Throw bolts from each hand. They land at your cursor.",
+  "passive": "Each hit on an enemy adds a Mark. Marks add damage to your shots.",
+  "dash": "Cartwheel. Your next shot deals 2.3x and refunds Vault if it hits.",
+  "rmb": "Throw a bola that slows the first enemy. Catch a second to stun both.",
+  "e": "Throw a dagger. Press again to blink to it.",
+  "x": "Throw blades at every enemy within 5m for 2s."
  },
  "cinder": {
-  "passive": "Your fire sets foes Ablaze, then Flashes them over."
+  "style": "Get close and keep fire on enemies until they burn.",
+  "lmb": "Hold to spray fire 6m ahead.",
+  "passive": "Keep fire on an enemy and they catch fire.",
+  "dash": "Ram into the first enemy and shove them back. 2 charges.",
+  "rmb": "Shoot a cinder that slows and sets an enemy on fire.",
+  "e": "Pull nearby enemies in. Gain a shield if you hit any.",
+  "x": "Fly forward and leave a lava trail that burns and slows."
  },
  "vex": {
-  "style": "Daze a foe with your Coin Blast, then shred them while it lasts."
+  "style": "Daze an enemy with Coin Blast, then shoot them while it lasts.",
+  "lmb": "Fire a full-auto rifle. Dazed enemies take 76% more.",
+  "passive": "Knock down a Hunter to get Slipstep back.",
+  "dash": "Tap to skid, hold to slide. You can shoot the whole time.",
+  "rmb": "Fire a charge that Dazes the first enemy it hits.",
+  "e": "Stand still to charge, then fire a beam through walls.",
+  "x": "Drop a shell on the cursor after 1.6s. The ground burns for 3s."
  }
 }

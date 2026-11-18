@@ -3,9 +3,10 @@
 
     python3 -I tools/hunters/build.py --game ../project-boki [--ref origin/main]
 
-Reads content/archetypes/*.json at that ref of the game repo (read only). Per ability it uses the game's short
-clip line when there is one (clip.lines), then our line in tools/hunters/lines.json, then the first clause of the card text, so the site stays in step
-with the game. Hunters are matched to the site by their base name (Vex, Albert, ...).
+Reads content/archetypes/*.json at that ref of the game repo (read only). Per ability it uses our line in
+tools/hunters/lines.json first (website copy leads, owner 11-18), then the game's short clip line (clip.lines), then the first clause of the card text.
+NOTE: ability names here come from the game; the site's names (owner renames 11-16) are ahead of main until rename/hunter-names-1116 merges,
+so a rebuild before then would put the old names back. Hunters are matched to the site by their base name (Vex, Albert, ...).
 """
 import argparse, json, os, re, subprocess
 
@@ -37,7 +38,7 @@ for f in git("ls-tree", "--name-only", a.ref, "content/archetypes/").split():
     try: wname = json.loads(git("show", f"{a.ref}:content/weapons/{weap}.json")).get("name")
     except subprocess.CalledProcessError: wname = None
     wname = wname or weap.replace("_", " ").title()
-    line = lambda k, name=None: lines.get(k) or mine.get(k) or short(card.get(k) or (card.get("weapons", {}).get(weap, "") if k == "lmb" else ""), name)
+    line = lambda k, name=None: mine.get(k) or lines.get(k) or short(card.get(k) or (card.get("weapons", {}).get(weap, "") if k == "lmb" else ""), name)
     kit = [
         {"key": "LMB", "kind": "Weapon", "name": wname, "line": line("lmb")},
         {"key": "", "kind": "Passive", "name": d["passive"]["name"], "line": line("passive", d["passive"]["name"])},
@@ -49,7 +50,7 @@ for f in git("ls-tree", "--name-only", a.ref, "content/archetypes/").split():
     loop = card.get("loop", "")
     out[sid] = {"color": d.get("color", "#9a7dff"), "style": mine.get("style") or (short(loop.split(":", 1)[1]) if ":" in loop else loop), "kit": kit}
 # Hunters on the site that aren't in the game yet: their proposed kits, kept until the game has them.
-EXTRA = {"gill": {"color": "#3f8fe0", "style": "Throw random vials, stack effects to Beach foes, then spin a waterspout.", "kit": [{"key": "LMB", "kind": "Weapon", "name": "Swordfish", "line": "Two quick thrusts with the swordfish, then a lunge that pierces and slows."}, {"key": "", "kind": "Passive", "name": "Fish Out of Water", "line": "Hit a foe with three different vials and they're Beached: a short stun."}, {"key": "Shift", "kind": "Dash", "name": "Deep End", "line": "Swim through the ground. Surface next to foes to knock them up."}, {"key": "RMB", "kind": "Ability", "name": "Grab Bag", "line": "Throw the vial in your hand: thunder, slime, air, fire, or a rare Super Zeep."}, {"key": "E", "kind": "Ability", "name": "Spin Cycle", "line": "Spin with the swordfish, then send a waterspout down a line."}, {"key": "R", "kind": "Ultimate", "name": "Surf's Up", "line": "Surf a wave of fish that knocks up and slows everything in its path."}]}}
+EXTRA = {"gill": {"color": "#3f8fe0", "style": "Fence up close and throw vials to stun enemies.", "kit": [{"key": "LMB", "kind": "Weapon", "name": "Swordfish", "line": "Thrust twice, then lunge. The lunge slows."}, {"key": "", "kind": "Passive", "name": "Fish Out of Water", "line": "Hit an enemy with 3 different vial effects in 5s to stun them."}, {"key": "Shift", "kind": "Dash", "name": "Deep End", "line": "Swim 6m underground. Surface near enemies to knock them up."}, {"key": "RMB", "kind": "Ability", "name": "Grab Bag", "line": "Throw the next vial from your bag. Each vial has a different effect."}, {"key": "E", "kind": "Ability", "name": "Spin Cycle", "line": "Spin to hit nearby enemies, then send a waterspout that knocks them up."}, {"key": "R", "kind": "Ultimate", "name": "Surf's Up", "line": "Surf a wave 14m. It knocks up and slows enemies it hits."}]}}
 for k, v in EXTRA.items(): out.setdefault(k, v)
 json.dump(out, open(f"{SITE}/assets/hunters.json", "w"), indent=1, ensure_ascii=False)
 print(f"{a.ref}: {len(out)} Hunters")

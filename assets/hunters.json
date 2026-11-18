@@ -1,547 +1,547 @@
 {
  "lisette": {
   "color": "#e8483e",
-  "style": "Time each draw, Pin Down foes on walls, spot hurt rivals through cover.",
+  "style": "Time your draws and pin enemies to walls from range.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Drawstring",
-    "line": "Draw and loose. Let go on the flash for a faster draw."
+    "line": "Hold to draw, release to shoot. Release on the flash to draw faster."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Red Thread",
-    "line": "Rivals under half health show through cover."
+    "line": "See enemies under half health through cover."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Slip Stitch",
-    "line": "Roll, then walk through rocks and walls."
+    "line": "Roll, then walk through rocks and trees for 2.8s."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Pin Down",
-    "line": "A heavy arrow that pins foes to walls."
+    "line": "Fire a heavy arrow that knocks back. Stuns enemies it drives into a wall."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Hemline",
-    "line": "Rain a wall of arrows that slows and burns."
+    "line": "Rain arrows in an arc. They slow and cut healing."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Finishing Touch",
-    "line": "Three big piercing arrows, no draw needed."
+    "line": "Fire 3 piercing arrows with no draw."
    }
   ]
  },
  "cinder": {
   "color": "#ff9a3a",
-  "style": "Soak foes in fire until they blaze, then finish them in the flames.",
+  "style": "Get close and keep fire on enemies until they burn.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Open Flame",
-    "line": "Pour fire from your hand 7m ahead."
+    "line": "Hold to spray fire 6m ahead."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Boiling Point",
-    "line": "Your fire sets foes Ablaze, then Flashes them over."
+    "line": "Keep fire on an enemy and they catch fire."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Lock Horns",
-    "line": "Ram head first into the first foe."
+    "line": "Ram into the first enemy and shove them back. 2 charges."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Spitfire",
-    "line": "A cinder that slows and spreads the burn."
+    "line": "Shoot a cinder that slows and sets an enemy on fire."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Molten Hug",
-    "line": "A heat blast drags foes in and shields you."
+    "line": "Pull nearby enemies in. Gain a shield if you hit any."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Red Carpet",
-    "line": "Fly, laying a burning lava carpet."
+    "line": "Fly forward and leave a lava trail that burns and slows."
    }
   ]
  },
  "breaker": {
   "color": "#8fd0ff",
-  "style": "Block with your aegis, then hammer foes into walls to stun them.",
+  "style": "Block with your shield and knock enemies into walls.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Capstan Hammer",
-    "line": "Throw your hammer and call it back, or spin and slam."
+    "line": "Tap to throw your hammer, tap again to call it back. Hold to charge a slam."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Hold Fast",
-    "line": "Knock a foe into a wall or another foe to stun it."
+    "line": "Knock an enemy into a wall or another enemy to stun them."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Tideturner",
-    "line": "A short dash that ends in a spinning smash."
+    "line": "Dash and spin your hammer around you."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Blue Guard",
-    "line": "Raise your aegis and block shots from the front."
+    "line": "Hold to raise your shield and block shots from the front."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Safe Harbour",
-    "line": "Call down a healing zone that ends in a burst."
+    "line": "Heal allies around your hammer for 4s."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Groundswell",
-    "line": "Slam the ground and throw every foe in a lane up."
+    "line": "Slam the ground and launch enemies in a 16m lane."
    }
   ]
  },
  "tarek": {
   "color": "#d9a35b",
-  "style": "Raises rocks to climb and hide behind, then punches them into the enemy.",
+  "style": "Raise rocks for cover, then punch them at enemies.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Stone's Throw",
-    "line": "Throw a boulder, or punch every rock in a lane."
+    "line": "Tap to throw a boulder. Hold to punch enemies back and launch your rocks."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Jade Ward",
-    "line": "Punch your own rocks for a shield."
+    "line": "Punch your rocks to gain a shield. Stacks 4 times."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Leap of Faith",
-    "line": "Hop from rock to rock, up to three times."
+    "line": "Hop toward the cursor, up to 3 times."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Rock Bottom",
-    "line": "Slam the ground ahead. The centre stuns."
+    "line": "Slam the ground ahead. Stuns enemies at the centre."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Foothold",
-    "line": "Raise three rocks to climb, hide behind or punch."
+    "line": "Raise 3 rocks that block shots. Climb them or punch them."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Backbone",
-    "line": "Raise a long ridge of rocks, even over the abyss."
+    "line": "Raise a 21m ridge of rocks. It can bridge the abyss."
    }
   ]
  },
  "grimble": {
   "color": "#e0b040",
-  "style": "Hook a foe to your feet, smash them, finish them up close.",
+  "style": "Pull an enemy to you and finish them up close.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Potshot",
-    "line": "Seven slugs in a tight fan. Hits from behind hurt more."
+    "line": "Fire 7 slugs in a tight group. Hits from behind deal 50% more."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Finders Keepers",
-    "line": "Knocks and assists stack extra health."
+    "line": "Gain 2.5% health per knock or assist, up to 10 times."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Mad Dash",
-    "line": "A low lunge, or a pounce in the air."
+    "line": "Lunge a short way. 3 charges."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Sticky Fingers",
-    "line": "Reach through rock, grab a foe and reel them in, stunned."
+    "line": "Reach through rocks, grab the first enemy and pull them to you, stunned."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Lump Sum",
-    "line": "Slam your fist down for a long stun."
+    "line": "Slam your fist down and stun enemies in front for 1.1s."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Both Barrels",
-    "line": "Two waves of brass slugs that block healing."
+    "line": "Charge up, then fire 2 waves of slugs that block healing."
    }
   ]
  },
  "vex": {
   "color": "#ff9a5c",
-  "style": "Daze a foe with your Coin Blast, then shred them while it lasts.",
+  "style": "Daze an enemy with Coin Blast, then shoot them while it lasts.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Brass Tacks",
-    "line": "Full-auto rifle. Dazed foes take 90% more."
+    "line": "Fire a full-auto rifle. Dazed enemies take 76% more."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Hot Streak",
-    "line": "Knock a Hunter down and Slipstep comes back."
+    "line": "Knock down a Hunter to get Slipstep back."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Slipstep",
-    "line": "Skid or slide, and keep shooting."
+    "line": "Tap to skid, hold to slide. You can shoot the whole time."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Coin Blast",
-    "line": "Fire the charge from your cannon; its blast Dazes."
+    "line": "Fire a charge that Dazes the first enemy it hits."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Palm Spear",
-    "line": "Stand still, then fire a beam through walls."
+    "line": "Stand still to charge, then fire a beam through walls."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Penny Drop",
-    "line": "Call a burning shell down on the cursor."
+    "line": "Drop a shell on the cursor after 1.6s. The ground burns for 3s."
    }
   ]
  },
  "kael": {
   "color": "#ff8a6a",
-  "style": "Get in, chain them close, and finish the wounded.",
+  "style": "Stay close and finish hurt enemies.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Bitter End",
-    "line": "Wide greatsword slashes."
+    "line": "Swing wide slashes. Hold to throw a ranged wave."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Bad Blood",
-    "line": "Fill Rage to Enrage: more damage, faster cooldowns."
+    "line": "Deal damage to fill Rage. At full, deal 15% more for 6s."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Rampage",
-    "line": "Charge through foes; the tip hits hardest."
+    "line": "Dash through enemies. The end hits twice as hard. 2 charges."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Final Swing",
-    "line": "A heavy slam. Hold to charge it."
+    "line": "Tap to slam a lane ahead. Hold to lunge at the first enemy."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Short Leash",
-    "line": "Chain a foe or a wall, then haul yourself in."
+    "line": "Hook an enemy or wall. Press again to pull yourself in."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Blow for Blow",
-    "line": "Guard, then lunge into a healing cleave."
+    "line": "Block all damage for 0.65s, then cleave and heal from the hit."
    }
   ]
  },
  "ryzz": {
   "color": "#5fe3c8",
-  "style": "Charge one foe to 4 Static, then Wirerun through them.",
+  "style": "Stack 4 Static on one enemy, then Wirerun through them.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Finger Guns",
-    "line": "Finger bolts to full range. Each adds Static."
+    "line": "Shoot bolts from your fingers. Each hit adds 1 Static."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Live Wire",
-    "line": "A fourth Static calls down a sky bolt."
+    "line": "Wirerun through an enemy with 4 Static for a big hit and a reset."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Wirerun",
-    "line": "Zap, or charge a long lane and streak through."
+    "line": "Hold to aim a lane, release to dash down it as lightning."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Pink Spear",
-    "line": "Throw a copper rod that knocks back and stuns on walls."
+    "line": "Throw a rod that knocks enemies back. Stuns them against walls."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Undercurrent",
-    "line": "Drop a circle. Lightning drags everyone inside."
+    "line": "Mark a circle. Lightning strikes it and drags enemies toward or away from you."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Stormfall",
-    "line": "Launch up, then strike down anywhere in a wide ring."
+    "line": "Jump up, then strike down at the cursor and knock enemies back."
    }
   ]
  },
  "motley": {
   "color": "#7fe0d0",
-  "style": "Stun from range, bomb the stunned, swap places to set it up.",
+  "style": "Stun from range, then swap places to set up your bomb.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Comic Timing",
-    "line": "Orbs through walls. Wait longer for a bigger one."
+    "line": "Shoot orbs through walls. Wait between shots for a bigger one."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Swell",
-    "line": "Fill Swell and everything you do grows."
+    "line": "Deal damage to fill Swell. At full, your abilities get stronger for 9s."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Musical Chairs",
-    "line": "Lob a lantern and swap places with everyone it lands on."
+    "line": "Throw a lantern and swap places with everyone near it."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Stage Fright",
-    "line": "Shards that stun, longer the further they flew."
+    "line": "Fire shards that stun the first enemy hit. Longer flight, longer stun."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Gag Gift",
-    "line": "A bomb that grows until you pop it."
+    "line": "Drop a bomb that grows for 6.5s. Press again to pop it."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Main Attraction",
-    "line": "Open a well that stuns and draws everything in."
+    "line": "Open a well that stuns enemies and pulls them in for 3.5s."
    }
   ]
  },
  "claire": {
   "color": "#5fd6c4",
-  "style": "Homing darts, a freezing spear and a sliding ice wall.",
+  "style": "Slow enemies with ice and block them off with your wall.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Ice Darts",
-    "line": "A barrage of darts that curve onto your target."
+    "line": "Hold to fire darts that curve toward the enemy nearest your cursor."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Cold Snap",
-    "line": "Chill a foe enough and they Shatter."
+    "line": "Hit an enemy with 8 darts to Shatter them for area damage."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Free Skate",
-    "line": "Skate where you move. Your darts fly straight."
+    "line": "Hold to skate. Your darts hit twice as hard while skating."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Icebreaker",
-    "line": "An ice spear that slows, then bursts."
+    "line": "Throw a spear that slows an area, then bursts after 1.8s."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Cold Front",
-    "line": "Slide an ice wall forward, then freeze it."
+    "line": "Slide an ice wall that blocks shots. Press again to stop it."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Freeze Frame",
-    "line": "Seal yourself in ice, then crack out and stun everyone near."
+    "line": "Freeze yourself and take no damage. After 3.3s, stun enemies around you."
    }
   ]
  },
  "pip": {
   "color": "#ffc46a",
-  "style": "Heals and carries the downed, roots whoever chases them.",
+  "style": "Heal your team and carry downed teammates to safety.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Hot and Cold",
-    "line": "Embers from both hands mark foes."
+    "line": "Throw embers. Each hit stacks Kindle for more ember damage, up to 5."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Carry the Day",
-    "line": "Run into downed teammates to carry them."
+    "line": "Run into a downed teammate to carry them. Carry up to 2."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Foxtrot",
-    "line": "A quick hop, a long glide in the air."
+    "line": "Hop a short way. In the air, glide about 10m."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Stick Around",
-    "line": "A seed that roots its target."
+    "line": "Stick a seed on an enemy. If they stay near you for 2s, it roots them."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Hearthlight",
-    "line": "A healing ring for you and your team."
+    "line": "Heal teammates in a ring around you. Press again to throw it."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Rise and Shine",
-    "line": "Tether a teammate and heal them as you go."
+    "line": "Tether a teammate and heal them for 5s. Revives them if downed."
    }
   ]
  },
  "sable": {
   "color": "#c9a0ff",
-  "style": "Stay on one foe, cartwheel, and land the big shot.",
+  "style": "Stick to one enemy and stack Marks on them.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Sleight Trigger",
-    "line": "Bolts from alternating hands that land at the cursor."
+    "line": "Throw bolts from each hand. They land at your cursor."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Marks",
-    "line": "Every hit on the same foe adds a Mark: +10% damage."
+    "line": "Each hit on an enemy adds a Mark. Marks add damage to your shots."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Vault",
-    "line": "Cartwheel. Your next shot hits big."
+    "line": "Cartwheel. Your next shot deals 2.3x and refunds Vault if it hits."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Dark Bola",
-    "line": "A bola that slows, and stuns two foes it ties."
+    "line": "Throw a bola that slows the first enemy. Catch a second to stun both."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "White Flash",
-    "line": "Throw a dagger, then blink to it."
+    "line": "Throw a dagger. Press again to blink to it."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Last Dance",
-    "line": "Blades fly at every foe in a ring around you."
+    "line": "Throw blades at every enemy within 5m for 2s."
    }
   ]
  },
  "gill": {
   "color": "#3f8fe0",
-  "style": "Throw random vials, stack effects to Beach foes, then spin a waterspout.",
+  "style": "Fence up close and throw vials to stun enemies.",
   "kit": [
    {
     "key": "LMB",
     "kind": "Weapon",
     "name": "Swordfish",
-    "line": "Two quick thrusts with the swordfish, then a lunge that pierces and slows."
+    "line": "Thrust twice, then lunge. The lunge slows."
    },
    {
     "key": "",
     "kind": "Passive",
     "name": "Fish Out of Water",
-    "line": "Hit a foe with three different vials and they're Beached: a short stun."
+    "line": "Hit an enemy with 3 different vial effects in 5s to stun them."
    },
    {
     "key": "Shift",
     "kind": "Dash",
     "name": "Deep End",
-    "line": "Swim through the ground. Surface next to foes to knock them up."
+    "line": "Swim 6m underground. Surface near enemies to knock them up."
    },
    {
     "key": "RMB",
     "kind": "Ability",
     "name": "Grab Bag",
-    "line": "Throw the vial in your hand: thunder, slime, air, fire, or a rare Super Zeep."
+    "line": "Throw the next vial from your bag. Each vial has a different effect."
    },
    {
     "key": "E",
     "kind": "Ability",
     "name": "Spin Cycle",
-    "line": "Spin with the swordfish, then send a waterspout down a line."
+    "line": "Spin to hit nearby enemies, then send a waterspout that knocks them up."
    },
    {
     "key": "R",
     "kind": "Ultimate",
     "name": "Surf's Up",
-    "line": "Surf a wave of fish that knocks up and slows everything in its path."
+    "line": "Surf a wave 14m. It knocks up and slows enemies it hits."
    }
   ]
  }
