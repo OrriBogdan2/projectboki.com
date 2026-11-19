@@ -213,6 +213,7 @@ const SECTIONS = [
   ['progress','Progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],
   ['servers','Servers','M3 4h18v6H3zM3 14h18v6H3zM7 7h.01M7 17h.01'],
   ['capacity','Capacity','M3 20h18M6 20v-6M11 20V8M16 20v-9M21 20V4'],
+  ['system','System','M12 3l8 4v5c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V7zM9 12l2 2 4-4'],
   ['money','Money','M12 2v20M17 6.5a4 4 0 0 0-4-2.5h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5'],
   ['usage','Usage','M21 12a9 9 0 1 1-9-9M12 3v9h9'],
   ['backlog','Backlog','M4 6h16M4 12h16M4 18h10'],
@@ -221,7 +222,7 @@ const SECTIONS = [
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6'],
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
-const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
+const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',system:'system',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
 const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)',corybogdan:'var(--c-cory)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
@@ -723,6 +724,55 @@ VIEWS.capacity = (c, el) => {
     } catch(e) {}
   }, 5000);
   api('/admin/capacity/history?hours=24').then(h => { lastH = now(); window._caphist = h.points || []; if (cur === 'capacity') render(); }).catch(() => {}); }
+};
+VIEWS.system = (c, el) => {
+  // How automated the dev system is getting. system-score refreshes the file hourly; every number carries a plain verdict and its change.
+  const VC = {good:'var(--good)', watch:'var(--warn)', bad:'var(--crit)'}, VW = {good:'Good', watch:'Watch', bad:'Bad'};
+  const dl = (d, better, unit) => {
+    if (d == null) return '<span class="muted">n/a</span>';
+    if (d === 0) return '<span class="muted">no change</span>';
+    const ok = (d > 0) === (better === 'up'), u = unit === '%' ? ' pts' : '';
+    return `<span style="color:${ok ? 'var(--good)' : 'var(--crit)'}">${d > 0 ? '&#9650;' : '&#9660;'} ${Math.abs(d)}${u}</span>`;
+  };
+  const dayLbl = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {weekday: 'short', month: 'numeric', day: 'numeric'});
+  const h = c.headline, hv = VC[h.verdict] || 'var(--muted)';
+  const tile = m => `<div class="card" style="border-left:4px solid ${VC[m.verdict] || 'var(--line)'}">
+    <h3>${esc(m.label)}</h3>
+    <div class="kpi">${m.value == null ? '<span class="muted" style="font-size:16px">not tracked yet</span>' : esc(m.value) + '<small>' + esc(m.unit) + '</small>'}</div>
+    <div class="sub"><i class="dot" style="background:${VC[m.verdict]}"></i> <b>${VW[m.verdict]}</b> &middot; ${esc(m.why)}</div>
+    <div class="small muted" style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap"><span>vs yesterday ${dl(m.dod, m.better, m.unit)}</span><span>vs 7 days ago ${dl(m.wow, m.better, m.unit)}</span></div></div>`;
+  const days = c.days || [];
+  const trend = (k, col, t) => `<div class="card"><h3>${t}</h3>${sparkline(days.map(r => r[k] || 0), col, 240, 40)}<div class="small muted" style="display:flex;justify-content:space-between;margin-top:4px"><span>${days.length ? esc(dayLbl(days[0].day)) : ''}</span><span>${days.length ? esc(dayLbl(days[days.length - 1].day)) : ''}</span></div></div>`;
+  const th = c.thresholds || {};
+  const lim = (k, f) => th[k] ? f(th[k][0], th[k][1]) : '';
+  el.innerHTML = `<div class="card" style="border-left:4px solid ${hv}">
+    <h3>Self-caught: problems the system found before he did</h3>
+    <div class="kpi">${h.score == null ? '<span class="muted" style="font-size:16px">no data yet</span>' : esc(h.score) + '<small>% (goal 90%)</small>'}</div>
+    ${h.score == null ? '' : meter(h.score, hv)}
+    <div class="sub"><i class="dot" style="background:${hv}"></i> <b>${VW[h.verdict] || ''}</b> &middot; ${esc(h.sentence)}</div>
+    <div class="small muted" style="margin-top:6px">As of ${esc(ago(c.ts))}. Refreshed every hour.</div></div>
+  ${sectionH('Today', 'with change vs yesterday and vs 7 days ago')}
+  <div class="grid tiles">${c.metrics.map(tile).join('')}</div>
+  ${sectionH('Last 14 days', 'one bar per day')}
+  <div class="grid cols3">${trend('owner', 'var(--crit)', 'He had to catch')}${trend('system', 'var(--good)', 'System caught')}${trend('merges', 'var(--accent)', 'Merged to main')}</div>
+  <div class="card" style="padding:4px 14px;margin-top:14px;font-size:13px">
+  <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:6px 8px;align-items:baseline">
+  ${['Day', 'Caught', 'Repeats', 'System', 'Merges'].map(h => `<div class="small muted" style="text-transform:uppercase;letter-spacing:.04em;font-size:11px;padding:6px 0;border-bottom:1px solid var(--line)">${h}</div>`).join('')}
+  ${days.slice().reverse().map(r => `<div>${esc(dayLbl(r.day))}</div><div>${r.owner}</div><div>${r.repeat}</div><div>${r.system}${r.partial_system ? ' <span class="muted" title="alert history only counts what left a dated record">*</span>' : ''}</div><div>${r.merges ?? '-'}</div>`).join('')}
+  </div></div>
+  ${sectionH('Latest things he caught', 'newest first')}
+  <div class="card" style="padding:0">${(c.recent_catches || []).map(r => `<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><div>${esc(r.what)}</div>
+    <div class="small muted" style="margin-top:3px">${esc(dayLbl(r.day))} &middot; ${esc(r.category)}${r.repeat ? ' &middot; <b style="color:var(--crit)">repeat</b>' : ''}${r.check_built ? ' &middot; check built: ' + esc(r.check_built) : ' &middot; no check yet'}</div></div>`).join('') || '<div class="empty">None recorded yet.</div>'}</div>
+  <div class="small muted" style="margin-top:16px;line-height:1.5"><b>How to read the verdicts.</b>
+    He had to catch: good at ${lim('owner_catches', (g, w) => g + ' or fewer a day')}, watch up to ${lim('owner_catches', (g, w) => w)}, bad above. Repeat catches: good at zero, watch up to ${lim('repeat_catches', (g, w) => w)}.
+    System caught: good at ${lim('system_catches', (g, w) => g + ' or more a day')}, watch at ${lim('system_catches', (g, w) => w)}, bad at zero.
+    Self-caught: good at ${lim('self_caught_pct', (g, w) => g + '% or more')}, watch from ${lim('self_caught_pct', (g, w) => w + '%')}, bad below; counted over 7 days.
+    Checks built: good at ${lim('covered_pct', (g, w) => g + '% or more')}, watch from ${lim('covered_pct', (g, w) => w + '%')}.
+    Alerts open over 6 hours: good at zero, watch up to ${lim('open_over_6h', (g, w) => w)}. Merges: good at ${lim('merges_per_day', (g, w) => g + ' or more a day')}, watch from ${lim('merges_per_day', (g, w) => w)}.
+    Green PR wait: good at ${lim('green_wait_h', (g, w) => g + ' hour or less')}, watch up to ${lim('green_wait_h', (g, w) => w + ' hours')}. Owner actions waiting: good at ${lim('owner_actions', (g, w) => g + ' or fewer')}, watch up to ${lim('owner_actions', (g, w) => w)}.
+    Promises on time: good at ${lim('promises_pct', (g, w) => g + '% or more')}, watch from ${lim('promises_pct', (g, w) => w + '%')}.
+    Days marked * count only alerts that left a dated record, so they read low. Alerts the system raises are counted from the first hourly run. The thresholds are constants at the top of system-score.</div>
+  <div class="small" style="margin-top:14px"><a href="#capacity">Computer and GPU use: see the Capacity tab</a></div>`;
 };
 VIEWS.money = (m, el) => {
   const b = m.burn, t = m.today, mo = m.month;
