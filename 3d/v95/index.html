@@ -175,7 +175,7 @@ function stopAnim(){if(mixer){mixer.stopAllAction();if(model)mixer.uncacheRoot(m
 function clearModel(){stopAnim(); if(model){scene.remove(model);model=null}}
 function frameModel(obj,keepDir){
   obj.updateMatrixWorld(true);
-  const box=new THREE.Box3().setFromObject(obj), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  const box=worldBox(obj), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
   const r=Math.max(size.x,size.y,size.z), vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
   const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12;
   const dir=keepDir?camera.position.clone().sub(controls.target).normalize():new THREE.Vector3(0.3,0.1,1).normalize();
@@ -193,7 +193,7 @@ async function chooseClip(h,name){
     let g; try{g=await getAnim(h)}catch(e){if(my===animTok)animSt.textContent="Could not load the animated glb ("+(e.message||e)+").";return}
     if(my!==animTok||rows[cur]!==h||lineMode)return;
     if(model&&!model.userData.anim)h._still=model; stopAnim(); if(model)scene.remove(model);
-    model=g.scene; model.userData.anim=true; model.rotation.y=Math.PI; /* game rigs face -Z; turn to face the camera like the still copy */ model.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false}); scene.add(model); h._clips=g.animations; frameModel(model,true)}
+    model=g.scene; model.userData.anim=true; model.rotation.y=Math.PI; /* game rigs face -Z; turn to face the camera like the still copy */ model.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false; else if(o.isMesh&&/^Icosphere/.test(o.name))o.visible=false}); /* 2 m helper sphere in every game glb */ scene.add(model); h._clips=g.animations; frameModel(model,true)}
   const clip=(h._clips||[]).find(c=>c.name===name); if(!clip)return;
   if(mixer)mixer.stopAllAction(); else mixer=new THREE.AnimationMixer(model);
   action=mixer.clipAction(clip); action.reset().play(); mixer.update(0);
@@ -202,7 +202,7 @@ function setupAnim(h){
   clipSel.innerHTML=""; animBox.hidden=!h.anim; canvas.dataset.clip=""; if(!h.anim)return;
   const o0=document.createElement("option");o0.value=NOANIM;o0.textContent="T-pose / no animation";clipSel.appendChild(o0);
   (h.clips||[]).forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;clipSel.appendChild(o)});
-  const def=(h.clips||[]).includes("idle")?"idle":(h.clips||[])[0]; clipSel.value=def||NOANIM;
+  clipSel.value=NOANIM; /* 11-19: open on the standing bind pose; the game idle leans hunters at the camera (owner read Sparkle as wide) */
   playing=true; $("play").textContent="Pause"; $("play").setAttribute("aria-pressed","true"); chooseClip(h,clipSel.value)}
 clipSel.onchange=()=>{if(rows[cur])chooseClip(rows[cur],clipSel.value)};
 $("play").onclick=()=>{playing=!playing;$("play").textContent=playing?"Pause":"Play";$("play").setAttribute("aria-pressed",String(playing))};
