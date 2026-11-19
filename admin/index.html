@@ -211,6 +211,7 @@ const SECTIONS = [
   ['patches','Patches','M12 2l8 4.5v11L12 22l-8-4.5v-11zM12 22V12M4 6.5l8 5.5 8-5.5'],
   ['agents','Agents','M4 20a8 8 0 0 1 16 0M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
   ['progress','Progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],
+  ['hunters','Hunters','M12 3l2.5 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.5 6.8 19.3l1.1-5.9L3.5 9.3l6-.8z'],
   ['servers','Servers','M3 4h18v6H3zM3 14h18v6H3zM7 7h.01M7 17h.01'],
   ['capacity','Capacity','M3 20h18M6 20v-6M11 20V8M16 20v-9M21 20V4'],
   ['system','System','M12 3l8 4v5c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V7zM9 12l2 2 4-4'],
@@ -222,7 +223,7 @@ const SECTIONS = [
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6'],
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
-const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',system:'system',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
+const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',system:'system',hunters:'hunters',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
 const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)',corybogdan:'var(--c-cory)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
@@ -877,6 +878,100 @@ function mtRender(t, el){
   groupBars($('#mt-io', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {r: d.ready, m: d.merged}})), [{k:'r', label:'new READY', color:'var(--c-yellow)'}, {k:'m', label:'merged', color:'var(--good)'}], {h:170});
   groupBars($('#mt-bl', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}${d.bl_queue!=null?' · queue '+d.bl_queue:''}`, parts: {a: d.bl_added, s: d.bl_started, f: d.bl_finished}})), [{k:'a', label:'added (about)', color:'var(--c-magenta)'}, {k:'s', label:'started', color:'var(--accent)'}, {k:'f', label:'finished', color:'var(--good)'}], {h:170});
 }
+VIEWS.hunters = (c, el) => {
+  // Where each hunter is on the way to done. hunter-tracker writes the file; pictures need the sign-in token, so they are fetched as blobs.
+  const S = c.summary, open = window._hopen = window._hopen || {}, imgs = window._himg = window._himg || {};
+  const STAGE = {'no fix yet':'var(--muted)','fix running':'var(--accent)','art-gate FAIL':'var(--crit)','art-gate PASS':'var(--good)','owner check':'var(--c-yellow)','merged':'var(--good)','in itch build':'var(--good)'};
+  const WORD = {'no fix yet':'No fix yet','fix running':'Fix running','art-gate FAIL':'Failed the art check','art-gate PASS':'Passed the art check','owner check':'Waiting for you','merged':'Merged','in itch build':'In the itch build'};
+  const chip = s => `<span class="badge" style="color:${STAGE[s] || 'var(--muted)'}">${esc(WORD[s] || s)}</span>`;
+  const src = p => imgs[p] ? `src="${imgs[p]}"` : `data-hp="${esc(p)}"`;
+  const pic = (p, cap, alt) => `<figure class="hpic"><div class="hbox">${p ? `<img alt="${esc(alt)}" ${src(p)}>` : '<span class="small muted">no picture</span>'}</div><figcaption class="small"><b>${esc(cap[0])}</b><br><span class="muted">${esc(cap[1])}</span></figcaption></figure>`;
+  const prTxt = pr => pr ? `<a href="https://github.com/OrriBogdan2/project-boki/pull/${Number(pr.number)}" target="_blank" rel="noopener">PR #${Number(pr.number)}</a> <span class="muted">${esc({draft:'draft',open:'open for review',merged:'merged',closed:'closed'}[pr.state] || pr.state)}</span>` : '<span class="muted">no PR yet</span>';
+  const vWord = v => v === 'PASS' ? 'passed' : v === 'FAIL' ? 'failed' : v === 'running' ? 'still running' : 'no review yet';
+  const vCol = v => v === 'PASS' ? 'var(--good)' : v === 'FAIL' ? 'var(--crit)' : v === 'running' ? 'var(--accent)' : 'var(--muted)';
+  const f1 = x => Number(x).toFixed(1);
+  const sCol = x => x == null ? 'var(--muted)' : x < 6 ? 'var(--crit)' : x < S.ship_bar ? 'var(--c-yellow)' : 'var(--good)';   // red under 6, amber 6 to 8.4, green at the 8.5 ship bar
+  const rTime = e => { if (!e) return ''; const p = {}; new Intl.DateTimeFormat('en-US', {timeZone: 'America/New_York', month: '2-digit', day: '2-digit', hour: 'numeric', minute: '2-digit'}).formatToParts(new Date(e * 1000)).forEach(x => p[x.type] = x.value); return `${p.month}-${p.day} ${p.hour}:${p.minute} ${p.dayPeriod} ET`; };
+  const drafts = window._hdraft = window._hdraft || {}, msgs = window._hmsg = window._hmsg || {};
+  const badge = (sc, label, big, extra) => `<div class="hbadge${big ? ' big' : ''}"><div class="hnum" style="color:${sCol(sc && sc.score)}">${sc ? f1(sc.score) : '<span class="hnone">not scored yet</span>'}${sc ? '<small>/10</small>' : ''}</div><div class="small muted">${esc(label)}${sc ? ' ' + esc(rTime(sc.at)) : ''}</div>${extra || ''}</div>`;
+  const kindWord = k => k === 'live' ? 'live model' : 'new attempt';
+  const ratingBox = h => {
+    const r = h.rating, d = drafts[h.key] || {};
+    return `<div class="hrate"><div class="hmine">${r ? `<b>Your rating ${f1(r.score)}</b> <span class="muted">(${esc(rTime(r.ts))})</span>${r.note ? `<div class="small">${esc(r.note)}</div>` : ''}` : '<span class="muted">You have not rated this one yet</span>'}</div>
+      <form class="hform" data-hk="${esc(h.key)}"><input type="number" class="hin" name="score" min="1" max="10" step="0.1" inputmode="decimal" placeholder="1.0 to 10.0" aria-label="${esc(h.name)} rating from 1 to 10" value="${esc(d.score != null ? d.score : '')}">
+        <input type="text" class="hnote" name="note" maxlength="300" placeholder="Short note (optional)" aria-label="${esc(h.name)} rating note" value="${esc(d.note || '')}"><button type="submit">Save rating</button></form>
+      <div class="small hmsg" style="color:${msgs[h.key] && msgs[h.key].bad ? 'var(--crit)' : 'var(--good)'}">${msgs[h.key] ? esc(msgs[h.key].text) : ''}</div></div>`;
+  };
+  const notes = n => n && n.length ? `<ul class="hnotes">${n.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  const card = h => {
+    const v = h.verdict, lj = h.latest_job, p = h.pics, ar = h.rounds.find(r => r.attempt);
+    const attCap = ['Latest attempt', ar ? `round ${ar.n}, ${vWord(ar.verdict)}` : 'no frame saved'];
+    const sc = h.score || {}, before = sc.before && sc.attempt ? `<div class="small muted">was ${f1(sc.before.score)}, now ${f1(sc.attempt.score)}</div>` : '';
+    return `<div class="card hcard">
+      <div class="hhead" data-hk="${esc(h.key)}" role="button" tabindex="0" aria-expanded="${open[h.key] ? 'true' : 'false'}">
+        <div class="hrow"><b class="hname">${esc(h.name)}</b>${chip(h.stage)}<span class="small muted">${open[h.key] ? 'hide rounds' : 'show all rounds'}</span></div>
+      </div>
+      <div class="hscores">${badge(sc.ingame, 'Reviewer score, in game now', true)}${badge(sc.attempt, 'Newest attempt', false, before)}</div>
+      ${ratingBox(h)}
+      <div class="hhead" data-hk="${esc(h.key)}" role="button" tabindex="0" aria-expanded="${open[h.key] ? 'true' : 'false'}" style="margin-top:8px">
+        <div class="small muted">Round ${h.rounds_total} so far, ${h.rounds_today} today. ${prTxt(h.pr)}.${lj ? ` Latest try: ${esc(lj.state === 'running' ? 'running now' : lj.state)}, ${esc(tEST(lj.start))}.` : ''}${h.awaiting_review ? ' A newer try is waiting for its review.' : ''}</div>
+        ${v ? `<div class="small" style="margin-top:6px"><b style="color:${vCol(v.verdict)}">Last review ${vWord(v.verdict)}</b> <span class="muted">${esc(tEST(v.at))}</span></div>${notes(v.notes)}` : ''}
+        ${h.note ? `<div class="small" style="margin-top:6px">${esc(h.note)}</div>` : ''}
+      </div>
+      <div class="hstrip">${pic(p.master, ['Master', 'the sculpt, before rigging'], h.name + ' master')}${pic(p.ingame, ['In game now', 'what the game ships'], h.name + ' in game')}${pic(p.attempt, attCap, h.name + ' latest attempt')}</div>
+      ${open[h.key] ? `<div class="hrounds">${(sc.history || []).length ? `<div class="small"><b>Reviewer scores so far</b> <span class="muted">${sc.history.slice().reverse().map(x => `${f1(x.score)} ${kindWord(x.kind)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}${(h.ratings || []).length > 1 ? `<div class="small" style="margin-top:4px"><b>Your last ratings</b> <span class="muted">${h.ratings.map(x => `${f1(x.score)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}${h.rounds.map(r => `<div class="hround"><div class="hrhead"><b>Round ${r.n}</b> <span class="small muted">${esc(tEST(r.start))}</span> <span class="small" style="color:${vCol(r.verdict)}">${esc(vWord(r.verdict))}</span> <span class="small muted">(${esc(r.state)})</span></div>${notes(r.notes)}${r.attempt ? `<div class="hbox hsmall"><img alt="${esc(h.name)} round ${r.n}" ${src(r.attempt)}></div>` : ''}</div>`).join('') || '<div class="small muted">No rounds yet.</div>'}</div>` : ''}
+    </div>`;
+  };
+  el.innerHTML = `<style>
+    .hcard .hhead{cursor:pointer}.hrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:2px}.hname{font-size:16px}
+    .hnotes{margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink2)}.hnotes li{margin:2px 0}
+    .hstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.hpic{margin:0;min-width:0}
+    .hbox{background:var(--surface2);border:1px solid var(--line);border-radius:8px;aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .hbox img{width:100%;height:100%;object-fit:contain}.hbox.hsmall{aspect-ratio:16/9;max-width:340px;margin-top:6px}
+    .hpic figcaption{margin-top:4px;line-height:1.3}.hrounds{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}.hround{padding:8px 0;border-bottom:1px solid var(--line)}
+    .hscores{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-top:6px}.hbadge .hnum{font-size:26px;font-weight:700;line-height:1.1}.hbadge.big .hnum{font-size:44px}
+    .hnum small{font-size:14px;font-weight:500;color:var(--muted);margin-left:2px}.hnone{font-size:14px;font-weight:500;color:var(--muted)}
+    .hrate{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}.hform{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .hform .hin{width:110px}.hform .hnote{flex:1 1 180px;width:auto}.hform input{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}.hmsg{min-height:1em;margin-top:4px}
+    .hround:last-child{border-bottom:0}.hgrid{display:grid;gap:14px;margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
+  </style>
+  <div class="small muted" style="margin-bottom:10px">As of <b>${esc(ago(c.ts))}</b>. A round is one fix attempt. Done means the art check passed (or later). <a href="${esc(c.viewer || '/3d/v95/')}" target="_blank" rel="noopener">Open in 3D viewer</a></div>
+  <div class="grid tiles">
+    <div class="card"><h3>Average reviewer score</h3><div class="kpi" style="color:${sCol(S.avg_score)}">${S.avg_score != null ? f1(S.avg_score) : '<span class="hnone">not scored yet</span>'}${S.avg_score != null ? '<small> of 10</small>' : ''}</div><div class="sub">${S.scored} of ${S.total} hunters scored by the reviewer</div></div>
+    <div class="card"><h3>At or above ${f1(S.ship_bar)}</h3><div class="kpi" style="color:var(--good)">${S.at_bar}<small> of ${S.total}</small></div>${meter(S.at_bar, 'var(--good)', S.total)}<div class="sub">${f1(S.ship_bar)} is the bar to ship</div></div>
+    <div class="card"><h3>In the game</h3><div class="kpi">${S.in_game}<small> of ${S.total}</small></div>${meter(S.in_game, 'var(--good)', S.total)}<div class="sub">fixed models in the itch build</div></div>
+  </div>
+  <div class="grid tiles" style="margin-top:14px">
+    <div class="card"><h3>Hunters done</h3><div class="kpi">${S.done}<small> of ${S.total}</small></div>${meter(S.done, 'var(--good)', S.total)}<div class="sub">${esc(S.eta)}</div></div>
+    <div class="card"><h3>Passes today</h3><div class="kpi" style="color:var(--good)">${S.passes_today}</div><div class="sub">${S.avg_rounds_per_pass != null ? 'Average ' + S.avg_rounds_per_pass + ' rounds to get a pass' : 'No pass yet to average'}</div></div>
+    <div class="card"><h3>Fails today</h3><div class="kpi" style="color:var(--crit)">${S.fails_today}</div><div class="sub">${S.rounds_today} fix attempts today, ${S.running} running now</div></div>
+  </div>
+  <div class="hgrid">${c.hunters.map(card).join('')}</div>
+  ${c.not_found && c.not_found.length ? `<div class="small muted" style="margin-top:12px">Not found: ${esc(c.not_found.join('; '))}</div>` : ''}
+  <div class="small muted" style="margin-top:10px">Pictures: master and in-game are the front view of the render sheets in the 3D page folder. The latest attempt is a frame the reviewer saved with that round, so it is a game-camera check frame rather than a clean render.</div>`;
+  el.querySelectorAll('.hhead').forEach(n => { const t = () => { open[n.dataset.hk] = !open[n.dataset.hk]; render(); }; n.onclick = e => { if (e.target.closest('a')) return; t(); }; n.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t(); } }; });
+  el.querySelectorAll('.hform').forEach(f => {
+    const k = f.dataset.hk, keep = () => { drafts[k] = {score: f.score.value, note: f.note.value}; };
+    f.score.oninput = keep; f.note.oninput = keep;
+    f.onsubmit = async e => {
+      e.preventDefault(); const v = parseFloat(f.score.value);
+      if (!(v >= 1 && v <= 10)) { msgs[k] = {bad: true, text: 'Enter a number from 1.0 to 10.0.'}; return render(); }
+      try {
+        const r = await api('/admin/hunter-rating', {method: 'POST', body: {hunter: k, score: Math.round(v * 10) / 10, note: f.note.value.trim()}});
+        const h = c.hunters.find(x => x.key === k); h.rating = r.rating; h.ratings = r.ratings;
+        delete drafts[k]; msgs[k] = {text: 'Saved.'};
+      } catch (err) { msgs[k] = {bad: true, text: 'Could not save: ' + err.message}; }
+      render();
+    };
+  });
+  el.querySelectorAll('img[data-hp]').forEach(async im => {
+    const p = im.dataset.hp;
+    try {
+      if (!imgs[p]) { const r = await fetch(API + '/admin/hunter-img?p=' + encodeURIComponent(p), {headers: token ? {Authorization: 'Bearer ' + token} : {}}); if (!r.ok) throw 0; imgs[p] = URL.createObjectURL(await r.blob()); }
+      im.src = imgs[p];
+    } catch(e) { im.replaceWith(Object.assign(document.createElement('span'), {className: 'small muted', textContent: 'picture failed to load'})); }
+  });
+};
 VIEWS.backlog = (b, el) => {
   el.innerHTML = `${sectionH('Merge & backlog', 'is the gap being handled?')}<div id="mt"><div class="muted small">Loading the merge tracker…</div></div>${sectionH('Backlog queue')}<div class="row wrap" style="margin-bottom:12px"><span class="muted small">${b.count} items · 0 = next to run · edits are audited</span><span class="grow"></span><button class="primary" id="add">Add task</button></div><div id="tbl"></div>`;
   mtData(b).then(t => { const m = $('#mt', el); if (m) mtRender(t, m); }).catch(e => { const m = $('#mt', el); if (m) m.innerHTML = `<div class="muted small">Merge tracker not available: ${esc(e.message)}</div>`; });
