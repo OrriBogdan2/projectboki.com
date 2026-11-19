@@ -212,6 +212,7 @@ const SECTIONS = [
   ['agents','Agents','M4 20a8 8 0 0 1 16 0M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
   ['progress','Progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],
   ['servers','Servers','M3 4h18v6H3zM3 14h18v6H3zM7 7h.01M7 17h.01'],
+  ['capacity','Capacity','M3 20h18M6 20v-6M11 20V8M16 20v-9M21 20V4'],
   ['money','Money','M12 2v20M17 6.5a4 4 0 0 0-4-2.5h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5'],
   ['usage','Usage','M21 12a9 9 0 1 1-9-9M12 3v9h9'],
   ['backlog','Backlog','M4 6h16M4 12h16M4 18h10'],
@@ -220,7 +221,7 @@ const SECTIONS = [
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6'],
 ];
 const PRIMARY_MOBILE = ['home','agents','patches','servers'];
-const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
+const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
 const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)',corybogdan:'var(--c-cory)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
@@ -683,6 +684,46 @@ VIEWS.servers = (s, el) => {
 };
 
 // ---------- money
+VIEWS.capacity = (c, el) => {
+  // Live: re-fetched every 5 s while this tab is open (the collector refreshes the file every minute); history about once a minute.
+  const hist = window._caphist || [];
+  const tone = v => v >= 70 ? 'var(--good)' : v >= 30 ? 'var(--accent)' : 'var(--warn)';
+  const tl = (t, v, sub) => `<div class="card"><h3>${t}</h3><div class="kpi">${Math.round(v)}<small>%</small></div>${meter(v, tone(v))}<div class="sub">${sub}</div></div>`;
+  const idleTxt = `${Math.round(c.cpu.idle_cores)} cores idle while backlog has ${c.agents.backlog} items`;
+  el.innerHTML = `<div class="small muted" style="margin-bottom:10px">As of <b id="capage">${esc(ago(c.ts))}</b>. The collector samples every minute; this page checks for a new sample every 5 seconds.</div>
+  <div class="grid tiles">
+    ${tl('Computers in use (CPU)', c.cpu.pct, `${Math.round(c.cpu.busy_cores)} of ${c.cpu.cores} cores busy, ${c.cpu.hosts_online} of ${c.cpu.hosts_total} machines up`)}
+    ${tl('Graphics machines in use (GPU)', c.gpu.pct, `${c.gpu.busy} of ${c.gpu.online} online, ${c.gpu.queued} jobs waiting for one`)}
+    ${tl('Agents working', c.agents.pct, `${c.agents.running} running of ${c.agents.slots} slots (slots are generous, so this reads low)`)}
+    ${tl('Claude accounts used this week', c.accounts.week_avg, `average of ${c.accounts.rows.length} accounts, 5-hour window ${Math.round(c.accounts.h5_avg)}%`)}
+  </div>
+  <div class="card" style="margin-top:14px"><b>${esc(idleTxt)}.</b>
+    <span class="small muted">${c.cost && c.cost.idle_hr ? `Paid machines sitting idle right now cost about ${money(c.cost.idle_hr)} an hour${c.idle_hosts && c.idle_hosts.length ? ' (' + esc(c.idle_hosts.join(', ')) + ')' : ''}. ` : ''}${c.cost && c.cost.total_hr ? `Everything together costs about ${money(c.cost.total_hr)} an hour.` : ''}</span></div>
+  ${sectionH('Last 24 hours', 'percent of what we pay for')}<div class="card"><div class="chart" id="caph"></div><div class="small muted" id="capleg"></div></div>
+  ${sectionH('Machines', `${c.hosts.length} probed`)}<div class="card" style="padding:0;overflow:auto"><table><tr><th>Machine</th><th>Kind</th><th>Cores</th><th>Busy</th><th>Jobs / slots</th><th>Godot</th><th></th></tr>
+  ${c.hosts.map(h => h.online ? `<tr><td>${esc(h.name)}</td><td class="muted">${esc(h.kind)}</td><td>${h.cores ?? '-'}</td><td style="min-width:110px">${h.cpu_pct == null ? '-' : Math.round(h.cpu_pct) + '%' + meter(h.cpu_pct, tone(h.cpu_pct))}</td><td>${h.jobs} / ${h.slots}</td><td>${h.godot ?? '-'}</td><td>${h.idle ? badge('warning', 'idle') : ''}</td></tr>`
+    : `<tr><td>${esc(h.name)}</td><td class="muted">${esc(h.kind)}</td><td colspan="5">${badge('offline', 'no reading')} <span class="small muted">${esc(h.err || '')}</span></td></tr>`).join('')}</table></div>
+  <div class="small muted" style="margin-top:10px">${c.cost ? esc(c.cost.note) : ''}</div>`;
+  const keys = [['cpu','var(--accent)','CPU'],['gpu','var(--c-yellow)','GPU'],['agents','var(--good)','Agents'],['acct','var(--c-magenta)','Claude accounts']];
+  const W = 600, Hh = 110, t0 = now() - 86400;
+  const lines = keys.map(([k, col]) => { const pts = hist.filter(r => typeof r[k] === 'number').map(r => `${((r.t - t0) / 86400 * W).toFixed(1)},${(Hh - 4 - Math.min(100, r[k]) / 100 * (Hh - 8)).toFixed(1)}`);
+    return pts.length > 1 ? `<polyline fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" points="${pts.join(' ')}"/>` : ''; }).join('');
+  $('#caph', el).innerHTML = hist.length > 1 ? `<svg viewBox="0 0 ${W} ${Hh}" style="width:100%;height:auto" role="img" aria-label="Last 24 hours of usage">${[0,.5,1].map(f => `<line x1="0" x2="${W}" y1="${Hh-4-f*(Hh-8)}" y2="${Hh-4-f*(Hh-8)}" stroke="var(--line)"/>`).join('')}${lines}</svg>` : '<div class="empty">History fills in after a few minutes of collection.</div>';
+  $('#capleg', el).innerHTML = keys.map(([k, col, n]) => `<span style="margin-right:14px"><i class="dot" style="background:${col}"></i> ${n}</span>`).join('');
+  if (!window._capTick) window._capTick = setInterval(() => {
+    if (cur !== 'capacity') { clearInterval(window._capTick); window._capTick = null; return; }
+    const n = $('#capage'); if (n && data.capacity) n.textContent = ago(data.capacity.ts);
+  }, 1000);
+  if (!window._capPoll) { let lastH = 0; window._capPoll = setInterval(async () => {
+    if (cur !== 'capacity') { clearInterval(window._capPoll); window._capPoll = null; return; }
+    if (document.hidden) return;
+    try {
+      if (now() - lastH > 55) { lastH = now(); window._caphist = (await api('/admin/capacity/history?hours=24')).points || []; }
+      const fresh = await api('/admin/capacity'); if (cur === 'capacity' && fresh.ts !== (data.capacity || {}).ts) { data.capacity = fresh; render(); }
+    } catch(e) {}
+  }, 5000);
+  api('/admin/capacity/history?hours=24').then(h => { lastH = now(); window._caphist = h.points || []; if (cur === 'capacity') render(); }).catch(() => {}); }
+};
 VIEWS.money = (m, el) => {
   const b = m.burn, t = m.today, mo = m.month;
   const parts = [['RunPod','runpod','var(--c-gc)'],['Hetzner','hetzner','var(--c-cory)'],['Claude','claude','var(--c-coord)'],['Other','other','var(--muted)']];
