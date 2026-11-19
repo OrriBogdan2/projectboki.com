@@ -65,6 +65,14 @@ ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .upd{font-size:12px;color:var(--muted)}
 body{margin:0}[hidden]{display:none!important}
 footer{color:var(--muted);font-size:13px}
+.anim{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.anim label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.anim select,.anim button{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;max-width:100%}
+.anim button{font-weight:700;cursor:pointer}.anim button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.anim select{flex:1 1 180px}.anim input[type=range]{width:min(140px,40vw);accent-color:var(--accent)}
+.anim select:focus-visible,.anim button:focus-visible,.anim input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.anim .st{flex:1 1 100%;font-size:12px;color:var(--muted);min-height:1.2em}
+.stage.lineup + .anim{display:none}
 </style>
 
 <div class="wrap lock" id="lock"><form id="lf"><h1>Boki Model Room</h1><label for="pw">Password</label>
@@ -81,6 +89,13 @@ footer{color:var(--muted);font-size:13px}
     <div class="load" id="load"></div>
     <div class="nav"><button id="prev" aria-label="Previous hunter">&larr;</button><button id="next" aria-label="Next hunter">&rarr;</button><button id="lineup" type="button" aria-pressed="false" title="All hunters side by side at model scale">Lineup</button><button id="lineupH" type="button" aria-pressed="false" title="All hunters side by side at their listed heights">Accurate height</button><button id="spin" aria-pressed="false">Spin</button></div>
     <div class="cap"><span class="nm" id="nm"></span><span class="sc" id="capsc"></span></div>
+  </div>
+
+  <div class="anim" id="anim" hidden>
+    <label for="clip">Animation</label><select id="clip" aria-label="Animation clip"></select>
+    <button id="play" type="button" aria-pressed="true">Pause</button>
+    <label for="spd">Speed <input id="spd" type="range" min="0.25" max="2" step="0.05" value="1"><span id="spdv" style="min-width:3.2em">1.00x</span></label>
+    <div class="st" id="animst"></div>
   </div>
 
   <div class="grid" id="chips"></div>
@@ -128,7 +143,8 @@ const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;cont
 const stageEl=document.querySelector(".stage"); let lineMode=false;
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 addEventListener("resize",resize);resize();
-(function tick(){requestAnimationFrame(tick);controls.update();if(lineMode)placeLabels();renderer.render(scene,camera)})();
+const clock=new THREE.Clock(); let mixer=null, action=null, playing=true, speed=1;
+(function tick(){requestAnimationFrame(tick);const dt=clock.getDelta();if(mixer&&playing)mixer.update(dt*speed);controls.update();if(lineMode)placeLabels();renderer.render(scene,camera)})();
 {const b=$("spin");b.onclick=()=>{controls.autoRotate=!controls.autoRotate;b.setAttribute("aria-pressed",String(controls.autoRotate))}}
 
 const loader=new GLTFLoader();
@@ -148,23 +164,60 @@ async function decFetch(path,fresh){const r=await fetch(path,fresh?{cache:"no-st
 async function getGlb(h){const k=h.model+"?"+h.v; if(!cache.has(k))cache.set(k,decFetch(k)); return cache.get(k)}
 const cmpCache=new Map();
 async function getCmp(h){const k=h.cmp+"?"+h.v; if(!cmpCache.has(k))cmpCache.set(k,decFetch(k).then(b=>URL.createObjectURL(new Blob([b],{type:"image/webp"})))); return cmpCache.get(k)}
+// Animation: the viewer's still model is the lite copy (no skeleton). A clip picks the RAW rigged in-game glb (d/<hash>.anim: gzip then AES-GCM),
+// untouched by game code, so what you see is what the file itself does. "T-pose / no animation" returns to the lite still model.
+const NOANIM="__none", animBox=$("anim"), clipSel=$("clip"), animSt=$("animst");
+async function gunzip(buf){const s=new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"));return new Response(s).arrayBuffer()}
+const animCache=new Map();
+function getAnim(h){const k=h.anim+"?"+h.v; if(!animCache.has(k)){if(animCache.size>1)animCache.delete(animCache.keys().next().value);
+  animCache.set(k,decFetch(k).then(gunzip).then(b=>new Promise((res,rej)=>loader.parse(b,"",res,rej))).catch(e=>{animCache.delete(k);throw e}))} return animCache.get(k)}
+function stopAnim(){if(mixer){mixer.stopAllAction();if(model)mixer.uncacheRoot(model)}mixer=null;action=null}
+function clearModel(){stopAnim(); if(model){scene.remove(model);model=null}}
+function frameModel(obj,keepDir){
+  obj.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(obj), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  const r=Math.max(size.x,size.y,size.z), vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
+  const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12;
+  const dir=keepDir?camera.position.clone().sub(controls.target).normalize():new THREE.Vector3(0.3,0.1,1).normalize();
+  controls.target.copy(c); camera.position.copy(c).addScaledVector(dir,d);
+  camera.near=r/100;camera.far=r*100;camera.updateProjectionMatrix();controls.minDistance=d*0.2;controls.maxDistance=d*3}
+let animTok=0;
+async function chooseClip(h,name){
+  const my=++animTok, still=name===NOANIM||!h.anim;
+  if(still){ // bind pose = the lite still model
+    if(model&&model.userData.anim){const s=h._still; clearModel(); if(s){model=s;scene.add(model);frameModel(model,true)}}
+    stopAnim(); animSt.textContent=h.anim?"Bind pose, no animation (lite 80k-triangle copy).":""; $("play").disabled=true; return}
+  $("play").disabled=false;
+  if(!(model&&model.userData.anim)){
+    animSt.textContent="Loading the raw game glb…";
+    let g; try{g=await getAnim(h)}catch(e){if(my===animTok)animSt.textContent="Could not load the animated glb ("+(e.message||e)+").";return}
+    if(my!==animTok||rows[cur]!==h||lineMode)return;
+    if(model&&!model.userData.anim)h._still=model; stopAnim(); if(model)scene.remove(model);
+    model=g.scene; model.userData.anim=true; model.rotation.y=Math.PI; /* game rigs face -Z; turn to face the camera like the still copy */ model.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false}); scene.add(model); h._clips=g.animations; frameModel(model,true)}
+  const clip=(h._clips||[]).find(c=>c.name===name); if(!clip)return;
+  if(mixer)mixer.stopAllAction(); else mixer=new THREE.AnimationMixer(model);
+  action=mixer.clipAction(clip); action.reset().play(); mixer.update(0);
+  canvas.dataset.clip=name; animSt.textContent=name+": "+clip.duration.toFixed(2)+" s, "+clip.tracks.length+" tracks, raw glb, no game code."}
+function setupAnim(h){
+  clipSel.innerHTML=""; animBox.hidden=!h.anim; canvas.dataset.clip=""; if(!h.anim)return;
+  const o0=document.createElement("option");o0.value=NOANIM;o0.textContent="T-pose / no animation";clipSel.appendChild(o0);
+  (h.clips||[]).forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;clipSel.appendChild(o)});
+  const def=(h.clips||[]).includes("idle")?"idle":(h.clips||[])[0]; clipSel.value=def||NOANIM;
+  playing=true; $("play").textContent="Pause"; $("play").setAttribute("aria-pressed","true"); chooseClip(h,clipSel.value)}
+clipSel.onchange=()=>{if(rows[cur])chooseClip(rows[cur],clipSel.value)};
+$("play").onclick=()=>{playing=!playing;$("play").textContent=playing?"Pause":"Play";$("play").setAttribute("aria-pressed",String(playing))};
+$("spd").oninput=e=>{speed=+e.target.value;$("spdv").textContent=speed.toFixed(2)+"x"};
 let model=null, token=0;
 async function setModel(h){
-  const my=++token; if(model){scene.remove(model);model=null}
+  const my=++token; ++animTok; animBox.hidden=true; h._still=null; clearModel();
   if(lineMode)return;
   if(!h.model){load.textContent="No viewer copy of this model yet.";return}
   load.textContent="Loading…";
   try{
     const buf=await getGlb(h); if(my!==token)return;
     const g=await new Promise((res,rej)=>loader.parse(buf,"",res,rej)); if(my!==token)return;
-    model=g.scene; scene.add(model);
-    const box=new THREE.Box3().setFromObject(model), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
-    const r=Math.max(size.x,size.y,size.z), vf=THREE.MathUtils.degToRad(camera.fov)/2, hf=Math.atan(Math.tan(vf)*camera.aspect);
-    const wd=Math.max(size.x,size.z), d=(Math.max((size.y/2)/Math.tan(vf),(wd/2)/Math.tan(hf))+wd/2)*1.12;
-    controls.target.copy(c);
-    camera.position.copy(c).addScaledVector(new THREE.Vector3(0.3,0.1,1).normalize(),d);
-    camera.near=r/100;camera.far=r*100;camera.updateProjectionMatrix();controls.minDistance=d*0.2;controls.maxDistance=d*3;
-    load.textContent="";
+    model=g.scene; scene.add(model); h._still=model; frameModel(model,false);
+    load.textContent=""; setupAnim(h);
   }catch(e){if(my===token)load.textContent="This model did not load ("+(e.message||e)+")."}}
 
 let rows=[], cur=0;
@@ -254,7 +307,7 @@ function placeLabels(){const w=canvas.clientWidth,h=canvas.clientHeight,v=new TH
 function leaveLineup(){if(!lineMode)return;
   lineMode=false; Object.values(LM).forEach(m=>m.grp.visible=false); stageEl.classList.remove("lineup","dense","acc"); resize(); lineBtn.setAttribute("aria-pressed","false"); lineBtnH.setAttribute("aria-pressed","false"); if(model)model.visible=true}
 async function showLineup(user,kind){kind=kind||"true";
-  lineMode=true; lineKind=kind; ++token; if(model){scene.remove(model);model=null}
+  lineMode=true; lineKind=kind; ++token; ++animTok; clearModel()
   Object.entries(LM).forEach(([k,m])=>m.grp.visible=false);
   lineBtn.setAttribute("aria-pressed",String(kind==="true")); lineBtnH.setAttribute("aria-pressed",String(kind==="acc")); [...$("chips").children].forEach(b=>b.setAttribute("aria-pressed","false"));
   canvas.setAttribute("aria-label",kind==="acc"?"Lineup of all the hunters at their listed heights":"Lineup of all the hunters at model scale");
