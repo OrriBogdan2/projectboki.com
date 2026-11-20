@@ -361,6 +361,7 @@ function go(sec, fromHash){
 $('#refresh').onclick = () => load(cur, false, true);
 async function load(sec, quiet, force){
   if (!force && quiet && document.hidden) return;
+  if (!force && quiet && sec === 'hunters' && loadedAt[sec] && now() - loadedAt[sec] < 290) return;   // hunters.json is rebuilt every 15 min; poll it every 5
   const stamp = $('#stamp'); if (!quiet) stamp.textContent = 'updating…';
   try {
     data[sec] = await api('/admin/' + ENDPOINT[sec]); loadedAt[sec] = now();
@@ -886,13 +887,122 @@ VIEWS.hunters = (c, el) => {
   const WORD = {'no fix yet':'No fix yet','fix running':'Fix running','art-gate FAIL':'Failed the art check','art-gate PASS':'Passed the art check','owner check':'Waiting for you','merged':'Merged','in itch build':'In the itch build'};
   const chip = s => `<span class="badge" style="color:${STAGE[s] || 'var(--muted)'}">${esc(WORD[s] || s)}</span>`;
   const src = p => imgs[p] ? `src="${imgs[p]}"` : `data-hp="${esc(p)}"`;
-  const pic = (p, cap, alt) => `<figure class="hpic"><div class="hbox">${p ? `<img alt="${esc(alt)}" ${src(p)}>` : '<span class="small muted">no picture</span>'}</div><figcaption class="small"><b>${esc(cap[0])}</b><br><span class="muted">${esc(cap[1])}</span></figcaption></figure>`;
+  const zoomBtn = (hk, p, full, label, inner) => `<button type="button" class="hzoom" data-hk="${esc(hk)}" data-full="${esc(full || p)}" aria-label="Enlarge: ${esc(label)}">${inner}</button>`;
+  const pic = (p, cap, alt, hk, full) => `<figure class="hpic"><div class="hbox">${p ? zoomBtn(hk, p, full, alt, `<img alt="${esc(alt)}" ${src(p)}>`) : '<span class="small muted">no picture</span>'}</div><figcaption class="small"><b>${esc(cap[0])}</b><br><span class="muted">${esc(cap[1])}</span></figcaption></figure>`;
   const prTxt = pr => pr ? `<a href="https://github.com/OrriBogdan2/project-boki/pull/${Number(pr.number)}" target="_blank" rel="noopener">PR #${Number(pr.number)}</a> <span class="muted">${esc({draft:'draft',open:'open for review',merged:'merged',closed:'closed'}[pr.state] || pr.state)}</span>` : '<span class="muted">no PR yet</span>';
   const vWord = v => v === 'PASS' ? 'passed' : v === 'FAIL' ? 'failed' : v === 'running' ? 'still running' : 'no review yet';
   const vCol = v => v === 'PASS' ? 'var(--good)' : v === 'FAIL' ? 'var(--crit)' : v === 'running' ? 'var(--accent)' : 'var(--muted)';
   const f1 = x => Number(x).toFixed(1);
   const sCol = x => x == null ? 'var(--muted)' : x < 6 ? 'var(--crit)' : x < S.ship_bar ? 'var(--c-yellow)' : 'var(--good)';   // red under 6, amber 6 to 8.4, green at the 8.5 ship bar
   const rTime = e => { if (!e) return ''; const p = {}; new Intl.DateTimeFormat('en-US', {timeZone: 'America/New_York', month: '2-digit', day: '2-digit', hour: 'numeric', minute: '2-digit'}).formatToParts(new Date(e * 1000)).forEach(x => p[x.type] = x.value); return `${p.month}-${p.day} ${p.hour}:${p.minute} ${p.dayPeriod} ET`; };
+  // Full-screen picture viewer shared by every image on this tab. One instance lives on document.body so it survives re-renders.
+  const LB = window._hLB || (window._hLB = (() => {
+    const css = document.createElement('style');
+    css.textContent = `.hlb{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:none;flex-direction:column;color:#f0efec;outline:0;overscroll-behavior:contain}
+      .hlb.on{display:flex}.hlb-stage{flex:1;position:relative;overflow:hidden;touch-action:none;cursor:zoom-in;user-select:none;-webkit-user-select:none}.hlb.zoomed .hlb-stage{cursor:grab}
+      .hlb-img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transform-origin:50% 50%;will-change:transform;-webkit-user-drag:none;pointer-events:none}
+      .hlb-bar{display:flex;align-items:center;gap:10px;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top))}.hlb-cnt{font-size:13px;opacity:.8;margin-right:auto}
+      .hlb button{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:10px;min-width:44px;min-height:44px;font-size:22px;line-height:1;cursor:pointer}.hlb button:hover{background:rgba(255,255,255,.22)}.hlb button:focus-visible{outline:2px solid #fff}
+      .hlb-nav{position:absolute;top:50%;margin-top:-26px;z-index:2}.hlb-nav.p{left:8px}.hlb-nav.n{right:8px}
+      .hlb-cap{padding:8px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));font-size:13px;line-height:1.4;text-align:center;max-height:22vh;overflow:auto}.hlb-cap small{display:block;opacity:.7;margin-top:2px}
+      .hlb-load{position:absolute;left:0;right:0;top:50%;text-align:center;font-size:13px;opacity:.7;pointer-events:none}`;
+    document.head.appendChild(css);
+    const root = document.createElement('div');
+    root.className = 'hlb'; root.tabIndex = -1; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Picture viewer');
+    root.innerHTML = `<div class="hlb-bar"><span class="hlb-cnt"></span><button type="button" data-a="reset" aria-label="Reset zoom" title="Reset zoom" style="font-size:14px">1:1</button><button type="button" data-a="close" aria-label="Close" title="Close (Esc)">×</button></div>
+      <div class="hlb-stage"><img class="hlb-img" alt=""><div class="hlb-load"></div><button type="button" class="hlb-nav p" data-a="prev" aria-label="Previous picture">‹</button><button type="button" class="hlb-nav n" data-a="next" aria-label="Next picture">›</button></div>
+      <div class="hlb-cap"></div>`;
+    document.body.appendChild(root);
+    const stage = root.querySelector('.hlb-stage'), img = root.querySelector('.hlb-img'), cnt = root.querySelector('.hlb-cnt'), cap = root.querySelector('.hlb-cap'), load = root.querySelector('.hlb-load');
+    let list = [], idx = 0, seq = 0, scale = 1, tx = 0, ty = 0, back = null;
+    const ptrs = new Map(); let g = null;   // g: gesture in progress
+    const MAXZ = 6;
+    const blob = async p => {
+      if (imgs[p]) return imgs[p];
+      const r = await fetch(API + '/admin/hunter-img?p=' + encodeURIComponent(p), {headers: token ? {Authorization: 'Bearer ' + token} : {}});
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return imgs[p] = URL.createObjectURL(await r.blob());
+    };
+    const lim = () => ({x: Math.max(0, (img.offsetWidth * scale - stage.clientWidth) / 2) + 30, y: Math.max(0, (img.offsetHeight * scale - stage.clientHeight) / 2) + 30});
+    const apply = () => {
+      if (scale <= 1.001) { scale = 1; tx = ty = 0; }
+      const l = lim(); tx = Math.max(-l.x, Math.min(l.x, tx)); ty = Math.max(-l.y, Math.min(l.y, ty));
+      img.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; root.classList.toggle('zoomed', scale > 1);
+    };
+    // zoom by factor k keeping the point (cx, cy), measured from the stage centre, fixed on screen
+    const zoomAt = (k, cx, cy) => { const ns = Math.max(1, Math.min(MAXZ, scale * k)), r = ns / scale; tx = cx - (cx - tx) * r; ty = cy - (cy - ty) * r; scale = ns; apply(); };
+    const centre = e => { const b = stage.getBoundingClientRect(); return {x: e.clientX - b.left - b.width / 2, y: e.clientY - b.top - b.height / 2}; };
+    const show = async i => {
+      idx = (i + list.length) % list.length; const it = list[idx], my = ++seq;
+      scale = 1; tx = ty = 0; apply();
+      cnt.textContent = list.length > 1 ? `${idx + 1} / ${list.length}` : '';
+      cap.innerHTML = `<b>${esc(it.cap || '')}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}`;
+      img.alt = it.cap || '';
+      root.querySelectorAll('.hlb-nav').forEach(b => b.style.display = list.length > 1 ? '' : 'none');
+      load.textContent = '';
+      if (it.t && imgs[it.t]) img.src = imgs[it.t]; else img.removeAttribute('src');
+      try {
+        if (!imgs[it.full]) load.textContent = 'Loading full size…';
+        const u = await blob(it.full); if (my !== seq) return; img.src = u; load.textContent = '';
+      } catch (e) { if (my === seq) load.textContent = 'Could not load the full-size picture'; }
+      const nx = list[(idx + 1) % list.length]; if (nx && !imgs[nx.full]) blob(nx.full).catch(() => {});   // warm the next one
+    };
+    const close = () => { if (!root.classList.contains('on')) return; root.classList.remove('on'); seq++; document.body.style.overflow = back.ov; ptrs.clear(); g = null; try { back.f && back.f.focus(); } catch (e) {} };
+    const step = d => { if (list.length > 1) show(idx + d); };
+    root.addEventListener('click', e => { const a = e.target.closest('[data-a]'); if (!a) return; const v = a.dataset.a; if (v === 'close') close(); else if (v === 'prev') step(-1); else if (v === 'next') step(1); else if (v === 'reset') { scale = 1; apply(); } });
+    root.addEventListener('keydown', e => {
+      if (!root.classList.contains('on')) return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+      else if (e.key === '+' || e.key === '=') zoomAt(1.4, 0, 0); else if (e.key === '-' || e.key === '_') zoomAt(1 / 1.4, 0, 0); else if (e.key === '0') { scale = 1; apply(); }
+      else if (e.key === 'Tab') { const bs = [...root.querySelectorAll('button')].filter(b => b.offsetParent); const k = bs.indexOf(document.activeElement); e.preventDefault(); (bs[(k + (e.shiftKey ? -1 : 1) + bs.length) % bs.length] || root).focus(); }
+    });
+    stage.addEventListener('wheel', e => { e.preventDefault(); const c0 = centre(e); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0018)), c0.x, c0.y); }, {passive: false});
+    // the <img> box fills the stage (the picture is letterboxed inside it), so "on the picture" is decided from the picture's drawn rectangle
+    const onPic = e => {
+      const b = stage.getBoundingClientRect(), nw = img.naturalWidth, nh = img.naturalHeight; if (!nw || !nh) return false;
+      const k = Math.min(b.width / nw, b.height / nh) * scale;
+      return Math.abs(e.clientX - (b.left + b.width / 2 + tx)) <= nw * k / 2 && Math.abs(e.clientY - (b.top + b.height / 2 + ty)) <= nh * k / 2;
+    };
+    let lastTap = 0, pendingClose = false;
+    stage.addEventListener('click', () => { if (pendingClose) { pendingClose = false; close(); } });
+    stage.addEventListener('pointerdown', e => {
+      if (e.target.closest('button')) return;
+      try { stage.setPointerCapture(e.pointerId); } catch (x) {}
+      ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY});
+      if (ptrs.size === 1) g = {x0: e.clientX, y0: e.clientY, t0: Date.now(), moved: 0, onImg: onPic(e), px: e.clientX, py: e.clientY, pinch: false};
+      else if (ptrs.size === 2 && g) { const [a, b] = [...ptrs.values()]; g.pinch = true; g.d = Math.hypot(a.x - b.x, a.y - b.y) || 1; g.mx = (a.x + b.x) / 2; g.my = (a.y + b.y) / 2; }
+    });
+    stage.addEventListener('pointermove', e => {
+      if (!ptrs.has(e.pointerId) || !g) return;
+      ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY});
+      if (ptrs.size >= 2) {
+        const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, r = stage.getBoundingClientRect();
+        tx += mx - g.mx; ty += my - g.my; zoomAt(d / g.d, mx - r.left - r.width / 2, my - r.top - r.height / 2); g.d = d; g.mx = mx; g.my = my; g.moved = 99; return;
+      }
+      g.moved = Math.max(g.moved, Math.hypot(e.clientX - g.x0, e.clientY - g.y0));
+      if (scale > 1) { tx += e.clientX - g.px; ty += e.clientY - g.py; apply(); }
+      g.px = e.clientX; g.py = e.clientY;
+    });
+    const up = e => {
+      if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId);
+      if (!g) return;
+      if (ptrs.size === 1) { const p = [...ptrs.values()][0]; g.px = p.x; g.py = p.y; g.moved = 99; return; }   // pinch ended, the other finger carries on as a pan
+      if (ptrs.size > 0) return;
+      const dx = e.clientX - g.x0, dy = e.clientY - g.y0, dt = Date.now() - g.t0, gg = g; g = null;
+      if (e.type === 'pointercancel' || gg.pinch) return;
+      if (scale === 1 && Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy) && dt < 700) { step(dx < 0 ? 1 : -1); return; }   // swipe
+      if (gg.moved < 10 && dt < 350) {   // tap
+        if (!gg.onImg) { pendingClose = true; setTimeout(() => { if (pendingClose) { pendingClose = false; close(); } }, 600); return; }   // tap on the dark area closes, but only once the tap's own click has landed on the viewer (closing now would let it fall through to the page)
+        const n = Date.now(); if (n - lastTap < 320) { lastTap = 0; const c0 = centre(e); if (scale > 1) { scale = 1; apply(); } else zoomAt(2.5, c0.x, c0.y); } else lastTap = n;
+      }
+    };
+    stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+    addEventListener('resize', () => { if (root.classList.contains('on')) apply(); });
+    return {
+      open(items, i) { if (!items.length) return; list = items; back = {f: document.activeElement, ov: document.body.style.overflow}; document.body.style.overflow = 'hidden'; root.classList.add('on'); root.focus(); show(i || 0); },
+      isOpen: () => root.classList.contains('on'), close
+    };
+  })());
   const drafts = window._hdraft = window._hdraft || {}, msgs = window._hmsg = window._hmsg || {};
   const badge = (sc, label, big, extra) => `<div class="hbadge${big ? ' big' : ''}"><div class="hnum" style="color:${sCol(sc && sc.score)}">${sc ? f1(sc.score) : '<span class="hnone">not scored yet</span>'}${sc ? '<small>/10</small>' : ''}</div><div class="small muted">${esc(label)}${sc ? ' ' + esc(rTime(sc.at)) : ''}</div>${extra || ''}</div>`;
   const kindWord = k => k === 'live' ? 'live model' : 'new attempt';
@@ -904,13 +1014,59 @@ VIEWS.hunters = (c, el) => {
       <div class="small hmsg" style="color:${msgs[h.key] && msgs[h.key].bad ? 'var(--crit)' : 'var(--good)'}">${msgs[h.key] ? esc(msgs[h.key].text) : ''}</div></div>`;
   };
   const notes = n => n && n.length ? `<ul class="hnotes">${n.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  const rImgs = r => (r.images && r.images.length) ? r.images : (r.attempt ? [{t: r.attempt, f: r.attempt}] : []);
+  const rWhen = r => r.start || r.end ? rTime(r.start || r.end) : (r.ts || '');
+  const rTitle = r => r.kind === '2d-ta' ? 'Texture pass' : (r.n != null ? 'Round ' + r.n : 'Round');
+  const rScoreTxt = r => r.score != null ? ' · score ' + f1(r.score) : '';
+  const stWord = s => ({running: 'running', done: 'finished', failed: 'failed'}[s] || s || 'unknown');
+  const stCol = s => s === 'running' ? 'var(--accent)' : s === 'failed' ? 'var(--crit)' : s === 'done' ? 'var(--good)' : 'var(--muted)';
+  // Every picture the card shows, in order, so the viewer can step through them for that hunter.
+  const gallery = h => {
+    const out = [], seen = new Set(), p = h.pics || {}, pf = h.pics_full || {};
+    const add = (t, f, cap, sub) => { const full = f || t; if (!full || seen.has(full)) return; seen.add(full); out.push({t, full, cap, sub}); };
+    add(p.master, pf.master, h.name + ' · master', 'the sculpt, before rigging');
+    add(p.ingame, pf.ingame, h.name + ' · in game now', 'what the game ships');
+    add(p.attempt, pf.attempt, h.name + ' · latest attempt', 'frame saved with the newest review');
+    (h.rounds || []).forEach(r => rImgs(r).forEach((im, k) => add(im.t, im.f, `${h.name} · ${rTitle(r)}${rImgs(r).length > 1 ? ' · picture ' + (k + 1) : ''}`,
+      [rWhen(r), stWord(r.status || r.state) + (r.verdict ? ', review ' + vWord(r.verdict) : '') + rScoreTxt(r), r.note || ''].filter(Boolean).join(' — '))));
+    return out;
+  };
+  const spark = h => {
+    const KO = {live: 0, attempt: 1, round: 2}, ser = (h.trend_series || ((h.score || {}).history || []));   // old files only have score.history
+    const pts = ser.filter(x => x.score != null).slice().sort((a, b) => a.ts - b.ts || (KO[a.kind] || 0) - (KO[b.kind] || 0));   // same time: in-game first, so the line ends on the newest attempt
+    const sc0 = h.score || {}, tr = h.trend || [(sc0.ingame || {}).score, (sc0.attempt || {}).score, Math.max(...ser.map(x => x.score).filter(x => x != null), -1) >= 0 ? Math.max(...ser.map(x => x.score).filter(x => x != null)) : null], bar = S.ship_bar;
+    const W = 320, H = 96, L = 24, R = 12, T = 8, B = 8, y = v => T + (H - T - B) * (1 - v / 10), x = k => pts.length < 2 ? (L + W - R) / 2 : L + (W - L - R) * k / (pts.length - 1);
+    const num = (v, lab) => `<span class="hts"><span class="small muted">${lab}</span> <b style="color:${sCol(v)}">${v == null ? '—' : f1(v)}</b></span>`;
+    const facts = `<div class="hfacts">${num(tr[0], 'In game')}${num(tr[1], 'Newest')}${num(tr[2], 'Best')}</div>`;
+    if (!pts.length) return `<div class="hspark">${facts}<div class="small muted">No reviewer scores for this hunter yet, so there is no line to draw.</div></div>`;
+    const line = pts.map((q, k) => `${x(k).toFixed(1)},${y(q.score).toFixed(1)}`).join(' ');
+    const dots = pts.map((q, k) => { const cx = x(k).toFixed(1), cy = y(q.score).toFixed(1), col = sCol(q.score);
+      return q.kind === 'live' ? `<rect x="${cx - 5}" y="${cy - 5}" width="10" height="10" rx="2" fill="${col}" stroke="var(--ink)" stroke-width="1.5"/>` : `<circle cx="${cx}" cy="${cy}" r="4.5" fill="${col}" stroke="var(--surface)" stroke-width="1.5"/>`; }).join('');
+    const lastQ = pts[pts.length - 1], lx = x(pts.length - 1);
+    const lab = `${h.name} scores over time: ${pts.map(q => (q.kind === 'live' ? 'in game ' : 'attempt ') + f1(q.score)).join(', ')}. Ship bar ${f1(bar)}.`;
+    return `<div class="hspark">${facts}<svg viewBox="0 0 ${W} ${H}" class="hsvg" role="img" aria-label="${esc(lab)}">
+      <line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line2)"/><text x="${L - 4}" y="${y(0) + 3}" text-anchor="end" class="hax">0</text><text x="${L - 4}" y="${y(10) + 3}" text-anchor="end" class="hax">10</text>
+      <line x1="${L}" x2="${W - R}" y1="${y(bar)}" y2="${y(bar)}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${L + 2}" y="${y(bar) - 3}" class="hax" fill="var(--good)">ship bar ${f1(bar)}</text>
+      ${pts.length > 1 ? `<polyline points="${line}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linejoin="round"/>` : ''}${dots}
+      <text x="${Math.min(lx, W - R - 2)}" y="${Math.max(10, y(lastQ.score) - 9)}" text-anchor="middle" class="hax" fill="var(--ink)" font-weight="700">${f1(lastQ.score)}</text></svg>
+      <div class="small muted hleg"><span class="hsq"></span> in game <span class="hci"></span> attempt or round · colour: red under 6, amber 6 to ${f1(bar - 0.1)}, green ${f1(bar)}+</div></div>`;
+  };
+  const roundRow = (h, r) => {
+    const im = rImgs(r), st = r.status || r.state, rv = r.verdict;
+    const thumbs = im.length ? `<div class="hrimgs">${im.map((q, k) => `<div class="hbox hth">${zoomBtn(h.key, q.t, q.f, `${h.name} ${rTitle(r)} picture ${k + 1}`, `<img alt="${esc(h.name + ' ' + rTitle(r) + ' picture ' + (k + 1))}" ${src(q.t)}>`)}</div>`).join('')}</div>` : '';
+    return `<div class="hr${st === 'running' ? ' live' : ''}">${thumbs}<div class="hrbody">
+      <div class="hrtop"><b>${esc(rTitle(r))}</b><span class="badge">${r.kind === '2d-ta' ? '2D texture' : '3D model'}</span><span class="badge" style="color:${stCol(st)}">${esc(stWord(st))}</span>${r.score != null ? `<span class="badge" style="color:${sCol(r.score)}">score ${f1(r.score)}</span>` : ''}${rv ? `<span class="badge" style="color:${vCol(rv)}">review ${esc(vWord(rv))}</span>` : ''}</div>
+      <div class="small muted">${esc(rWhen(r))}${r.label ? ' · ' + esc(r.label) : ''}${r.escalated ? ' · escalated' : ''}</div>
+      ${r.note ? `<div class="small hrnote">${esc(r.note)}</div>` : ''}${rv ? notes(r.notes) : ''}</div></div>`;
+  };
+  const rows = (h, rs) => rs.length ? rs.map(r => roundRow(h, r)).join('') : '<div class="small muted">No 3D rounds recorded yet.</div>';
   const card = h => {
-    const v = h.verdict, lj = h.latest_job, p = h.pics, ar = h.rounds.find(r => r.attempt);
-    const attCap = ['Latest attempt', ar ? `round ${ar.n}, ${vWord(ar.verdict)}` : 'no frame saved'];
+    const v = h.verdict, lj = h.latest_job, p = h.pics, pf = h.pics_full || {}, ar = h.rounds.find(r => r.attempt), rn = h.running_now || [];
+    const attCap = ['Latest attempt', ar ? `${rTitle(ar).toLowerCase()}, ${vWord(ar.verdict)}` : 'no frame saved'];
     const sc = h.score || {}, before = sc.before && sc.attempt ? `<div class="small muted">was ${f1(sc.before.score)}, now ${f1(sc.attempt.score)}</div>` : '';
     return `<div class="card hcard">
       <div class="hhead" data-hk="${esc(h.key)}" role="button" tabindex="0" aria-expanded="${open[h.key] ? 'true' : 'false'}">
-        <div class="hrow"><b class="hname">${esc(h.name)}</b>${chip(h.stage)}<span class="small muted">${open[h.key] ? 'hide rounds' : 'show all rounds'}</span></div>
+        <div class="hrow"><b class="hname">${esc(h.name)}</b>${chip(h.stage)}${rn.length ? `<span class="badge s-running hlive" title="${esc(rn.join(', '))}"><i class="hdot"></i>running now${rn.length > 1 ? ' ×' + rn.length : ''}</span>` : ''}<span class="small muted">${open[h.key] ? 'hide rounds' : 'show all rounds'}</span></div>
       </div>
       <div class="hscores">${badge(sc.ingame, 'Reviewer score, in game now', true)}${badge(sc.attempt, 'Newest attempt', false, before)}</div>
       ${ratingBox(h)}
@@ -919,8 +1075,11 @@ VIEWS.hunters = (c, el) => {
         ${v ? `<div class="small" style="margin-top:6px"><b style="color:${vCol(v.verdict)}">Last review ${vWord(v.verdict)}</b> <span class="muted">${esc(tEST(v.at))}</span></div>${notes(v.notes)}` : ''}
         ${h.note ? `<div class="small" style="margin-top:6px">${esc(h.note)}</div>` : ''}
       </div>
-      <div class="hstrip">${pic(p.master, ['Master', 'the sculpt, before rigging'], h.name + ' master')}${pic(p.ingame, ['In game now', 'what the game ships'], h.name + ' in game')}${pic(p.attempt, attCap, h.name + ' latest attempt')}</div>
-      ${open[h.key] ? `<div class="hrounds">${(sc.history || []).length ? `<div class="small"><b>Reviewer scores so far</b> <span class="muted">${sc.history.slice().reverse().map(x => `${f1(x.score)} ${kindWord(x.kind)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}${(h.ratings || []).length > 1 ? `<div class="small" style="margin-top:4px"><b>Your last ratings</b> <span class="muted">${h.ratings.map(x => `${f1(x.score)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}${h.rounds.map(r => `<div class="hround"><div class="hrhead"><b>Round ${r.n}</b> <span class="small muted">${esc(tEST(r.start))}</span> <span class="small" style="color:${vCol(r.verdict)}">${esc(vWord(r.verdict))}</span> <span class="small muted">(${esc(r.state)})</span></div>${notes(r.notes)}${r.attempt ? `<div class="hbox hsmall"><img alt="${esc(h.name)} round ${r.n}" ${src(r.attempt)}></div>` : ''}</div>`).join('') || '<div class="small muted">No rounds yet.</div>'}</div>` : ''}
+      <div class="hstrip">${pic(p.master, ['Master', 'the sculpt, before rigging'], h.name + ' master', h.key, pf.master)}${pic(p.ingame, ['In game now', 'what the game ships'], h.name + ' in game', h.key, pf.ingame)}${pic(p.attempt, attCap, h.name + ' latest attempt', h.key, pf.attempt)}</div>
+      <div class="h3d"><div class="hsec">3D progress${rn.length ? ` <span class="small muted">· running: ${esc(rn.join(', '))}</span>` : ''}</div>${spark(h)}
+        <div class="hline">${rows(h, open[h.key] ? h.rounds : h.rounds.slice(0, 3))}</div>
+        ${h.rounds.length > 3 ? `<button type="button" class="hmore" data-hk="${esc(h.key)}" aria-expanded="${open[h.key] ? 'true' : 'false'}">${open[h.key] ? 'Show fewer rounds' : `Show all ${h.rounds.length} recent rounds`}</button>` : ''}</div>
+      ${open[h.key] && ((h.score || {}).history || []).length + (h.ratings || []).length > 1 ? `<div class="hrounds">${(sc.history || []).length ? `<div class="small"><b>Reviewer scores so far</b> <span class="muted">${sc.history.slice().reverse().map(x => `${f1(x.score)} ${kindWord(x.kind)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}${(h.ratings || []).length > 1 ? `<div class="small" style="margin-top:4px"><b>Your last ratings</b> <span class="muted">${h.ratings.map(x => `${f1(x.score)} (${esc(rTime(x.ts))})`).join(', ')}</span></div>` : ''}</div>` : ''}
     </div>`;
   };
   el.innerHTML = `<style>
@@ -934,9 +1093,16 @@ VIEWS.hunters = (c, el) => {
     .hnum small{font-size:14px;font-weight:500;color:var(--muted);margin-left:2px}.hnone{font-size:14px;font-weight:500;color:var(--muted)}
     .hrate{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}.hform{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .hform .hin{width:110px}.hform .hnote{flex:1 1 180px;width:auto}.hform input{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}.hmsg{min-height:1em;margin-top:4px}
+    .h3d{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}.hsec{font-weight:700;font-size:13.5px;margin-bottom:4px}
+    .hzoom{display:block;width:100%;height:100%;padding:0;margin:0;border:0;border-radius:0;background:none;cursor:zoom-in}.hzoom:hover{background:none;filter:brightness(1.06)}.hzoom img{display:block}
+    .hspark{margin:4px 0 8px}.hfacts{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:2px}.hts b{font-size:17px}.hsvg{display:block;width:100%;max-width:520px;height:auto}.hax{font-size:9px;fill:var(--muted)}
+    .hleg{margin-top:2px}.hsq,.hci{display:inline-block;width:9px;height:9px;background:var(--muted);vertical-align:baseline;margin:0 2px 0 6px}.hsq{border-radius:2px}.hci{border-radius:50%}
+    .hr{display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.hr.live{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent)}
+    .hrimgs{display:flex;gap:6px;flex:0 0 auto}.hbox.hth{width:64px;height:64px;aspect-ratio:auto;flex:0 0 auto}.hrbody{flex:1 1 180px;min-width:0}.hrtop{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.hrnote{margin-top:2px;overflow-wrap:anywhere}
+    .hmore{margin-top:6px}.hlive .hdot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:hpulse 1.4s ease-in-out infinite}@keyframes hpulse{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.hlive .hdot{animation:none}}
     .hround:last-child{border-bottom:0}.hgrid{display:grid;gap:14px;margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
   </style>
-  <div class="small muted" style="margin-bottom:10px">As of <b>${esc(ago(c.ts))}</b>. A round is one fix attempt. Done means the art check passed (or later). <a href="${esc(c.viewer || '/3d/v95/')}" target="_blank" rel="noopener">Open in 3D viewer</a></div>
+  <div class="small muted" style="margin-bottom:10px">Updated <b id="hupd" data-ts="${Number(c.ts) || 0}">${esc(ago(c.ts))}</b> (refreshes every 5 min). A round is one fix attempt. Done means the art check passed (or later). <a href="${esc(c.viewer || '/3d/v95/')}" target="_blank" rel="noopener">Open in 3D viewer</a></div>
   <div class="grid tiles">
     <div class="card"><h3>Average reviewer score</h3><div class="kpi" style="color:${sCol(S.avg_score)}">${S.avg_score != null ? f1(S.avg_score) : '<span class="hnone">not scored yet</span>'}${S.avg_score != null ? '<small> of 10</small>' : ''}</div><div class="sub">${S.scored} of ${S.total} hunters scored by the reviewer</div></div>
     <div class="card"><h3>At or above ${f1(S.ship_bar)}</h3><div class="kpi" style="color:var(--good)">${S.at_bar}<small> of ${S.total}</small></div>${meter(S.at_bar, 'var(--good)', S.total)}<div class="sub">${f1(S.ship_bar)} is the bar to ship</div></div>
@@ -965,6 +1131,13 @@ VIEWS.hunters = (c, el) => {
       render();
     };
   });
+  el.querySelectorAll('.hmore').forEach(b => b.onclick = () => { open[b.dataset.hk] = !open[b.dataset.hk]; render(); });
+  el.querySelectorAll('.hzoom').forEach(b => b.onclick = () => {
+    const h = c.hunters.find(x => x.key === b.dataset.hk); if (!h) return;
+    const g = gallery(h), k = g.findIndex(x => x.full === b.dataset.full);
+    LB.open(k >= 0 ? g : [{t: null, full: b.dataset.full, cap: h.name}], Math.max(0, k));
+  });
+  clearInterval(window._hTick); window._hTick = setInterval(() => { const u = document.getElementById('hupd'); if (!u) return clearInterval(window._hTick); u.textContent = ago(Number(u.dataset.ts)); }, 20000);
   el.querySelectorAll('img[data-hp]').forEach(async im => {
     const p = im.dataset.hp;
     try {
