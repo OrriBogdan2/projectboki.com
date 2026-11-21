@@ -1104,7 +1104,8 @@ VIEWS.hunters = (c, el) => {
   </style>
   <div class="small muted" style="margin-bottom:10px">Updated <b id="hupd" data-ts="${Number(c.ts) || 0}">${esc(ago(c.ts))}</b> (refreshes every 5 min). A round is one fix attempt. Done means the art check passed (or later). <a href="${esc(c.viewer || '/3d/v95/')}" target="_blank" rel="noopener">Open in 3D viewer</a></div>
   <div class="grid tiles">
-    <div class="card"><h3>Average reviewer score</h3><div class="kpi" style="color:${sCol(S.avg_score)}">${S.avg_score != null ? f1(S.avg_score) : '<span class="hnone">not scored yet</span>'}${S.avg_score != null ? '<small> of 10</small>' : ''}</div><div class="sub">${S.scored} of ${S.total} hunters scored by the reviewer</div></div>
+    <div class="card"><h3>Best new models (average)</h3><div class="kpi" style="color:${sCol(S.avg_best_new)}">${S.avg_best_new != null ? f1(S.avg_best_new) : '<span class="hnone">not scored yet</span>'}${S.avg_best_new != null ? '<small> of 10</small>' : ''}</div><div class="sub">newest candidate per hunter, not in the game yet; ${S.best_new_at_bar ?? 0} at ${f1(S.ship_bar)}</div></div>
+    <div class="card"><h3>In the game now (average)</h3><div class="kpi" style="color:${sCol(S.avg_score)}">${S.avg_score != null ? f1(S.avg_score) : '<span class="hnone">not scored yet</span>'}${S.avg_score != null ? '<small> of 10</small>' : ''}</div><div class="sub">${S.scored} of ${S.total} hunters scored by the reviewer</div></div>
     <div class="card"><h3>At or above ${f1(S.ship_bar)}</h3><div class="kpi" style="color:var(--good)">${S.at_bar}<small> of ${S.total}</small></div>${meter(S.at_bar, 'var(--good)', S.total)}<div class="sub">${f1(S.ship_bar)} is the bar to ship</div></div>
     <div class="card"><h3>In the game</h3><div class="kpi">${S.in_game}<small> of ${S.total}</small></div>${meter(S.in_game, 'var(--good)', S.total)}<div class="sub">fixed models in the itch build</div></div>
   </div>
