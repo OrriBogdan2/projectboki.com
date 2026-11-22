@@ -208,6 +208,7 @@ const API = (Q.get('api') && LOCAL_API.test(Q.get('api'))) ? Q.get('api') : 'htt
 const TOKEN_KEY = 'boki_admin_token', STATE_KEY = 'boki_cr_state';
 const SECTIONS = [
   ['home','Home','M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+  ['focus','Focus','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01'],
   ['patches','Patches','M12 2l8 4.5v11L12 22l-8-4.5v-11zM12 22V12M4 6.5l8 5.5 8-5.5'],
   ['agents','Agents','M4 20a8 8 0 0 1 16 0M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
   ['progress','Progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],
@@ -222,8 +223,8 @@ const SECTIONS = [
   ['site','Site','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'],
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6'],
 ];
-const PRIMARY_MOBILE = ['home','agents','patches','servers'];
-const ENDPOINT = {home:'overview',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',system:'system',hunters:'hunters',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
+const PRIMARY_MOBILE = ['home','focus','patches','agents'];
+const ENDPOINT = {home:'overview',focus:'focus',patches:'patches',agents:'agents',progress:'progress',servers:'servers',capacity:'capacity',system:'system',hunters:'hunters',money:'money',usage:'usage/data',backlog:'backlog',alerts:'alerts',site:'traffic',signups:'signups'};
 const ACC = {Cory:'var(--c-cory)',GC:'var(--c-gc)',OrriB:'var(--c-orrib)',ProjectBoki:'var(--c-coord)',corybogdan:'var(--c-cory)','Outlook 1':'var(--c-yellow)','Outlook 2':'var(--c-magenta)',acct:'var(--muted)'};
 const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yellow)',failed:'var(--crit)',blocked:'var(--crit)',skipped:'var(--muted)',other:'var(--muted)',redo:'var(--muted)'};
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
@@ -542,6 +543,36 @@ VIEWS.home = (o, el) => {
 };
 
 // ---------- patches
+VIEWS.focus = (f, el) => {
+  const nowT = f.now || now(), span = (f.end||0)-(f.start||0), pct = span > 0 ? Math.max(0, Math.min(100, Math.round(100*(nowT-f.start)/span))) : 0;
+  const fmtV = (v,u) => v == null ? '—' : `${v}${u||''}`;
+  const ST = {hit:['var(--good)','target hit'],better:['var(--good)','better'],worse:['var(--crit)','worse'],same:['var(--muted)','no change yet'],pending:['var(--muted)','measuring']};
+  const nextCk = (f.checkins||[]).find(c => !c.past);
+  const head = `<div class="card" style="margin-bottom:12px"><h3>${esc(f.title||'Focus')}</h3>
+    <div class="row wrap" style="gap:18px;align-items:baseline"><span class="kpi">${pct}%</span><span class="muted">of the window used · ${esc(tEST(f.start))} → ${esc(tEST(f.end))} (ends ${esc(ago(f.end))})</span></div>
+    <div style="height:8px;background:var(--line);border-radius:4px;margin:8px 0 10px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent,#5b8def)"></div></div>
+    ${nextCk ? `<div><b>Next check-in:</b> ${esc(tEST(nextCk.t))} (${esc(ago(nextCk.t))}): ${esc(nextCk.what)}</div>` : ''}
+    <div class="small muted" style="margin-top:6px">Your words: “${esc(f.owner_words||'')}”</div>
+    <div class="small muted" style="margin-top:4px">Plan updated ${esc(ago(f.updated))} · live numbers refresh every minute (merge numbers every 15 min${f.live_at && f.live_at.merge_metrics ? `, last ${esc(ago(f.live_at.merge_metrics))}` : ''})</div></div>`;
+  const metricRow = m => { const s = ST[m.state] || ST.pending; return `<tr><td>${esc(m.label)}${m.note ? `<div class="small muted">${esc(m.note)}</div>` : ''}</td>
+    <td class="num">${fmtV(m.baseline,m.unit)}</td><td class="num"><b>${fmtV(m.now,m.unit)}</b>${m.live ? ' <span class="small muted">live</span>' : ''}</td><td class="num">${fmtV(m.target,m.unit)}</td>
+    <td style="color:${s[0]};white-space:nowrap">${s[1]}</td></tr>`; };
+  const list = (title, xs, col) => `<div style="min-width:220px;flex:1"><div class="small muted">${title}</div>${(xs||[]).map(x=>`<div class="small"${col?` style="color:${col}"`:''}>• ${esc(x)}</div>`).join('') || '<div class="small muted">—</div>'}</div>`;
+  const lanes = (f.lanes||[]).map(l => {
+    const ms = l.metrics||[], hit = ms.filter(m=>m.state==='hit').length, better = ms.filter(m=>m.state==='better').length, worse = ms.filter(m=>m.state==='worse').length;
+    return `<div class="card" style="margin-bottom:12px"><h3>${esc(l.name)}</h3><div class="sub">${esc(l.goal||'')}</div>
+    <div class="small" style="margin:6px 0">${hit} of ${ms.length} targets hit · ${better} better · ${worse ? `<span style="color:var(--crit)">${worse} worse</span>` : '0 worse'}</div>
+    <div style="overflow-x:auto"><table class="small" style="width:100%;margin-top:4px"><thead><tr><th style="text-align:left">Measure</th><th class="num">Start</th><th class="num">Now</th><th class="num">Target</th><th style="text-align:left">Verdict</th></tr></thead><tbody>${ms.map(metricRow).join('')}</tbody></table></div>
+    <div class="row wrap" style="gap:20px;margin-top:10px;align-items:flex-start">${list('Done', l.done, 'var(--good)')}${list('Doing now', l.doing)}${list('Next', l.next)}</div></div>`; }).join('');
+  const np = (f.not_paused||[]).map(x => `<div class="row small" style="gap:10px;padding:4px 0;border-bottom:1px solid var(--line)"><b style="min-width:160px">${esc(x.what)}</b><span class="grow">${esc(x.status || x.note || '')}${x.status && x.note ? ` <span class="muted">(${esc(x.note)})</span>` : ''}</span></div>`).join('');
+  const rules = (f.rules||[]).length ? `<ol class="small" style="margin:6px 0 0 18px">${f.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>` : '<div class="small muted">Draft due with the baseline (~7 AM EST). They show here once they are in force.</div>';
+  const ups = (f.updates||[]).map(u => `<div class="row small" style="gap:10px;padding:3px 0"><span class="t muted" style="min-width:110px">${esc(tEST(u.t))}</span><span class="grow">${esc(u.text)}</span></div>`).join('');
+  const cks = (f.checkins||[]).map(c => `<div class="small">${c.past ? '✓' : '○'} ${esc(tEST(c.t))}: ${esc(c.what)}</div>`).join('');
+  el.innerHTML = head + lanes +
+    `<div class="card" style="margin-bottom:12px"><h3>Still moving (not paused)</h3>${np}</div>
+    <div class="grid tiles"><div class="card"><h3>Rules going forward</h3>${rules}</div><div class="card"><h3>Check-ins</h3>${cks}</div></div>
+    ${sectionH('Updates', 'newest first')}<div class="card">${ups || '<div class="muted small">none yet</div>'}</div>`;
+};
 VIEWS.patches = (p, el) => {
   const g = p.gate, gs = p.gate_state, gt = gateTile(gs || (g ? {unknown:true,last_run:g.last_run} : null), p.sources && p.sources.gate), mgp = p.merge_gap;
   const np = p.next_patch;
