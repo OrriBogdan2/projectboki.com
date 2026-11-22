@@ -896,6 +896,21 @@ function mtHourRender(t, el){
     <tbody>${hrs.map(row).join('')}</tbody></table></details>
     <div class="small muted" style="margin-top:6px">Waiting = READY branches not on main yet (the merge gap). Gain = went up, loss = went down; a change can differ from new − merged when branches close, retire or post a newer commit.</div></div>`);
 }
+// Owner 11-22 headline: READY -> main wait (merge_tracker wait_info). Green/red per owner target: p90 < 24 h, nothing waiting older than 3 days.
+function mtWaitRender(t, el){
+  const w = t.wait; if (!w || !w.w3) return;
+  const H = h => h == null ? '—' : h < 48 ? (Math.round(h * 10) / 10) + ' h' : (Math.round(h / 2.4) / 10) + ' d';
+  const ok = c => `var(--${c ? 'good' : 'crit'})`, tick = c => c ? '✓' : '✗';
+  const a = w.w3, o = w.oldest, p90ok = a.p90_h != null && a.p90_h < w.target_p90_h, oldok = !o || o.age_h < w.target_max_h;
+  const cell = (label, val, c, tgt) => `<div style="min-width:150px;border-left:5px solid ${c == null ? 'var(--muted)' : ok(c)};padding:2px 0 2px 10px"><div class="small muted">${label}</div><div class="kpi" style="color:${c == null ? 'inherit' : ok(c)}">${val}${c == null ? '' : ' <small style="color:'+ok(c)+'">'+tick(c)+'</small>'}</div>${tgt ? `<div class="small muted">${tgt}</div>` : ''}</div>`;
+  el.insertAdjacentHTML('afterbegin', `<div class="card" style="margin-bottom:12px"><h3>READY → main wait</h3>
+    <div class="row wrap" style="gap:22px;align-items:flex-start">
+      ${cell('Median', H(a.median_h), null, `${a.n} PRs merged in the last 3 days`)}
+      ${cell('p90 (9 in 10 merged within)', H(a.p90_h), p90ok, `target: under ${w.target_p90_h} h`)}
+      ${cell('Oldest waiting now', o ? H(o.age_h) : 'none', oldok, `target: nothing older than ${Math.round(w.target_max_h / 24)} days${o ? ' · '+esc(o.branch)+(o.age_h > 24 ? ' (date approx.)' : '') : ''}`)}
+    </div>
+    <div class="small muted" style="margin-top:8px">Wait = first READY post → GitHub merge time, for PRs merged into main in the last 3 days. Last 7 days: median ${H(w.w7.median_h)}, p90 ${H(w.w7.p90_h)} (${w.w7.n} PRs). Still waiting now (${w.waiting_now.n} READY branches): median age ${H(w.waiting_now.median_h)}, p90 ${H(w.waiting_now.p90_h)}, ${w.waiting_now.over_3d} older than 3 days. ${w.no_ready_post_7d} merged PRs had no READY post and are not counted. Green ✓ = target met, red ✗ = missed.</div></div>`);
+}
 function mtRender(t, el){
   const u = t.unmerged, r = t.rate, p = t.pipeline, bl = t.backlog, lv = {good:'good', warn:'warning', bad:'critical'}[t.verdict.level] || 'warning';
   const days = t.days, last = days.slice(-7), dname = d => fmtWd.format(new Date(d.day+'T12:00:00Z'));
@@ -1206,7 +1221,7 @@ VIEWS.hunters = (c, el) => {
 };
 VIEWS.backlog = (b, el) => {
   el.innerHTML = `${sectionH('Merge & backlog', 'is the gap being handled?')}<div id="mt"><div class="muted small">Loading the merge tracker…</div></div>${sectionH('Backlog queue')}<div class="row wrap" style="margin-bottom:12px"><span class="muted small">${b.count} items · 0 = next to run · edits are audited</span><span class="grow"></span><button class="primary" id="add">Add task</button></div><div id="tbl"></div>`;
-  mtData(b).then(t => { const m = $('#mt', el); if (m) { mtRender(t, m); mtHourRender(t, m); } }).catch(e => { const m = $('#mt', el); if (m) m.innerHTML = `<div class="muted small">Merge tracker not available: ${esc(e.message)}</div>`; });
+  mtData(b).then(t => { const m = $('#mt', el); if (m) { mtRender(t, m); mtHourRender(t, m); mtWaitRender(t, m); } }).catch(e => { const m = $('#mt', el); if (m) m.innerHTML = `<div class="muted small">Merge tracker not available: ${esc(e.message)}</div>`; });
   $('#add', el).onclick = () => openDrawer('Add a backlog item', 'appended at the bottom', d => {
     d.innerHTML = `<div class="grid" style="gap:10px"><input type="text" id="bl-label" placeholder="Label, e.g. [combat] Kael dash cancel window" maxlength="200"><input type="text" id="bl-role" placeholder="Role (build, deep, feel, verify, scout…)" value="build"><textarea id="bl-task" placeholder="Task text for the worker"></textarea><div class="row"><button class="primary" id="bl-go">Add</button><span class="err" id="bl-err"></span></div></div>`;
     $('#bl-go', d).onclick = async () => { try { await api('/admin/backlog/add', {method:'POST', body:{label:$('#bl-label',d).value, role:$('#bl-role',d).value, task:$('#bl-task',d).value}}); closeDrawer(); load('backlog'); } catch(e) { $('#bl-err', d).textContent = e.message; } };
