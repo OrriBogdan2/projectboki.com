@@ -544,7 +544,16 @@ VIEWS.home = (o, el) => {
 // ---------- patches
 VIEWS.patches = (p, el) => {
   const g = p.gate, gs = p.gate_state, gt = gateTile(gs || (g ? {unknown:true,last_run:g.last_run} : null), p.sources && p.sources.gate), mgp = p.merge_gap;
-  el.innerHTML = srcLine(p.sources) + `
+  const np = p.next_patch;
+  const npCard = np ? `<div class="card" style="margin-bottom:12px"><h3>Next patch</h3>
+    <div class="row wrap" style="gap:18px;align-items:baseline"><span class="kpi">${esc(np.version||'—')}</span>
+    <span style="font-size:22px;font-weight:650">${np.target ? esc(tEST(np.target)) : 'no date set'}</span>${np.target ? `<span class="muted">${esc(ago(np.target))}</span>` : ''}</div>
+    ${np.target_note ? `<div class="sub" style="margin-top:4px">${esc(np.target_note)}</div>` : ''}
+    <div class="row wrap" style="gap:28px;margin-top:10px;align-items:flex-start">
+      <div><div class="small muted">What's in it</div>${(np.contents||[]).map(x=>`<div class="small">• ${esc(x)}</div>`).join('') || '<div class="small muted">not planned yet</div>'}</div>
+      <div><div class="small muted">Blocking it</div>${(np.blockers||[]).map(x=>`<div class="small" style="color:var(--crit)">• ${esc(x)}</div>`).join('') || '<div class="small" style="color:var(--good)">nothing</div>'}</div></div>
+    <div class="small muted" style="margin-top:8px">Last patch ${esc(np.last_tag||'—')} · ${esc(tEST(np.last_published))} (${esc(ago(np.last_published))})${np.updated ? ` · plan updated ${esc(ago(np.updated))}` : ''}</div></div>` : '';
+  el.innerHTML = srcLine(p.sources) + npCard + `
   <div class="grid tiles">
     <div class="card"><h3>Merge gate now</h3><div class="kpi">${gt[0]}</div><div class="sub">${gt[1]}</div></div>
     <div class="card"><h3>Last gate run</h3><div class="kpi">${g && g.last_run ? esc(ago(g.last_run)) : '—'}</div><div class="sub">${g ? `${esc(g.headline||'no headline')}` : ''}</div></div>
