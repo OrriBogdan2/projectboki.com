@@ -588,7 +588,7 @@ VIEWS.patches = (p, el) => {
   <div class="grid tiles">
     <div class="card"><h3>Merge gate now</h3><div class="kpi">${gt[0]}</div><div class="sub">${gt[1]}</div></div>
     <div class="card"><h3>Last gate run</h3><div class="kpi">${g && g.last_run ? esc(ago(g.last_run)) : '—'}</div><div class="sub">${g ? `${esc(g.headline||'no headline')}` : ''}</div></div>
-    <div class="card"><h3>Gate report</h3><div class="kpi">${g ? g.merged.length : '—'}<small>merged</small></div><div class="sub">${g ? `${g.skipped.length} skipped (conflicts) · report ${esc(ago(g.report_at))} · candidate ${esc(g.candidate_branch||'—')}` : ''}</div></div>
+    <div class="card"><h3>Gate report</h3><div class="kpi">${g ? g.merged.length : '—'}<small>PRs merged into main</small></div><div class="sub">${g ? `${g.skipped.length} skipped (conflicts) · report ${esc(ago(g.report_at))} · candidate ${esc(g.candidate_branch||'—')}` : ''}</div></div>
     <div class="card"><h3>Release dry-run</h3><div class="kpi">${g && g.release_dryrun ? (g.release_dryrun.ok ? badge('done','exports pass') : badge('failed','exports failing')) : '—'}</div><div class="sub">${g && g.release_dryrun ? `${g.release_dryrun.rows.map(r=>`${esc(r[0])} ${esc(r[1])}: ${esc(r[2])}`).join(' · ')} · ${esc(ago(g.release_dryrun.at))}` : ''}</div></div>
   </div>
   ${sectionH('Releases', `GitHub releases · commits from the local clone (fetched ${esc(ago(p.main_fetched))})`)}
@@ -903,18 +903,19 @@ function mtRender(t, el){
   const inTrain = p.in_train ? p.in_train.n : p.in_train_n;
   const lanesTxt = (u.lanes||[]).slice(0,3).map(l=>`${l.lane} ${l.n}`).join(' · ');
   el.innerHTML = `<div class="card" style="margin-bottom:12px;border-left:5px solid var(--${lv==='good'?'good':lv==='warning'?'warn':'crit'})"><div class="row">${dot(lv)}<b style="font-size:16px">${esc(t.verdict.text)}</b></div>
-    ${t.verdict.red_flag ? `<div class="row" style="margin-top:6px;color:var(--crit)">${dot('critical')}<b>Nothing merged in the last 24 hours.</b>&nbsp;Last merge ${esc(tWk(t.last_merge ? t.last_merge.t : t.last_merge_t))}.</div>` : ''}
+    ${t.verdict.red_flag ? `<div class="row" style="margin-top:6px;color:var(--crit)">${dot('critical')}<b>Nothing merged into main in the last 24 hours.</b>&nbsp;Last merge ${esc(tWk(t.last_merge ? t.last_merge.t : t.last_merge_t))}.</div>` : ''}
     <div class="small muted" style="margin-top:4px">READY branches are finished work waiting for the merge gate. Updated ${esc(ago(t.at))}.</div></div>
   <div class="grid tiles">
+    ${t.states && !t.states.error ? (s => `<div class="card" style="grid-column:1/-1"><h3>Where the PRs are now (${s.open_prs} open${s.no_pr && s.no_pr.n ? ' + '+s.no_pr.n+' READY branches with no PR' : ''}; each PR in one bucket${s.check && !s.check.ok ? ' — DOES NOT ADD UP' : ''})</h3><div class="small">${s.buckets.map(b => `<b>${esc(b.label)}</b> ${b.n}`).join(' · ')} · <b>PARKED</b> ${s.parked.open} (${s.parked.bring_back} bring-back) · <b>BACKLOG</b> ${s.backlog.n} tasks <span class="muted">(queued work, not unmerged code)</span></div></div>`)(t.states) : ''}
     <div class="card"><h3>Waiting to merge</h3><div class="kpi">${u.n}<small>READY branches</small></div><div class="sub">oldest since ${esc(u.oldest_t ? fmtWd.format(new Date(u.oldest_t*1000+43200000))+' '+tDay(u.oldest_t+43200) : '—')}${lanesTxt ? ' · '+esc(lanesTxt) : ''}</div></div>
-    <div class="card"><h3>In vs out, per day</h3><div class="kpi">${Math.round(r.ready_day)}<small>new READY</small> ${Math.round(r.merged_day)}<small>merged</small></div><div class="sub">3-day average (headline window) · ${r.closed_day!=null ? Math.round(r.closed_day)+' closed or retired without merging · ' : ''}waiting count ${r.change_day>=0?'+':''}${Math.round(r.change_day)}/day</div></div>
-    <div class="card"><h3>Merged, last 24 h</h3><div class="kpi">${t.merged_24h}<small>branches</small></div><div class="sub">last merge ${esc(ago(t.last_merge ? t.last_merge.t : t.last_merge_t))}</div></div>
+    <div class="card"><h3>In vs out, per day</h3><div class="kpi">${Math.round(r.ready_day)}<small>new READY</small> ${Math.round(r.merged_day)}<small>merged</small></div><div class="sub">3-day average (headline window) · ${r.closed_day!=null ? Math.round(r.closed_day)+' left the list unmerged (parked, retired, replaced) · ' : ''}waiting count ${r.change_day>=0?'+':''}${Math.round(r.change_day)}/day</div></div>
+    <div class="card"><h3>PRs merged into main, last 24 h</h3><div class="kpi">${t.merged_24h}<small>PRs</small></div><div class="sub">last merge ${esc(ago(t.last_merge ? t.last_merge.t : t.last_merge_t))}</div></div>
     <div class="card"><h3>Backlog</h3><div class="kpi">${bl.queued}<small>tasks queued</small></div><div class="sub">${bl.oldest ? 'oldest: '+esc(bl.oldest.label)+', waiting '+esc(dur(now()-bl.oldest.since)) : bl.oldest_since ? 'oldest waiting '+esc(dur(now()-bl.oldest_since)) : ''}</div></div>
     ${t.parked && t.parked.n != null ? (pk => `<div class="card"><h3>Parked</h3><div class="kpi">${pk.n}<small>branches set aside</small></div><div class="sub">${pk.bring_back} being brought back · ${pk.landed} of those in main${pk.bring_back && pk.landed >= pk.bring_back ? ' (all)' : ''}${(pk.bundles||[]).length ? ' · bundle '+esc(pk.bundles.map(x=>x.state).join(', ')) : ''}<br>restore any: tell coord the name${pk.since ? ' · parked '+esc(pk.since.slice(0,10)) : ''}</div></div>`)(t.parked) : ''}
   </div>
   <div class="grid cols2" style="margin-top:12px">
     <div class="card"><h3>Waiting to merge, end of each day</h3><div class="chart" id="mt-u"></div><div class="small muted">Faded = rebuilt from branch history (no live count that day). Live counts are recorded every few minutes from now on.</div></div>
-    <div class="card"><h3>New READY vs merged, per day</h3><div class="chart" id="mt-io"></div></div>
+    <div class="card"><h3>New READY vs PRs merged into main, per day</h3><div class="chart" id="mt-io"></div></div>
   </div>
   <div class="grid cols2" style="margin-top:12px">
     <div class="card"><h3>Waiting by lane</h3><div class="small muted" style="margin-bottom:6px">lane = guessed from the branch name</div>${hbars((u.lanes||[]).map(l=>({label:l.lane, v:l.n, fmt:`${l.n}`})))}</div>
@@ -933,7 +934,7 @@ function mtRender(t, el){
   </div>
   ${u.oldest ? `${sectionH('Oldest READY branches not merged', 'admin only')}<div class="card"><div class="list">${u.oldest.map(o=>`<div class="row small"><span class="t" style="width:120px">${esc(o.t ? fmtWd.format(new Date(o.t*1000+43200000))+' '+tDay(o.t+43200) : 'no date')}</span><span class="mono ell grow">${esc(o.branch)}</span><span class="muted">${esc(o.lane)}</span></div>`).join('')}</div></div>` : `<div class="small muted" style="margin-top:8px">Branch names show here once the Control Room API is restarted.</div>`}`;
   groupBars($('#mt-u', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {u: d.unmerged}, faint: d.est, note: d.est ? 'rebuilt from history' : ''})), [{k:'u', label:'waiting to merge', color:'var(--accent)', faint:true}], {h:170});
-  groupBars($('#mt-io', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {r: d.ready, m: d.merged}})), [{k:'r', label:'new READY', color:'var(--c-yellow)'}, {k:'m', label:'merged', color:'var(--good)'}], {h:170});
+  groupBars($('#mt-io', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {r: d.ready, m: d.merged}})), [{k:'r', label:'new READY', color:'var(--c-yellow)'}, {k:'m', label:'PRs merged', color:'var(--good)'}], {h:170});
   groupBars($('#mt-bl', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}${d.bl_queue!=null?' · queue '+d.bl_queue:''}`, parts: {a: d.bl_added, s: d.bl_started, f: d.bl_finished}})), [{k:'a', label:'added (about)', color:'var(--c-magenta)'}, {k:'s', label:'started', color:'var(--accent)'}, {k:'f', label:'finished', color:'var(--good)'}], {h:170});
 }
 VIEWS.hunters = (c, el) => {
