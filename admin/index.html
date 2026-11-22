@@ -840,6 +840,22 @@ async function mtData(b){
   if (!m) throw new Error('tracker not found'); return JSON.parse(m[1]);
 }
 const tWk = e => e ? fmtWd.format(new Date(e*1000)) + ' ' + tEST(e) : '—';
+// Owner 11-22: "last hour" gain/loss for waiting-to-merge + one waiting-to-merge number per hour (merge_tracker hourly_info).
+// Up = gain (worse, red), down = loss (better, green).
+function mtHourRender(t, el){
+  if (!t.last_hour || !t.hourly) return;
+  const lh = t.last_hour, sg = c => c == null ? '—' : (c > 0 ? '+' + c : String(c)), col = c => c == null ? 'var(--muted)' : c > 0 ? 'var(--crit)' : c < 0 ? 'var(--good)' : 'var(--muted)';
+  const word = c => c == null ? 'no sample an hour ago' : c > 0 ? `gain of ${c} (worse)` : c < 0 ? `loss of ${-c} (better)` : 'no change';
+  const hrs = t.hourly.slice().reverse();
+  const row = h => `<tr><td>${esc(fmtT.format(new Date(h.t*1000)))}–${esc(fmtT.format(new Date((h.t+3600)*1000)))}</td><td class="num"><b>${h.waiting ?? '—'}</b></td><td class="num" style="color:${col(h.change)}">${sg(h.change)}</td><td class="num">${h.new}</td><td class="num">${h.merged}</td></tr>`;
+  el.insertAdjacentHTML('afterbegin', `<div class="card" style="margin-bottom:12px"><h3>Last hour: waiting to merge</h3>
+    <div class="row wrap" style="gap:18px;align-items:baseline"><span class="kpi">${lh.waiting}</span><span style="font-size:18px;font-weight:650;color:${col(lh.change)}">${sg(lh.change)}</span>
+    <span class="muted">${lh.hour_ago ?? '—'} an hour ago → ${lh.waiting} now: ${word(lh.change)} · ${lh.new} new READY · ${lh.merged} merged</span></div>
+    <details style="margin-top:10px" open><summary class="small muted">Hourly, last 24 h (ET, newest first): waiting at the end of each hour</summary>
+    <table class="small" style="margin-top:6px;width:100%;max-width:560px"><thead><tr><th style="text-align:left">Hour</th><th class="num">Waiting</th><th class="num">Gain / loss</th><th class="num">New READY</th><th class="num">Merged</th></tr></thead>
+    <tbody>${hrs.map(row).join('')}</tbody></table></details>
+    <div class="small muted" style="margin-top:6px">Waiting = READY branches not on main yet (the merge gap). Gain = went up, loss = went down; a change can differ from new − merged when branches close, retire or post a newer commit.</div></div>`);
+}
 function mtRender(t, el){
   const u = t.unmerged, r = t.rate, p = t.pipeline, bl = t.backlog, lv = {good:'good', warn:'warning', bad:'critical'}[t.verdict.level] || 'warning';
   const days = t.days, last = days.slice(-7), dname = d => fmtWd.format(new Date(d.day+'T12:00:00Z'));
@@ -1149,7 +1165,7 @@ VIEWS.hunters = (c, el) => {
 };
 VIEWS.backlog = (b, el) => {
   el.innerHTML = `${sectionH('Merge & backlog', 'is the gap being handled?')}<div id="mt"><div class="muted small">Loading the merge tracker…</div></div>${sectionH('Backlog queue')}<div class="row wrap" style="margin-bottom:12px"><span class="muted small">${b.count} items · 0 = next to run · edits are audited</span><span class="grow"></span><button class="primary" id="add">Add task</button></div><div id="tbl"></div>`;
-  mtData(b).then(t => { const m = $('#mt', el); if (m) mtRender(t, m); }).catch(e => { const m = $('#mt', el); if (m) m.innerHTML = `<div class="muted small">Merge tracker not available: ${esc(e.message)}</div>`; });
+  mtData(b).then(t => { const m = $('#mt', el); if (m) { mtRender(t, m); mtHourRender(t, m); } }).catch(e => { const m = $('#mt', el); if (m) m.innerHTML = `<div class="muted small">Merge tracker not available: ${esc(e.message)}</div>`; });
   $('#add', el).onclick = () => openDrawer('Add a backlog item', 'appended at the bottom', d => {
     d.innerHTML = `<div class="grid" style="gap:10px"><input type="text" id="bl-label" placeholder="Label, e.g. [combat] Kael dash cancel window" maxlength="200"><input type="text" id="bl-role" placeholder="Role (build, deep, feel, verify, scout…)" value="build"><textarea id="bl-task" placeholder="Task text for the worker"></textarea><div class="row"><button class="primary" id="bl-go">Add</button><span class="err" id="bl-err"></span></div></div>`;
     $('#bl-go', d).onclick = async () => { try { await api('/admin/backlog/add', {method:'POST', body:{label:$('#bl-label',d).value, role:$('#bl-role',d).value, task:$('#bl-task',d).value}}); closeDrawer(); load('backlog'); } catch(e) { $('#bl-err', d).textContent = e.message; } };
