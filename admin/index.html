@@ -885,16 +885,16 @@ const tWk = e => e ? fmtWd.format(new Date(e*1000)) + ' ' + tEST(e) : '—';
 function mtHourRender(t, el){
   if (!t.last_hour || !t.hourly) return;
   const lh = t.last_hour, sg = c => c == null ? '—' : (c > 0 ? '+' + c : String(c)), col = c => c == null ? 'var(--muted)' : c > 0 ? 'var(--crit)' : c < 0 ? 'var(--good)' : 'var(--muted)';
-  const word = c => c == null ? 'no sample an hour ago' : c > 0 ? `gain of ${c} (worse)` : c < 0 ? `loss of ${-c} (better)` : 'no change';
+  const word = c => c == null ? 'no sample an hour ago' : c > 0 ? `up ${c} (worse)` : c < 0 ? `down ${-c} (better)` : 'no change';
   const hrs = t.hourly.slice().reverse();
-  const row = h => `<tr><td>${esc(fmtT.format(new Date(h.t*1000)))}–${esc(fmtT.format(new Date((h.t+3600)*1000)))}</td><td class="num"><b>${h.waiting ?? '—'}</b></td><td class="num" style="color:${col(h.change)}">${sg(h.change)}</td><td class="num">${h.new}</td><td class="num">${h.merged}</td></tr>`;
+  const row = h => `<tr><td>${esc(fmtT.format(new Date(h.t*1000)))}–${esc(fmtT.format(new Date((h.t+3600)*1000)))}</td><td class="num"><b>${h.waiting ?? '—'}</b></td><td class="num" style="color:${col(h.change)}">${sg(h.change)}${h.other ? ` <span class="muted" title="joined or dropped off the list with no dated READY post or merge">(${sg(h.other)} other)</span>` : ''}</td><td class="num">${h.new}</td><td class="num">${h.left ?? '—'}${h.left != null && h.landed != null && h.left !== h.landed ? ` <span class="muted">(${h.landed} landed)</span>` : ''}</td><td class="num">${h.merged}</td></tr>`;
   el.insertAdjacentHTML('afterbegin', `<div class="card" style="margin-bottom:12px"><h3>Last hour: waiting to merge</h3>
     <div class="row wrap" style="gap:18px;align-items:baseline"><span class="kpi">${lh.waiting}</span><span style="font-size:18px;font-weight:650;color:${col(lh.change)}">${sg(lh.change)}</span>
-    <span class="muted">${lh.hour_ago ?? '—'} an hour ago → ${lh.waiting} now: ${word(lh.change)} · ${lh.new} new READY · ${lh.merged} merged</span></div>
+    <span class="muted">${lh.hour_ago ?? '—'} an hour ago → ${lh.waiting} now: ${word(lh.change)} · ${lh.new} new READY branches − ${lh.left} branches landed or closed · ${lh.merged} PRs merged${lh.other ? ` · ${sg(lh.other)} other` : ''}</span></div>
     <details style="margin-top:10px" open><summary class="small muted">Hourly, last 24 h (ET, newest first): waiting at the end of each hour</summary>
-    <table class="small" style="margin-top:6px;width:100%;max-width:560px"><thead><tr><th style="text-align:left">Hour</th><th class="num">Waiting</th><th class="num">Gain / loss</th><th class="num">New READY</th><th class="num">Merged</th></tr></thead>
+    <table class="small" style="margin-top:6px;width:100%;max-width:640px"><thead><tr><th style="text-align:left">Hour</th><th class="num">Waiting</th><th class="num">Change</th><th class="num">New READY branches</th><th class="num">Branches landed / closed</th><th class="num">PRs merged</th></tr></thead>
     <tbody>${hrs.map(row).join('')}</tbody></table></details>
-    <div class="small muted" style="margin-top:6px">Waiting = READY branches not on main yet (the merge gap). Gain = went up, loss = went down; a change can differ from new − merged when branches close, retire or post a newer commit.</div></div>`);
+    <div class="small muted" style="margin-top:6px">Change = new branches minus branches that landed or closed. One merged PR can carry many branches (bundles). "Branches landed / closed" counts branches that landed on main plus branches closed or retired without landing (the number in brackets is the part that landed). "PRs merged" counts real GitHub PRs only. "other" = branches that joined or dropped off the list with no dated READY post or merge (archived, set aside, restored); it makes the row add up.</div></div>`);
 }
 // Owner 11-22 headline: READY -> main wait (merge_tracker wait_info). Green/red per owner target: p90 < 24 h, nothing waiting older than 3 days.
 function mtWaitRender(t, el){
