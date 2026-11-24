@@ -112,6 +112,20 @@ pre{background:var(--surface2);border:1px solid var(--line);border-radius:8px;pa
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}.toolbar input[type=search]{max-width:280px}
 .toolbar .cnt{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
 
+/* patch notes (owner 11-24) */
+.pn-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.pn-bar input[type=search]{flex:1 1 220px;min-width:0}
+.pn-jump{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.pn-jump button.chip{flex:0 0 auto;font-size:13px;cursor:pointer;font-family:inherit}
+.pn-card{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);margin-bottom:8px;scroll-margin-top:70px;min-width:0}
+.pn-card>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}.pn-card>summary::-webkit-details-marker{display:none}
+.pn-card>summary::before{content:'\25B8';color:var(--muted);font-size:13px;width:12px}.pn-card[open]>summary::before{content:'\25BE'}
+.pn-v{font-weight:650;font-size:16px}.pn-d{font-size:13px;color:var(--muted);white-space:nowrap}.pn-n{font-size:13px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.pn-h{flex:1 1 100%;font-size:14px;color:var(--ink2);padding-left:24px;margin-top:-2px}
+.pn-body{padding:0 14px 12px 14px}.pn-sec{border-left:3px solid var(--line);padding-left:10px;margin:10px 0 0}.pn-sec h4{margin:0 0 2px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+.pn-sec ul{margin:0;padding-left:18px}.pn-sec li{margin:3px 0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.pn-sec.s-new{border-left-color:var(--good)}.pn-sec.s-fix{border-left-color:var(--crit)}.pn-sec.s-perf{border-left-color:var(--serious)}.pn-sec.s-art{border-left-color:var(--accent)}
+.pn-card mark{background:var(--accent);color:var(--bg);border-radius:3px;padding:0 2px}
+@media (max-width:719px){.pn-n{margin-left:24px}.pn-card>summary{padding:10px 12px}.pn-body{padding:0 12px 10px}}
+
 /* tables */
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -597,6 +611,7 @@ VIEWS.patches = (p, el) => {
   ${sectionH('READY queue', `${mgp ? `${mgp.today} waiting to merge (merge gap, ${mgp.yesterday} yesterday)` : 'merge gap not available'} · the lines below are the latest ${p.ready.length} in EXT_TO_MAIN.md, newest first`)}<div id="ready"></div>
   ${sectionH('main (first-parent log)')}<div id="main"></div>`;
   const fs = fstate('patches');
+  patchNotesMount(el, p, fs);
   table($('#rel', el), {state: fs.rel = fs.rel || {sort:'published',dir:-1}, rows: p.releases, onRow: r => openRelease(r, p),
     cols: [{k:'tag',label:'Version',get:r=>r.tag,lead:true,render:r=>`<b>${esc(r.tag)}</b>${r.prerelease?' '+badge('other','pre'):''}`},
       {k:'published',label:'Published (ET)',get:r=>r.published,num:true,render:r=>esc(tEST(r.published))},
@@ -610,6 +625,40 @@ VIEWS.patches = (p, el) => {
     onRow: r => openDrawer(`<span class="mono">${esc(r.branch)}</span>`, `READY ${esc(r.sha)}`, b => b.innerHTML = `<p>${esc(r.what)}</p>`)});
   table($('#main', el), {state: fs.main = fs.main || {sort:'t',dir:-1}, rows: p.main, cols: [{k:'sha',label:'SHA',get:r=>r.sha,render:r=>`<span class="mono">${esc(r.sha)}</span>`},{k:'t',label:'When (ET)',get:r=>r.t,num:true,render:r=>esc(tEST(r.t))},{k:'msg',label:'Message',get:r=>r.msg,lead:true,render:r=>`<span class="ell">${esc(r.msg)}</span>`}]});
 };
+// ---------- patch notes (owner 11-24): one collapsible card per release, newest first, with search and jump chips.
+// State (search text, which cards are open) lives in fstate('patches').notes so the 60 s refresh does not reset it.
+function patchNotesMount(el, p, fs){
+  const notes = p.patch_notes || [], S = fs.notes = fs.notes || {open: {}, q: ''};
+  const CLS = {'New':'s-new','Fixes':'s-fix','Performance':'s-perf','Art & models':'s-art'};
+  const box = document.createElement('div'); box.id = 'pn';
+  const first = el.querySelector('.grid'); first ? first.before(box) : el.appendChild(box);
+  if (!notes.length){ box.innerHTML = sectionH('Patch notes') + '<div class="card muted small" style="margin-bottom:12px">No patch notes yet. The patch-notes tool writes one file per release into the data folder.</div>'; return; }
+  const hl = (t, q) => { const s = esc(t); if (!q) return s; const i = s.toLowerCase().indexOf(esc(q).toLowerCase()); return i < 0 ? s : s.slice(0,i) + '<mark>' + s.slice(i, i+esc(q).length) + '</mark>' + s.slice(i+esc(q).length); };
+  box.innerHTML = sectionH('Patch notes', `newest first · notes written ${esc(ago(p.patch_notes_at))} · checked every 60 s`) + `
+    <div class="pn-bar"><input type="search" id="pnq" placeholder="Search the notes (a hunter, a fix, a word)…" aria-label="Search patch notes" value="${esc(S.q)}"><button id="pnopen">Open all</button><button id="pnshut">Close all</button><span class="small muted" id="pncnt"></span></div>
+    <div class="pn-jump" id="pnjump">${notes.map(n => `<button class="chip" data-tag="${esc(n.tag)}">${esc(n.tag)}</button>`).join('')}</div>
+    <div id="pnlist" style="margin-bottom:12px"></div>`;
+  const list = box.querySelector('#pnlist');
+  const draw = () => {
+    const q = (S.q || '').trim(), ql = q.toLowerCase(); let hits = 0, cards = 0;
+    list.innerHTML = notes.map((n, i) => {
+      const headHit = ql && (n.tag + ' ' + n.headline).toLowerCase().includes(ql);
+      const secs = n.sections.map(s => ({t: s.title, b: s.bullets.filter(b => !ql || headHit || b.toLowerCase().includes(ql))})).filter(s => s.b.length);
+      if (ql && !secs.length && !headHit) return '';
+      cards++; const nb = secs.reduce((a, s) => a + s.b.length, 0); hits += ql ? nb : 0;
+      const open = ql ? true : (S.open[n.tag] != null ? S.open[n.tag] : i === 0);
+      return `<details class="pn-card" id="pn-${esc(n.tag)}" data-tag="${esc(n.tag)}"${open ? ' open' : ''}><summary><span class="pn-v">${esc(n.tag)}</span><span class="pn-d">${esc(n.published ? tDay(n.published) : (n.date || ''))}</span><span class="pn-n">${nb} note${nb === 1 ? '' : 's'}</span><span class="pn-h">${hl(n.headline, q)}</span></summary>
+        <div class="pn-body">${secs.map(s => `<div class="pn-sec ${CLS[s.t] || ''}"><h4>${esc(s.t)}</h4><ul>${s.b.map(b => `<li>${hl(b, q)}</li>`).join('')}</ul></div>`).join('')}</div></details>`;
+    }).join('') || '<div class="empty">Nothing matches that.</div>';
+    box.querySelector('#pncnt').textContent = ql ? `${hits} match${hits === 1 ? '' : 'es'} in ${cards} patch${cards === 1 ? '' : 'es'}` : `${notes.length} patches`;
+    list.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => { if (!(S.q || '').trim()) S.open[d.dataset.tag] = d.open; }));
+  };
+  draw();
+  const q = box.querySelector('#pnq'); q.oninput = () => { S.q = q.value; draw(); };
+  box.querySelector('#pnopen').onclick = () => { S.q = ''; q.value = ''; notes.forEach(n => S.open[n.tag] = true); draw(); };
+  box.querySelector('#pnshut').onclick = () => { S.q = ''; q.value = ''; notes.forEach(n => S.open[n.tag] = false); draw(); };
+  box.querySelector('#pnjump').onclick = e => { const b = e.target.closest('button[data-tag]'); if (!b) return; S.q = ''; q.value = ''; S.open[b.dataset.tag] = true; draw(); const d = list.querySelector(`[data-tag="${CSS.escape(b.dataset.tag)}"]`); if (d) d.scrollIntoView({behavior: 'smooth', block: 'start'}); };
+}
 const AREA_RX = {feel:/\[feel\]|game feel|supervive|camera|dash|input buffer|movement/i,farm:/\[farm\]|farm|chao|raising|bond|hob/i,combat:/\[combat\]|combat|kit|damage|ttk|parity/i,anim:/\[anim\]|anim|gait|idle|walk|locomotion|clip/i,vfx:/\[vfx\]|vfx|particle|effect/i,sfx:/\[sfx\]|sfx|sound|audio/i,ui:/\[ui\]|\bui\b|hud|menu|inventory/i,tutorial:/\[tutorial\]|tutorial|onboarding|new-player/i};
 function areaOf(s){ for (const [a,rx] of Object.entries(AREA_RX)) if (rx.test(s)) return a; return 'other'; }
 function openRelease(r, p){
