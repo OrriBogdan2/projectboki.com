@@ -1078,6 +1078,24 @@ VIEWS.hunters = (c, el) => {
   const drafts = window._hdraft = window._hdraft || {}, msgs = window._hmsg = window._hmsg || {};
   const badge = (sc, label, big, extra) => `<div class="hbadge${big ? ' big' : ''}"><div class="hnum" style="color:${sCol(sc && sc.score)}">${sc ? f1(sc.score) : '<span class="hnone">not scored yet</span>'}${sc ? '<small>/10</small>' : ''}</div><div class="small muted">${esc(label)}${sc ? ' ' + esc(rTime(sc.at)) : ''}</div>${extra || ''}</div>`;
   const kindWord = k => k === 'live' ? 'live model' : 'new attempt';
+  // Per-part table (owner 11-23): every part of the in-game glb scored at game view and close up, clipping pairs, flat hands; worst first. Colours: red under 7, amber 7 to 8.9, green 9+.
+  const pCol = x => x == null ? 'var(--muted)' : x < 7 ? 'var(--crit)' : x < 9 ? 'var(--c-yellow)' : 'var(--good)';
+  const pNum = x => `<b style="color:${pCol(x)}">${x == null ? '—' : f1(x)}</b>`;
+  const pAge = e => { if (!e) return ''; const d = Math.max(0, Date.now() / 1000 - e), D = Math.floor(d / 86400), H = Math.floor(d % 86400 / 3600); return D ? `${D} d ${H} h old` : H ? `${H} h old` : `${Math.max(1, Math.floor(d / 60))} min old`; };
+  const partsBox = h => {
+    const P = h.parts; if (!P) return '';
+    const ok = P.status === 'ok', stale = P.status === 'stale', shown = open['p:' + h.key] ? P.rows : P.rows.slice(0, 6);
+    const geo = P.geo === 'ok' ? 'geo clip numbers: measured' : P.geo === 'stale' ? 'geo: measured on an older model (stale)' : 'geo: pending';
+    const head = P.status === 'none' ? `<span class="badge" style="color:var(--muted)">not judged yet</span>` :
+      `<span class="badge" style="color:${stale ? 'var(--crit)' : 'var(--good)'}">${stale ? 'STALE: the model changed on main since this was judged' : 'judged on the model in the game now'}</span><span class="small muted">model ${esc((P.judged_blob || '').slice(0, 8))}, judged ${esc(rTime(P.judged_at))} EST, ${esc(pAge(P.judged_at))}${P.live_at ? `; glb on main since ${esc(rTime(P.live_at))}` : ''}${P.model ? ' · by ' + esc(P.model) : ''}</span>`;
+    const cl = r => r.clips_into.length ? r.clips_into.map(c => `<span style="color:${(c.cm || 0) >= 2 || c.held ? 'var(--crit)' : 'var(--c-yellow)'}">${esc(c.other)}${c.cm != null ? ' ' + f1(c.cm) + ' cm' : ''}</span>`).join(', ') : '<span class="muted">none</span>';
+    const rowsH = shown.map(r => `<tr><td><b>${esc(r.part)}</b></td><td>${pNum(r.game)}</td><td>${pNum(r.close)}</td><td>${cl(r)}</td><td>${r.flat_hand == null ? '<span class="muted">—</span>' : r.flat_hand ? '<b style="color:var(--crit)">Y</b>' : 'N'}</td><td class="small">${esc(r.issue)}</td></tr>`).join('');
+    const sum = P.n ? `<span class="small muted">${P.n} parts · worst ${P.worst != null ? `<b style="color:${pCol(P.worst)}">${f1(P.worst)}</b> (${esc(P.worst_part)})` : '—'} · ${P.clip_pairs} clipping ${P.clip_pairs === 1 ? 'pair' : 'pairs'} · ${P.flat_hands} flat ${P.flat_hands === 1 ? 'hand' : 'hands'} · ${esc(geo)}</span>` : '';
+    return `<div class="hparts"><div class="hsec">Parts, worst first ${head}</div>${sum}${P.note ? `<div class="small muted">${esc(P.note)}</div>` : ''}
+      ${P.n ? `<div class="hptw"><table class="hpt"><thead><tr><th>Part</th><th>Game</th><th>Close-up</th><th>Clips into</th><th>Flat hand</th><th>Issue</th></tr></thead><tbody>${rowsH}</tbody></table></div>` : ''}
+      ${P.rows.length > 6 ? `<button type="button" class="hpmore" data-hk="${esc(h.key)}">${open['p:' + h.key] ? 'Show the worst 6 only' : `Show all ${P.rows.length} parts`}</button>` : ''}
+      ${P.sheet ? `<div class="hbox hsmall" style="max-width:520px;aspect-ratio:auto">${zoomBtn(h.key, P.sheet, P.sheet, h.name + ' parts sheet', `<img alt="${esc(h.name)} parts: game camera, eye level, knee level, hands and face, idle, run, attack" ${src(P.sheet)}>`)}</div>` : ''}</div>`;
+  };
   const ratingBox = h => {
     const r = h.rating, d = drafts[h.key] || {};
     return `<div class="hrate"><div class="hmine">${r ? `<b>Your rating ${f1(r.score)}</b> <span class="muted">(${esc(rTime(r.ts))})</span>${r.note ? `<div class="small">${esc(r.note)}</div>` : ''}` : '<span class="muted">You have not rated this one yet</span>'}</div>
@@ -1142,6 +1160,7 @@ VIEWS.hunters = (c, el) => {
       </div>
       <div class="hscores">${badge(sc.ingame, 'In game now (game view)', true)}${badge(sc.attempt, 'Newest attempt (game view)', false, before)}${(sc.closeup || sc.closeup_live) ? `<div class="hbadge"><div class="hnum" style="color:${sCol(sc.closeup && sc.closeup.score)}">${sc.closeup ? f1(sc.closeup.score) : '—'}<small>/10</small></div><div class="small muted">Close-up check (polish list, not a blocker)${sc.closeup_live ? ' · live model ' + f1(sc.closeup_live.score) : ''}${sc.closeup ? ' ' + esc(rTime(sc.closeup.at)) : ''}</div></div>` : ''}</div>
       ${ratingBox(h)}
+      ${partsBox(h)}
       <div class="hhead" data-hk="${esc(h.key)}" role="button" tabindex="0" aria-expanded="${open[h.key] ? 'true' : 'false'}" style="margin-top:8px">
         <div class="small muted">Round ${h.rounds_total} so far, ${h.rounds_today} today. ${prTxt(h.pr)}.${lj ? ` Latest try: ${esc(lj.state === 'running' ? 'running now' : lj.state)}, ${esc(tEST(lj.start))}.` : ''}${h.awaiting_review ? ' A newer try is waiting for its review.' : ''}</div>
         ${v ? `<div class="small" style="margin-top:6px"><b style="color:${vCol(v.verdict)}">Last review ${vWord(v.verdict)}</b> <span class="muted">${esc(tEST(v.at))}</span></div>${notes(v.notes)}` : ''}
@@ -1171,6 +1190,7 @@ VIEWS.hunters = (c, el) => {
     .hleg{margin-top:2px}.hsq,.hci{display:inline-block;width:9px;height:9px;background:var(--muted);vertical-align:baseline;margin:0 2px 0 6px}.hsq{border-radius:2px}.hci{border-radius:50%}
     .hr{display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.hr.live{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent)}
     .hrimgs{display:flex;gap:6px;flex:0 0 auto}.hbox.hth{width:64px;height:64px;aspect-ratio:auto;flex:0 0 auto}.hrbody{flex:1 1 180px;min-width:0}.hrtop{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.hrnote{margin-top:2px;overflow-wrap:anywhere}
+    .hparts{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}.hptw{overflow-x:auto;margin-top:4px}.hpt{border-collapse:collapse;width:100%;min-width:600px;font-size:12.5px}.hpt td:last-child{min-width:240px}.hpt th{text-align:left;font-weight:600;color:var(--muted);padding:3px 8px 3px 0;white-space:nowrap}.hpt td{padding:3px 8px 3px 0;border-top:1px solid var(--line);vertical-align:top}.hpmore{margin-top:6px}
     .hmore{margin-top:6px}.hlive .hdot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:hpulse 1.4s ease-in-out infinite}@keyframes hpulse{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.hlive .hdot{animation:none}}
     .hround:last-child{border-bottom:0}.hgrid{display:grid;gap:14px;margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
   </style>
@@ -1204,6 +1224,7 @@ VIEWS.hunters = (c, el) => {
       render();
     };
   });
+  el.querySelectorAll('.hpmore').forEach(b => b.onclick = () => { open['p:' + b.dataset.hk] = !open['p:' + b.dataset.hk]; render(); });
   el.querySelectorAll('.hmore').forEach(b => b.onclick = () => { open[b.dataset.hk] = !open[b.dataset.hk]; render(); });
   el.querySelectorAll('.hzoom').forEach(b => b.onclick = () => {
     const h = c.hunters.find(x => x.key === b.dataset.hk); if (!h) return;
