@@ -979,7 +979,7 @@ function mtRender(t, el){
   </div>
   <div class="grid cols2" style="margin-top:12px">
     <div class="card"><h3>Waiting to merge, end of each day</h3><div class="chart" id="mt-u"></div><div class="small muted">Faded = rebuilt from branch history (no live count that day). Live counts are recorded every few minutes from now on.</div></div>
-    <div class="card"><h3>New READY vs PRs merged into main, per day</h3><div class="chart" id="mt-io"></div></div>
+    <div class="card"><h3>New READY vs PRs merged into main, per day</h3><div class="small muted">one PR can carry many branches: blue = branches that reached main inside the green PRs</div><div class="chart" id="mt-io"></div></div>
   </div>
   <div class="grid cols2" style="margin-top:12px">
     <div class="card"><h3>Waiting by lane</h3><div class="small muted" style="margin-bottom:6px">lane = guessed from the branch name</div>${hbars((u.lanes||[]).map(l=>({label:l.lane, v:l.n, fmt:`${l.n}`})))}</div>
@@ -998,7 +998,7 @@ function mtRender(t, el){
   </div>
   ${u.oldest ? `${sectionH('Oldest READY branches not merged', 'admin only')}<div class="card"><div class="list">${u.oldest.map(o=>`<div class="row small"><span class="t" style="width:120px">${esc(o.t ? fmtWd.format(new Date(o.t*1000+43200000))+' '+tDay(o.t+43200) : 'no date')}</span><span class="mono ell grow">${esc(o.branch)}</span><span class="muted">${esc(o.lane)}</span></div>`).join('')}</div></div>` : `<div class="small muted" style="margin-top:8px">Branch names show here once the Control Room API is restarted.</div>`}`;
   groupBars($('#mt-u', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {u: d.unmerged}, faint: d.est, note: d.est ? 'rebuilt from history' : ''})), [{k:'u', label:'waiting to merge', color:'var(--accent)', faint:true}], {h:170});
-  groupBars($('#mt-io', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {r: d.ready, m: d.merged}})), [{k:'r', label:'new READY', color:'var(--c-yellow)'}, {k:'m', label:'PRs merged', color:'var(--good)'}], {h:170});
+  groupBars($('#mt-io', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}`, parts: {r: d.ready, m: d.merged, b: Math.max(0, (d.left_gap||0) - ((d.left_unmerged||{}).total||0))}, note: `${d.merged} PRs carried ${Math.max(0, (d.left_gap||0) - ((d.left_unmerged||{}).total||0))} branches`})), [{k:'r', label:'new READY', color:'var(--c-yellow)'}, {k:'m', label:'PRs merged', color:'var(--good)'}, {k:'b', label:'branches landed (inside those PRs)', color:'var(--c-cory)'}], {h:170});
   groupBars($('#mt-bl', el), days.map(d => ({label: dname(d).slice(0,2), title: `${dname(d)} ${d.day}${d.bl_queue!=null?' · queue '+d.bl_queue:''}`, parts: {a: d.bl_added, s: d.bl_started, f: d.bl_finished}})), [{k:'a', label:'added (about)', color:'var(--c-magenta)'}, {k:'s', label:'started', color:'var(--accent)'}, {k:'f', label:'finished', color:'var(--good)'}], {h:170});
 }
 VIEWS.hunters = (c, el) => {
