@@ -798,7 +798,7 @@ VIEWS.patches = (p, el) => {
     ${stat({label:'Merge run now', value: esc(gw.head), unit: gw.unit, v: gw.v, word: gw.word, line: gw.line, sub: gw.fin})}
     ${stat({label:'Last test report', value: g && g.last_run ? esc(ago(g.last_run)) : '—', line: g ? esc(plain(g.headline||'no headline')) : ''})}
     ${stat({label:'Merged in that run', value: g ? g.merged.length : '—', unit:'branches into main', line: g ? `${g.skipped.length} skipped (conflicts) · report ${esc(ago(g.report_at))}` : '', sub: g ? `<span class="mono">${esc(g.candidate_branch||'—')}</span>` : ''})}
-    ${stat({label:'Release build check', value: dr ? (dr.ok ? 'Pass' : 'Failing') : '—', v: dr ? (dr.ok ? 'good' : 'bad') : '', word: dr ? (dr.ok ? 'Exports build' : 'Exports broken') : '', line: dr ? esc(ago(dr.at)) : '', sub: dr ? dr.rows.map(r=>`${esc(r[0])} ${esc(r[1])}: ${esc(r[2])}`).join(' · ') : ''})}
+    ${stat({label:'Release build check', value: dr ? (dr.ok == null ? 'Running' : dr.ok ? 'Pass' : 'Failing') : '—', v: dr ? (dr.ok == null ? '' : dr.ok ? 'good' : 'bad') : '', word: dr ? (dr.ok == null ? 'Check in progress' : dr.ok ? 'Exports build' : 'Exports broken') : '', line: dr ? esc(ago(dr.at)) : '', sub: dr ? dr.rows.map(r=>`${esc(r[0])} ${esc(r[1])}: ${esc(r[2])}`).join(' · ') : ''})}
   </div>
   <div id="pn"></div>
   ${sectionH('Records', `commits from the local clone, fetched ${esc(ago(p.main_fetched))}`)}
