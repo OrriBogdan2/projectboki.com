@@ -181,6 +181,11 @@ function frameModel(obj,keepDir){
   const dir=keepDir?camera.position.clone().sub(controls.target).normalize():new THREE.Vector3(0.3,0.1,1).normalize();
   controls.target.copy(c); camera.position.copy(c).addScaledVector(dir,d);
   camera.near=r/100;camera.far=r*100;camera.updateProjectionMatrix();controls.minDistance=d*0.2;controls.maxDistance=d*3}
+function faceYaw(m){ /* facing the camera (+Z) puts the character's left-side bones at +X */
+  m.updateMatrixWorld(true); let l=null,r=null;
+  m.traverse(o=>{if(!o.isBone)return; const n=o.name; if(!l&&/^(Left(Arm|Shoulder|UpLeg))$|^(upper_arm|shoulder|thigh)\.L$/i.test(n))l=o; if(!r&&/^(Right(Arm|Shoulder|UpLeg))$|^(upper_arm|shoulder|thigh)\.R$/i.test(n))r=o});
+  if(!l||!r)return Math.PI; const a=new THREE.Vector3(), b=new THREE.Vector3(); l.getWorldPosition(a); r.getWorldPosition(b);
+  return a.x>b.x?0:Math.PI}
 let animTok=0;
 async function chooseClip(h,name){
   const my=++animTok, still=name===NOANIM||!h.anim;
@@ -193,7 +198,7 @@ async function chooseClip(h,name){
     let g; try{g=await getAnim(h)}catch(e){if(my===animTok)animSt.textContent="Could not load the animated glb ("+(e.message||e)+").";return}
     if(my!==animTok||rows[cur]!==h||lineMode)return;
     if(model&&!model.userData.anim)h._still=model; stopAnim(); if(model)scene.remove(model);
-    model=g.scene; model.userData.anim=true; model.rotation.y=Math.PI; /* game rigs face -Z; turn to face the camera like the still copy */ model.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false; else if(o.isMesh&&/^Icosphere/.test(o.name))o.visible=false}); /* 2 m helper sphere in every game glb */ scene.add(model); h._clips=g.animations; frameModel(model,true)}
+    model=g.scene; model.userData.anim=true; model.rotation.y=faceYaw(model); /* 11-26: old game rigs face -Z, Meshy _meshy rigs face +Z: read it from the skeleton */ model.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false; else if(o.isMesh&&/^Icosphere/.test(o.name))o.visible=false}); /* 2 m helper sphere in every game glb */ scene.add(model); h._clips=g.animations; frameModel(model,true)}
   const clip=(h._clips||[]).find(c=>c.name===name); if(!clip)return;
   if(mixer)mixer.stopAllAction(); else mixer=new THREE.AnimationMixer(model);
   action=mixer.clipAction(clip); action.reset().play(); mixer.update(0);
