@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>Height lineup · Boki admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+/* Admin-only 3D height lineup: our 13 hunters beside the reference hunters on one ground, a 0.25 m ruler wall behind.
+   Everything model-related (names of the reference hunters, heights, the .glb files) comes from the auth-checked API;
+   this file holds no private data. Same look as the Model Room (/3d/v95). */
+:root{
+  --bg:#14121c; --panel:#1d1a29; --line:#332e47; --fg:#ece8f6; --muted:#9d96b8;
+  --accent:#ffb347; --ref:#6fd3ff; --good:#3fbf7f; --low:#e8585c; --stage1:#2a2540; --stage2:#100e17;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif; color-scheme:dark}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.hide{display:none!important}
+#app{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 35%,var(--stage1),var(--stage2))}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;text-align:center;font-size:12px;line-height:1.15;white-space:nowrap;text-shadow:0 0 4px #000,0 0 2px #000;will-change:transform}
+.lbl b{display:block;font-family:var(--display);font-weight:800;font-size:13px}
+.lbl.o b{color:var(--accent)} .lbl.r b{color:var(--ref)}
+.lbl span{display:block;font-variant-numeric:tabular-nums}
+.lbl .w{color:var(--muted)}
+.lbl.sel b{text-decoration:underline}
+.compact .lbl span{display:none} .mid .lbl span.w{display:none}
+.bar{position:absolute;top:0;left:0;right:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:10px max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));
+  background:linear-gradient(var(--bg),rgba(20,18,28,.75) 70%,transparent)}
+.bar h1{font-family:var(--display);font-weight:800;font-size:20px;margin:0 8px 0 0;white-space:nowrap}
+.grp{display:flex;gap:4px;align-items:center}
+.bar button,.bar select{font:inherit;font-size:13.5px;font-weight:700;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+.bar button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.bar label{font-size:13px;color:var(--muted);display:flex;gap:5px;align-items:center;cursor:pointer}
+.bar :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.st{font-size:12.5px;color:var(--muted);flex:1 1 160px;text-align:right}
+.key{display:inline-flex;gap:12px;font-size:12.5px}.key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+#info{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:12px;width:min(340px,calc(100vw - 24px));box-sizing:border-box;max-height:46vh;overflow:auto;
+  background:rgba(29,26,41,.92);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13px}
+.note{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:12px;margin:0;max-width:min(520px,calc(100vw - 230px));font-size:12.5px;color:var(--muted);background:rgba(29,26,41,.85);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+#info summary{cursor:pointer;font-family:var(--display);font-weight:600;font-size:15px}
+#info p{margin:6px 0;color:var(--muted)} #info b{color:var(--fg)}
+#info table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;margin-top:4px}
+#info td{padding:2px 4px;border-top:1px solid var(--line)} #info td:last-child{text-align:right}
+#sel h2{margin:8px 0 2px;font-family:var(--display);font-size:18px}
+.lock{min-height:100vh;display:grid;place-items:center;padding:16px;box-sizing:border-box}
+.lock .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px;width:min(360px,100%)}
+.lock h1{font-family:var(--display);font-weight:800;font-size:26px;margin:0}
+.lock .err{color:var(--low);font-size:14px;min-height:1.2em;margin:0}
+.lock a{color:var(--accent)}
+@media (max-width:720px){
+  .bar h1{font-size:17px;flex:1 1 100%}
+  .bar button,.bar select{font-size:12.5px;padding:4px 8px}
+  .st{text-align:left;flex-basis:100%}
+  .lbl{font-size:10px}.lbl b{font-size:11px}
+  #info{max-height:34vh;font-size:12.5px}
+  .note{font-size:11px;max-width:none;right:max(12px,env(safe-area-inset-right,0px));bottom:62px}
+  #info:not([open]){width:auto}
+}
+</style>
+</head>
+<body>
+<div id="signin" class="lock hide"><div class="card">
+  <h1>Height lineup</h1>
+  <p style="margin:0;color:var(--muted)">Admins only. Sign in with the Google account you use for the admin pages.</p>
+  <div id="gsi"></div><p id="gsi-msg" style="margin:0;color:var(--muted);font-size:13px"></p>
+  <p class="err" id="signin-err"></p><a href="../">Back to the admin pages</a>
+</div></div>
+
+<div id="app" class="hide">
+  <canvas id="cv" aria-label="3D height lineup"></canvas>
+  <div id="labels"></div>
+  <div class="bar">
+    <h1>Height lineup</h1>
+    <div class="grp" role="group" aria-label="Layout">
+      <button data-mode="split" aria-pressed="true">Side by side</button>
+      <button data-mode="mixed" aria-pressed="false">Mixed</button>
+      <button data-mode="pairs" aria-pressed="false">Pairs</button>
+    </div>
+    <label>Sort <select id="sort"><option value="head">by head height</option><option value="all">by height with weapon</option><option value="name">by name</option></select></label>
+    <label title="ext/hunter-size-onscreen-1127: Hunter.VIS_SCALE = 1.12 x match_k per hunter"><input type="checkbox" id="pend"> Pending sizes</label>
+    <div class="grp" role="group" aria-label="Camera">
+      <button data-view="fit">Fit all</button>
+      <button data-view="ours">Ours</button>
+      <button data-view="ref">Reference</button>
+      <button data-view="game" aria-pressed="false">Game camera</button>
+    </div>
+    <span class="key"><span><i style="background:var(--accent)"></i>ours</span><span><i style="background:var(--ref)"></i>reference</span></span>
+    <span class="st" id="st">loading…</span>
+  </div>
+  <p class="note" id="note">Our world body_scale is 1.16 (our base hunter 2.04 m vs the reference 1.76 m, decision 0061). Reference models in rest pose.</p>
+  <details id="info">
+    <summary>About these heights</summary>
+    <p><b>Ours:</b> the exact .glb files the game loads on main, posed in the held idle frame, at the size a match draws them (Models.hunter scale × Hunter.VIS_SCALE <span id="vis"></span>), with weapons and props, no team tint.</p>
+    <p><b>Reference:</b> true height in metres, in their rest pose (those files have no idle clip; idle heights are in each hunter's details).</p>
+    <p><b>Head</b> = top of the head without loose props (our head-top anchor; the reference crown). <b>With weapon</b> = the highest point of the whole model.</p>
+    <p>Our world body_scale is 1.16 (our base hunter 2.04 m vs the reference 1.76 m, decision 0061).</p>
+    <p>Ruler lines every 0.25 m (brighter every 0.5 m and 1 m). Drag to orbit, scroll or pinch to zoom, right-drag to pan. Click a hunter for its numbers, double-click to fly to it.</p>
+    <div id="sel"></div>
+    <p id="built" style="font-size:12px"></p>
+  </details>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js";
+
+// ------------------------------------------------------------------ auth (same token + Google sign-in as /admin)
+const Q = new URLSearchParams(location.search);
+const PROD_API = 'https://87-99-130-182.sslip.io/api';
+const LOCAL_API = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/api$/;
+const API = (Q.get('api') && LOCAL_API.test(Q.get('api'))) ? Q.get('api') : PROD_API;   // ?api= only for local testing
+const TOKEN_KEY = 'boki_admin_token';
+const $ = s => document.querySelector(s);
+let token = null, me = null;
+try { token = localStorage.getItem(TOKEN_KEY); } catch(e) {}
+async function api(path, opt={}){
+  const h = {}; if (token) h.Authorization = 'Bearer ' + token; if (opt.body) h['Content-Type'] = 'application/json';
+  const r = await fetch(API + path, {method: opt.method || 'GET', headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined});
+  let j = null; try { j = await r.json(); } catch(e) {}
+  if (!r.ok) throw Object.assign(new Error((j && j.error) || ('HTTP ' + r.status)), {status: r.status});
+  return j;
+}
+async function boot(){
+  if (token) { try { me = (await api('/me')).user; } catch(e) { me = null; } }
+  if (!me) return showSignin();
+  if (!['owner','admin'].includes(me.role)) { forget(); return showSignin('This account is not an admin.'); }
+  showApp();
+}
+function forget(){ token = null; me = null; try { localStorage.removeItem(TOKEN_KEY); } catch(e) {} }
+async function showSignin(err){
+  $('#app').classList.add('hide'); $('#signin').classList.remove('hide'); $('#signin-err').textContent = err || '';
+  let cfg = null; try { cfg = await api('/config'); } catch(e) { $('#gsi-msg').textContent = 'API not reachable'; }
+  if (cfg && cfg.google_client_id) {
+    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+    s.onload = () => { google.accounts.id.initialize({client_id: cfg.google_client_id, callback: onGoogle, ux_mode: 'popup'});
+      google.accounts.id.renderButton($('#gsi'), {theme: 'filled_black', size: 'large', width: 300, text: 'signin_with', shape: 'pill'}); };
+    s.onerror = () => { $('#gsi-msg').textContent = 'Google sign-in did not load.'; };
+    document.head.appendChild(s);
+  } else if (cfg) { $('#gsi-msg').textContent = 'Google sign-in is not configured on this server.'; }
+}
+async function onGoogle(resp){
+  try {
+    const r = await api('/signin/google', {method: 'POST', body: {credential: resp.credential}});
+    token = r.token; try { localStorage.setItem(TOKEN_KEY, token); } catch(e) {}
+    me = r.user; if (!['owner','admin'].includes(me.role)) { forget(); return showSignin('Signed in, but this Google account is not an admin.'); }
+    showApp();
+  } catch(e) { $('#signin-err').textContent = e.message; }
+}
+
+// ------------------------------------------------------------------ scene
+const PHONE = () => innerWidth < 720;
+const MAX_TEX = PHONE() ? 512 : 1024;   // the lineup is seen from metres away: smaller textures keep 38 models in GPU memory
+const C_OURS = 0xffb347, C_REF = 0x6fd3ff;
+const RULER_TOP = 4, GAP = 0.32, PAIR_GAP = 1.4, GROUP_GAP = 3;
+const GAME = {pitch: 66, dist: 23, fov: 32, focusY: 1.0};   // content/rules/camera.json "default" style (match camera)
+let renderer, scene, camera, controls, wall, models = [], manifest, mode = 'split', sortKey = 'head', pending = false, gameCam = false;
+let touched = false, selected = null;
+
+function initScene(){
+  const canvas = $('#cv');
+  renderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  scene = new THREE.Scene();
+  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 0.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(2, 4, 3); scene.add(sun);
+  camera = new THREE.PerspectiveCamera(30, 1, 0.05, 2000);
+  controls = new OrbitControls(camera, canvas); controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.495;
+  controls.addEventListener('start', () => { touched = true; });
+  controls.addEventListener('change', () => { dirty = true; });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({color: 0x24202f, roughness: 1}));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.002; scene.add(ground);
+  const grid = new THREE.GridHelper(400, 400, 0x3a3450, 0x2c2840); grid.position.y = 0.001; scene.add(grid);
+  wall = new THREE.Group(); scene.add(wall);
+  addEventListener('resize', resize); resize();
+  canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener('pointerup', e => { if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) pick(e, false); });
+  canvas.addEventListener('dblclick', e => pick(e, true));
+  renderer.setAnimationLoop(frame);
+}
+let down = null;
+function resize(){ const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); redraw(); }
+
+// the 0.25 m ruler: lines on a back wall just behind the deepest model, plus ruler posts standing in the models'
+// own plane (z = 0) at both ends and between the groups. The posts are exact at any camera; the wall is a guide.
+function buildWall(x0, x1, posts){
+  wall.clear();
+  const W = x1 - x0 + 8, cx = (x0 + x1) / 2;
+  const wz = -Math.max(0.6, ...models.filter(m => m.g.visible).map(m => m.d * scaleOf(m))) - 0.3;
+  const panel = new THREE.Mesh(new THREE.PlaneGeometry(W, RULER_TOP + 0.6), new THREE.MeshStandardMaterial({color: 0x1b1826, roughness: 1}));
+  panel.position.set(cx, (RULER_TOP + 0.6) / 2, wz - 0.01); wall.add(panel);
+  const tiers = [[], [], []];   // quarter, half, metre
+  for (let i = 1; i <= RULER_TOP * 4; i++) {
+    const y = i / 4, t = i % 4 === 0 ? 2 : i % 2 === 0 ? 1 : 0;
+    tiers[t].push(cx - W / 2, y, wz, cx + W / 2, y, wz);
+    for (const px of posts) { const L = [0.1, 0.18, 0.3][t]; tiers[t].push(px - L, y, 0, px + L, y, 0); }
+  }
+  for (const px of posts) tiers[2].push(px, 0, 0, px, RULER_TOP, 0);
+  [[0x4a4366, tiers[0]], [0x6c6390, tiers[1]], [0xb7b0d2, tiers[2]]].forEach(([c, v]) => {
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
+    wall.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({color: c})));
+  });
+  for (const px of posts) for (let i = 2; i <= RULER_TOP * 4; i += 2) {
+    const s = textSprite((i / 4).toFixed(i % 4 ? 1 : 0) + ' m', i % 4 === 0 ? '#ece8f6' : '#9d96b8');
+    s.position.set(px + 0.5, i / 4, 0); wall.add(s);
+  }
+}
+const spriteCache = {};
+function textSprite(txt, col){
+  const key = txt + col;
+  if (!spriteCache[key]) {
+    const c = document.createElement('canvas'); c.width = 160; c.height = 40; const g = c.getContext('2d');
+    g.font = 'bold 26px system-ui, sans-serif'; g.fillStyle = col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 80, 20);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; spriteCache[key] = new THREE.SpriteMaterial({map: t, transparent: true, depthWrite: false, toneMapped: false});
+  }
+  const s = new THREE.Sprite(spriteCache[key]); s.scale.set(0.6, 0.15, 1); return s;
+}
+
+// ------------------------------------------------------------------ models
+const loader = new GLTFLoader();
+const shrunk = new WeakSet();
+function shrinkTextures(root){
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    for (const m of [].concat(o.material)) for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) {
+      const t = m[k]; if (!t || shrunk.has(t) || !t.image || !(t.image.width > MAX_TEX)) continue;
+      const s = MAX_TEX / Math.max(t.image.width, t.image.height), c = document.createElement('canvas');
+      c.width = Math.round(t.image.width * s); c.height = Math.round(t.image.height * s);
+      c.getContext('2d').drawImage(t.image, 0, 0, c.width, c.height);
+      if (t.image.close) t.image.close();
+      t.image = c; t.needsUpdate = true; shrunk.add(t);
+    }
+  });
+}
+async function loadGlb(file, tries = 3){
+  for (let t = 1; ; t++) {
+    try {
+      const r = await fetch(API + '/admin/lineup3d-glb?f=' + encodeURIComponent(file), {headers: {Authorization: 'Bearer ' + token}});
+      if (!r.ok) throw Object.assign(new Error(file + ': HTTP ' + r.status), {final: r.status < 500});
+      return await loader.parseAsync(await r.arrayBuffer(), '');
+    } catch(e) {   // a dropped download (big file, slow link) is retried; a 4xx is not
+      if (e.final || t >= tries) throw e;
+      await new Promise(ok => setTimeout(ok, 800 * t));
+    }
+  }
+}
+function addModel(row, grp, gltf){
+  const inner = gltf.scene;
+  if (row.yaw_deg) inner.rotation.y = THREE.MathUtils.degToRad(row.yaw_deg);
+  shrinkTextures(inner);
+  const g = new THREE.Group(); g.add(inner); scene.add(g);
+  const box = new THREE.Box3().setFromObject(inner), c = box.getCenter(new THREE.Vector3());
+  inner.position.x -= c.x; inner.position.z -= c.z;   // centred on its slot; the feet stay at y = 0
+  const w = Math.max(box.max.x - box.min.x, 0.5), d = Math.max(box.max.z - c.z, c.z - box.min.z);
+  const m = {grp, row, g, w, d, top: box.max.y, bottom: box.min.y, name: row.name, head: row.head_h, all: row.all_h, k: grp === 'o' ? row.pending_k : 1};
+  // head (solid) and with-weapon (faint) ticks just outside the model's sides: exact heights, nothing pierces the model
+  const col = grp === 'o' ? C_OURS : C_REF, t = 0.22, ticks = (y, op) => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute([-w/2 - t, y, 0, -w/2 - 0.03, y, 0, w/2 + 0.03, y, 0, w/2 + t, y, 0], 3));
+    const l = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({color: col, transparent: op < 1, opacity: op})); g.add(l);
+  };
+  ticks(m.head, 1); if (m.all - m.head > 0.03) ticks(m.all, 0.45);
+  g.traverse(o => { o.userData.model = m; });
+  const el = document.createElement('div'); el.className = 'lbl ' + (grp === 'o' ? 'o' : 'r'); m.el = el; $('#labels').appendChild(el);
+  models.push(m); return m;
+}
+const scaleOf = m => (pending && m.grp === 'o') ? m.k : 1;
+function labelHtml(m){
+  const s = scaleOf(m), h = (m.head * s).toFixed(2), a = (m.all * s).toFixed(2);
+  return `<b>${esc(m.name)}</b><span>${h} m</span>` + (m.all - m.head > 0.03 ? `<span class="w">${a} m w/ weapon</span>` : '');
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]);
+
+// ------------------------------------------------------------------ layout
+function sorted(list){
+  const key = sortKey === 'name' ? null : sortKey;
+  return list.slice().sort((a, b) => key ? (a[key] * scaleOf(a) - b[key] * scaleOf(b)) || a.name.localeCompare(b.name) : a.name.localeCompare(b.name));
+}
+function layout(){
+  const ours = models.filter(m => m.grp === 'o'), refs = models.filter(m => m.grp === 'r');
+  let order = [];   // [model, gap before]
+  if (mode === 'split') {
+    sorted(ours).forEach((m, i) => order.push([m, i ? GAP : 0]));
+    sorted(refs).forEach((m, i) => order.push([m, i ? GAP : (ours.length ? GROUP_GAP : 0)]));
+  } else if (mode === 'mixed') {
+    sorted(models).forEach((m, i) => order.push([m, i ? GAP : 0]));
+  } else {
+    const byName = Object.fromEntries(refs.map(m => [m.name, m]));
+    const pairs = (manifest.pairs || []).map(([o, r]) => [ours.find(m => m.name === o), byName[r]]).filter(p => p[0] || p[1]);
+    const pk = p => p[0] ? (sortKey === 'name' ? p[0].name : p[0][sortKey] * scaleOf(p[0])) : 0;
+    pairs.sort((a, b) => sortKey === 'name' ? String(pk(a)).localeCompare(pk(b)) : pk(a) - pk(b));
+    pairs.forEach((p, i) => p.filter(Boolean).forEach((m, j) => order.push([m, j ? 0.12 : (i ? PAIR_GAP : 0)])));
+  }
+  const shown = new Set(order.map(o => o[0]));
+  let x = 0; const xs = [], posts = [];
+  for (const [m, gap] of order) { const w = m.w * scaleOf(m); if (gap >= GROUP_GAP) posts.push(x + gap / 2); x += gap + w / 2; xs.push(x); x += w / 2; }
+  const off = x / 2;
+  order.forEach(([m], i) => { m.g.position.set(xs[i] - off, 0, 0); m.g.scale.setScalar(scaleOf(m)); });
+  for (const m of models) { m.g.visible = shown.has(m); m.el.style.display = shown.has(m) ? '' : 'none'; m.el.innerHTML = labelHtml(m); m.wd = 0; m.x = m.g.position.x; }
+  buildWall(-off - 1, off + 1, [-off - 0.9, ...posts.map(p => p - off), off + 0.4]);
+  if (selected) showSel(selected);
+  redraw();
+}
+function extent(list){
+  const vis = list.filter(m => m.g.visible); if (!vis.length) return null;
+  let x0 = Infinity, x1 = -Infinity, top = 0;
+  for (const m of vis) { const s = scaleOf(m); x0 = Math.min(x0, m.x - m.w * s / 2); x1 = Math.max(x1, m.x + m.w * s / 2); top = Math.max(top, m.top * s); }
+  return {x0, x1, top};
+}
+
+// ------------------------------------------------------------------ camera
+function setGame(on){
+  gameCam = on; document.querySelector('[data-view="game"]').setAttribute('aria-pressed', on);
+  camera.fov = on ? GAME.fov : 30; camera.updateProjectionMatrix(); redraw();
+}
+function frameView(which){
+  setGame(false);
+  const e = extent(which === 'ours' ? models.filter(m => m.grp === 'o') : which === 'ref' ? models.filter(m => m.grp === 'r') : models);
+  if (!e) return;
+  const cx = (e.x0 + e.x1) / 2, halfW = (e.x1 - e.x0) / 2 + 0.8, halfH = Math.max(e.top, 2.5) / 2 + 0.6;
+  const tv = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const dist = Math.max(halfW / (tv * camera.aspect), halfH / tv) * 1.04 + 1.5;
+  const ty = halfH - 0.35;
+  controls.target.set(cx, ty, 0);
+  camera.position.set(cx, ty + dist * Math.sin(THREE.MathUtils.degToRad(4)), dist);
+  controls.update();
+}
+function gameView(x){
+  setGame(true);
+  const p = THREE.MathUtils.degToRad(GAME.pitch);
+  const cx = x ?? controls.target.x;
+  controls.target.set(cx, GAME.focusY, 0);
+  camera.position.set(cx, GAME.focusY + GAME.dist * Math.sin(p), GAME.dist * Math.cos(p));
+  controls.update();
+}
+function flyTo(m){
+  setGame(false);
+  const s = scaleOf(m), h = Math.max(m.top * s, 2);
+  controls.target.set(m.x, h / 2, 0);
+  camera.position.set(m.x, h / 2 + 0.4, h * 2.2 + 3); controls.update();
+}
+
+// ------------------------------------------------------------------ picking + details
+const ray = new THREE.Raycaster();
+function pick(e, fly){
+  const r = $('#cv').getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), camera);
+  const hit = ray.intersectObjects(models.filter(m => m.g.visible).map(m => m.g), true).find(h => h.object.userData.model);
+  if (!hit) return;
+  const m = hit.object.userData.model; showSel(m); if (fly) { touched = true; flyTo(m); }
+}
+function showSel(m){
+  if (selected) selected.el.classList.remove('sel');
+  selected = m; m.el.classList.add('sel'); $('#info').open = true;
+  const r = m.row, f = v => v == null ? '–' : (+v).toFixed(2) + ' m', rows = [];
+  if (m.grp === 'o') {
+    rows.push(['Head (main)', f(r.head_h)], ['With weapon (main)', f(r.all_h)],
+      ['Head (pending sizes)', f(r.head_h * r.pending_k)], ['With weapon (pending)', f(r.all_h * r.pending_k)],
+      ['Pending / main', '× ' + r.pending_k.toFixed(3)], ['Model', esc(r.src)], ['Triangles', r.tris.toLocaleString()]);
+  } else {
+    rows.push(['Head (rest pose)', f(r.head_h)], ['With weapon (rest)', f(r.all_h)],
+      ['Head (idle)', f(r.idle_head_h)], ['With weapon (idle)', f(r.idle_all_h)], ['Triangles', r.tris.toLocaleString()]);
+  }
+  const pr = (manifest.pairs || []).find(p => p[0] === m.name || p[1] === m.name);
+  if (pr) rows.push(['Pair', esc(m.grp === 'o' ? pr[1] : pr[0])]);
+  rows.push(['Measured box top', f(m.top * scaleOf(m))]);
+  $('#sel').innerHTML = `<h2 style="color:${m.grp === 'o' ? 'var(--accent)' : 'var(--ref)'}">${esc(m.name)}</h2><table>${rows.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>`;
+}
+
+// ------------------------------------------------------------------ labels (HTML, projected every frame; up to three rows so neighbours don't collide)
+const v3 = new THREE.Vector3();
+function placeLabels(){
+  const w = innerWidth, h = innerHeight, list = [];
+  for (const m of models) {
+    if (!m.g.visible) continue;
+    v3.set(m.x, 0, 0.55).project(camera);
+    if (v3.z > 1 || v3.x < -1.3 || v3.x > 1.3) { m.el.style.visibility = 'hidden'; continue; }
+    m.el.style.visibility = ''; list.push([m, (v3.x + 1) / 2 * w, (1 - v3.y) / 2 * h]);
+  }
+  list.sort((a, b) => a[1] - b[1]);
+  // density: full (name, head, with weapon) / mid (name, head) / names only, from the mean spacing on screen
+  const pitch = list.length > 1 ? (list[list.length - 1][1] - list[0][1]) / (list.length - 1) : 999;
+  const dens = pitch < 34 ? 'names' : pitch < 64 ? 'mid' : '';
+  const L = $('#labels'); if (L.dataset.d !== dens) { L.dataset.d = dens; L.classList.toggle('compact', dens === 'names'); L.classList.toggle('mid', dens === 'mid'); for (const [m] of list) m.wd = 0; }
+  const lineH = PHONE() ? 12 : 14, rowH = (dens === 'names' ? 1 : dens === 'mid' ? 2 : 3) * lineH + 4;
+  const right = [-1e9, -1e9, -1e9, -1e9];
+  for (const [m, x, y] of list) {
+    if (!m.wd) m.wd = m.el.offsetWidth || 60;
+    const l = x - m.wd / 2;
+    let row = right.findIndex(r => l >= r + 6);
+    if (row < 0 && m !== selected) { m.el.style.visibility = 'hidden'; continue; }   // no free row: hide it (zoom in to read), never overprint
+    if (row < 0) row = right.indexOf(Math.min(...right));
+    right[row] = x + m.wd / 2;
+    m.el.style.transform = `translate(${x}px,${y + 4 + row * rowH}px) translateX(-50%)`;
+  }
+}
+let dirty = true;   // draw only when something moved: 38 models are heavy, an idle page should not spin the GPU
+const redraw = () => { dirty = true; };
+function frame(){ if (controls.update() || dirty) { dirty = false; renderer.render(scene, camera); placeLabels(); } }
+
+// ------------------------------------------------------------------ UI + loading
+function wireUi(){
+  document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
+    mode = b.dataset.mode; document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    layout(); gameCam ? gameView(0) : frameView('all');
+  });
+  $('#sort').onchange = e => { sortKey = e.target.value; layout(); };
+  $('#pend').onchange = e => { pending = e.target.checked; layout(); };
+  document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { touched = true; b.dataset.view === 'game' ? gameView() : frameView(b.dataset.view); });
+}
+async function showApp(){
+  $('#signin').classList.add('hide'); $('#app').classList.remove('hide');
+  if (Q.get('mode')) mode = Q.get('mode'); if (Q.get('pending') === '1') { pending = true; }
+  try { manifest = await api('/admin/lineup3d'); }
+  catch(e) { $('#st').textContent = 'Could not load the lineup: ' + e.message; return; }
+  initScene(); wireUi(); $('#pend').checked = pending;
+  document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x.dataset.mode === mode));
+  $('#vis').textContent = (+manifest.vis_scale).toFixed(3);
+  $('#built').textContent = 'Lineup built ' + manifest.built + '.';
+  const jobs = [...manifest.ours.map(r => ['o', r]), ...manifest.theirs.map(r => ['r', r])];
+  let done = 0, failed = 0, next = 0;
+  const st = () => { $('#st').textContent = done + failed < jobs.length ? `loading ${done} / ${jobs.length} models…` : `${done} models` + (failed ? `, ${failed} failed` : '') + ' · ' + (me.display || me.role); };
+  st();
+  const worker = async () => {
+    while (next < jobs.length) {
+      const [grp, row] = jobs[next++];
+      try { addModel(row, grp, await loadGlb(row.file)); done++; } catch(e) { failed++; console.warn(e); }
+      st(); layout(); if (!touched) frameView('all');
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  layout(); if (!touched) { Q.get('view') === 'game' ? gameView(0) : frameView(Q.get('view') || 'all'); }
+  window.__lineupReady = true;
+}
+// read-only hook for the screenshot check: per model, where it stands and how tall its box is
+window.__lineup = () => models.map(m => ({grp: m.grp, name: m.name, x: +m.x.toFixed(3), visible: m.g.visible, head: m.head, all: m.all,
+  scale: scaleOf(m), top: +(new THREE.Box3().setFromObject(m.g.children[0], true).max.y).toFixed(3), bottom: +m.bottom.toFixed(3)}));
+boot();
+</script>
+</body>
+</html>
