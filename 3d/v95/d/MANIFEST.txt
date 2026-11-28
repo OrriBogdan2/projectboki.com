@@ -1,9 +1,9 @@
 # /3d/v95 source manifest (not secret). Checked by room3d-check.
-main 8d8b678e3eb5da2ac8b04bc5481ce2d3d9ecd305
-built 2026-11-28T10:30Z
+main fe73e2bc74d9a48f03477f78d5d99837ddb1c221
+built 2026-11-28T13:20Z
 v95_Albert newer_than_game game=bcfdb0558a5 src=bcfdb0558a5 updated=2026-11-19T15:39 pr=723 pr_blob=b4aa3e72b79 clips=60 prclips=60 slots=10/17
 v95_Cinder newer_than_game game=3fe3758f2bb src=3fe3758f2bb updated=2026-11-27T17:17 pr=362 pr_blob=72337b82eb6 clips=15 prclips=15 slots=6/17
-v95_Gil newer_than_game game=235d1c63bfc src=235d1c63bfc updated=2026-11-23T19:04 pr=905 pr_blob=e88612a3077 clips=7 prclips=8 slots=6/17
+v95_Gil newer_than_game game=235d1c63bfc src=235d1c63bfc updated=2026-11-23T19:04 pr=905 pr_blob=b15d6715fd1 clips=7 prclips=8 slots=6/17
 v95_Grimble newer_than_game game=b56f7a8b3f1 src=b56f7a8b3f1 updated=2026-11-27T18:47 pr=1167 pr_blob=9be75593ba8 clips=7 prclips=7 slots=6/17
 v95_Kael newer_than_game game=4b89b251ac8 src=4b89b251ac8 updated=2026-11-25T05:17 pr=997 pr_blob=ab5ef50f9fe clips=18 prclips=18 slots=6/17
 v95_Meeko newer_than_game game=51a4f615861 src=51a4f615861 updated=2026-11-27T21:17 pr=1162 pr_blob=fcc4f7ede9e clips=6 prclips=6 slots=6/17
