@@ -1,6 +1,6 @@
 # /3d/v95 source manifest (not secret). Checked by room3d-check.
 main b8cd02049a3f75e054bc27355cc945ccdf41ff49
-built 2026-11-28T18:30Z
+built 2026-11-28T18:51Z
 v95_Albert newer_than_game game=bcfdb0558a5 src=bcfdb0558a5 updated=2026-11-19T15:39 pr=723 pr_blob=b4aa3e72b79 clips=60 prclips=60 slots=10/17
 v95_Cinder newer_than_game game=3fe3758f2bb src=3fe3758f2bb updated=2026-11-27T17:17 pr=1149 pr_blob=94e6c578f19 clips=15 prclips=15 slots=6/17
 v95_Gil newer_than_game game=235d1c63bfc src=235d1c63bfc updated=2026-11-23T19:04 pr=905 pr_blob=b15d6715fd1 clips=7 prclips=8 slots=6/17
@@ -10,7 +10,7 @@ v95_Meeko newer_than_game game=51a4f615861 src=51a4f615861 updated=2026-11-27T21
 v95_Motley newer_than_game game=2e2c846131d src=2e2c846131d updated=2026-11-27T16:47 pr=1137 pr_blob=65739a568cb clips=6 prclips=6 slots=6/17
 v95_Sable newer_than_game game=9b0cc76ca92 src=9b0cc76ca92 updated=2026-11-27T22:17 pr=1165 pr_blob=be30bc4961e clips=6 prclips=6 slots=6/17
 v95_Sparkle newer_than_game game=b5c215d3970 src=b5c215d3970 updated=2026-11-28T00:47 pr=1206 pr_blob=d1377c08d6f clips=6 prclips=6 slots=6/17
-v95_Vex newer_than_game game=d63493dae6f src=d63493dae6f updated=2026-11-27T17:17 pr=1325 pr_blob=0066e1dcb65 clips=9 prclips=9 slots=9/17
+v95_Vex newer_than_game game=d63493dae6f src=d63493dae6f updated=2026-11-27T17:17 pr=1354 pr_blob=d06430e827e clips=9 prclips=9 slots=9/17
 v95_claire newer_than_game game=6aa5bc94811 src=6aa5bc94811 updated=2026-11-26T13:47 pr=1111 pr_blob=fedc4e57581 clips=6 prclips=6 slots=6/17
 v95_lace newer_than_game game=0275e33882e src=0275e33882e updated=2026-11-24T01:17 pr=883 pr_blob=495585669a0 clips=16 prclips=16 slots=6/17
 v95_tarek newer_than_game game=05d43d9c114 src=05d43d9c114 updated=2026-11-25T23:47 pr=1235 pr_blob=88c9f1fe6e8 clips=6 prclips=6 slots=6/17
