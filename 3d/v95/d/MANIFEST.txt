@@ -1,7 +1,7 @@
 # /3d/v95 source manifest (not secret). Checked by room3d-check.
 main ac10b3c76957396c8720847deb98958a75f84cb7
-built 2026-11-28T02:42Z
-v95_Albert in_game game=bcfdb0558a5 src=bcfdb0558a5 updated=2026-11-19T15:39 pr=- pr_blob=- clips=60 prclips=0 slots=10/17
+built 2026-11-28T02:52Z
+v95_Albert newer_than_game game=bcfdb0558a5 src=bcfdb0558a5 updated=2026-11-19T15:39 pr=723 pr_blob=b4aa3e72b79 clips=60 prclips=60 slots=10/17
 v95_Cinder in_game game=3fe3758f2bb src=3fe3758f2bb updated=2026-11-27T17:17 pr=- pr_blob=- clips=15 prclips=0 slots=6/17
 v95_Gil in_game game=235d1c63bfc src=235d1c63bfc updated=2026-11-23T19:04 pr=- pr_blob=- clips=7 prclips=0 slots=6/17
 v95_Grimble in_game game=b56f7a8b3f1 src=b56f7a8b3f1 updated=2026-11-27T18:47 pr=- pr_blob=- clips=7 prclips=0 slots=6/17
