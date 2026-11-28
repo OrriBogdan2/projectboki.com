@@ -100,7 +100,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 <div class="wrap" id="app" hidden>
   <header>
     <h1>Boki Model Room</h1>
-    <p>Every 3D model in the game right now: 12 heroes and the 21 Boki that have models. Drag to spin, pinch or scroll to zoom. Use the arrow keys or the buttons to step through.</p>
+    <p>Every 3D model in the game right now: 13 heroes and the 21 Boki that have models. Drag to spin, pinch or scroll to zoom. Use the arrow keys or the buttons to step through.</p>
     <nav class="tabs" aria-label="Model Room sections"><a href="./" aria-current="page">Hunters</a><a href="boki/">Boki</a><a href="v95/">v95 masters</a></nav>
     <p>The v95 masters are the new high-fidelity hunter models with judge scores and turnaround comparisons. The Boki tab spins all the new Boki models.</p>
   </header>
@@ -108,7 +108,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
   <div class="stage">
     <canvas id="mv" aria-label="3D model viewer"></canvas>
     <div class="load" id="load"></div>
-    <div class="nav"><button id="prev" aria-label="Previous model">&larr;</button><button id="next" aria-label="Next model">&rarr;</button><button id="lineup" type="button" aria-pressed="false" title="All 12 heroes side by side at true scale">Line-up</button></div>
+    <div class="nav"><button id="prev" aria-label="Previous model">&larr;</button><button id="next" aria-label="Next model">&rarr;</button><button id="lineup" type="button" aria-pressed="false" title="All 13 heroes side by side at true scale">Line-up</button></div>
     <button id="spin" class="spin" type="button" aria-pressed="false" title="Auto-rotate the model">Auto-rotate: Off</button>
     <div class="cap"><span class="nm" id="nm"></span><span id="tg"></span><span class="meta" id="meta"></span></div>
   </div>
@@ -116,12 +116,8 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
   <div class="panel">
     <div class="box" id="animbox">
       <h3>Animations <span class="meta" id="acount" style="font-weight:400;color:var(--muted);font-size:13px"></span></h3>
-      <div class="anims" id="anims"></div>
-      <div class="ctl">
-        <button id="play" type="button">Pause</button>
-        <label for="speed">Speed</label><input id="speed" type="range" min="0.1" max="2" step="0.1" value="1"><span id="spv">1.0×</span>
-        <label><input id="loop" type="checkbox" checked> Loop</label>
-      </div>
+      <div id="ckroot"></div>
+    </div>
     </div>
     <div class="box" id="revbox">
       <h3>Completeness</h3>
@@ -149,6 +145,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js";
+import {clipKit, loadClipFile} from "./clipkit.js";
 let all=[];
 const canvas=document.getElementById("mv"), load=document.getElementById("load");
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
@@ -164,23 +161,17 @@ const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;cont
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 addEventListener("resize",resize);resize();
 const moodT={value:0}; // time for the face's blink (gameLook)
-const clock=new THREE.Clock(); let mixer=null, clips=[], action=null, paused=false, speed=1, lineMode=false, lineMixers=[], lineLbls=[];
+const clock=new THREE.Clock(); let lineMode=false, lineMixers=[], lineLbls=[];
+const kit=clipKit(THREE,document.getElementById("ckroot")); // game-slot clip picker (clipkit.js, shared with /3d/v95)
 (function tick(){requestAnimationFrame(tick);const dt=clock.getDelta();
-  if(lineMode){if(!paused)lineMixers.forEach(m=>m.update(dt*speed));placeLabels()}else if(mixer&&!paused)mixer.update(dt*speed);
+  if(lineMode){if(!kit.paused)lineMixers.forEach(m=>m.update(dt*kit.speed));placeLabels()}else kit.update(dt);
   moodT.value=clock.elapsedTime;controls.update();renderer.render(scene,camera)})();
-const animsEl=document.getElementById("anims"), playBtn=document.getElementById("play"), loopEl=document.getElementById("loop");
-function playClip(i){if(!mixer)return;if(action)action.stop();const c=clips[i];action=mixer.clipAction(c);
-  action.setLoop(loopEl.checked?THREE.LoopRepeat:THREE.LoopOnce,Infinity);action.clampWhenFinished=true;action.reset().play();
-  [...animsEl.children].forEach((b,j)=>b.setAttribute("aria-pressed",j===i));paused=false;playBtn.textContent="Pause"}
-function setupAnims(g){mixer=null;action=null;clips=g.animations||[];animsEl.innerHTML="";
-  document.getElementById("acount").textContent=clips.length?clips.length+" clips":"";
-  if(!clips.length){animsEl.innerHTML='<p class="empty">This model has no animations yet.</p>';return}
-  mixer=new THREE.AnimationMixer(g.scene);
-  clips.forEach((c,i)=>{const b=document.createElement("button");b.type="button";b.textContent=c.name;b.title=c.duration.toFixed(2)+" s";b.onclick=()=>playClip(i);animsEl.appendChild(b)});
-  const idle=clips.findIndex(c=>c.name==="idle");playClip(idle>=0?idle:0)}
-playBtn.onclick=()=>{paused=!paused;playBtn.textContent=paused?"Play":"Pause"};
-document.getElementById("speed").oninput=e=>{speed=+e.target.value;document.getElementById("spv").textContent=speed.toFixed(1)+"×"};
-loopEl.onchange=()=>{const i=[...animsEl.children].findIndex(b=>b.getAttribute("aria-pressed")==="true");if(i>=0)playClip(i)};
+// Plays what the game plays: slots from content/rules/warden_native.json (x.a), clips borrowed from <id>_clips.glb (x.cf) merged by name.
+async function setupAnims(g,x){const spec=x&&x.a, extra=[];
+  for(const f of (x&&x.cf)||[]){try{extra.push(...await loadClipFile(loader,await getGlb(f)))}catch(e){}}
+  const n=(g.animations||[]).length+extra.length;
+  document.getElementById("acount").textContent=n?n+" clips":"";
+  kit.set(g.scene,g.animations||[],spec,extra)}
 // Auto-rotate starts off; the button turns it on, and the choice is remembered on this device.
 {const sb=document.getElementById("spin");let on=false;try{on=localStorage.getItem("boki-room-spin")==="1"}catch(e){}
  const set=v=>{on=v;controls.autoRotate=v;sb.setAttribute("aria-pressed",String(v));sb.textContent="Auto-rotate: "+(v?"On":"Off");try{localStorage.setItem("boki-room-spin",v?"1":"0")}catch(e){}};
@@ -202,10 +193,14 @@ function moodMat(src){
       float sheen=smoothstep(0.34,0.0,length((p-vec2(-0.32,0.5))*vec2(1.0,2.2)))*0.18;
       diffuseColor.rgb=vec3(0.03,0.09,0.1)+vec3(sheen*0.5)+vec3(0.45,1.0,0.95)*(line*1.8+halo*0.6);`);};
   return m}
-function gameLook(g){
+// Meeko's sun/cloud companions: the .glb texture is the whole 4x2 face atlas (calm, happy, angry, sleepy per companion); the game shows ONE
+// cell per mood (warden_anim/pip.json mood.faces). Show the calm cell (build3d item "mc": {sun: cell, cloud: cell}), not the whole sheet.
+function faceCell(m,cell){if(!m.map)return m; const t=m.map.clone(); t.repeat.set(1/4,1/2); t.offset.set((cell%4)/4,Math.floor(cell/4)/2); t.needsUpdate=true; m.map=t; return m}
+function gameLook(g,src){const it=all.find(i=>i.src===src), mc=(it&&it.mc)||{};
   g.scene.traverse(o=>{if(!o.isMesh)return;
     const one=!Array.isArray(o.material), ms=one?[o.material]:o.material;
     const out=ms.map(m=>{const n=m.name||"";
+      const fm=/^eyes-mood_(\w+)$/.exec(n); if(fm&&mc[fm[1]]!==undefined)return faceCell(m,mc[fm[1]]);
       if(n.startsWith("eyes-mood"))return moodMat(m);
       if((n.startsWith("glow-")||n.startsWith("flame-"))&&m.map){m.emissive=new THREE.Color(1,1,1);m.emissiveMap=m.map;m.emissiveIntensity=1.6;m.needsUpdate=true}
       return m});
@@ -230,9 +225,8 @@ async function setModel(src){
   const my=++token; load.textContent="Loading…";
   try{
     const buf=await getGlb(src); if(my!==token)return;
-    const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g),src)),rej)); if(my!==token)return;
-    if(model)scene.remove(model); model=g.scene; scene.add(model); setupAnims(g);
-    if(mixer)mixer.update(0);
+    const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g,src),src)),rej)); if(my!==token)return;
+    if(model)scene.remove(model); model=g.scene; scene.add(model); await setupAnims(g,all.find(i=>i.src===src)); if(my!==token)return;
     const box=posedBox(model);
     const size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
     const R=size.length()/2, r=Math.max(size.x,size.y,size.z);
@@ -254,7 +248,7 @@ function lineLabel(html,p,rule){const el=document.createElement("div");el.classN
 async function buildLineup(){
   const hs=all.filter(x=>x.kind==="h"); let n=0;
   const gs=await Promise.all(hs.map(async x=>{
-    try{const buf=await getGlb(x.src); const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g),x.src)),rej));
+    try{const buf=await getGlb(x.src); const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g,x.src),x.src)),rej));
       if(lineMode)load.textContent="Loading line-up "+(++n)+"/"+hs.length+"…"; return g}
     catch(e){return null}}));
   if(!gs.some(g=>g))throw new Error("no models");
@@ -303,7 +297,7 @@ async function showLineup(user){
   canvas.setAttribute("aria-label","Line-up of all the heroes at true scale");
   document.getElementById("nm").textContent="Line-up"; document.getElementById("tg").innerHTML="";
   document.getElementById("meta").textContent="Heroes at true scale, idle pose, in roster order. Guides at 1 m and 2 m.";
-  document.getElementById("acount").textContent=""; animsEl.innerHTML='<p class="empty">The line-up plays each hero\'s idle clip. Pick a model to browse its clips.</p>';
+  document.getElementById("acount").textContent=""; kit.message("The line-up plays each hero\'s idle clip. Pick a model to browse its clips.");
   document.getElementById("rev").innerHTML='<p class="empty">Pick a model to see its completeness rating.</p>';
   if(user){try{history.replaceState(null,"","#lineup")}catch(e){location.hash="lineup"}
     stageEl.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest"})}
