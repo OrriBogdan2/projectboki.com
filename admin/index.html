@@ -91,6 +91,9 @@ main{min-width:0;padding:0 28px 56px;max-width:1500px}
 .topbar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;gap:10px;padding:14px 0 12px;border-bottom:1px solid var(--line);margin-bottom:var(--s5)}
 .topbar .stamp{font-size:12px;color:var(--muted);white-space:nowrap}
 .topbar .stamp.stale{color:var(--crit)}
+.fresh{font-size:12px;color:var(--muted);white-space:nowrap;border:1px solid var(--line,var(--muted));border-radius:999px;padding:0 8px;line-height:20px}
+.fresh.stale{color:#fff;background:var(--crit);border-color:var(--crit);font-weight:650}
+.freshstrip{margin:8px 0 0;padding:8px 12px;border-radius:8px;font-size:12.5px;color:var(--crit);background:color-mix(in srgb,var(--crit) 10%,transparent)}
 .user{font-size:var(--t-sm);color:var(--ink2);margin-left:4px}
 nav.bottom{display:none}
 .sheet{position:fixed;inset:auto 0 0 0;max-height:88dvh;overflow-y:auto;background:var(--surface);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:6px 14px calc(14px + env(safe-area-inset-bottom));z-index:30;box-shadow:var(--shadow)}
@@ -320,11 +323,13 @@ ul.bul,ol.bul{margin:2px 0 0;padding-left:18px;font-size:var(--t-sm);line-height
       <h1 id="title">Home</h1>
       <span class="grow"></span>
       <span class="stamp" id="stamp">—</span>
+      <span class="fresh hide" id="fresh"></span>
       <button class="icon" id="refresh" title="Refresh" aria-label="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button>
       <button class="icon" id="theme" title="Theme" aria-label="Toggle theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
       <span class="user" id="who"></span>
       <button id="signout" class="small">Sign out</button>
     </div>
+    <div id="freshstrip" class="freshstrip hide"></div>
     <div id="view"></div>
   </main>
   <nav class="bottom" id="bottomnav"></nav>
@@ -351,7 +356,7 @@ const SECTIONS = [
   ['system','System','M12 3l8 4v5c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V7zM9 12l2 2 4-4','fleet'],
   ['money','Money','M12 2v20M17 6.5a4 4 0 0 0-4-2.5h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5','money'],
   ['usage','Usage','M21 12a9 9 0 1 1-9-9M12 3v9h9','money'],
-  ['backlog','Backlog','M4 6h16M4 12h16M4 18h10','fleet'],
+  ['backlog','Merging','M4 6h16M4 12h16M4 18h10','fleet'],
   ['alerts','Alerts','M12 3l10 18H2zM12 10v4M12 17.5h.01','today'],
   ['site','Site','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18','audience'],
   ['signups','Signups','M3 6h18v12H3zM3 7l9 6 9-6','audience'],
@@ -366,6 +371,7 @@ const STATUS = {done:'var(--good)',running:'var(--accent)',partial:'var(--c-yell
 const AREA_LABEL = {feel:'Game feel',farm:'Farm',combat:'Combat',anim:'Animation',vfx:'VFX',sfx:'SFX',ui:'UI',tutorial:'Tutorial'};
 const st = loadState();   // {section, filters:{section:{...}}, theme}
 let token = null, me = null, cur = 'home', data = {}, loadedAt = {}, timer = null, drawerRender = null;
+let fresh = null, freshAt = 0;   // /admin/freshness result + when it was read
 function loadState(){ try{ return JSON.parse(localStorage.getItem(STATE_KEY)) || {filters:{}}; }catch(e){ return {filters:{}}; } }
 function saveState(){ try{ localStorage.setItem(STATE_KEY, JSON.stringify(st)); }catch(e){} }
 function fstate(sec){ st.filters = st.filters || {}; return st.filters[sec] = st.filters[sec] || {}; }
@@ -402,7 +408,30 @@ function resetIn(e){ if (!e) return 'Reset time unknown'; let m = Math.max(0, Ma
   const D = Math.floor(m/1440), H = Math.floor(m%1440/60), M = m%60, u = (n, w) => `${n}\u00a0${w}${n===1?'':'S'}`;
   return 'Reset in ' + [u(D,'DAY'), u(H,'HOUR'), u(M,'MINUTE')].join(', '); }
 function bytes(b){ if(b==null) return '—'; const u=['B','KB','MB','GB','TB']; let i=0; while(b>=1024&&i<4){b/=1024;i++;} return b.toFixed(i>2?1:0)+' '+u[i]; }
-function badge(s, text){ return `<span class="badge s-${esc(s)}">${esc(text||s)}</span>`; }
+// Plain words for status codes (owner 11-27: label anything unclear, e.g. parked vs queued). Every badge, filter and legend reads these.
+const SWORD = {done:'Done', running:'Working now', partial:'Partly done', failed:'Failed', blocked:'Blocked', skipped:'Not needed', redo:'Redone', other:'Unclear', queued:'Queued', parked:'Parked'};
+const SHELP = {done:'finished, nothing left over', running:'an agent or machine is on it right now', partial:'finished part of it; what is left is written up as a follow-up', failed:'stopped with an error; it is retried or gets a fix job', blocked:'needs a fix somewhere else first, cannot continue until then', skipped:'the job found the work already done or no longer needed', redo:'an earlier result was thrown out and the task was run again', other:'ended without a clear result', queued:'ready to start, waiting for a free machine or account', parked:'held on purpose; nobody works on it until it is brought back'};
+const sw = s => (SWORD[s] || s || '').toLowerCase();
+function badge(s, text){ const w = SWORD[s]; return `<span class="badge s-${esc(s)}"${w ? ` title="${esc(w + ': ' + SHELP[s])}"` : ''}>${esc(text || w || s)}</span>`; }
+const legend = keys => `<div class="note" style="margin:6px 0 10px"><b>What the words mean:</b> ${keys.map(k => `<b>${SWORD[k]}</b> = ${SHELP[k]}`).join(' · ')}</div>`;
+// One sentence at the top of every tab: what this tab says right now. Each is wrapped in try/catch by render(); '' = no line.
+const LEAD = {
+  home: o => `The fleet has <b>${o.running.count}</b> agents working now and finished <b>${o.done_24h}</b> jobs in the last 24 h; the box below lists anything that needs you.`,
+  patches: p => { const np = p.next_patch || {}, b = (np.blockers || []).length; return `The last version players can download is <b>${esc(np.last_tag || '—')}</b>; the next one (${esc(np.version || '—')}) has <b>${(np.contents || []).length}</b> changes lined up and ${b ? `<b class="vc v-bad">${b} thing${b > 1 ? 's' : ''} holding it</b>` : 'nothing holding it'}.`; },
+  agents: a => { const L = a.last24 || {}, r = a.jobs.filter(j => j.running).length; return `<b>${r}</b> AI agents are working right now; in the last 24 h <b>${L.total ?? '—'}</b> jobs ended and <b>${L.done ?? '—'}</b> of them finished cleanly.` + legend(['running','done','partial','failed','blocked','skipped','redo','queued']); },
+  progress: p => { const A = p.areas || [], act = A.filter(a => a.running).length; return `Game work by area: <b>${act}</b> of ${A.length} areas have an agent on them now, and <b>${A.reduce((x, a) => x + (a.done_24h || 0), 0)}</b> jobs finished in the last 24 h.` + legend(['running','queued','partial']); },
+  hunters: c => `Where each hunter's 3D model is on the way to "in the game": the score is how close it looks to the approved 2D art (10 = identical).`,
+  servers: s => { const w = s.workers || [], on = w.filter(x => x.online).length; return `<b>${on}</b> of ${w.length} worker computers are online, plus the main box; render jobs: <b>${s.jobq.running.length}</b> running, <b>${s.jobq.queue.length}</b> queued.` + legend(['running','queued']); },
+  capacity: c => `How much of what we pay for is busy right now: <b>${Math.round(c.cpu.pct)}%</b> of the processors. The aim is 80% or more on everything.`,
+  system: c => `How much of the work the system does by itself, without you noticing problems first; each number has a verdict and its change.`,
+  money: m => `We are spending about <b>$${Math.round(m.burn.day)}</b> a day (<b>$${(Math.round(m.burn.hr * 10) / 10)}</b> an hour) at the current rate; most of it is rented graphics machines.`,
+  usage: u => { const A = u.accounts || [], hi = A.filter(a => (a.week_pct ?? a.weekly_pct ?? 0) >= 90).length; return `Each Claude account has a weekly allowance; the aim is to use close to all of it without running out early.${hi ? ` <b>${hi}</b> account${hi > 1 ? 's are' : ' is'} at 90% or more of the week.` : ''}`; },
+  backlog: b => `Two lists: finished changes waiting to get into the game (top), and tasks nobody has started yet (bottom).` + legend(['queued','parked','blocked']),
+  alerts: a => '',
+  signups: s => `People who gave their email on projectboki.com, newest first.`,
+  site: t => `Visitors to projectboki.com and how many of them signed up.`,
+};
+function leadLine(k, d){ try { const t = LEAD[k] ? LEAD[k](d) : ''; return t ? `<div class="leadline" style="margin:0 0 12px;font-size:14px;line-height:1.45"><span class="muted">What this means right now: </span>${t}</div>` : ''; } catch(e) { return ''; } }
 function acct(a){ return `<span class="acct" style="white-space:nowrap"><i style="background:${ACC[a]||ACC.acct}"></i>${esc(a==='corybogdan'?'Cory':a)}</span>`; }
 function dot(level){ return `<span class="dot ${esc(level)}"></span>`; }
 function notconn(src, what){ return `<span class="notconn" title="${esc(src && src.err || '')}">● ${esc(what||'not connected')}${src && src.err ? ': '+esc(src.err.slice(0,80)) : ''}</span>`; }
@@ -493,7 +522,7 @@ function showApp(){
   $('#who').textContent = me.display || me.role;
   $('#sidenav').innerHTML = `<div class="wordmark">Project Boki<small>Control Room</small></div>` +
     GROUPS.map(([g,gl]) => `<div class="navgroup">${gl}</div>` + SECTIONS.filter(x => x[3] === g).map(([k,l,d]) => `<a class="navitem" data-s="${k}" href="#${k}">${icon(d)}<span>${l}</span><span class="cnt" id="cnt-${k}"></span></a>`).join('')).join('') +
-    `<div class="foot">Times in ET · refreshes every 60 s</div>`;
+    `<div class="foot">Times in ET · refreshes every 60 s · each panel shows its data age (red = stale)</div>`;
   $('#bottomnav').innerHTML = PRIMARY_MOBILE.map(k => { const s = SECTIONS.find(x=>x[0]===k); return `<a class="navitem" data-s="${k}" href="#${k}">${icon(s[2])}<span>${s[1]}</span></a>`; }).join('') +
     `<a class="navitem" id="more" href="#more">${icon('M5 12h.01M12 12h.01M19 12h.01')}<span>More</span></a>`;
   $('#more').onclick = ev => { ev.preventDefault(); openSheet(); };
@@ -501,6 +530,8 @@ function showApp(){
   if (h === 'signout') { history.replaceState(null,'',location.pathname+location.search+'#home'); return signout(false); }
   go(ENDPOINT[h] ? h : (st.section && ENDPOINT[st.section] ? st.section : 'home'), true);
   clearInterval(timer); timer = setInterval(() => load(cur, true), 60000);
+  clearInterval(window._freshTick); window._freshTick = setInterval(paintFresh, 15000);   // keeps "data N old" counting between loads
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && token) load(cur, true, true); });   // a tab left in the background catches up the moment it is shown
   addEventListener('hashchange', () => { const s = location.hash.replace('#','').split('/')[0]; if (s && s !== cur && ENDPOINT[s]) go(s, true); });
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(rerender, 150); });
 }
@@ -516,7 +547,7 @@ function go(sec, fromHash){
   cur = sec; st.section = sec; saveState(); closeDrawer();
   if (!fromHash || location.hash.replace('#','').split('/')[0] !== sec) history.replaceState(null,'',location.pathname+location.search+'#'+sec);
   document.querySelectorAll('.navitem').forEach(a => a.classList.toggle('on', a.dataset.s === sec));
-  $('#title').textContent = SECTIONS.find(x=>x[0]===sec)[1];
+  $('#title').textContent = SECTIONS.find(x=>x[0]===sec)[1]; paintFresh();
   if (data[sec]) render(); else $('#view').innerHTML = '<div class="empty">Loading…</div>';
   load(sec);
   const id = location.hash.split('/')[1]; if (id && sec === 'agents') openAgent(id);
@@ -535,11 +566,27 @@ async function load(sec, quiet, force){
     stamp.textContent = 'update failed · ' + esc(e.message); stamp.classList.add('stale'); return;
   }
   stamp.classList.remove('stale'); stamp.textContent = 'updated ' + fmtT.format(new Date()) + ' ET';
+  loadFresh();
+}
+// per-panel data age (owner 11-27: every panel refreshes at least hourly and says how old its data is). /admin/freshness = source ages vs their limits.
+async function loadFresh(){ try{ fresh = await api('/admin/freshness'); freshAt = now(); }catch(e){} paintFresh(); }
+function paintFresh(){
+  const el = $('#fresh'), strip = $('#freshstrip'); if (!el || !strip) return;
+  const p = fresh && fresh.panels && fresh.panels[cur];
+  if (!p) { el.classList.add('hide'); strip.classList.add('hide'); return; }
+  const extra = now() - freshAt, srcs = p.sources || [], bad = srcs.filter(x => x.stale);
+  const hrs = a => Math.max(1, Math.floor((a + extra) / 3600)) + 'h';
+  const line = x => x.label + ' ' + (x.age_s == null ? 'never collected' : dur(x.age_s + extra));
+  el.classList.remove('hide'); el.classList.toggle('stale', !!p.stale);
+  el.textContent = p.stale ? (bad.some(x => x.age_s == null) ? 'stale' : 'stale ' + hrs(Math.max(...bad.map(x => x.age_s)))) : (p.age_s == null ? 'live' : 'data ' + dur(p.age_s + extra) + ' old');
+  el.title = srcs.map(x => line(x) + (x.stale ? ' (stale)' : '')).join('\n');
+  strip.classList.toggle('hide', !bad.length);
+  strip.textContent = bad.length ? 'Stale data: ' + bad.map(x => line(x) + ' (limit ' + Math.round(x.limit_s / 3600) + 'h)').join(' · ') : '';
 }
 function sideCounts(o){ if(!o) return; const set=(k,v,hot)=>{ const el=$('#cnt-'+k); if(el){ el.textContent=v??''; el.classList.toggle('hot',!!hot);} };
   set('agents', o.running && o.running.count); set('alerts', o.health && o.health.alerts, o.health && o.health.level!=='good'); set('backlog', o.backlog); }
 function rerender(){ if (data[cur]) render(); if (drawerRender) drawerRender(); }
-function render(){ const d = data[cur]; const fn = VIEWS[cur]; $('#view').innerHTML = ''; try { fn(d, $('#view')); } catch(e) { $('#view').innerHTML = `<div class="empty">Render error: ${esc(e.message)}</div>`; console.error(e); } }
+function render(){ const d = data[cur]; const fn = VIEWS[cur]; $('#view').innerHTML = ''; try { fn(d, $('#view')); const _l = leadLine(cur, d); if (_l && !$('#view .leadline')) $('#view').insertAdjacentHTML('afterbegin', _l); } catch(e) { $('#view').innerHTML = `<div class="empty">Render error: ${esc(e.message)}</div>`; console.error(e); } }
 
 // ------------------------------------------------------------------ drawer
 function openDrawer(title, sub, renderFn){
@@ -683,16 +730,16 @@ function groupBars(el, items, keys, o={}){
   el.querySelectorAll('rect').forEach(r => { r.onmousemove = ev => { const it = items[+r.dataset.i]; showTip(ev, `<b>${esc(it.title||it.label)}</b><br>${keys.map(k=>`${esc(k.label)} ${it.parts[k.k]||0}`).join(' · ')}${it.note?'<br>'+esc(it.note):''}`); }; r.onmouseleave = hideTip; });
 }
 // plain-English versions of the fleet's shorthand
-const plain = s => String(s||'').replace(/\bregate\.lag:?/g,'Merge re-check stuck:').replace(/NEW-RED (\d+)/g,'$1 newly failing').replace(/(\d+) NEW-RED/g,'$1 newly failing').replace(/WORSE (\d+)/g,'$1 got worse').replace(/FIXED (\d+)/g,'$1 fixed').replace(/RED\/CONFLICT/g,'failing or conflicting').replace(/\bfirst-parent\b/g,'main line');
+const plain = s => String(s||'').replace(/; (\d+) merged, \d+ skipped/g,'; $1 merged').replace(/, \d+ skipped\b/g,'').replace(/\bregate\.lag:?/g,'Merge re-check stuck:').replace(/NEW-RED (\d+)/g,'$1 newly failing').replace(/(\d+) NEW-RED/g,'$1 newly failing').replace(/WORSE (\d+)/g,'$1 got worse').replace(/FIXED (\d+)/g,'$1 fixed').replace(/RED\/CONFLICT/g,'failing or conflicting').replace(/\bfirst-parent\b/g,'main line');
 function sectionH(title, right=''){ return `<div class="section-h"><h2>${title}</h2><span class="small muted">${right}</span></div>`; }
 
 // the merge run (the job that tests finished branches and merges the ones that pass) in plain words
 function gateWords(g, src){
   if (!g) return {v:'', head:'—', word:'', line:notconn(src), fin:''};
   if (g.unknown) return {v:'', head:'—', word:'', line:`state not collected yet (restart the collector) · last report ${esc(ago(g.last_run))}`, fin:''};
-  const lf = g.last_finished, fin = lf ? `Last finished run (started ${esc(ago(lf.at))}): ${lf.merged} merged, ${lf.skipped} skipped${lf.new_red!=null?`, ${lf.new_red} newly failing checks`:''}` : 'No finished run recorded';
+  const lf = g.last_finished, fin = lf ? `Last finished run (started ${esc(ago(lf.at))}): ${lf.merged} branches merged${lf.new_red!=null?`, ${lf.new_red} newly failing checks`:''}` : 'No finished run recorded';
   if (g.running) return {v: g.stuck?'bad':'good', head:`${dur(g.running_h*3600)}`, unit:'running', word: g.stuck?'Too long':'Running', fin,
-    line:`since ${esc(tEST(g.since))}${g.full?' · full test suite':''}${g.so_far?` · ${g.so_far.merged} merged, ${g.so_far.skipped} skipped so far`:''}`};
+    line:`since ${esc(tEST(g.since))}${g.full?' · full test suite':''}${g.so_far?` · ${g.so_far.merged} merged so far`:''}`};
   return {v:'', head:'Idle', word:'', line: lf ? `last run started ${esc(ago(lf.at))}` : '', fin};
 }
 const usageV = u => u.pct >= 95 ? 'bad' : (u.pace_pct != null && u.pct - u.pace_pct > 10) ? 'watch' : 'good';
@@ -704,8 +751,8 @@ VIEWS.home = (o, el) => {
   const h = o.health || {}, r = o.running || {}, lp = o.last_patch, sp = o.spend || {}, a24 = o.agents24, mgp = o.merge_gap;
   const gw = gateWords(o.gate, o.sources && o.sources.gate);
   const lvl = h.level || 'warning', hv = vOf(lvl) || 'watch';
-  const ny = (o.needs_you && o.needs_you.items) || [];
-  const hero = `<div class="hero ${ny.length?'v-watch':'v-good'}"><div class="hh"><b>${ny.length ? `${ny.length} thing${ny.length>1?'s':''} need${ny.length>1?'':'s'} you` : 'Nothing needs you'}</b>${o.needs_you && o.needs_you.updated ? `<span class="small muted">updated ${esc(ago(o.needs_you.updated))}</span>` : ''}<a class="small" href="#alerts" style="margin-left:auto">All alerts</a></div>${
+  const ny = ((o.needs_you && o.needs_you.items) || []).filter(i => !/^(cleared|done|coming|fyi|note)\b[^:]{0,40}:/i.test(i));   // coordinator notes are not asks (shown on the Alerts tab)
+  const hero = `<div class="hero ${ny.length?'v-watch':'v-good'}"><div class="hh"><b>${ny.length ? `${ny.length} thing${ny.length>1?'s':''} need${ny.length>1?'':'s'} you` : 'Nothing needs you'}</b>${o.needs_you && o.needs_you.updated ? `<span class="small muted" title="This list is written by the coordinator and only changes when an ask changes">list last rewritten ${esc(ago(o.needs_you.updated))}</span>` : ''}<a class="small" href="#alerts" style="margin-left:auto">All alerts</a></div>${
     ny.length ? capped('home-ny', ny.map(i => `<li>${esc(i)}</li>`), 4, x => `<ol class="todo">${x}</ol>`) : '<div class="note">The coordinator has no open questions for you.</div>'}</div>`;
   const tr = mgp ? (mgp.change_day < -1 ? 'good' : mgp.change_day > 1 ? 'bad' : 'watch') : '';
   const rp = sp.runway && sp.runway.runpod, series = mgp ? (mgp.series||[]).map(x => x.n) : [];
@@ -722,7 +769,7 @@ VIEWS.home = (o, el) => {
     stat({href:'#agents', label:'Agents', value: r.count ?? '—', unit:'running now', v: a24 ? (a24.stalled ? 'bad' : a24.fail_pct > 10 ? 'watch' : 'good') : '',
       word: a24 ? (a24.stalled ? `${a24.stalled} stalled` : a24.fail_pct != null ? `${a24.fail_pct}% failed` : 'Idle') : '',
       line: a24 ? `${a24.done} done, ${a24.partial} partly done${a24.blocked?', '+a24.blocked+' blocked':''} in 24 h` : `${o.done_24h ?? 0} done in 24 h`,
-      sub: `${by || 'none running'}${o.backlog != null ? ` · ${o.backlog} queued` : ''}`}),
+      sub: `${by || 'none running'}${o.backlog != null ? ` · ${o.backlog} tasks queued (not started)` : ''}`}),
     stat({href:'#money', label:'Spend today', value: money(sp.today,0), unit: sp.estimate ? 'estimate' : '', v: rp ? (vOf(rp.level) || 'good') : '',
       word: rp && rp.level ? 'Top up' : 'Funded', line: `RunPod balance ${money(sp.runpod_balance,0)}${rp && rp.out_text ? ` · ${rp.level ? 'runs out ' : ''}${esc(rp.out_text)}` : ''}`,
       sub: `${money(sp.month,0)} this month · ${money(sp.hr)}/h`}),
@@ -747,7 +794,53 @@ VIEWS.home = (o, el) => {
 };
 
 // ---------- patches
+// Focus (v2, 11-27): a living list of goals. focus-snap (cron, every 15 min) measures every number and fills "Done since" from merged PRs and
+// finished jobs; nothing here is typed by hand. Goals are set or retired with focus-note; retired ones keep a final scoreboard below.
 VIEWS.focus = (f, el) => {
+  if (f.v !== 2) return focusV1(f, el);
+  const fmtV = (v,u) => v == null ? '—' : `${v}${u||''}`, goals = f.goals || [], nowT = f.now || now();
+  const age = f.updated ? Math.max(0, Math.round((nowT - f.updated)/60)) : null, late = age == null || age > 30;
+  const ST = {hit:'Target hit', better:'Getting better', worse:'Getting worse', flat:'No change', nodata:'No number yet'};
+  const nBad = goals.filter(g => g.colour==='bad').length, nGood = goals.filter(g => g.colour==='good').length;
+  const head = `<div class="hero v-${nBad?'bad':nGood===goals.length&&goals.length?'good':'watch'}"><div class="hh"><b>${esc(f.title||'Focus')}</b>
+      <span class="small ${late?'vc v-bad':'muted'}">updated ${age == null ? 'never' : age + ' min ago'}${late ? ' (should be under 15 min: the refresh is late)' : ''}</span></div>
+    <div class="sub" style="margin-top:0">What this means right now: ${goals.length} goals we are working toward; ${nGood} on track, ${goals.length-nGood-nBad} moving but not there, ${nBad} going the wrong way or far off. Every number measures itself every 15 minutes.</div>
+    ${f.owner_words ? `<div class="quote" style="margin-top:var(--s2)">Owner: “${esc(f.owner_words)}”</div>` : ''}
+    ${(f.errors||[]).length ? `<div class="note vc v-bad" style="margin-top:6px">Could not read: ${esc(f.errors.join('; '))}</div>` : ''}</div>`;
+  const metricRow = m => `<tr><td class="lead" data-l="Number"><span class="cell">${esc(m.label)}<div class="note">${esc(m.trend||'')}</div></span></td>
+    <td class="num right" data-l="At start">${fmtV(m.baseline,m.unit)}</td><td class="num right" data-l="Now"><b class="${m.colour&&m.colour!=='none'?'vc v-'+m.colour:''}">${fmtV(m.now,m.unit)}</b></td>
+    <td class="num right" data-l="Target">${m.target == null ? '<span class="muted">lower is better</span>'.replace('lower', m.better==='up'?'higher':'lower') : fmtV(m.target,m.unit)}</td>
+    <td data-l="">${vd(m.colour==='none'?'':m.colour, ST[m.state]||m.state)}</td></tr>`;
+  const IT = {done:'good', moving:'good', working:'watch', waiting:'watch', idle:'bad'};
+  const cards = goals.map((g,i) => {
+    const d = g.done || {}, since = tEST(d.since);
+    const moved = (d.moved||[]).map(x => `<li>${esc(x)}</li>`).join('');
+    const prs = (d.prs||[]).map(p => `<li>${esc(p.title)} <span class="muted">· merged ${esc(ago(p.t))}</span></li>`).join('');
+    const jobs = (d.jobs||[]).map(j => `<li>${esc(j.name)}${j.part ? ' <span class="muted">(partly)</span>' : ''} <span class="muted">· finished ${esc(ago(j.t))}</span></li>`).join('');
+    const items = (g.item_rows||[]).map(r => `<div class="kvrow"><b>${esc(r.name)}${r.due ? `<div class="note">due ${esc(tEST(r.due))}</div>` : ''}</b><span>${vd(IT[r.state]||'', r.words)} <span class="muted">${r.prs_n} merged · ${r.jobs_n} jobs finished · ${r.running_n} running · ${r.waiting_n} waiting</span>${r.last ? `<div class="note">last finished: ${esc(r.last)} (${esc(ago(r.last_t))})</div>` : ''}</span></div>`).join('');
+    const doneBody = d.nothing ? `<div class="note vc v-bad">${esc(d.nothing)}</div>` :
+      `${moved ? `<div class="lbl" style="margin-top:var(--s2)">Numbers that moved</div><ul class="bul ok">${moved}</ul>` : ''}
+       ${prs ? `<div class="lbl" style="margin-top:var(--s2)">Merged into the game (${d.prs_n}${d.prs_n > (d.prs||[]).length ? ', newest ' + d.prs.length + ' shown' : ''})</div><ul class="bul ok">${prs}</ul>` : ''}
+       ${jobs ? `<div class="lbl" style="margin-top:var(--s2)">Finished jobs (${d.jobs_n}${d.jobs_n > (d.jobs||[]).length ? ', newest ' + d.jobs.length + ' shown' : ''})</div><ul class="bul ok">${jobs}</ul>` : ''}`;
+    const nowLine = `${d.running_n||0} running now${(d.running||[]).length ? ': ' + d.running.map(esc).join(', ') : ''} · ${d.waiting_n||0} waiting for a free machine or account${d.failed_n ? ` · <span class="vc v-bad">${d.failed_n} failed or need a fix</span>` : ''}`;
+    return `<div class="card v-${g.colour||'none'}"><h3>${esc(g.name)}</h3><div class="sub" style="margin-top:0">${esc(g.why||'')}</div>
+      <div class="verdict">${vd(g.colour, g.colour==='good'?'On track':g.colour==='bad'?'Off track':'Moving')}<span>${esc(g.verdict||'')}${g.until ? ` · ends ${esc(tEST(Date.parse(g.until)/1000))}` : ''}</span></div>
+      <div class="tw" style="margin-top:var(--s3)"><table class="plain"><thead><tr><th>Number</th><th class="right">At start</th><th class="right">Now</th><th class="right">Target</th><th></th></tr></thead><tbody>${(g.metrics||[]).map(metricRow).join('')}</tbody></table></div>
+      ${items ? `<div style="margin-top:var(--s2)">${items}</div>` : ''}
+      <div class="lbl" style="margin-top:var(--s3)">Done since ${esc(since)}: ${d.prs_n||0} merged · ${d.jobs_n||0} jobs finished</div>${doneBody}
+      <div class="note" style="margin-top:6px">${nowLine}</div></div>`; }).join('');
+  const arch = (f.archive||[]).map((a,i) => fold('focus-a'+i, esc(a.name), `retired ${esc(tEST(Date.parse(a.retired)/1000))}`,
+    `<div class="sub">${esc(a.why||'')}</div><div class="note">Why it was retired: ${esc(a.reason||'')}</div>
+     <div class="tw"><table class="plain"><thead><tr><th>Number</th><th class="right">At start</th><th class="right">At the end</th><th class="right">Target</th><th>Result</th></tr></thead><tbody>${(a.scoreboard||[]).map(s =>
+       `<tr><td class="lead" data-l="Number">${esc(s.label)}</td><td class="num right" data-l="At start">${fmtV(s.start,s.unit)}</td><td class="num right" data-l="At the end">${fmtV(s.final,s.unit)}</td><td class="num right" data-l="Target">${fmtV(s.target,s.unit)}</td>
+        <td data-l="Result">${vd(/hit/.test(s.verdict)?'good':/^better/.test(s.verdict)?'watch':/worse/.test(s.verdict)?'bad':'', s.verdict)}</td></tr>`).join('')}</tbody></table></div>`, {plain:true})).join('');
+  const ups = (f.updates||[]).map(u => `<div><span class="t">${esc(tEST(u.t))}</span><span>${esc(u.text)}</span></div>`);
+  el.innerHTML = head + `<div class="grid cols2" style="margin-top:var(--s3);align-items:start">${cards || '<div class="card">No goals set.</div>'}</div>
+    ${sectionH('Earlier goals', 'final numbers when each was retired')}<div class="card">${arch || '<div class="muted small">none yet</div>'}</div>
+    ${sectionH('Notes', 'newest first')}<div class="card">${ups.length ? capped('focus-ups', ups, 4, x => `<div class="list feed wide">${x}</div>`) : '<div class="muted small">none yet</div>'}</div>
+    <div class="note" style="margin-top:var(--s3)">How to read this: “At start” is the number when the goal was set, “Now” is the latest measurement, and the small line under each number compares with 3 days ago. Merged = changes that reached the game (GitHub count). Goals are changed by the coordinator when your focus changes; old ones move to Earlier goals with their final numbers.</div>`;
+};
+const focusV1 = (f, el) => {
   const nowT = f.now || now(), span = (f.end||0)-(f.start||0), pc = span > 0 ? Math.max(0, Math.min(100, Math.round(100*(nowT-f.start)/span))) : 0;
   const fmtV = (v,u) => v == null ? '—' : `${v}${u||''}`;
   const ST = {hit:['good','Target hit'],better:['good','Better'],worse:['bad','Worse'],same:['none','No change yet'],pending:['none','Measuring']};
@@ -791,13 +884,13 @@ VIEWS.patches = (p, el) => {
   const npCard = np ? `<div class="hero ${(np.blockers||[]).length ? 'v-bad' : np.target ? 'v-good' : ''}"><div class="grid cols3">
       <div><div class="lbl">Next patch</div><div class="kpi">${esc(np.version||'—')}</div><div class="sub"><b>${np.target ? esc(tEST(np.target)) : 'No date set'}</b>${np.target ? ` · ${esc(ago(np.target))}` : ''}</div>${np.target_note ? `<div class="note">${esc(np.target_note)}</div>` : ''}
         <div class="note" style="margin-top:6px">Last patch ${esc(np.last_tag||'—')} · ${esc(tEST(np.last_published))} (${esc(ago(np.last_published))})${np.updated ? ` · plan updated ${esc(ago(np.updated))}` : ''}</div></div>
-      <div><div class="lbl">What's in it</div>${bul(np.contents, '', 'Not planned yet')}</div>
+      <div><div class="lbl">What's in it</div>${bul(np.contents, '', 'Not planned yet')}${np.contents_source && np.contents_source.startsWith('auto') ? `<div class="note" style="margin-top:6px">${esc(np.contents_source)}</div>` : ''}</div>
       <div><div class="lbl">Blocking it</div>${bul(np.blockers, 'bad', '<span class="vc v-good">Nothing</span>')}</div></div></div>` : '';
   el.innerHTML = srcLine(p.sources) + npCard + `
   <div class="grid tiles t4" style="margin-top:var(--s3)">
     ${stat({label:'Merge run now', value: esc(gw.head), unit: gw.unit, v: gw.v, word: gw.word, line: gw.line, sub: gw.fin})}
     ${stat({label:'Last test report', value: g && g.last_run ? esc(ago(g.last_run)) : '—', line: g ? esc(plain(g.headline||'no headline')) : ''})}
-    ${stat({label:'Merged in that run', value: g ? g.merged.length : '—', unit:'branches into main', line: g ? `${g.skipped.length} skipped (conflicts) · report ${esc(ago(g.report_at))}` : '', sub: g ? `<span class="mono">${esc(g.candidate_branch||'—')}</span>` : ''})}
+    ${stat({label:'Merged in that run', value: g ? g.merged.length : '—', unit:'branches into main', line: g ? `what is still waiting, and why: <a href="#backlog">Merging tab</a> · report ${esc(ago(g.report_at))}` : '', sub: g ? `<span class="mono">${esc(g.candidate_branch||'—')}</span>` : ''})}
     ${stat({label:'Release build check', value: dr ? (dr.ok == null ? 'Running' : dr.ok ? 'Pass' : 'Failing') : '—', v: dr ? (dr.ok == null ? '' : dr.ok ? 'good' : 'bad') : '', word: dr ? (dr.ok == null ? 'Check in progress' : dr.ok ? 'Exports build' : 'Exports broken') : '', line: dr ? esc(ago(dr.at)) : '', sub: dr ? dr.rows.map(r=>`${esc(r[0])} ${esc(r[1])}: ${esc(r[2])}`).join(' · ') : ''})}
   </div>
   <div id="pn"></div>
@@ -878,7 +971,7 @@ VIEWS.agents = (a, el) => {
     ${stat({label:'Running now', value: running.length, v: L ? (L.stalled ? 'bad' : 'good') : '', word: L ? (L.stalled ? `${L.stalled} stalled` : 'None stalled') : '', line: L ? `stalled = running over ${L.stall_after_h} h` : '',
       sub: Object.entries(running.reduce((m,j)=>(m[j.account]=(m[j.account]||0)+1,m),{})).map(([k,v])=>`${acct(k)} ${v}`).join(' &nbsp; ') || 'idle'})}
     ${stat({label:'Finished in 24 h', value: fin24, unit:'jobs', v: fv, word: L && L.fail_pct != null ? `${L.fail_pct}% failed` : '', line: L ? `${L.unclean_pct}% did not finish cleanly` : '',
-      sub: ['done','partial','failed','blocked','skipped'].map(s => { const n = L ? L[s] : jobs.filter(j=>!j.running && j.status===s && t-j.finished<=86400).length; return n ? badge(s, `${n} ${s}`) : ''; }).join(' ')})}
+      sub: ['done','partial','failed','blocked','skipped'].map(s => { const n = L ? L[s] : jobs.filter(j=>!j.running && j.status===s && t-j.finished<=86400).length; return n ? badge(s, `${n} ${sw(s)}`) : ''; }).join(' ')})}
     ${stat({label:`Last ${a.days} days`, value: jobs.length.toLocaleString('en-US'), unit:'jobs', sub: Object.entries(c).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`${k} ${v}`).join(' · ')})}
     ${stat({label:'Typical job time', value: med, sub:'median of finished jobs, excluding rebase chores'})}
   </div>
@@ -886,7 +979,7 @@ VIEWS.agents = (a, el) => {
   <div id="tbl"></div>`;
   const fs = fstate('agents'); fs.tbl = fs.tbl || {sort:'start',dir:-1};
   table($('#tbl', el), {state: fs.tbl, rows: jobs, noun:'jobs', onRow: j => openAgent(j.id), searchKeys: j => `${j.title} ${j.label} ${j.id} ${j.summary} ${j.role} ${j.account} ${j.host} ${j.model}`,
-    filters: [{k:'status',label:'Status',get:j=>j.status,order:['running','done','partial','failed','blocked','skipped','redo','other']},{k:'account',label:'Account',get:j=>j.account,order:['Cory','GC','OrriB','ProjectBoki','Outlook 1','Outlook 2']},
+    filters: [{k:'status',label:'Status',get:j=>j.status,order:['running','done','partial','failed','blocked','skipped','redo','other'],fmt:s=>SWORD[s]||s},{k:'account',label:'Account',get:j=>j.account,order:['Cory','GC','OrriB','ProjectBoki','Outlook 1','Outlook 2']},
       {k:'role',label:'Role',get:j=>j.role},{k:'area',label:'Area',get:j=>j.areas.length?j.areas:['none'],fmt:a=>AREA_LABEL[a]||a},{k:'host',label:'Host',get:j=>j.host},{k:'chore',label:'Kind',get:j=>j.chore?'rebase chore':'task'}],
     cols: [
       {k:'status',label:'Status',get:j=>j.status,render:j=>badge(j.status)},
@@ -913,31 +1006,43 @@ async function openAgent(id){
 
 // ---------- progress
 VIEWS.progress = (p, el) => {
-  el.innerHTML = srcLine(p.sources) + (p.priorities_head ? `<div class="note" style="margin-bottom:var(--s3)">${esc(p.priorities_head)}</div>` : '') +
-  `<div class="grid cols3" id="areas"></div>
-  ${sectionH('Bokidex art pipeline', p.gens.connected ? `${p.gens.total} generations in /gens` : '')}<div id="gens"></div>`;
+  // 11-27: areas come from data/progress_areas.json and follow the Focus tab; the art generations log sits below, folded.
+  const fo = p.focus || {}, un = p.untagged || {}, g = p.gens || {};
+  const asof = t => t ? `<span title="${esc(tEST(t))}">data ${esc(ago(t))}</span>` : '<span class="vc v-bad">data age unknown</span>';
+  const ranked = p.areas.filter(a => (a.rank||99) < 99).length;
+  el.innerHTML = srcLine(p.sources) +
+  `<div class="note" style="margin-bottom:var(--s3)">${fo.title ? `<b>Focus now:</b> ${esc(fo.title)}${fo.updated ? ` <span class="muted">· plan updated ${esc(ago(fo.updated))}</span>` : ''}<br>` : ''}Areas follow the Focus tab, then 24 h activity. ${ranked} of ${p.areas.length} areas are on the focus list; the rest are ordered by what finished in the last 24 h. Counts are jobs by finish time; a job counts in one area only.</div>
+  ${sectionH('Areas', `${asof(p.generated)} · jobs by label and task words (config updated ${esc(ago(p.config_at))})`)}
+  <div class="grid cols3" id="areas"></div>
+  <div class="small muted" style="margin-top:8px">${un.total_7d ? `<b class="${un.total_7d > 0.1 * (un.tagged_7d + un.total_7d) ? 'vc v-watch' : ''}">${un.total_7d} job${un.total_7d === 1 ? '' : 's'}</b> in the last 7 d (${un.running || 0} running) and ${un.queued || 0} queued ha${un.total_7d === 1 ? 's' : 've'} no area` : 'Every job has an area'} · ${p.chores_skipped || 0} housekeeping jobs (bringing a branch up to date) not counted. ${(un.labels || []).length ? `<details style="display:inline"><summary style="display:inline;cursor:pointer">show some</summary><div class="small">${un.labels.map(l => `<div>${esc(l)}</div>`).join('')}</div></details>` : ''}</div>
+  ${sectionH('Art generations', g.connected ? `${asof(g.scanned_at)} · ${g.total} in /gens, all subjects` : '')}<div id="gens"></div>`;
   const areas = $('#areas', el);
+  const fbadge = a => (a.focus||[]).length ? `<span class="badge plain" title="Focus lane: ${esc((a.focus_names||[]).join(', '))}">focus #${a.focus[0]}</span>` : '';
   areas.innerHTML = p.areas.map(a => `<div class="card click" data-a="${a.area}">
-    <div class="row"><h2>${esc(AREA_LABEL[a.area]||a.area)}</h2>${a.priority?`<span class="badge plain">#${a.priority.n}</span>`:''}<span class="grow"></span><span class="small muted">${a.coverage!=null?`coverage ${a.coverage}`:''}</span></div>
-    ${a.priority?`<div class="small muted ell" title="${esc(a.priority.detail)}">${esc(a.priority.detail)}</div>`:''}
-    <div class="mini"><div><b>${a.running}</b><span>running</span></div><div><b>${a.queued}</b><span>queued</span></div><div><b class="${a.done_24h?'':'vc v-watch'}">${a.done_24h}</b><span>done 24 h</span></div><div><b>${a.done_7d}</b><span>done 7 d</span></div></div>
-    <div title="done per day, last ${p.days.length} days">${sparkline(a.spark.map(s=>s[0]+s[1]), 'var(--good)', 200, 26)}</div>
-    <div class="small ink2" style="margin-top:8px">${a.latest[0] ? `latest: ${esc(a.latest[0].title)} <span class="muted">· ${esc(ago(a.latest[0].finished))}</span>` : '<span class="muted">nothing finished recently</span>'}</div>
+    <div class="row"><h2>${esc(a.name||AREA_LABEL[a.area]||a.area)}</h2>${fbadge(a)}<span class="grow"></span></div>
+    <div class="small muted ell" title="${esc(a.blurb||'')}">${esc(a.blurb||'')}</div>
+    <div class="mini"><div><b>${a.running}</b><span title="${esc(SHELP.running)}">working now</span></div><div><b>${a.queued}</b><span title="${esc(SHELP.queued)}">queued</span></div><div><b class="${a.done_24h ? '' : 'vc v-watch'}">${a.done_24h}</b><span>done 24 h</span></div><div><b>${a.done_7d}</b><span>done 7 d</span></div></div>
+    <div class="small muted" style="margin-top:4px">7 d: ${a.partial_7d} partial · <span class="${a.failed_7d ? 'vc v-watch' : ''}">${a.failed_7d} failed</span></div>
+    <div title="done per day, last ${p.days.length} days">${sparkline(a.spark.map(s => s[0] + s[1]), 'var(--good)', 200, 26)}</div>
+    <div class="small ink2" style="margin-top:8px">${a.latest[0] ? `latest: ${esc(a.latest[0].plain || a.latest[0].title)} <span class="muted">· ${esc(ago(a.latest[0].finished))}</span>` : '<span class="muted">nothing finished in the last 14 days</span>'}</div>
   </div>`).join('');
-  areas.querySelectorAll('.card').forEach(c => c.onclick = () => { const a = p.areas.find(x=>x.area===c.dataset.a); openDrawer(esc(AREA_LABEL[a.area]||a.area), a.priority ? `priority #${a.priority.n} · ${esc(a.priority.detail)}` : '', b => {
-    b.innerHTML = `<dl class="kv"><dt>Running</dt><dd>${a.running}</dd><dt>Queued</dt><dd>${a.queued}</dd><dt>Done 24h / 7d</dt><dd>${a.done_24h} / ${a.done_7d}</dd><dt>Partial 7d</dt><dd>${a.partial_7d}</dd><dt>Failed/blocked 7d</dt><dd>${a.failed_7d}</dd></dl>
+  areas.querySelectorAll('.card').forEach(c => c.onclick = () => { const a = p.areas.find(x => x.area === c.dataset.a); openDrawer(esc(a.name||a.area), (a.focus||[]).length ? `Focus: ${esc((a.focus_names||[]).join(', '))}` : 'not on the focus list', b => {
+    b.innerHTML = `<dl class="kv"><dt>Working now</dt><dd>${a.running}</dd><dt>Queued (waiting for a free machine or account)</dt><dd>${a.queued}</dd><dt>Done 24h / 7d</dt><dd>${a.done_24h} / ${a.done_7d}</dd><dt>Partly done 7d</dt><dd>${a.partial_7d}</dd><dt>Failed/blocked 7d</dt><dd>${a.failed_7d}</dd><dt>Data</dt><dd>${esc(ago(p.generated))}</dd></dl>
       <h3>Per day</h3><div class="chart" id="ac"></div>
-      <h3 style="margin-top:14px">Running now</h3><div class="list">${a.running_jobs.map(j=>`<div class="row small" data-id="${j.id}" style="cursor:pointer"><span class="ell grow">${esc(j.title)}</span>${acct(j.account)}</div>`).join('')||'<div class="muted small">none</div>'}</div>
-      <h3 style="margin-top:14px">Latest finished</h3><div class="list">${a.latest.map(j=>`<div data-id="${j.id}" style="cursor:pointer"><div class="row small">${badge(j.status)}<span class="ell grow">${esc(j.title)}</span><span class="t">${esc(tShort(j.finished))}</span></div><div class="small muted">${esc(j.summary||'')}</div></div>`).join('')||'<div class="muted small">none</div>'}</div>
-      <h3 style="margin-top:14px">Queued in backlog</h3><div class="list">${a.queued_labels.map(l=>`<div class="small">${esc(l)}</div>`).join('')||'<div class="muted small">none</div>'}</div>`;
-    stackedBars($('#ac', b), p.days.map((d,i)=>({label: d.slice(5), title:d, parts:{done:a.spark[i][0], partial:a.spark[i][1]}})), [{k:'done',label:'done',color:'var(--good)'},{k:'partial',label:'partial',color:'var(--c-yellow)'}], {h:120});
+      <h3 style="margin-top:14px">Running now</h3><div class="list">${a.running_jobs.map(j => `<div class="row small" data-id="${j.id}" style="cursor:pointer"><span class="ell grow">${esc(j.title)}</span>${acct(j.account)}</div>`).join('') || '<div class="muted small">none</div>'}</div>
+      <h3 style="margin-top:14px">Latest finished</h3><div class="list">${a.latest.map(j => `<div data-id="${j.id}" style="cursor:pointer"><div class="row small">${badge(j.status)}<span class="ell grow">${esc(j.title)}</span><span class="t">${esc(tShort(j.finished))}</span></div><div class="small muted">${esc(j.plain || j.summary || '')}</div></div>`).join('') || '<div class="muted small">none</div>'}</div>
+      <h3 style="margin-top:14px">Queued: not started yet, waiting for a free machine or account</h3><div class="list">${a.queued_labels.map(l => `<div class="small">${esc(l)}</div>`).join('') || '<div class="muted small">none</div>'}</div>`;
+    stackedBars($('#ac', b), p.days.map((d, i) => ({label: d.slice(5), title: d, parts: {done: a.spark[i][0], partial: a.spark[i][1]}})), [{k:'done',label:'done',color:'var(--good)'},{k:'partial',label:'partial',color:'var(--c-yellow)'}], {h:120});
     b.querySelectorAll('[data-id]').forEach(d => d.onclick = () => openAgent(d.dataset.id));
   }); });
-  const g = p.gens; const ge = $('#gens', el);
+  const ge = $('#gens', el);
   if (!g.connected) { ge.innerHTML = `<div class="card">${notconn(null, 'gens not connected')}</div>`; return; }
-  ge.innerHTML = `<div class="grid cols2"><div class="card"><h3>By decision</h3>${hbars(Object.entries(g.by_action).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({label:k,v,color:{approved:'var(--good)',rejected:'var(--crit)',redo:'var(--c-yellow)'}[k]||'var(--muted)'})))}</div>
+  const subj = (g.by_subject || []).map(s => `<div class="row small"><b style="min-width:84px">${esc(s.subject)}</b><span class="grow muted">${s.total} total · ${s.n_7d} in the last 7 d${s.last ? ' · latest ' + esc(ago(s.last)) : ''}</span><span class="vc v-good">${s.approved}</span> <span class="vc v-bad">${s.rejected}</span> <span class="vc v-watch">${s.redo}</span></div>`).join('');
+  const body = `<div class="small muted" style="margin-bottom:6px">Per subject: approved (green) · rejected (red) · redo (yellow).</div><div class="list">${subj}</div>
+    <div class="grid cols2" style="margin-top:var(--s3)"><div class="card"><h3>By decision</h3>${hbars(Object.entries(g.by_action).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({label:k,v,color:{approved:'var(--good)',rejected:'var(--crit)',redo:'var(--c-yellow)'}[k]||'var(--muted)'})))}</div>
     <div class="card"><h3>By kind</h3>${hbars(Object.entries(g.by_kind).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({label:k,v})), 'var(--c-coord)')}</div></div>
-    <div class="card" style="margin-top:var(--s3)"><h3>Latest generations</h3>${capped('pg-gens', g.latest.map(x=>`<div class="row small"><span class="ell grow"><b>${esc(x.name)}</b> <span class="muted">${esc(x.kind)}${x.attempt?' · try '+x.attempt:''}</span></span><span>${x.action?badge({approved:'done',rejected:'failed',redo:'partial'}[x.action]||'other', x.action):''}</span><span class="muted">${x.score!=null?'score '+x.score:''}</span><span class="t">${esc(tShort(x.created))}</span></div>`), 6, x => `<div class="list">${x}</div>`)}</div>`;
+    <div class="card" style="margin-top:var(--s3)"><h3>Latest generations</h3>${capped('pg-gens', g.latest.map(x=>`<div class="row small"><span class="ell grow"><b>${esc(x.name)}</b> <span class="muted">${esc(x.subject||'')} · ${esc(x.kind)}${x.attempt?' · try '+x.attempt:''}</span></span><span>${x.action?badge({approved:'done',rejected:'failed',redo:'partial'}[x.action]||'other', x.action):''}</span><span class="muted">${x.score!=null?'score '+esc(x.score):''}</span><span class="muted">${x.created?esc(ago(x.created)):''}</span></div>`), 8, h=>`<div class="list">${h}</div>`)}</div>`;
+  ge.innerHTML = fold('pg-art', 'Art generations by subject', `${(g.by_subject || []).slice(0, 5).map(s => esc(s.subject) + ' ' + s.total).join(' · ')}`, body);
 };
 
 // ---------- servers
@@ -972,7 +1077,7 @@ VIEWS.servers = (s, el) => {
       {k:'up',label:'Uptime',hm:true,get:w=>w.uptime_s,num:true,render:w=>w.online?dur(w.uptime_s):'—'}]});
   table($('#jq', el), {state: fs.jq = fs.jq || {}, rows: s.jobq.workers, filters:[{k:'kind',label:'Kind',get:w=>w.kind}],
     cols: [{k:'name',label:'Worker',get:w=>w.name,lead:true,render:w=>`<span class="row"><span class="dot ${w.online?'good':''}"></span><b>${esc(w.name)}</b></span>`},{k:'kind',label:'Kind',get:w=>w.kind},{k:'job',label:'Current job',get:w=>w.job||'',render:w=>w.job?`<span class="ell">${esc(w.job)}</span>`:'<span class="muted">idle</span>'},{k:'last_seen',label:'Last seen',get:w=>w.last_seen,num:true,render:w=>esc(ago(w.last_seen))},{k:'last_job',label:'Last job',get:w=>w.last_job,num:true,render:w=>esc(ago(w.last_job))}]});
-  table($('#jqq', el), {state: fs.jqq = fs.jqq || {}, rows: qrows, filters:[{k:'state',label:'State',get:r=>r.state,order:['running','queued','done','failed']}],
+  table($('#jqq', el), {state: fs.jqq = fs.jqq || {}, rows: qrows, filters:[{k:'state',label:'State',get:r=>r.state,order:['running','queued','done','failed'],fmt:s=>SWORD[s]||s}],
     cols: [{k:'state',label:'State',get:r=>r.state,render:r=>badge(r.state)},{k:'label',label:'Job',get:r=>r.label,lead:true,render:r=>`<span class="ell">${esc(r.label)}</span>`},{k:'app',label:'App',get:r=>r.app||''},{k:'worker',label:'Worker',get:r=>r.worker||'',render:r=>esc(r.worker||'—')},{k:'t',label:'When',get:r=>r.t,num:true,render:r=>esc(tShort(r.t))},{k:'age',label:'Age / took',get:r=>r.age_s??(r.secs?+r.secs:null),num:true,render:r=>r.age_s!=null?dur(r.age_s):(r.secs?dur(+r.secs):'—')}]});
   table($('#rp', el), {state: fs.rp = fs.rp || {}, rows: s.runpod.pods, empty: s.sources.runpod.ok ? 'no pods' : 'RunPod not connected',
     cols: [{k:'name',label:'Pod',get:p=>p.name,lead:true},{k:'status',label:'Status',get:p=>p.status,render:p=>badge(p.status==='RUNNING'?'online':'offline',p.status)},{k:'gpu',label:'GPUs',get:p=>p.gpu_count,num:true},{k:'vcpu',label:'vCPU',get:p=>p.vcpu,num:true},{k:'mem',label:'RAM',get:p=>p.mem_gb,num:true,render:p=>p.mem_gb+' GB'},{k:'cost',label:'$/h',get:p=>p.cost_hr,num:true,render:p=>money(p.cost_hr)},{k:'started',label:'Started',get:p=>p.started,num:true,render:p=>esc(ago(p.started))}]});
@@ -1085,6 +1190,9 @@ VIEWS.money = (m, el) => {
     <div class="card"><h3>Burn by source ($/h)</h3>${hbars(parts.map(([l,k,c])=>({label:l,v:b.parts_hr[k]||0,fmt:money(b.parts_hr[k]||0),color:c})))}</div>
     <div class="card"><h3>RunPod balance over time</h3>${m.runpod.balance_series.length>1 ? '<div class="chart" id="bal"></div>' : '<div class="muted small">collecting; needs a few samples (one per collector run)</div>'}<div class="note" style="margin-top:6px">${m.runpod.measured_since ? `measured spend since ${esc(tEST(m.runpod.measured_since))}: ${money(m.runpod.measured_usd)}` : ''}</div></div>
   </div>
+  ${m.api_spend ? `${sectionH('Meshy, OpenAI and Google image spend', 'estimated from our own logs, not from invoices')}
+  <div class="card"><div class="grid cols2">${m.api_spend.providers.map(a => `<div><h3>${esc(a.label)}</h3><div class="kpi">${money(a.usd_24h,0)}<small>last 24 hours</small></div><div class="small muted">${money(a.usd_7d,0)} in the last 7 days</div></div>`).join('')}</div>
+  <div class="note" style="margin-top:8px">${m.api_spend.have ? `Together ${money(m.api_spend.total_24h,0)} in the last 24 hours and ${money(m.api_spend.total_7d,0)} in the last 7 days. ` : 'Collecting: the first hourly sample has not run yet. '}All three are estimates: Meshy credits used times about 1.3 cents a credit, OpenAI and Google images counted from the generation logs times the published price per image.</div></div>` : ''}
   ${sectionH('Where it goes')}
   ${fold('mn-rp', 'RunPod pods', `${m.runpod.pods.length} pods · ${money(b.parts_hr.runpod||0)}/h`, '', {id:'rp'})}
   ${fold('mn-hc', 'Hetzner Cloud servers', `${m.hetzner.servers.length} servers · month to date ${money(m.hetzner.month_to_date)}`, '', {id:'hc'})}
@@ -1106,7 +1214,7 @@ VIEWS.usage = (u, el) => {
   ${sectionH('Weekly usage, last 7 days', `snapshot ${esc(ago(u.snapshot_at))} · pacer ${u.pacer_last_t ? esc(tEST(u.pacer_last_t)) : esc(u.pacer_last||'—')}`)}<div class="card"><div class="chart" id="uc"></div></div>
   <div class="grid cols2" style="margin-top:var(--s3)"><div class="card"><h3>Jobs per day (${u.jobs_per_day.length} days, ET)</h3><div class="chart" id="pd"></div></div><div class="card"><h3>Jobs per hour of day (ET)</h3><div class="chart" id="ph"></div></div></div>`;
   $('#accs', el).innerHTML = u.accounts.map(a => { const b = a.ballistic, d = a.done_24h || {};
-    const jobs = ['done','partial','failed','skipped','blocked'].filter(k => d[k]).map(k => `<span class="uj-${k}">${d[k]} ${k}</span>`).join(' · ') || 'none';
+    const jobs = ['done','partial','failed','skipped','blocked'].filter(k => d[k]).map(k => `<span class="uj-${k}" title="${esc(SHELP[k]||'')}">${d[k]} ${sw(k)}</span>`).join(' · ') || 'none';
     const v = usageV(a), gap = a.pace_gap != null ? Math.abs(Math.round(a.pace_gap)) : null;
     return `<div class="card ucard v-${v}"><div class="row">${acct(a.label)}${a.coord?`<span class="badge plain" style="color:var(--c-coord)">coordinator</span>`:""}</div>
     ${a.lane ? `<div class="small muted ulane">${esc(a.lane)}</div>` : ''}
@@ -1121,7 +1229,7 @@ VIEWS.usage = (u, el) => {
       ${b ? `<dt>Burn</dt><dd>${b.rate_h >= 0 ? '+' : ''}${b.rate_h}%/h · 90% in ${b.to90_h}h${b.flag ? ' ' + badge('warning', b.flag) : ''}</dd>` : ''}</dl>`, {plain:true, open: !phone()})}</div>`; }).join('');
   if (!window._resetTick) window._resetTick = setInterval(() => document.querySelectorAll('[data-reset]').forEach(n => { n.textContent = resetIn(+n.dataset.reset); }), 30000);
   lineChart($('#uc', el), u.series.map(s => ({label:s.label, color:ACC[s.label]||ACC.acct, pts:s.pts, resets:s.resets})), {x0:u.x0, x1:u.x1, yMax:100, hold:90, h:200});
-  const keys = [{k:'done',label:'done',color:'var(--good)'},{k:'partial',label:'partial',color:'var(--c-yellow)'},{k:'skipped',label:'skipped',color:'var(--muted)'},{k:'failed',label:'failed',color:'var(--crit)'},{k:'blocked',label:'blocked',color:'var(--serious)'}];
+  const keys = [{k:'done',label:'done',color:'var(--good)'},{k:'partial',label:'partly done',color:'var(--c-yellow)'},{k:'skipped',label:'not needed',color:'var(--muted)'},{k:'failed',label:'failed',color:'var(--crit)'},{k:'blocked',label:'blocked',color:'var(--serious)'}];
   stackedBars($('#pd', el), u.jobs_per_day.map(d => ({label: d.day.slice(5), title: d.day, parts: d})), keys, {h:160});
   stackedBars($('#ph', el), u.jobs_per_hour.map((h,i) => ({label: i%3?'':String(i), title: `${i}:00 ET`, parts: h})), keys, {h:160});
 };
@@ -1149,6 +1257,31 @@ function mtHourHTML(t){
 }
 // Owner 11-22 headline: READY -> main wait (merge_tracker wait_info). Targets: p90 < 24 h, nothing waiting older than 3 days.
 const mtH = h => h == null ? '—' : h < 48 ? (Math.round(h * 10) / 10) + ' h' : (Math.round(h / 2.4) / 10) + ' d';
+// Owner 11-27: replaces the "N skipped" count of the last merge run (READY posts that run could not fold in: many stale or duplicate, nothing to act on).
+// Every open change sits in exactly one row; each row says why it waits and what is being done. Source: merge-tracker states.
+const WAITWHY = {
+  merge_ready: ['Passed its tests', 'ready to go in', 'Merges on the next merge run; nothing needed.', 'good'],
+  in_gate: ['Being tested right now', 'a test run is on it', 'Merges by itself if the run passes.', ''],
+  first_gate: ['Waiting for its first test run', 'new, not tested yet', 'Next in line for a test run.', ''],
+  behind: ['Passed earlier, needs a re-test', 'the game changed after it passed', 'Re-tested automatically, oldest first. This is the wait we are working to shorten.', 'watch'],
+  red: ['Needs a fix', 'its tests fail, or it clashes with a newer change', 'Each one gets a fix job, then goes back to testing.', 'bad'],
+  draft: ['Held on purpose', 'mostly model and art changes waiting for a look before they go in', 'Released one by one after the visual check; say the name to release one sooner.', ''],
+};
+function waitWhy(s){
+  const by = {}; s.buckets.forEach(b => by[b.key] = b.n);
+  const order = ['merge_ready','in_gate','first_gate','behind','red','draft'];
+  const row = (w, n, unit) => `<tr><td class="lead"><b class="vc v-${w[3]||'none'}">${esc(w[0])}</b><div class="small muted">${esc(w[1])}</div></td><td class="num right" data-l="${unit}"><b>${n}</b></td><td class="small full">${esc(w[2])}</td></tr>`;
+  const known = order.filter(k => by[k] != null), extra = s.buckets.filter(b => !WAITWHY[b.key]);
+  const np = s.no_pr && s.no_pr.n ? s.no_pr.n : 0, pk = s.parked || {};
+  return `<div class="card" style="margin-top:var(--s3)"><h3>Why each change is still waiting</h3>
+    <div class="note" style="margin-bottom:8px"><b>${s.open_prs + np}</b> changes are open: ${s.open_prs} filed for merging${np ? ` and ${np} finished but not filed yet` : ''}. Each one is in exactly one row${s.check && !s.check.ok ? ' <b class="vc v-bad">(the rows do not add up right now; being checked)</b>' : ''}.</div>
+    <div class="tw"><table class="plain"><thead><tr><th>Why it waits</th><th class="right">Changes</th><th>What we are doing about it</th></tr></thead><tbody>
+    ${known.map(k => row(WAITWHY[k], by[k], 'Changes')).join('')}
+    ${extra.map(b => row([b.label[0] + b.label.slice(1).toLowerCase(), b.rule || '', '', ''], b.n, 'Changes')).join('')}
+    ${np ? row(['Finished, not filed yet', 'the work is done but no merge request exists', 'Filed automatically, then tested like the rest.', 'watch'], np, 'Changes') : ''}
+    </tbody></table></div>
+    <div class="note" style="margin-top:8px">Not in the list above: <b>${pk.open ?? '—'}</b> older branches are <b>parked</b> (held on purpose, nobody is working on them${pk.bring_back ? `; ${pk.bring_back} are being brought back` : ''}), and <b>${s.backlog ? s.backlog.n : '—'}</b> tasks are <b>queued</b> (not started yet, waiting for a free machine or account, so there is no code to merge). Changes already merged or replaced by a newer one are not counted anywhere.</div></div>`;
+}
 function mtRender(t, el){
   const u = t.unmerged, r = t.rate, p = t.pipeline, bl = t.backlog, lv = vOf({good:'good', warn:'warning', bad:'critical'}[t.verdict.level] || 'warning');
   const days = t.days, dname = d => fmtWd.format(new Date(d.day+'T12:00:00Z'));
@@ -1163,8 +1296,8 @@ function mtRender(t, el){
     tiles.push(stat({label:'Wait from finished to merged', value: H(a.p90_h), unit:'for 9 in 10', v: p90ok ? 'good' : 'bad', word: p90ok ? 'On target' : 'Too slow', line:`target under ${w.target_p90_h} h`, sub:`typical (median) ${H(a.median_h)} · ${a.n} PRs merged in the last 3 days`}));
     tiles.push(stat({label:'Oldest still waiting', value: o ? H(o.age_h) : 'none', v: oldok ? 'good' : 'bad', word: oldok ? 'On target' : 'Too old', line:`target: nothing older than ${Math.round(w.target_max_h / 24)} days`, sub: `${w.waiting_now.over_3d} of ${w.waiting_now.n} are older than 3 days${o ? `<div class="mono ell" title="${esc(o.branch)}">${esc(o.branch)}</div>` : ''}`})); }
   tiles.push(stat({label:'Merged into main, last 24 h', value: t.merged_24h, unit:'pull requests', v: t.verdict.red_flag ? 'bad' : t.merged_24h ? 'good' : 'watch', word: t.merged_24h ? 'Flowing' : 'Nothing merged', line:`last merge ${esc(ago(t.last_merge ? t.last_merge.t : t.last_merge_t))}`}));
-  tiles.push(stat({label:'Tasks queued', value: bl.queued, unit:'not started', sub: bl.oldest ? 'oldest: '+esc(bl.oldest.label)+', waiting '+esc(dur(now()-bl.oldest.since)) : bl.oldest_since ? 'oldest waiting '+esc(dur(now()-bl.oldest_since)) : ''}));
-  if (t.parked && t.parked.n != null) { const pk = t.parked; tiles.push(stat({label:'Parked', value: pk.n, unit:'branches set aside', sub:`${pk.bring_back} being brought back · ${pk.landed} of those in main${pk.bring_back && pk.landed >= pk.bring_back ? ' (all)' : ''}${(pk.bundles||[]).length ? ' · bundle '+esc(pk.bundles.map(x=>x.state).join(', ')) : ''} · to restore one, tell coord the name${pk.since ? ' · parked '+esc(pk.since.slice(0,10)) : ''}`})); }
+  tiles.push(stat({label:'Tasks queued', value: bl.queued, unit:'not started: waiting for a free machine or account', sub: bl.oldest ? 'oldest: '+esc(bl.oldest.label)+', waiting '+esc(dur(now()-bl.oldest.since)) : bl.oldest_since ? 'oldest waiting '+esc(dur(now()-bl.oldest_since)) : ''}));
+  if (t.parked && t.parked.n != null) { const pk = t.parked; tiles.push(stat({label:'Parked (held on purpose)', value: pk.n, unit:'branches set aside, nobody is working on them', sub:`${pk.bring_back} being brought back · ${pk.landed} of those in main${pk.bring_back && pk.landed >= pk.bring_back ? ' (all)' : ''}${(pk.bundles||[]).length ? ' · bundle '+esc(pk.bundles.map(x=>x.state).join(', ')) : ''} · to restore one, tell coord the name${pk.since ? ' · parked '+esc(pk.since.slice(0,10)) : ''}`})); }
   el.innerHTML = `<div class="hero v-${lv||'none'}"><div class="hh"><b>${u.n} finished branches waiting to merge</b>${vd(lv, trendW)}</div>
     <div class="sub" style="margin-top:0">Over the last ${r.window_days || 3} days the pile changed by <b class="vc v-${r.change_day > 0 ? 'bad' : 'good'}">${r.change_day>=0?'+':''}${Math.round(r.change_day)} a day</b>: ${Math.round(r.ready_day)} newly finished, ${Math.round(r.merged_day)} pull requests merged${r.closed_day!=null ? `, ${Math.round(Math.abs(r.closed_day))} left the list unmerged (parked, retired, replaced)` : ''}. Oldest waiting since ${esc(u.oldest_t ? fmtWd.format(new Date(u.oldest_t*1000+43200000))+' '+tDay(u.oldest_t+43200) : '—')}${lanesTxt ? '. Biggest lanes: '+esc(lanesTxt) : ''}.</div>
     ${t.verdict.red_flag ? `<div class="verdict">${vd('bad','No merges')}<span><b>Nothing merged into main in the last 24 hours.</b> Last merge ${esc(tWk(t.last_merge ? t.last_merge.t : t.last_merge_t))}.</span></div>` : ''}
@@ -1175,19 +1308,15 @@ function mtRender(t, el){
     <div class="card"><h3>Waiting to merge, end of each day</h3><div class="chart" id="mt-u"></div><div class="note">Faded = rebuilt from branch history (no live count that day).</div></div>
     <div class="card"><h3>New finished vs merged, per day</h3><div class="chart" id="mt-io"></div><div class="note">One PR can carry many branches: blue = branches that reached main inside the green PRs.</div></div>
   </div>
+  ${s ? waitWhy(s) : ''}
   ${sectionH('More detail')}
   ${mtHourHTML(t)}
-  ${s ? fold('bl-states', 'Where the pull requests are now', `${s.open_prs} open${s.no_pr && s.no_pr.n ? ' + '+s.no_pr.n+' finished branches with no PR' : ''}${s.check && !s.check.ok ? ' · DOES NOT ADD UP' : ''}`, `<div class="tw"><table class="plain"><thead><tr><th>State</th><th class="right">PRs</th><th>What it means</th></tr></thead><tbody>
-    ${s.buckets.map(b => `<tr><td class="lead"><b>${esc(b.label[0] + b.label.slice(1).toLowerCase())}</b></td><td class="num right" data-l="PRs"><b>${b.n}</b></td><td class="small muted full">${esc(b.rule || '')}</td></tr>`).join('')}
-    <tr><td class="lead"><b>Parked</b></td><td class="num right" data-l="PRs"><b>${s.parked.open}</b></td><td class="small muted full">set aside on purpose · ${s.parked.bring_back} being brought back</td></tr>
-    <tr><td class="lead"><b>Backlog</b></td><td class="num right" data-l="Tasks"><b>${s.backlog.n}</b></td><td class="small muted full">queued tasks, not unmerged code</td></tr></tbody></table></div>
-    <div class="note" style="margin-top:6px">Each PR sits in exactly one state.</div>`) : ''}
   ${fold('bl-lanes', 'Waiting by lane, and the oldest branches', `${(u.lanes||[]).length} lanes`, `<div class="grid cols2">
     <div><div class="lbl">By lane (guessed from the branch name)</div>${hbars((u.lanes||[]).map(l=>({label:l.lane, v:l.n, fmt:`${l.n}`})))}</div>
     <div><div class="lbl">Oldest finished branches not merged</div>${u.oldest ? `<div class="list">${u.oldest.map(o=>`<div class="row small"><span class="t" style="width:92px;flex:none">${esc(o.t ? fmtWd.format(new Date(o.t*1000+43200000))+' '+tDay(o.t+43200) : 'no date')}</span><span class="mono ell grow">${esc(o.branch)}</span><span class="muted">${esc(o.lane)}</span></div>`).join('')}</div>` : `<div class="note">Branch names show here once the Control Room API is restarted.</div>`}</div></div>`)}
   ${fold('bl-pipe', 'Release pipeline', rel ? `last release ${esc(rel.tag)} · ${inTrain} branches in the next one` : '', `<div class="list">
-      <div><div class="lbl">Last merge run</div>${gl ? `${esc(tWk(gl.t))}: <b>${gl.merged}</b> merged, ${gl.skipped} skipped, <b class="vc v-${gl.new_red?'bad':'good'}">${gl.new_red ?? '?'} newly failing</b>` : '—'}</div>
-      ${gr ? `<div><div class="lbl">Merge run going now</div>since ${esc(tWk(gr.since))}${gr.merged!=null?` · ${gr.merged} merged, ${gr.skipped} skipped so far`:''}</div>` : ''}
+      <div><div class="lbl">Last merge run</div>${gl ? `${esc(tWk(gl.t))}: <b>${gl.merged}</b> merged, <b class="vc v-${gl.new_red?'bad':'good'}">${gl.new_red ?? '?'} newly failing</b>` : '—'}</div>
+      ${gr ? `<div><div class="lbl">Merge run going now</div>since ${esc(tWk(gr.since))}${gr.merged!=null?` · ${gr.merged} merged so far`:''}</div>` : ''}
       <div><div class="lbl">Last release</div>${rel ? `<b>${esc(rel.tag)}</b> · ${esc(tWk(rel.t))}` : '—'}</div>
       <div><div class="lbl">Next release (daily, about 6 PM ET)</div>${esc(tWk(p.next_train))} (${esc(ago(p.next_train))}) · <b>${inTrain}</b> branches merged since the last release${p.in_train && p.in_train.branches.length ? `<div class="small muted mono" style="margin-top:4px;overflow-wrap:anywhere">${esc(p.in_train.branches.join(', '))}</div>` : ''}</div>
     </div>`)}
@@ -1498,19 +1627,31 @@ VIEWS.backlog = (b, el) => {
 
 // ---------- alerts
 VIEWS.alerts = (a, el) => {
-  const ny = a.needs_you || {items:[]}, n = (ny.items || []).length, C = a.counts;
+  const ny = a.needs_you || {items:[]}, isNote = i => /^(cleared|done|coming|fyi|note)\b[^:]{0,40}:/i.test(i), asks = (ny.items || []).filter(i => !isNote(i)), notes = (ny.items || []).filter(isNote), n = asks.length, C = a.counts || {};
   const lv = l => vOf(l) || 'none', rank = {bad:0, watch:1, none:2, good:3};
-  const rows = list => list.slice().sort((x, y) => rank[lv(x.level)] - rank[lv(y.level)]).map(f => `<li class="v-${lv(f.level)}"><span class="arow-d"></span><span>${esc(plain(f.text))}</span></li>`);
+  const WHOV = {'Nobody yet':'watch', 'Fix job':'good', 'Automatic':'good', 'Coordinator':'none', 'Nobody needed':'none'};
+  const rows = list => list.slice().sort((x, y) => rank[lv(x.level)] - rank[lv(y.level)]).map(f => `<li class="v-${lv(f.level)}"><span class="arow-d"></span><span>${esc(plain(f.text))}
+      <div class="small muted" style="margin-top:3px">${f.since ? `Open since ${esc(tEST(f.since))} (${esc(dur(now() - f.since))})` : 'Open now'}${f.who ? ` · <b class="vc v-${WHOV[f.who] || 'none'}" title="Who handles this alert">${esc(f.who)}</b>: ${esc(f.todo || '')}` : ''}${!f.owner && f.level !== 'info' && (f.handler || 'none') === 'none' && !f.miss ? ' <span class="muted">(no job on it yet)</span>' : ''}${f.miss ? ` <b class="vc v-bad" title="Open more than 6 hours with nobody on it">Over 6 h with nobody on it: the coordinator's miss</b>` : ''}</div></span></li>`);
   const worst = list => list.reduce((w, f) => rank[lv(f.level)] < rank[w] ? lv(f.level) : w, 'good');
-  const box = (key, title, list, none, sub) => { const w = list.length ? worst(list) : 'good'; return `<div class="card v-${w === 'none' ? 'good' : w}"><div class="hh"><h3 style="margin:0">${title}</h3>${vd(w === 'none' ? 'good' : w, list.length ? `${list.length} open` : 'Clear')}</div>${list.length ? capped(key, rows(list), 6, x => `<ul class="arows">${x}</ul>`) : `<div class="note">${none}</div>`}${sub || ''}</div>`; };
-  el.innerHTML = srcLine(a.sources) + `<div class="hero ${n ? 'v-watch' : 'v-good'}"><div class="hh"><b>${n ? `${n} thing${n > 1 ? 's' : ''} need${n > 1 ? '' : 's'} you` : 'Nothing needs you'}</b><span class="small muted">updated ${esc(ago(ny.updated))}</span></div>
-    ${n ? `<ol class="todo">${ny.items.map(i => `<li>${esc(i)}</li>`).join('')}</ol>` : '<div class="note">The coordinator has no open questions for you.</div>'}</div>
-  ${sectionH('Problems right now', C ? `${C.problems} open · ${C.need_action ? `<b class="vc v-bad">${C.need_action} need action from you</b>` : 'none need action from you'}` : '')}
-  <div class="grid cols2">
-    ${box('al-fleet', 'Agents and merges', a.fleet || [], 'No fleet alerts.', `<div class="note" style="margin-top:8px">Checked ${esc(ago(a.fleet_at))}</div>${a.fleet_summary ? fold('al-sum', 'Fleet summary line', '', `<div class="note">${esc(a.fleet_summary)}</div>`, {plain: true}) : ''}`)}
-    ${box('al-sys', 'Servers and accounts', a.system || [], 'All checks pass.')}
+  const box = (key, title, list, none, sub) => { const w = list.length ? worst(list) : 'good'; return `<div class="card v-${w === 'none' ? 'good' : w}"><div class="hh"><h3 style="margin:0">${title}</h3>${vd(w === 'none' ? 'good' : w, list.length ? `${list.length} open` : 'Clear')}</div>${list.length ? capped(key, rows(list), 8, x => `<ul class="arows">${x}</ul>`) : `<div class="note">${none}</div>`}${sub || ''}</div>`; };
+  const all = (a.fleet || []).concat(a.system || []).filter(f => f.level !== 'info'), mine = all.filter(f => f.owner), open = all.filter(f => !f.owner), nobody = open.filter(f => (f.handler || 'none') === 'none').length, misses = open.filter(f => f.miss).length;
+  const notOwner = l => (l || []).filter(f => !f.owner), nAsk = n + mine.length;
+  const needs = `<div class="hero ${nAsk ? 'v-watch' : 'v-good'}"><div class="hh"><b>${nAsk ? `Needs you: ${nAsk} thing${nAsk > 1 ? 's' : ''}` : 'Needs you: nothing'}</b><span class="small muted">these stay open as long as you need · list last rewritten ${esc(ago(ny.updated))}</span></div>
+    ${nAsk ? `<ol class="todo">${mine.map(f => `<li>${esc(plain(f.text))} <span class="small muted">(open since ${esc(f.since ? tEST(f.since) : 'now')})</span></li>`).join('')}${asks.map(i => `<li>${esc(i)}</li>`).join('')}</ol>` : '<div class="note">No decision, approval, login or purchase is waiting on you.</div>'}${notes.length ? fold('al-notes', `Coordinator notes (${notes.length}): nothing to do, for your information`, '', notes.map(i => `<div class="note">${esc(i)}</div>`).join(''), {plain: true}) : ''}</div>`;
+  const chkOld = a.checked_at && now() - a.checked_at > 1800;
+  el.innerHTML = srcLine(a.sources) + `<div class="leadline" style="margin:0 0 12px;font-size:14px;line-height:1.45"><span class="muted">What this means right now: </span><b>${nAsk}</b> thing${nAsk === 1 ? '' : 's'} need${nAsk === 1 ? 's' : ''} you (listed first). <b>${open.length}</b> other alert${open.length === 1 ? ' is' : 's are'} open and belong to the coordinator: ${nobody ? `<b>${nobody}</b> ${nobody === 1 ? 'has' : 'have'} no job on ${nobody === 1 ? 'it' : 'them'} yet` : 'every one has a job or tool on it'}${misses ? `, <b class="vc v-bad">${misses} open over 6 h with nobody on it (the coordinator's miss)</b>` : ''}.</div>
+  ${needs}
+  <div class="grid tiles">
+    ${stat({label:'Checked', value: a.checked_at ? esc(ago(a.checked_at)) : '—', v: chkOld ? 'bad' : 'good', word: chkOld ? 'Late' : 'Fresh', sub:'when every alert below was last re-measured (runs at least every 15 min)'})}
+    ${stat({label:'Last new alert', value: a.last_new_at ? esc(ago(a.last_new_at)) : 'none', sub:'when the newest alert started. A long time here is good: nothing new has gone wrong'})}
+    ${stat({label:'Handled by coordinator', value: open.length, v: misses ? 'bad' : (C.need_action ? 'watch' : (open.length ? '' : 'good')), word: misses ? `${misses} missed` : (C.need_action ? `${C.need_action} serious` : ''), sub: `oldest open ${C.oldest_h ?? 0} h · ${C.being_fixed ?? 0} with a fix job running`})}
   </div>
-  ${sectionH('Alert log', `${(a.log || []).length} entries, newest first`)}<div class="card">${(a.log || []).length ? capped('al-log', a.log.map(l => `<li class="v-none"><span class="t">${esc(l.t ? tShort(l.t) : '')}</span><span>${esc(plain(l.text))}</span></li>`), 5, x => `<ul class="arows log">${x}</ul>`) : '<div class="muted">empty</div>'}</div>`;
+  ${sectionH('Handled by coordinator', 'open right now. Each line: what is wrong, since when, who handles it. Red tag = open over 6 h with nobody on it')}
+  <div class="grid cols2">
+    ${box('al-fleet', 'Agents and merges', notOwner(a.fleet), 'No alerts.', `<div class="note" style="margin-top:8px">Checked ${esc(ago(a.fleet_at))}</div>${a.fleet_summary ? fold('al-sum', 'Raw summary line (for agents)', '', `<div class="note">${esc(a.fleet_summary)}</div>`, {plain: true}) : ''}`)}
+    ${box('al-sys', 'Servers and accounts', notOwner(a.system), 'All checks pass.')}
+  </div>
+  ${sectionH('History', `past events, newest first. This list only grows when something new happens, so an old top entry is normal`)}<div class="card">${(a.log || []).length ? capped('al-log', a.log.map(l => `<li class="v-none"><span class="t">${esc(l.t ? tShort(l.t) : '')}</span><span>${esc(plain(l.text))}</span></li>`), 5, x => `<ul class="arows log">${x}</ul>`) : '<div class="muted">empty</div>'}</div>`;
 };
 
 // ---------- signups
