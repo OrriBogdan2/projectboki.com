@@ -141,7 +141,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
     <div class="grid" id="bgrid"></div>
   </section>
 
-  <footer>Models as of 7 Nov 2026, 05:40 UTC. Display names follow the latest renames; file ids in brackets.</footer>
+  <footer><span id="asof"></span> Display names follow the latest renames; file ids in brackets.</footer>
 </div>
 
 <script type="module">
@@ -224,11 +224,13 @@ function posedBox(root){root.updateMatrixWorld(true);
   root.traverse(o=>{if(!o.isMesh||!o.visible)return; if(o.isSkinnedMesh){o.skeleton.update();o.computeBoundingBox();box.union(o.boundingBox.clone().applyMatrix4(o.matrixWorld))}else{if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();box.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld))}});
   if(box.isEmpty())box.setFromObject(root);
   return box}
+// meshy_native hunters face +Z (glTF standard), contract rigs and kin face -Z: turn the +Z ones so every model meets the camera on -Z (build3d marks them fz:1)
+const orient=(g,src)=>{const x=all.find(i=>i.src===src); if(x&&x.fz===1&&g&&g.scene)g.scene.rotation.y=Math.PI; return g};
 async function setModel(src){
   const my=++token; load.textContent="Loading…";
   try{
     const buf=await getGlb(src); if(my!==token)return;
-    const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(gameLook(g)),rej)); if(my!==token)return;
+    const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g),src)),rej)); if(my!==token)return;
     if(model)scene.remove(model); model=g.scene; scene.add(model); setupAnims(g);
     if(mixer)mixer.update(0);
     const box=posedBox(model);
@@ -252,7 +254,7 @@ function lineLabel(html,p,rule){const el=document.createElement("div");el.classN
 async function buildLineup(){
   const hs=all.filter(x=>x.kind==="h"); let n=0;
   const gs=await Promise.all(hs.map(async x=>{
-    try{const buf=await getGlb(x.src); const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(gameLook(g)),rej));
+    try{const buf=await getGlb(x.src); const g=await new Promise((res,rej)=>loader.parse(buf,"",g=>res(orient(gameLook(g),x.src)),rej));
       if(lineMode)load.textContent="Loading line-up "+(++n)+"/"+hs.length+"…"; return g}
     catch(e){return null}}));
   if(!gs.some(g=>g))throw new Error("no models");
@@ -337,6 +339,7 @@ async function decFetch(path){const r=await fetch(path);if(!r.ok)throw new Error
   return crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12))}
 function boot(man){
   all=man.items.map(x=>({...x,src:x.f,n:x.n})); all.forEach(x=>{if(x.r)REV[(x.kind==="h"?"h_":"b_")+x.id]=x.r});
+  document.getElementById("asof").textContent=man.asof?"In game models, built from "+man.asof+".":"";
   document.getElementById("lock").hidden=true; document.getElementById("app").hidden=false; resize();
 all.forEach((x,i)=>document.getElementById(x.kind==="h"?"hgrid":"bgrid").appendChild(chip(x,i)));
 let cur=0;

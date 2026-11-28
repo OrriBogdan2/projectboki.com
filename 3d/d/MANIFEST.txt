@@ -1,37 +1,105 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
-commit a5004c97d96849676d225390bb1472af6c2ea88a
-built 2026-11-25T23:40Z
-h_vex fca9acc49613c092d4972eb9a188e1523676822b art/wardens/vex/vex.glb 7acaed12d1c 2026-11-18
+commit ac10b3c76957396c8720847deb98958a75f84cb7
+built 2026-11-28T01:34Z
+h_vex d63493dae6f33fe4f85d69c32d947fa1e1bd8a57 art/wardens/vex/vex_meshy.glb 20f90384984 2026-11-27
 h_breaker bcfdb0558a5965b48f95447f67a9c6d6c80e3b3f art/wardens/breaker/breaker.glb 7acaed12d1c 2026-11-18
-h_claire d16bb7eaac79ef089fc87bed4b6cfb951c743f6b art/wardens/claire/claire.glb 5cd36e3a8c6 2026-11-17
-h_kael 12ce4a681750df40286f7d2a21a406d3260e73a3 art/wardens/kael/kael.glb ba9fda9a49d 2026-11-24
-h_cinder b1903ec35801a0986478c927d02faacc16205a33 art/wardens/cinder/cinder.glb 3ad4b43beec 2026-11-18
-h_tarek 1af2d4c566af40d9593356f17c87eee91567922b art/wardens/tarek/tarek.glb 063512502db 2026-11-25
-h_ryzz 6cb9c28783f1613b9987313868e363009908e2ce art/wardens/ryzz/ryzz.glb 4de8a2b5c17 2026-11-20
-h_dredge 63347867590bf504c0738fe27c55134d3b3a1752 art/wardens/dredge/dredge.glb 2f965391881 2026-11-23
-h_pip 25978c749335ca8e11a832aacb8cc6d9726d3861 art/wardens/pip/pip.glb d5c89fdd660 2026-11-17
-h_sable 5a0371433046bbe15a6351642397589d8041c36b art/wardens/sable/sable.glb e34303c0749 2026-11-18
-h_hem add555c3b6f19bb2c1abd1e2d30f8d756089b94d art/wardens/hem/hem.glb e5f13f6492e 2026-11-17
-h_ostra c60862eccb57a2e41c1b9732c8128deadd0b6a2c art/wardens/ostra/ostra.glb d37ae63b3c3 2026-11-18
-b_cindle sha256:78d3e55a2250e555c1e7525854492ebbb9f67d62 snapshot
-b_pebbit sha256:3a230f7f744f7aa3077bbdf93145c4108fc15dff snapshot
-b_cairnback sha256:0959fad3084d43f0219ee10da162c49e4a5d27f3 snapshot
-b_glintmole sha256:494f0ba86fce7dc07c70f0b39dc04a0cecf68847 snapshot
-b_mossgrade sha256:bfd02536bd144a6f9c621b4dc66bb074a5292c60 snapshot
-b_kestrike sha256:bba7bbee4287cbc4da43030281699faba3c8fd84 snapshot
-b_thrumbird sha256:ea83b46a315c58602ea95dc9bfd8dd3d7018c896 snapshot
-b_selenfin sha256:40f1c364a97ebfebcd1d030c965a96ec80218d20 snapshot
-b_burrlet sha256:63c87e53596c933de7fcaa34ca3ae7bb58edbaa1 snapshot
-b_puddlet sha256:22ebf3e432f54bdbcedb220bfbc2119ccadcaac0 snapshot
-b_wisplet sha256:c1a6a11e4f3bcea35a868c7164b92e74e2b59c57 snapshot
-b_zapple sha256:43944b45bcb8b683b888c090ae793bf19ee35adb snapshot
-b_hivara sha256:3d3def7496aad2d6baa90db0628620248d36c989 snapshot
-b_zephyrak sha256:060e9b7222a1a5b128bb76368e23a21b4f5d8abe snapshot
-b_kindlewren sha256:9bf398bd6f4c41abe0f93235237b105739c49ac1 snapshot
-b_rimeshrew sha256:88439b7a67444a2be55b89ba20ba56ba8de3e9c1 snapshot
-b_gloamshell sha256:2087311b533eb5557cb7b60dae9351722c5cfe22 snapshot
-b_nettlynx sha256:253af2e3d5d0927d0aa252738bb5630dcaa032ed snapshot
-b_lodestick sha256:de85d7b6fb3aa419b0c344db4c3178dc4d850f81 snapshot
-b_marchleaf sha256:30682dd6aa822ff9fcde45fe4445e8be8e5e2a2b snapshot
-b_glomwort sha256:a1c8a9456db96c701e65f446453aa3d468f3ca25 snapshot
+h_claire 6aa5bc94811a8162affef52ef3d00a052a7c336b art/wardens/claire/claire_meshy.glb 91d02047bec 2026-11-26
+h_kael 4b89b251ac808db3eb13ff12da7484272952db50 art/wardens/kael/kael_meshy.glb 6bcea197b7e 2026-11-24
+h_cinder 3fe3758f2bb48b8793514879fff1061b8b84d4ae art/wardens/cinder/cinder_meshy.glb 0182615eadb 2026-11-27
+h_tarek 05d43d9c11479424cef9cc2faabb5e11227646eb art/wardens/tarek/tarek_meshy.glb 63486cea0b2 2026-11-25
+h_ryzz b5c215d397041f5eb3d7d0d5522841cb251da269 art/wardens/ryzz/ryzz_meshy.glb f01b4115157 2026-11-28
+h_dredge b56f7a8b3f13b6ec5cc5c0fabf428923978bb77c art/wardens/dredge/dredge_meshy.glb 024c5b4eaec 2026-11-27
+h_pip 51a4f6158611d1db9f7f757c361612982e353dea art/wardens/pip/pip_meshy.glb 4525aa7110a 2026-11-26
+h_sable 9b0cc76ca92d167eb76c8b05d8c6ff14b0c79aae art/wardens/sable/sable_meshy.glb 6806ced7f76 2026-11-27
+h_hem 0275e33882e44276566d5dc80a19a95bea437c91 art/wardens/hem/hem_meshy.glb 3e5ca8797d4 2026-11-23
+h_ostra 2e2c846131d2ff52565ff33c3ad8bce8f72787c7 art/wardens/ostra/ostra_meshy.glb 6d5766c3ba1 2026-11-27
+h_gil 235d1c63bfcb5354816446b8ec5cb789a9a78847 art/wardens/gil/gil_meshy.glb 9ea09465a61 2026-11-22
+b_cindle bbfab1bae15962eeae323420364baa82ab350531 art/kin/cindle/cindle.glb 2704b01fe59 2026-11-18
+b_vespox c5eabc4c55544537533817d59f26eed6dd6cdd0e art/kin/vespox/vespox.glb 685f40d2c1f 2026-11-18
+b_puddlet 9783026076642cda4126074934eac5f165314865 art/kin/puddlet/puddlet.glb 80f5f5e4d13 2026-11-23
+b_glassolotl 725a03a3a2d7c1c08c75c4522e4f579cf8656ddd art/kin/glassolotl/glassolotl.glb 685f40d2c1f 2026-11-18
+b_burrlet cacf0c7ce89e4e286cc532b7832583d64d6ff5a0 art/kin/burrlet/burrlet.glb 80f5f5e4d13 2026-11-23
+b_sporcupine ac0c4390ed7e8e12b4fb2b21755d75e6a62cef82 art/kin/sporcupine/sporcupine.glb 685f40d2c1f 2026-11-18
+b_pebbit 02aed3970a657f687a17b135edb115682766e212 art/kin/pebbit/pebbit.glb 1254d69f0d9 2026-11-18
+b_gravitank 8bf816bbf12c9083d0843706e942beaa1e9fc44a art/kin/gravitank/gravitank.glb 685f40d2c1f 2026-11-18
+b_wisplet ed225aadcf48be948ae1fc30a4d043a6b5fb9d50 art/kin/wisplet/wisplet.glb 476011edaee 2026-11-17
+b_eclipsowl d694bf6b5a8739d23989d2617c0753e1237ae1c3 art/kin/eclipsowl/eclipsowl.glb 685f40d2c1f 2026-11-18
+b_zapple 1c2d8f8a8e59087e27c12bd10056fddff2134a0f art/kin/zapple/zapple.glb 0dd0e57fb15 2026-11-18
+b_howlop f1ddae22e799fcd81c586dbb11895e95c0dd5abd art/kin/howlop/howlop.glb 685f40d2c1f 2026-11-18
+b_basaltoad a53758242648582a63667922b80e4aa1e4413bde art/kin/basaltoad/basaltoad.glb 685f40d2c1f 2026-11-18
+b_seamwyrm c9dc8845537971504f9186482dcbb2935415e2cb art/kin/seamwyrm/seamwyrm.glb 685f40d2c1f 2026-11-18
+b_anchorhorn fb932c7d892dcf0d6ff90bdeb9644e7eb890edca art/kin/anchorhorn/anchorhorn.glb 685f40d2c1f 2026-11-18
+b_floenatee a616454c15ff8370081f8848eed6d5ce4b71fa20 art/kin/floenatee/floenatee.glb 33388158b6a 2026-11-13
+b_glaciatee 3ebc9abfdfe3166aa4df1152f1b44730700bbacb art/kin/glaciatee/glaciatee.glb 685f40d2c1f 2026-11-18
+b_gibbelle 8f14e7dc9b3b25ff465c723161d58628567ebb19 art/kin/gibbelle/gibbelle.glb 0d064be0972 2026-11-13
+b_gongrowl 410899db11a7e68eb2324db408cdc6aa74c9eead art/kin/gongrowl/gongrowl.glb 685f40d2c1f 2026-11-18
+b_glaciyak 945c939e9bc204590aba556876d687b2b0b288fc art/kin/glaciyak/glaciyak.glb 084e6df4c0c 2026-11-18
+b_dreadnoyak fa113e8ecd01412cc157c211d561beed1e9b0370 art/kin/dreadnoyak/dreadnoyak.glb 685f40d2c1f 2026-11-18
+b_glintmole 7c65556a7ecafebd69107e2024e34c3af995b88b art/kin/glintmole/glintmole.glb 5dca7b60da0 2026-11-18
+b_geodemole fe6ac9ae5e336b26f019568fadbfe6cf8cffa73d art/kin/geodemole/geodemole.glb 685f40d2c1f 2026-11-18
+b_gloamspire f58b416839a8f5020def8e6f81f4ce94bf3424f7 art/kin/gloamspire/gloamspire.glb 685f40d2c1f 2026-11-18
+b_glomwort 954d1b2a4268eda1578ac26031f1c9b71b4e271a art/kin/glomwort/glomwort.glb 5a9c43b6293 2026-11-18
+b_glomworth cbd6c89e51a27f4614f3a4bb3116aceda78a7289 art/kin/glomworth/glomworth.glb 685f40d2c1f 2026-11-18
+b_effigoon 9acfa2e30acde64ae08ea62334efd5a699e3f6f8 art/kin/effigoon/effigoon.glb 685f40d2c1f 2026-11-18
+b_heatherhorn b1646121ec8f5c2eafedeba696d302bc1a3a6083 art/kin/heatherhorn/heatherhorn.glb a40086da6f3 2026-11-22
+b_crofthollow 825f8bda1a5b922f0a51601c085b6ff420101af5 art/kin/crofthollow/crofthollow.glb 685f40d2c1f 2026-11-18
+b_hoarheron 43faff1eae719461efe5c46d438322d13f0ffa94 art/kin/hoarheron/hoarheron.glb 269c641fb7c 2026-11-13
+b_lanceron 7aa01e57019fe9e2c587ec27cd93b92735454e85 art/kin/lanceron/lanceron.glb 685f40d2c1f 2026-11-18
+b_kestrike b79ddb56fe2837ee51e43adaded33aa687cae8b8 art/kin/kestrike/kestrike.glb 966076c3676 2026-11-18
+b_arcestrel ced8e3cbaa99cc4a19ff83dcb4921ec9803648bf art/kin/arcestrel/arcestrel.glb 685f40d2c1f 2026-11-18
+b_kilnbadger 0360446b4f8da651b49bc5d5b9b64a7818ae90a2 art/kin/kilnbadger/kilnbadger.glb a40086da6f3 2026-11-22
+b_forgebrock a8a8d12ca5b87e566df0dfc0d0fd74cd0a99b135 art/kin/forgebrock/forgebrock.glb 685f40d2c1f 2026-11-18
+b_kindlewren 12ef604ff9d3096ffeaa809771576b0c3339e0ff art/kin/kindlewren/kindlewren.glb 476011edaee 2026-11-17
+b_embrook 64932fe90c3dbae376fc828b43c70778ac54bb65 art/kin/embrook/embrook.glb 685f40d2c1f 2026-11-18
+b_lilybara e23ea7b29bcc6a500a817c6154acadaea1ec184f art/kin/lilybara/lilybara.glb 876901d401f 2026-11-19
+b_geysirbara 0d990c01d5daa652fba466f960a4a13a53bfae39 art/kin/geysirbara/geysirbara.glb 685f40d2c1f 2026-11-18
+b_limpetor 3d5b6d03cca2c146949dbb8eb253ea9d6d604f02 art/kin/limpetor/limpetor.glb e83afbdc578 2026-11-22
+b_citadoad caa64c59c2fa58b76bb4ca123d0ce3c009ae3bb4 art/kin/citadoad/citadoad.glb 685f40d2c1f 2026-11-18
+b_lodestaff 6df8578571be0d8aa274efe3c3e81a938a32c7aa art/kin/lodestaff/lodestaff.glb 685f40d2c1f 2026-11-18
+b_marchleaf 3a94147eaa3a5348b92974763198d23f846b7228 art/kin/marchleaf/marchleaf.glb 476011edaee 2026-11-17
+b_shinobant f87665954ab7f0f6450adcac768ec628cf7088f9 art/kin/shinobant/shinobant.glb 685f40d2c1f 2026-11-18
+b_scythant 6df762c7b50f850f0eee7df85762a8de34fdd99e art/kin/scythant/scythant.glb 685f40d2c1f 2026-11-18
+b_moonloris b576ff408790535dc9651f13af1d57e764edf2b3 art/kin/moonloris/moonloris.glb e83afbdc578 2026-11-22
+b_lanternlong ba49f27216df4123cdcda4e85492c2512252128c art/kin/lanternlong/lanternlong.glb 685f40d2c1f 2026-11-18
+b_mossgrade ae36a49f89008dc4937cc7397f6c655ace8639de art/kin/mossgrade/mossgrade.glb 476011edaee 2026-11-17
+b_mossbastion 4b4b736f5cd4e47613b7850ef3346a9abb43cb60 art/kin/mossbastion/mossbastion.glb 685f40d2c1f 2026-11-18
+b_moundvark 34d9c824627beb5eabea78e4837a043f0c2539e7 art/kin/moundvark/moundvark.glb 084e6df4c0c 2026-11-18
+b_murmurling 600d383001fc344d2366f8704e5c5b4406c6e81b art/kin/murmurling/murmurling.glb 5a49c647e03 2026-11-18
+b_murmuron f8962dd7a4625025914eab39cc6298fc7e4d923d art/kin/murmuron/murmuron.glb 685f40d2c1f 2026-11-18
+b_nacrolin 5938f388fb10bb58f51fa2ac2054251c32db8646 art/kin/nacrolin/nacrolin.glb 5a49c647e03 2026-11-18
+b_strobolin 8d22075610fa792af8ecf1d8fb360c803d81c29f art/kin/strobolin/strobolin.glb 685f40d2c1f 2026-11-18
+b_nettlynx d42465fe57b88a68676cd62a9c8a5d00a141a298 art/kin/nettlynx/nettlynx.glb 476011edaee 2026-11-17
+b_thistlynx f1ba4ad91dbc1a189d925bd70ffa4ca7ffd149b5 art/kin/thistlynx/thistlynx.glb 685f40d2c1f 2026-11-18
+b_nimbostrich f2acc977e01675758887c58dffb108653a6a60f6 art/kin/nimbostrich/nimbostrich.glb 5a49c647e03 2026-11-18
+b_thunderstrich c9e0b1960552d82ce9be5ee0bf211c23011e7549 art/kin/thunderstrich/thunderstrich.glb 685f40d2c1f 2026-11-18
+b_opalisk 07f5e3c746a4ae4167db6244bb13d5801a34f956 art/kin/opalisk/opalisk.glb 084e6df4c0c 2026-11-18
+b_tidalisk 17b1924a55b869c908c6d147b5e8703266052162 art/kin/tidalisk/tidalisk.glb 685f40d2c1f 2026-11-18
+b_rimeshrew 5ae5977df50499cc96837b6ea52df786656d80b1 art/kin/rimeshrew/rimeshrew.glb b75de698819 2026-11-18
+b_rimefang e8650b529fa086f27437af3bcc16e6d389a29562 art/kin/rimefang/rimefang.glb 685f40d2c1f 2026-11-18
+b_scaldamus 7568c0bbe6a0efef428b2b56429146125bb2beca art/kin/scaldamus/scaldamus.glb 084e6df4c0c 2026-11-18
+b_selenwhale 56040302160bca5ba7f09e8d24ae95a59e4297c7 art/kin/selenwhale/selenwhale.glb 685f40d2c1f 2026-11-18
+b_sentrikat d4071197ca76bdbf2b0eaa7e214be92333215ca8 art/kin/sentrikat/sentrikat.glb 5a49c647e03 2026-11-18
+b_barostorm 63704140cb7080bd771d235f554edd1b8e4fc240 art/kin/barostorm/barostorm.glb 685f40d2c1f 2026-11-18
+b_cisternmander fd1ac6eaabee820130a7751df4bbe46713019632 art/kin/cisternmander/cisternmander.glb 685f40d2c1f 2026-11-18
+b_squalltross d64f76cb45909ec64551b6e24188c4301ee34e3d art/kin/squalltross/squalltross.glb 5a49c647e03 2026-11-18
+b_threadwyrm f489210014767ec3e57a077b305f1ab3cec109a5 art/kin/threadwyrm/threadwyrm.glb 216ade04d89 2026-11-24
+b_thrumbird 157a14ad3155a46260a0adbc4163e8bc90aedce5 art/kin/thrumbird/thrumbird.glb 6c3b6dd023f 2026-11-24
+b_lyrewing 1f9d0700075c7f9439e7d88941ea0c9a496d659f art/kin/lyrewing/lyrewing.glb 685f40d2c1f 2026-11-18
+b_tuatrune 8fec9112f0204dbd94f6a12952ac50fe7411f76c art/kin/tuatrune/tuatrune.glb 084e6df4c0c 2026-11-18
+b_vaultara 5ef7f2a61eb023035803e63c032b415b274be108 art/kin/vaultara/vaultara.glb 685f40d2c1f 2026-11-18
+b_velvorm c5234b709bae0847a5e91ec1270305a63eb086ed art/kin/velvorm/velvorm.glb 476011edaee 2026-11-17
+b_pipeworth 4072483df042137b8ce4e524c1fddd1fc7ea9131 art/kin/pipeworth/pipeworth.glb 685f40d2c1f 2026-11-18
+b_cairnback 3ef5132ed52da000bdca7a0c6a33871843c6e071 art/kin/cairnback/cairnback.glb 5b2141d2fef 2026-11-18
+b_hivara 728ea3eba0961d4b19cc979c7845bfbc505b29ba art/kin/hivara/hivara.glb 476011edaee 2026-11-17
+b_zephyrak eb3cbd77aca0bf1adfbba326ad9aac2867718f8f art/kin/zephyrak/zephyrak.glb f60fc9ed518 2026-11-24
+b_casquebill 7c1d134fbf9a74464cb179c9923ee0b0d8cb47ff art/kin/casquebill/casquebill.glb 476011edaee 2026-11-17
+b_spatewader dd12eb0f436c810286fb6cedf97587826df0e812 art/kin/spatewader/spatewader.glb 084e6df4c0c 2026-11-18
+b_goliathite 51fdca8c356691a6b3da02b0163a231f7e70a0e1 art/kin/goliathite/goliathite.glb 269c641fb7c 2026-11-13
+b_gloamshell d174c48f5b3196b5b8362b736044677059d481ae art/kin/gloamshell/gloamshell.glb 476011edaee 2026-11-17
+b_lodestick d9d674c51d2dc60bb5890bb243b7ba5a0ffe24e9 art/kin/lodestick/lodestick.glb 476011edaee 2026-11-17
+b_selenfin 2bb994c16e7e987aa1f837ed8c1e839de5fc636a art/kin/selenfin/selenfin.glb 353d5bae4f1 2026-11-18
+b_duskapi 46c1736e5f60811bdd787fea8aa914de1909d25a art/kin/duskapi/duskapi.glb 084e6df4c0c 2026-11-18
+b_orchisloth 52b3fe1fc784939321ef02c674d0d09fcf7325cd art/kin/orchisloth/orchisloth.glb 084e6df4c0c 2026-11-18
+b_umbrathere 4a80781651c3651e57d452721c4055811d75788e art/kin/umbrathere/umbrathere.glb 876901d401f 2026-11-19
+b_caecilith c5c39ca8478e56a3fc1047bfe23721f9398a91fb art/kin/caecilith/caecilith.glb 52ad55e3aa2 2026-11-24
