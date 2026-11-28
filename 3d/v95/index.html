@@ -210,7 +210,7 @@ function pick(i){ if(!rows.length)return; leaveLineup();
     const a=document.createElement("span");a.textContent=LBL[k];
     const bar=document.createElement("div");bar.className="bar";const fill=document.createElement("i");fill.style.width=(100*v/MAX[k])+"%";bar.appendChild(fill);
     const n=document.createElement("span");n.className="sc";n.textContent=v+"/"+MAX[k];$("subs").append(a,bar,n)}
-  $("rounds").textContent=(h.rounds&&h.rounds.length?"Rounds: "+h.rounds.join(" → ")+". ":"")+(h.credits!=null?"Meshy credits used: "+h.credits+".":"");
+  $("rounds").textContent=(h.rounds&&h.rounds.length?"Judge history: "+h.rounds.map(r=>typeof r==="object"?(r.score!=null?r.score:"?")+" ("+String(r.build||"").replace(/^auto: /,"").slice(0,48)+")":r).join(" → ")+". ":"")+(h.credits!=null?"Meshy credits used: "+h.credits+".":"");
   $("deltas").innerHTML=""; (h.deltas.length?h.deltas:["Nothing listed."]).forEach(t=>{const li=document.createElement("li");li.textContent=t;$("deltas").appendChild(li)});
   $("upd").textContent=updText(h); drawVars(h);
   $("cmp").removeAttribute("src"); getCmp(h).then(u=>{if(rows[cur]===h)$("cmp").src=u}).catch(()=>{});

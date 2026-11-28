@@ -1,6 +1,6 @@
 # /3d/v95 source manifest (not secret). Checked by room3d-check.
 main ac10b3c76957396c8720847deb98958a75f84cb7
-built 2026-11-28T02:31Z
+built 2026-11-28T02:42Z
 v95_Albert in_game game=bcfdb0558a5 src=bcfdb0558a5 updated=2026-11-19T15:39 pr=- pr_blob=- clips=60 prclips=0 slots=10/17
 v95_Cinder in_game game=3fe3758f2bb src=3fe3758f2bb updated=2026-11-27T17:17 pr=- pr_blob=- clips=15 prclips=0 slots=6/17
 v95_Gil in_game game=235d1c63bfc src=235d1c63bfc updated=2026-11-23T19:04 pr=- pr_blob=- clips=7 prclips=0 slots=6/17
@@ -12,5 +12,5 @@ v95_Sable newer_than_game game=9b0cc76ca92 src=9b0cc76ca92 updated=2026-11-27T22
 v95_Sparkle in_game game=b5c215d3970 src=b5c215d3970 updated=2026-11-28T00:47 pr=- pr_blob=- clips=6 prclips=0 slots=6/17
 v95_Vex in_game game=d63493dae6f src=d63493dae6f updated=2026-11-27T17:17 pr=- pr_blob=- clips=9 prclips=0 slots=9/17
 v95_claire in_game game=6aa5bc94811 src=6aa5bc94811 updated=2026-11-26T13:47 pr=- pr_blob=- clips=6 prclips=0 slots=6/17
-v95_lace in_game game=0275e33882e src=0275e33882e updated=2026-11-24T01:17 pr=- pr_blob=- clips=16 prclips=0 slots=6/17
+v95_lace newer_than_game game=0275e33882e src=0275e33882e updated=2026-11-24T01:17 pr=883 pr_blob=495585669a0 clips=16 prclips=16 slots=6/17
 v95_tarek in_game game=05d43d9c114 src=05d43d9c114 updated=2026-11-25T23:47 pr=- pr_blob=- clips=6 prclips=0 slots=6/17
