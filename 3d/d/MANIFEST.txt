@@ -1,18 +1,21 @@
 # Model Room source manifest (not secret). Stale check: build3d.py WORK --check
 ref origin/main
 commit ac10b3c76957396c8720847deb98958a75f84cb7
-built 2026-11-28T01:34Z
+built 2026-11-28T02:20Z
 h_vex d63493dae6f33fe4f85d69c32d947fa1e1bd8a57 art/wardens/vex/vex_meshy.glb 20f90384984 2026-11-27
 h_breaker bcfdb0558a5965b48f95447f67a9c6d6c80e3b3f art/wardens/breaker/breaker.glb 7acaed12d1c 2026-11-18
 h_claire 6aa5bc94811a8162affef52ef3d00a052a7c336b art/wardens/claire/claire_meshy.glb 91d02047bec 2026-11-26
 h_kael 4b89b251ac808db3eb13ff12da7484272952db50 art/wardens/kael/kael_meshy.glb 6bcea197b7e 2026-11-24
+c_kael_0 9147b1eb11f3b79ec5f16c9914778935b9607d7c art/wardens/kael/kael_clips.glb clips=12
 h_cinder 3fe3758f2bb48b8793514879fff1061b8b84d4ae art/wardens/cinder/cinder_meshy.glb 0182615eadb 2026-11-27
+c_cinder_0 76cda77af9499172f989399e88aa1d927b7bdebd art/wardens/cinder/cinder_clips.glb clips=9
 h_tarek 05d43d9c11479424cef9cc2faabb5e11227646eb art/wardens/tarek/tarek_meshy.glb 63486cea0b2 2026-11-25
 h_ryzz b5c215d397041f5eb3d7d0d5522841cb251da269 art/wardens/ryzz/ryzz_meshy.glb f01b4115157 2026-11-28
 h_dredge b56f7a8b3f13b6ec5cc5c0fabf428923978bb77c art/wardens/dredge/dredge_meshy.glb 024c5b4eaec 2026-11-27
 h_pip 51a4f6158611d1db9f7f757c361612982e353dea art/wardens/pip/pip_meshy.glb 4525aa7110a 2026-11-26
 h_sable 9b0cc76ca92d167eb76c8b05d8c6ff14b0c79aae art/wardens/sable/sable_meshy.glb 6806ced7f76 2026-11-27
 h_hem 0275e33882e44276566d5dc80a19a95bea437c91 art/wardens/hem/hem_meshy.glb 3e5ca8797d4 2026-11-23
+c_hem_0 88b549da150d11aa4e6b4bda0f77aa509634f4cf art/wardens/hem/hem_clips.glb clips=10
 h_ostra 2e2c846131d2ff52565ff33c3ad8bce8f72787c7 art/wardens/ostra/ostra_meshy.glb 6d5766c3ba1 2026-11-27
 h_gil 235d1c63bfcb5354816446b8ec5cb789a9a78847 art/wardens/gil/gil_meshy.glb 9ea09465a61 2026-11-22
 b_cindle bbfab1bae15962eeae323420364baa82ab350531 art/kin/cindle/cindle.glb 2704b01fe59 2026-11-18
@@ -103,3 +106,19 @@ b_duskapi 46c1736e5f60811bdd787fea8aa914de1909d25a art/kin/duskapi/duskapi.glb 0
 b_orchisloth 52b3fe1fc784939321ef02c674d0d09fcf7325cd art/kin/orchisloth/orchisloth.glb 084e6df4c0c 2026-11-18
 b_umbrathere 4a80781651c3651e57d452721c4055811d75788e art/kin/umbrathere/umbrathere.glb 876901d401f 2026-11-19
 b_caecilith c5c39ca8478e56a3fc1047bfe23721f9398a91fb art/kin/caecilith/caecilith.glb 52ad55e3aa2 2026-11-24
+spec_warden_native.json 3667f0a8109ac302a4320f63ae00e3b14b7c45d3 content/rules/warden_native.json
+spec_breaker.json 0c8e7bea547c5940ae4c18ad04653a1dcff19833 content/rules/warden_anim/breaker.json
+spec_pip.json e7b6d2f172840974330dac75f9fd90fcfc6b6ac2 content/rules/warden_anim/pip.json
+clips_vex 9 slots=9/17 moves=0
+clips_breaker 60 slots=10/17 moves=16
+clips_claire 6 slots=6/17 moves=0
+clips_kael 18 slots=6/17 moves=12
+clips_cinder 15 slots=6/17 moves=8
+clips_tarek 6 slots=6/17 moves=0
+clips_ryzz 6 slots=6/17 moves=0
+clips_dredge 7 slots=6/17 moves=0
+clips_pip 6 slots=6/17 moves=0
+clips_sable 6 slots=6/17 moves=0
+clips_hem 16 slots=6/17 moves=12
+clips_ostra 6 slots=6/17 moves=0
+clips_gil 7 slots=6/17 moves=3
